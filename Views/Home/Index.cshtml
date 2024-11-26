@@ -1,0 +1,20 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="form-container">
+    <h2>DNI Vendedor</h2>
+    <form action="@Url.Action("Buscar","Home")" method="post">
+        <input type="text" name="dni" placeholder="Ingrese su DNI" required>
+        <button type="submit"><i class="fas fa-search"></i> Buscar </button>
+    </form>
+</div> <br><br>
+
+<div class="image-container text-center"> 
+    <img src="~/images/A365.png" alt="Imagen de Inicio" class="img-fluid">
+</div>
+
+<div class="text-center">
+    <h1 class="display-4">Innovacion y Experiencia a tu Servicio</h1>
+</div>
+

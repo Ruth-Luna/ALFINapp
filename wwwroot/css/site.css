@@ -1,0 +1,35 @@
+html {
+  margin-top: 30px;
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.top-container {
+  display: flex;
+  justify-content: space-between; /* Asegura que los elementos estén al principio y al final */
+  align-items: center; /* Alinea ambos elementos verticalmente al centro */
+  margin-bottom: 20px;
+}
+
+.buttons-container {
+  display: flex;
+  gap: 10px;
+}
+
+.top-container p {
+  font-size: 35px;
+}

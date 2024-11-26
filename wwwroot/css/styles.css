@@ -1,0 +1,37 @@
+/* Estilos para el formulario */
+
+.form-container {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    text-align: left;
+    margin-bottom: 5px;
+}
+
+.form-container input {
+    padding: 10px;
+    width: 300px;
+    margin-right: 10px;
+}
+
+.form-container button {
+    padding: 10px 20px;
+    background-color: #6bcfcf;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.form-container button:hover {
+    background-color: #8bb9b9;
+}
+
+/* Estilos para la imagen */
+.image-container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.image-container img {
+    height: auto;
+}

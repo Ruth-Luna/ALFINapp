@@ -1,0 +1,32 @@
+@{
+    ViewData["Title"] = "Main Page";
+}
+
+<div class="container mt-4">
+    <div class="top-container">
+        <p><strong>Fecha actual:</strong> @DateTime.Now.ToString("dd/MM/yyyy")</p>
+        <div class="buttons-container">
+            <button class="btn btn-primary">Agregar Cliente</button>
+            <button class="btn btn-secondary">Cerrar Sesión</button>
+        </div>
+        
+    </div>
+    <h2>Ventas del Usuario</h2>
+    <!-- Tabla Vacía -->
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Tipificacion</th>
+                <th>DNI</th>
+                <th>X_APATERNO</th>
+                <th>X_AMATERNO</th>
+                <th>X_NOMBRE</th>
+                <th>OFERTAMAX</th>
+                <th>CAMPANA</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Aquí aparecerán las filas de la tabla, pero por ahora está vacía -->
+        </tbody>
+    </table>
+</div>
