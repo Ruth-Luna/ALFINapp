@@ -4,43 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ALFINapp.Controllers
 {
-    public class UserController : Controller
+    public class ClientesController : Controller
     {
         private readonly MDbContext _context;
 
-        public UserController(MDbContext context)
+        public ClientesController(MDbContext context)
         {
             _context = context;
-        }
-
-        [HttpGet]
-        public IActionResult CrearUsuario()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CrearUsuario (DNIUserModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var usuarioExistente = await _context.usuarios
-                    .FirstOrDefaultAsync(usuario => usuario.dni == model.dni);
-
-                if (usuarioExistente != null)
-                {
-                    ModelState.AddModelError("dni", "El DNI se encuentra registrado");
-                    return View ("Index");
-                }
-                _context.usuarios.Add(model);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Index");
-            }
-            else
-            {
-                return View("Index");
-            }
         }
 
         // Acción para verificar si el DNI existe
@@ -49,7 +19,7 @@ namespace ALFINapp.Controllers
         {
             if (!dni.All(char.IsDigit))
             {
-                return BadRequest("Ingrese solo números");
+                return BadRequest("Ingrese solo números >:v");
             }
 
             var usuario = await _context.usuarios.FirstOrDefaultAsync(u => u.dni == dni);

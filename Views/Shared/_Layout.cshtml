@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - ALFINapp</title>
+    @RenderSection("Styles", required: false)
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
@@ -42,7 +43,11 @@
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2024 - AppBancoAlFIN - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <a asp-area="" asp-controller="Home" asp-action="PersonalUser">UsuarioPersonal</a>
+            <a asp-area="" asp-controller="Home" asp-action="Addingclient">Addingclient</a>
+            
         </div>
+        
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

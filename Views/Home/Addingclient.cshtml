@@ -1,0 +1,73 @@
+@model IEnumerable<ALFINapp.Models.BaseCliente>
+
+@{
+    ViewBag.Title = "Agregar Cliente";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/agregarcliente.css">
+}
+
+<h1>Agregar Cliente</h1>
+<div id="dni-section">
+    <div class="form-group">
+        <label for="DNI">Ingresa DNI</label>
+        <input type="text" id="DNI" class="form-control" placeholder="Ingrese DNI">
+        <br>
+        <button id="consultar-dni" class="btn btn-primary" onclick="validarDNI()">Consultar</button>
+    </div>
+</div>
+
+<!-- Mensaje de advertencia -->
+<div id="error-message" style="color: red; display: none;"></div>
+
+<div id="formulario-cliente" style="display:none; margin-top: 20px;">
+    <div class="form-group">
+        <label for="DNIForm">DNI</label>
+        <input type="text" id="DNIForm" class="form-control" readonly>
+    </div>
+    <div class="form-group">
+        <label for="ApellidoPaterno">Apellido Paterno</label>
+        <input type="text" id="ApellidoPaterno" class="form-control" placeholder="Apellido Paterno">
+    </div>
+    <div class="form-group">
+        <label for="ApellidoMaterno">Apellido Materno</label>
+        <input type="text" id="ApellidoMaterno" class="form-control" placeholder="Apellido Materno">
+    </div>
+    <div class="form-group">
+        <label for="Nombres">Nombres</label>
+        <input type="text" id="Nombres" class="form-control" placeholder="Nombres">
+    </div>
+    <div class="form-group">
+        <label for="Edad">Edad</label>
+        <input type="number" id="Edad" class="form-control" placeholder="Edad">
+    </div>
+    <br>
+    <button class="btn btn-success">Agregar</button>
+</div>
+
+<script>
+    function validarDNI() {
+        const dniInput = document.getElementById("DNI");
+        const errorMessage = document.getElementById("error-message");
+        const formularioCliente = document.getElementById("formulario-cliente");
+        const dniForm = document.getElementById("DNIForm");
+
+        const dniValue = dniInput.value;
+
+        errorMessage.style.display = "none";
+
+        if (dniValue === "") {
+            errorMessage.style.display = "block";
+            errorMessage.innerHTML = "El DNI no puede estar vacío.";
+            formularioCliente.style.display = "none";
+        } else if (!/^\d{8}$/.test(dniValue)) {
+            errorMessage.style.display = "block";
+            errorMessage.innerHTML = "El DNI debe contener exactamente 8 dígitos y solo números.";
+            formularioCliente.style.display = "none";
+        } else {
+            dniForm.value = dniValue;
+            formularioCliente.style.display = "block";
+        }
+    }
+</script>

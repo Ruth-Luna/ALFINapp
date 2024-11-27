@@ -4,17 +4,17 @@ namespace ALFINapp.Models;
 
 public class DNIUserModel
 {
-    [Key] // Marca el campo Id como clave primaria
-    public int? id_usuario { get; set; } // Corresponde a 'id_usuario' en la tabla
+    [Key]
+    public int? id_usuario { get; set; }
 
-    [Required] // Marca el campo como obligatorio
-    public string? dni { get; set; } // Corresponde a 'dni' en la tabla
+    [Required]
+    public string? dni { get; set; }
 
-    public string? nombre { get; set; } // Corresponde a 'nombre' en la tabla
+    public string? nombre { get; set; }
 
-    public string? rol { get; set; } // Corresponde a 'rol' en la tabla
+    public string? rol { get; set; }
 
-    public string? departamento { get; set; } // Corresponde a 'departamento' en la tabla
+    public string? departamento { get; set; }
 
     public string? provincia { get; set; } // Corresponde a 'provincia' en la tabla
 

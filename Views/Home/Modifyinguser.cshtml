@@ -1,0 +1,161 @@
+@model IEnumerable<ALFINapp.Models.BaseCliente>
+
+@{
+    ViewBag.Title = "Actual User";
+}
+
+<h1>Datos del prospecto</h1>
+<h2>Datos personales</h2>
+<form action="@Url.Action("AgregarUsuario","ClientesController")">
+    <div class="row">
+        <!-- Primera Columna -->
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="Nombre">Nombre</label>
+                <div class="input-group">
+                    <input type="text" value="Juan" id="Nombre" class="form-control" placeholder="Nombre" disabled>
+                    <button type="button" class="btn btn-info" onclick="toggleEdit('Nombre')">Editar</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="Puesto">Puesto</label>
+                <div class="input-group">
+                    <input type="text" value="Jefe" id="Puesto" class="form-control" placeholder="Puesto" disabled>
+                    <button type="button" class="btn btn-info" onclick="toggleEdit('Puesto')">Editar</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="Telefono">Teléfono</label>
+                <div class="input-group">
+                    <input type="text" id="Telefono" class="form-control" placeholder="Teléfono" disabled>
+                    <button type="button" class="btn btn-info" onclick="toggleEdit('Telefono')">Editar</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="Direccion">Dirección</label>
+                <div class="input-group">
+                    <input type="text" id="Direccion" class="form-control" placeholder="Dirección" disabled>
+                    <button type="button" class="btn btn-info" onclick="toggleEdit('Direccion')">Editar</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="Pais">País</label>
+                <div class="input-group">
+                    <input type="text" id="Pais" class="form-control" placeholder="País" disabled>
+                    <button type="button" class="btn btn-info" onclick="toggleEdit('Pais')">Editar</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="Origen">Origen</label>
+                <div class="input-group">
+                    <input type="text" id="Origen" class="form-control" placeholder="Origen" disabled>
+                    <button type="button" class="btn btn-info" onclick="toggleEdit('Origen')">Editar</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="Fase">Fase</label>
+                <div class="input-group">
+                    <input type="text" id="Fase" class="form-control" placeholder="Fase" disabled>
+                    <button type="button" class="btn btn-info" onclick="toggleEdit('Fase')">Editar</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="Etiquetas">Etiquetas</label>
+                <div class="input-group">
+                    <input type="text" id="Etiquetas" class="form-control" placeholder="Etiquetas" disabled>
+                    <button type="button" class="btn btn-info" onclick="toggleEdit('Etiquetas')">Editar</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="Comentarios">Comentarios</label>
+                <div class="input-group">
+                    <textarea id="Comentarios" class="form-control" placeholder="Comentarios" disabled></textarea>
+                    <button type="button" class="btn btn-info" onclick="toggleEdit('Comentarios')">Editar</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="RedesSociales">Redes Sociales</label>
+                <div class="input-group">
+                    <input type="text" id="RedesSociales" class="form-control" placeholder="Redes Sociales" disabled>
+                    <button type="button" class="btn btn-info" onclick="toggleEdit('RedesSociales')">Editar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Segunda Columna -->
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="CorreoElectronico">Correo Electrónico</label>
+                <div class="input-group">
+                    <input type="email" id="CorreoElectronico" class="form-control" placeholder="Correo Electrónico" disabled>
+                    <button type="button" class="btn btn-info" onclick="toggleEdit('CorreoElectronico')">Editar</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="Movil">Móvil</label>
+                <div class="input-group">
+                    <input type="text" id="Movil" class="form-control" placeholder="Móvil" disabled>
+                    <button type="button" class="btn btn-info" onclick="toggleEdit('Movil')">Editar</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="Telefono2">Teléfono 2</label>
+                <div class="input-group">
+                    <input type="text" id="Telefono2" class="form-control" placeholder="Teléfono 2" disabled>
+                    <button type="button" class="btn btn-info" onclick="toggleEdit('Telefono2')">Editar</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="Ubicacion">Ubicación</label>
+                <div class="input-group">
+                    <input type="text" id="Ubicacion" class="form-control" placeholder="Ubicación" disabled>
+                    <button type="button" class="btn btn-info" onclick="toggleEdit('Ubicacion')">Editar</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="FechaCreacion">Fecha Creación</label>
+                <div class="input-group">
+                    <input type="date" id="FechaCreacion" class="form-control" disabled>
+                    <button type="button" class="btn btn-info" onclick="toggleEdit('FechaCreacion')">Editar</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="Ejecutivo">Ejecutivo</label>
+                <div class="input-group">
+                    <input type="text" id="Ejecutivo" class="form-control" placeholder="Ejecutivo" disabled>
+                    <button type="button" class="btn btn-info" onclick="toggleEdit('Ejecutivo')">Editar</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="PaginaWeb">Página Web</label>
+                <div class="input-group">
+                    <input type="url" id="PaginaWeb" class="form-control" placeholder="Página Web" disabled>
+                    <button type="button" class="btn btn-info" onclick="toggleEdit('PaginaWeb')">Editar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <button type="button" class="btn btn-secondary" onclick="history.back()">Cancelar</button>
+    </div>
+</form>
+
+<script>
+    function toggleEdit(fieldId) {
+        var field = document.getElementById(fieldId);
+        var button = event.target;
+
+        // Habilitar/deshabilitar el campo de texto
+        field.disabled = !field.disabled;
+        
+        // Cambiar el texto del botón de "Editar" a "Guardar" y viceversa
+        if (field.disabled) {
+            button.innerText = "Editar";
+        } else {
+            button.innerText = "Guardar";
+        }
+    }
+</script>
