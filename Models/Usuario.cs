@@ -1,0 +1,43 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ALFINapp.Models;
+
+public partial class Usuario
+{
+    [Key]
+    [Column("id_usuario")]
+    public int IdUsuario { get; set; }
+    [Column("dni")]
+
+    public string Dni { get; set; } = null!;
+    [Column("Nombres_Completos")]
+    public string NombresCompletos { get; set; } = null!;
+    [Column("rol")]
+    public string Rol { get; set; } = null!;
+    [Column("departamento")]
+    public string Departamento { get; set; } = null!;
+    [Column("provincia")]
+    public string Provincia { get; set; } = null!;
+    [Column("distrito")]
+    public string Distrito { get; set; } = null!;
+    [Column("telefono")]
+    public string Telefono { get; set; } = null!;
+    [Column("fecha_registro")]
+    public DateTime? FechaRegistro { get; set; }
+    [Column("estado")]
+
+    public string? Estado { get; set; }
+    [Column("Apellido_Paterno")]
+
+    public string? ApellidoPaterno { get; set; }
+    [Column("Apellido_Materno")]
+
+    public string? ApellidoMaterno { get; set; }
+    [Column("Nombres")]
+
+    public string? Nombres { get; set; }
+
+}

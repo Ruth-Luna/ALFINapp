@@ -40,6 +40,11 @@ public class HomeController : Controller
         return View("Modifyinguser");
     }
 
+    public IActionResult CreateUser()
+    {
+        return View("Createuser");
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

@@ -18,3 +18,9 @@
     <h1 class="display-4">Innovacion y Experiencia a tu Servicio</h1>
 </div>
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <script>
+        alert('@TempData["SuccessMessage"]');
+    </script>
+}

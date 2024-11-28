@@ -9,7 +9,7 @@
     <div class="top-container">
         <p><strong>Fecha actual:</strong> @DateTime.Now.ToString("dd/MM/yyyy")</p>
         <div class="buttons-container">
-            <button class="btn btn-primary">Agregar Cliente</button>
+            <a href="@Url.Action("AddingClient", "User")" class="btn btn-primary">Agregar Cliente</a>
             <button class="btn btn-secondary">Cerrar Sesión</button>
         </div>
     </div>
@@ -31,14 +31,23 @@
             @foreach (var BaseCliente in Model)
             {
                 <tr>
-                    <td>@BaseCliente.dni</td>
-                    <td>@BaseCliente.x_appaterno</td>
-                    <td>@BaseCliente.x_apmaterno</td>
-                    <td>@BaseCliente.x_nombre</td>
-                    <td>@BaseCliente.edad</td>
-                    <td>@BaseCliente.departamento</td>
+                    <td><button class="btn btn-primary">Tipificación</button></td>
+                    <td>@BaseCliente.Dni</td>
+                    <td>@BaseCliente.XAppaterno</td>
+                    <td>@BaseCliente.XApmaterno</td>
+                    <td>@BaseCliente.XNombre</td>
+                    <td>@BaseCliente.Edad</td>
+                    <td>@BaseCliente.Departamento</td>
                 </tr>
             }
+            
         </tbody>
     </table>
 </div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <script>
+        alert('@TempData["SuccessMessage"]');
+    </script>
+}
