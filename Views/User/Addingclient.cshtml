@@ -79,15 +79,20 @@
             errorMessage.style.display = "block";
             errorMessage.innerHTML = "El DNI debe contener exactamente 8 dígitos y solo números.";
         } else {
-            fetch('@Url.Action("VerificarDNI", "User")', {
-                method: 'POST',
+            fetch(`/User/VerificarDNI?dni=${dniValue}`, {
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ dni: dniValue })
+                }
             })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok){
+                        throw new Error('Error en la respuesta del server');
+                    }
+                    return response.json();
+                })
                 .then(data => {
+                    console.log('respuesta del servidor: ',data);
                     if (data.existe) {
                         errorMessage.style.display = "block";
                         errorMessage.innerHTML = "El DNI ya existe en la base de datos.";

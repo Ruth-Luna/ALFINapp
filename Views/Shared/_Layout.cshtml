@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,6 +11,7 @@
     <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ALFINapp.styles.css" asp-append-version="true" />
 </head>
+
 <body>
     <!-- #region 
     <header>
@@ -46,13 +48,20 @@
             <a asp-area="" asp-controller="Home" asp-action="PersonalUser">UsuarioPersonal</a>
             <a asp-area="" asp-controller="Home" asp-action="Addingclient">Addingclient</a>
             <a asp-area="" asp-controller="Home" asp-action="CreateUser">CreateUser</a>
-            
+
         </div>
-        
+
     </footer>
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <script>
+            alert('@TempData["ErrorMessage"]');
+        </script>
+    }
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>

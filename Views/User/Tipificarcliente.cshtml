@@ -1,0 +1,91 @@
+@model ALFINapp.Models.ClientesEnriquecido
+
+@{
+    var dni = ViewData["DNIcliente"];
+}
+
+<h1>Datos del Prospecto</h1>
+
+<form asp-action="TipificarCliente" asp-controller="User" method="post">
+    <div class="row">
+        <!-- Primera Columna -->
+        <div class="col-md-6">
+            <div class="form-group">
+                <h2>@dni</h2>
+            </div>
+
+            <div class="form-group">
+                <label for="Telefono1">Teléfono 1</label>
+                <input asp-for="Telefono1" class="form-control" id="Telefono1" type="text" value="@Model.Telefono1" placeholder="Teléfono 1">
+                <span asp-validation-for="Telefono1" class="text-danger"></span>
+            </div>
+
+            <input type="hidden" asp-for="IdBase" value="@Model.IdBase">
+
+            <div class="form-group">
+                <label for="Telefono2">Teléfono 2</label>
+                <input asp-for="Telefono2" class="form-control" id="Telefono2" type="text" value="@Model.Telefono2" placeholder="Teléfono 2">
+                <span asp-validation-for="Telefono2" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="Telefono3">Teléfono 3</label>
+                <input asp-for="Telefono3" class="form-control" id="Telefono3" type="text" value="@Model.Telefono3" placeholder="Teléfono 3">
+                <span asp-validation-for="Telefono3" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="Telefono4">Teléfono 4</label>
+                <input asp-for="Telefono4" class="form-control" id="Telefono4" type="text" value="@Model.Telefono4" placeholder="Teléfono 4">
+                <span asp-validation-for="Telefono4" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="Telefono5">Teléfono 5</label>
+                <input asp-for="Telefono5" class="form-control" id="Telefono5" type="text" value="@Model.Telefono5" placeholder="Teléfono 5">
+                <span asp-validation-for="Telefono5" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="Email1">Correo Electrónico 1</label>
+                <input asp-for="Email1" class="form-control" id="Email1" type="email" value="@Model.Email1" placeholder="Correo Electrónico 1">
+                <span asp-validation-for="Email1" class="text-danger"></span>
+            </div>
+        </div>
+
+        <!-- Segunda Columna -->
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="Email2">Correo Electrónico 2</label>
+                <input asp-for="Email2" class="form-control" id="Email2" type="email" value="@Model.Email2" placeholder="Correo Electrónico 2">
+                <span asp-validation-for="Email2" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="FechaEnriquecimiento">Fecha de Enriquecimiento</label>
+                <input asp-for="FechaEnriquecimiento" class="form-control" id="FechaEnriquecimiento" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" readonly>
+                <span asp-validation-for="FechaEnriquecimiento" class="text-danger"></span>
+            </div>
+            <!--
+            <div class="form-group">
+                <label for="Comentarios">Comentarios</label>
+                <textarea asp-for="Comentarios" class="form-control" id="Comentarios" placeholder="Comentarios"></textarea>
+                <span asp-validation-for="Comentarios" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="RedesSociales">Redes Sociales</label>
+                <input asp-for="RedesSociales" class="form-control" id="RedesSociales" type="text" placeholder="Redes Sociales">
+                <span asp-validation-for="RedesSociales" class="text-danger"></span>
+            </div>
+            -->
+        </div>
+    </div>
+
+    <br>
+
+    <div class="form-group">
+        <button class="btn btn-success" type="submit">Guardar</button>
+        <button type="button" class="btn btn-secondary" onclick="history.back()">Cancelar</button>
+    </div>
+</form>

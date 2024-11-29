@@ -13,9 +13,6 @@ public partial class ClientesEnriquecido
     [Column("id_base")]
 
     public int IdBase { get; set; }
-    [Column("dni")]
-
-    public string Dni { get; set; } = null!;
     [Column("telefono_1")]
 
     public string? Telefono1 { get; set; }

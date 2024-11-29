@@ -18,31 +18,9 @@ public class HomeController : Controller
         return View();
     }
 
-    public IActionResult Buscar(string dni)
-    {
-        if (string.IsNullOrEmpty(dni))
-        {
-            return RedirectToAction("Index");
-        }
-        else
-        {
-            return View("Main");
-        }
-    }
-
     public IActionResult Privacy()
     {
         return View();
-    }
-
-    public IActionResult PersonalUser()
-    {
-        return View("Modifyinguser");
-    }
-
-    public IActionResult CreateUser()
-    {
-        return View("Createuser");
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -54,5 +32,10 @@ public class HomeController : Controller
     public IActionResult Addingclient()
     {
         return View("Addingclient");
+    }
+
+    public IActionResult Error404()
+    {
+        return View();
     }
 }
