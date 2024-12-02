@@ -1,6 +1,8 @@
+using System.Security;
 using ALFINapp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace ALFINapp.Controllers
 {
@@ -80,49 +82,31 @@ namespace ALFINapp.Controllers
             .Select(ca => ca.IdCliente)
             .ToListAsync();
 
-            var clientes = await (from bc in _context.base_clientes
-                                  join db in _context.detalle_base
-                                  on bc.IdBase equals db.IdBase into detalleBaseGroup
-                                  from db in detalleBaseGroup.DefaultIfEmpty()
-                                  where clientesAsignados.Contains(bc.IdBase)
+            var clientesGralBase = await (
+            from ce in _context.clientes_enriquecidos
+            where clientesAsignados.Contains(ce.IdCliente)
+            select ce.IdBase
+            ).ToListAsync();
+
+            var clientes = await (from db in _context.detalle_base
+                                  join cg in clientesGralBase
+                                  on db.IdBase equals cg
+                                  join bc in _context.base_clientes
+                                  on db.IdBase equals bc.IdBase
                                   select new DetalleBaseClienteDTO
                                   {
                                       Dni = bc.Dni,
                                       XAppaterno = bc.XAppaterno,
                                       XApmaterno = bc.XApmaterno,
                                       XNombre = bc.XNombre,
-                                      Edad = bc.Edad,
 
                                       OfertaMax = db.OfertaMax,
                                       Campaña = db.Campaña,
-                                      Cuota = db.Cuota,
-                                      Oferta12m = db.Oferta12m,
-                                      Tasa12m = db.Tasa12m,
-                                      Tasa18m = db.Tasa18m,
-                                      Cuota18m = db.Cuota18m,
-                                      Oferta24m = db.Oferta24m,
-                                      Tasa24m = db.Tasa24m,
-                                      Cuota24m = db.Cuota24m,
-                                      Oferta36m = db.Oferta36m,
-                                      Tasa36m = db.Tasa36m,
-                                      Cuota36m = db.Cuota36m,
 
-                                      Departamento = bc.Departamento,
-                                      Provincia = bc.Provincia,
-                                      Distrito = bc.Distrito,
-
-                                      Sucursal = db.Sucursal,
-                                      AgenciaComercial = db.AgenciaComercial,
-                                      TipoCliente = db.TipoCliente,
-                                      ClienteNuevo = db.ClienteNuevo,
-                                      GrupoTasa = db.GrupoTasa,
-                                      GrupoMonto = db.GrupoMonto,
-                                      Propension = db.Propension,
-                                      
-
-                                      IdDetalle = db.IdDetalle,
                                       IdBase = bc.IdBase
-                                  }).ToListAsync();
+                                  })
+                                  .Distinct()
+                                  .ToListAsync();
 
             if (clientes == null)
             {
@@ -237,26 +221,86 @@ namespace ALFINapp.Controllers
             }
 
             Console.WriteLine($"DNI {id_base}");
-            var clienteEnriquecido = _context.clientes_enriquecidos.FirstOrDefault(ce => ce.IdBase == id_base);
 
-            if (clienteEnriquecido == null)
+            var detalleTipificarCliente = (from baseCliente in _context.base_clientes
+                                           join detalleBase in _context.detalle_base
+                                           on baseCliente.IdBase equals detalleBase.IdBase
+                                           join clienteEnriquecido in _context.clientes_enriquecidos
+                                           on baseCliente.IdBase equals clienteEnriquecido.IdBase
+                                           where baseCliente.IdBase == id_base
+                                           select new DetalleTipificarClienteDTO
+                                           {
+                                               // Propiedades de BaseCliente
+                                               Dni = baseCliente.Dni,
+                                               XAppaterno = baseCliente.XAppaterno,
+                                               XApmaterno = baseCliente.XApmaterno,
+                                               XNombre = baseCliente.XNombre,
+                                               Edad = baseCliente.Edad,
+                                               Departamento = baseCliente.Departamento,
+                                               Provincia = baseCliente.Provincia,
+                                               Distrito = baseCliente.Distrito,
+
+                                               // Propiedades de DetalleBase
+                                               Campaña = detalleBase.Campaña,
+                                               OfertaMax = detalleBase.OfertaMax,
+                                               TasaMinima = detalleBase.TasaMinima,
+                                               Sucursal = detalleBase.Sucursal,
+                                               AgenciaComercial = detalleBase.AgenciaComercial,
+                                               Plazo = detalleBase.Plazo,
+                                               Cuota = detalleBase.Cuota,
+                                               GrupoTasa = detalleBase.GrupoTasa,
+                                               GrupoMonto = detalleBase.GrupoMonto,
+                                               Propension = detalleBase.Propension,
+                                               TipoCliente = detalleBase.TipoCliente,
+                                               ClienteNuevo = detalleBase.ClienteNuevo,
+
+                                               // Propiedades de ClientesEnriquecido
+                                               Telefono1 = clienteEnriquecido.Telefono1,
+                                               Telefono2 = clienteEnriquecido.Telefono2,
+                                               Telefono3 = clienteEnriquecido.Telefono3,
+                                               Telefono4 = clienteEnriquecido.Telefono4,
+                                               Telefono5 = clienteEnriquecido.Telefono5
+                                           }).FirstOrDefault();
+
+            if (detalleTipificarCliente == null)
             {
                 TempData["ErrorMessage"] = "El Cliente no se le permite ser Tipificado";
                 Console.WriteLine("El cliente fue Eliminado manualmente de la Tabla clientes_tipificado");
                 return RedirectToAction("Ventas");
             }
 
-            var ClientesAsignado = _context.clientes_asignados.FirstOrDefault(ca => ca.IdCliente == clienteEnriquecido.IdCliente && ca.IdUsuario == HttpContext.Session.GetInt32("UsuarioId"));
-            if (ClientesAsignado == null)
+            var clienteEnriquecidoConsult = _context.clientes_enriquecidos.FirstOrDefault(ce => ce.IdBase == id_base);
+            if (clienteEnriquecidoConsult == null)
+            {
+                TempData["ErrorMessage"] = "No se encontró un cliente enriquecido con los criterios proporcionados.";
+                return RedirectToAction("Ventas");
+            }
+
+            var ClienteAsignado = _context.clientes_asignados.FirstOrDefault(ca => ca.IdCliente == clienteEnriquecidoConsult.IdCliente && ca.IdUsuario == HttpContext.Session.GetInt32("UsuarioId"));
+
+            if (ClienteAsignado == null)
             {
                 TempData["ErrorMessage"] = "No tiene permiso para tipificar este cliente";
                 return RedirectToAction("Ventas");
             }
 
-            var dni = _context.base_clientes.FirstOrDefault(bc => bc.IdBase == id_base);
+            ViewData["ID_asignacion"] = ClienteAsignado.IdAsignacion;
 
+            var tipificaciones = _context.tipificaciones.Select(t => new { t.IdTipificacion, t.DescripcionTipificacion }).ToList();
+            ViewData["Tipificaciones"] = tipificaciones;
+
+            var tipificaciones_asignadas = (from t in _context.tipificaciones
+                                            join ct in _context.clientes_tipificados on t.IdTipificacion equals ct.IdTipificacion
+                                            where ct.IdAsignacion == 4
+                                            select new
+                                            {
+                                                t.DescripcionTipificacion,
+                                                ct.IdAsignacion
+                                            }).ToList();
+            ViewData["tipificaciones_asignadas"] = tipificaciones_asignadas.ToList();
+            var dni = _context.base_clientes.FirstOrDefault(bc => bc.IdBase == id_base);
             ViewData["DNIcliente"] = dni != null ? dni.Dni : "El usuario No tiene DNI Registrado";
-            return View("Tipificarcliente", clienteEnriquecido);
+            return View("Tipificarcliente", detalleTipificarCliente);
         }
 
         public IActionResult AddingClient()
@@ -275,5 +319,80 @@ namespace ALFINapp.Controllers
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
         }
+
+        [HttpPost]
+        public IActionResult TipificarMotivo(int IdAsignacion, int? Tipificacion1, int? Tipificacion2, int? Tipificacion3)
+        {
+            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+            {
+                TempData["ErrorMessage"] = "Ha ocurrido un error en la autenticación";
+                return RedirectToAction("Index", "Home");
+            }
+
+            var ClienteAsignado = _context.clientes_asignados.FirstOrDefault(ca => ca.IdAsignacion == IdAsignacion && ca.IdUsuario == HttpContext.Session.GetInt32("UsuarioId"));
+
+            if (ClienteAsignado == null)
+            {
+                TempData["ErrorMessage"] = "No tiene permiso para tipificar este cliente";
+                Console.WriteLine($"{IdAsignacion}");
+                Console.WriteLine($"{Tipificacion1}");
+                return RedirectToAction("Ventas");
+            }
+
+            var clientesTipificados = new List<ClientesTipificado>();
+            DateTime fechaTipificacion = DateTime.Now;
+            Console.WriteLine($"ENTRO A LA LINEA PREVIA A TIPIFICACION 1 {IdAsignacion}");
+            Console.WriteLine($"{Tipificacion1}");
+            if (Tipificacion1.HasValue)
+            {
+                var clienteTipificado = new ClientesTipificado
+                {
+                    IdAsignacion = IdAsignacion,
+                    IdTipificacion = Tipificacion1.Value,
+                    FechaTipificacion = fechaTipificacion,
+                    Origen = "nuevo"
+                };
+                clientesTipificados.Add(clienteTipificado);
+                Console.WriteLine($"ENTRO A LA LINEA TIPIFICACION 1 {IdAsignacion}");
+                Console.WriteLine($"{Tipificacion1}");
+            }
+
+            // Procesamos la tipificación de Teléfono 2 si se seleccionó una opción
+            if (Tipificacion2.HasValue)
+            {
+                var clienteTipificado = new ClientesTipificado
+                {
+                    IdAsignacion = IdAsignacion,
+                    IdTipificacion = Tipificacion2.Value,
+                    FechaTipificacion = fechaTipificacion,
+                    Origen = "nuevo"
+                };
+                clientesTipificados.Add(clienteTipificado);
+                Console.WriteLine($"ENTRO A LA LINEA TIPIFICACION 2 {IdAsignacion}");
+                Console.WriteLine($"{Tipificacion2}");
+            }
+
+            // Procesamos la tipificación de Teléfono 3 si se seleccionó una opción
+            if (Tipificacion3.HasValue)
+            {
+                var clienteTipificado = new ClientesTipificado
+                {
+                    IdAsignacion = IdAsignacion,
+                    IdTipificacion = Tipificacion3.Value,
+                    FechaTipificacion = fechaTipificacion,
+                    Origen = "nuevo"
+                };
+                clientesTipificados.Add(clienteTipificado);
+                Console.WriteLine($"ENTRO A LA LINEA TIPIFICACION 3 {IdAsignacion}");
+                Console.WriteLine($"{Tipificacion3}");
+            }
+            _context.clientes_tipificados.AddRange(clientesTipificados);
+            _context.SaveChanges();
+            TempData["SuccessMessage"] = "Las Tipificaciones se han guardado Correctamente";
+
+            return RedirectToAction("Ventas");
+        }
+
     }
 }

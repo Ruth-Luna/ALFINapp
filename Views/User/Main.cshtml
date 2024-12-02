@@ -5,14 +5,19 @@
     var usuarioNombre = ViewData["UsuarioNombre"];
 }
 
-<div class="container mt-4">
+<header>
     <div class="top-container">
-        <p><strong>Fecha actual:</strong> @DateTime.Now.ToString("dd/MM/yyyy")</p>
-        <div class="buttons-container">
-            <a href="@Url.Action("AddingClient", "User")" class="btn btn-primary">Agregar Cliente</a>
-            <a href="@Url.Action("CerrarSesion", "User")" class="btn btn-secondary">Cerrar Sesion</a>
+            <p><strong>Fecha actual:</strong> @DateTime.Now.ToString("dd/MM/yyyy")</p>
+            <div class="buttons-container">
+                <a href="@Url.Action("AddingClient", "User")" class="btn btn-primary">Agregar Cliente</a>
+                <a href="@Url.Action("CerrarSesion", "User")" class="btn btn-secondary">Cerrar Sesion</a>
+            </div>
         </div>
-    </div>
+
+</header>
+
+<div class="container mt-4">
+
     <h2>Ventas del Usuario - @usuarioNombre</h2>
     <!-- Tabla para mostrar los DetalleBases/ventas -->
     <table class="table table-bordered">
@@ -24,33 +29,9 @@
                 <th>Apellido Paterno</th>
                 <th>Apellido Materno</th>
                 <th>Nombre</th>
-                
+
                 <th>Oferta Max</th>
                 <th>Campaña</th>
-                <th>Cuota</th>
-                <th>Oferta 12M</th>
-                <th>Tasa 12M</th>
-                <th>Tasa 18M</th>
-                <th>Cuota 18M</th>
-                <th>Oferta 24M</th>
-                <th>Tasa 24M</th>
-                <th>Cuota 24M</th>
-                <th>Oferta 36M</th>
-                <th>Tasa 36M</th>
-                <th>Cuota 36M</th>
-
-                <th>Departamento</th>
-                <th>Provincia</th>
-                <th>Distrito</th>
-                <th>Edad</th>
-
-                <th>Sucursal Comercial</th>
-                <th>Agencia Comercial</th>
-                <th>Tipo Cliente</th>
-                <th>Antiguedad del Cliente</th>
-                <th>Grupo Tasa</th>
-                <th>Grupo Monto</th>
-                <th>Propension</th>
             </tr>
         </thead>
         <tbody>
@@ -58,37 +39,16 @@
             {
                 <tr>
                     <td><a href="@Url.Action("TipificarClienteView", "User", new { id_base = ClienteDTO.IdBase })"
-                            class="btn btn-info">Tipificar Cliente</a></td>
+                            class="btn btn-info">Ver Cliente</a></td>
                     <td>@ClienteDTO.Dni</td>
                     <td>@ClienteDTO.XAppaterno</td>
                     <td>@ClienteDTO.XApmaterno</td>
                     <td>@ClienteDTO.XNombre</td>
                     <td>@ClienteDTO.OfertaMax</td>
                     <td>@ClienteDTO.Campaña</td>
-                    <td>@ClienteDTO.Cuota</td>
-                    <td>@ClienteDTO.Oferta12m</td>
-                    <td>@ClienteDTO.Tasa12m</td>
-                    <td>@ClienteDTO.Tasa18m</td>
-                    <td>@ClienteDTO.Cuota18m</td>
-                    <td>@ClienteDTO.Oferta24m</td>
-                    <td>@ClienteDTO.Tasa24m</td>
-                    <td>@ClienteDTO.Cuota24m</td>
-                    <td>@ClienteDTO.Oferta36m</td>
-                    <td>@ClienteDTO.Tasa36m</td>
-                    <td>@ClienteDTO.Cuota36m</td>
-                    <td>@ClienteDTO.Departamento</td>
-                    <td>@ClienteDTO.Provincia</td>
-                    <td>@ClienteDTO.Distrito</td>
-                    <td>@ClienteDTO.Edad</td>
-                    <td>@ClienteDTO.Sucursal</td>
-                    <td>@ClienteDTO.AgenciaComercial</td>
-                    <td>@ClienteDTO.TipoCliente</td>
-                    <td>@ClienteDTO.ClienteNuevo</td>
-                    <td>@ClienteDTO.GrupoTasa</td>
-                    <td>@ClienteDTO.GrupoMonto</td>
-                    <td>@ClienteDTO.Propension</td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
+

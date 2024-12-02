@@ -2,15 +2,24 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="form-container">
-    <h2>DNI Vendedor</h2>
-    <form action="@Url.Action("VerificarUsuario","User")" method="post">
-        <input type="text" name="dni" placeholder="Ingrese su DNI" required>
-        <button type="submit"><i class="fas fa-search"></i> Buscar </button>
-    </form>
-</div> <br><br>
+@section Styles {
+    <link rel="stylesheet" href="~/css/agregarcliente.css">
+}
+<header>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <div class="container-fluid">
+            <div class="form-container">
+                <h2>DNI Vendedor</h2>
+                <form action="@Url.Action("VerificarUsuario","User")" method="post">
+                    <input type="text" name="dni" placeholder="Ingrese su DNI" required>
+                    <button type="submit"><i class="fas fa-search"></i> Buscar </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+</header>
 
-<div class="image-container text-center"> 
+<div class="image-container text-center">
     <img src="~/images/A365.png" alt="Imagen de Inicio" class="img-fluid">
 </div>
 

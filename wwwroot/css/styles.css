@@ -16,14 +16,14 @@
 
 .form-container button {
     padding: 10px 20px;
-    background-color: #6bcfcf;
+    background-color: #14a11c;
     color: white;
     border: none;
     cursor: pointer;
 }
 
 .form-container button:hover {
-    background-color: #8bb9b9;
+    background-color: #5be46d;
 }
 
 /* Estilos para la imagen */
