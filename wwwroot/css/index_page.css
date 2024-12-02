@@ -1,0 +1,8 @@
+/* index.css */
+header {
+    background-color: #085394;
+    border-bottom: 2px solid #2980b9; /* Bordo inferior */
+}
+
+form input, form button {
+}

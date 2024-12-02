@@ -1,0 +1,223 @@
+@model ALFINapp.Models.DetalleTipificarClienteDTO
+
+@{
+    var dni = ViewData["DNIcliente"];
+}
+
+<form action="">
+    <div class="row">
+        <!-- Primera Columna -->
+        <div class="col-md-6">
+            <h3>Datos del Prospecto</h3>
+            <div class="form-group">
+                <label for="DNI">DNI</label>
+                <input class="form-control" id="DNI" type="text" value="@dni" readonly>
+            </div>
+            <div class="form-group">
+                <label for="X_APPATERNO">Apellido Paterno</label>
+                <input class="form-control" id="X_APPATERNO" type="text" value="@Model.XAppaterno" readonly>
+            </div>
+            <div class="form-group">
+                <label for="X_APMATERNO">Apellido Materno</label>
+                <input class="form-control" id="X_APMATERNO" type="text" value="@Model.XApmaterno" readonly>
+            </div>
+            <div class="form-group">
+                <label for="X_NOMBRE">Nombre</label>
+                <input class="form-control" id="X_NOMBRE" type="text" value="@Model.XNombre" readonly>
+            </div>
+            <div class="form-group">
+                <label for="EDAD">Edad</label>
+                <input class="form-control" id="EDAD" type="text" value="@Model.Edad" readonly>
+            </div>
+            <div class="form-group">
+                <label for="DEPARTAMENTO">Departamento</label>
+                <input class="form-control" id="DEPARTAMENTO" type="text" value="@Model.Departamento" readonly>
+            </div>
+            <div class="form-group">
+                <label for="PROVINCIA">Provincia</label>
+                <input class="form-control" id="PROVINCIA" type="text" value="@Model.Provincia" readonly>
+            </div>
+            <div class="form-group">
+                <label for="DISTRITO">Distrito</label>
+                <input class="form-control" id="DISTRITO" type="text" value="@Model.Distrito" readonly>
+            </div>
+            <h3>Tendencia del Prospecto</h3>
+            <div class="form-group">
+                <label for="PROPENSION">Propensión</label>
+                <input class="form-control" id="PROPENSION" type="text" value="@Model.Propension" readonly>
+            </div>
+            <div class="form-group">
+                <label for="TIPO_CLIENTE">Tipo de Cliente</label>
+                <input class="form-control" id="TIPO_CLIENTE" type="text" value="@Model.TipoCliente" readonly>
+            </div>
+            <div class="form-group">
+                <label for="CLIENTE_NUEVO">Cliente Nuevo</label>
+                <input class="form-control" id="CLIENTE_NUEVO" type="text" value="@Model.ClienteNuevo" readonly>
+            </div>
+        </div>
+        <!-- Segunda Columna -->
+        <div class="col-md-6">
+            <h3>Detalles de la Campaña</h3>
+            <div class="form-group">
+                <label for="CAMPAÑA">Campaña</label>
+                <input class="form-control" id="CAMPAÑA" type="text" value="@Model.Campaña" readonly>
+            </div>
+            <div class="form-group">
+                <label for="OFERTA_MAX">Oferta Máxima</label>
+                <input class="form-control" id="OFERTA_MAX" type="text" value="@Model.OfertaMax" readonly>
+            </div>
+            <div class="form-group">
+                <label for="TASA_MINIMA">Tasa Mínima</label>
+                <input class="form-control" id="TASA_MINIMA" type="text" value="@Model.TasaMinima" readonly>
+            </div>
+            <div class="form-group">
+                <label for="SUCURSAL_COMERCIAL">Sucursal Comercial</label>
+                <input class="form-control" id="SUCURSAL_COMERCIAL" type="text" value="@Model.Sucursal" readonly>
+            </div>
+            <div class="form-group">
+                <label for="PLAZO">Plazo</label>
+                <input class="form-control" id="PLAZO" type="text" value="@Model.Plazo" readonly>
+            </div>
+            <div class="form-group">
+                <label for="CUOTA">Cuota</label>
+                <input class="form-control" id="CUOTA" type="text" value="@Model.Cuota" readonly>
+            </div>
+            <div class="form-group">
+                <label for="GRUPO_TASA">Grupo Tasa</label>
+                <input class="form-control" id="GRUPO_TASA" type="text" value="@Model.GrupoTasa" readonly>
+            </div>
+            <div class="form-group">
+                <label for="GRUPO_MONTO">Grupo Monto</label>
+                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.GrupoMonto" readonly>
+            </div>
+        </div>
+    </div>
+</form>
+
+<form asp-action="TipificarMotivo" asp-controller="User" method="post">
+    <div class="row">
+        <h3>Tipificaciones Asignadas:</h3>
+        @{
+            int contador = 1;
+            string? tipificacion1 = null;
+            string? tipificacion2 = null;
+            string? tipificacion3 = null;
+            string? tipificacion4 = null;
+            string? tipificacion5 = null;
+        }
+
+        @if (ViewData["tipificaciones_asignadas"] is IEnumerable<dynamic> tipificaciones)
+        {
+            @foreach (var tipificacion in tipificaciones)
+            {
+                if (contador == 1) { tipificacion1 = tipificacion.DescripcionTipificacion; }
+                if (contador == 2) { tipificacion2 = tipificacion.DescripcionTipificacion; }
+                if (contador == 3) { tipificacion3 = tipificacion.DescripcionTipificacion; }
+                if (contador == 4) { tipificacion4 = tipificacion.DescripcionTipificacion; }
+                if (contador == 5) { tipificacion5 = tipificacion.DescripcionTipificacion; }
+                contador++;
+            }
+        }
+
+        <div class="spacing"></div>
+
+        <input type="hidden" name="IdAsignacion" value="@ViewData["ID_asignacion"]">
+        <!-- Teléfono 1 -->
+        <div class="form-group d-flex align-items-center">
+            <label for="Telefono1" class="me-2">Teléfono 1</label>
+            <input class="form-control me-2" id="Telefono1" type="text" value="@Model.Telefono1" readonly>
+            @if (@Model.Telefono1 != "0")
+            {
+                <div>
+                    <select class="form-select mt-2" name="Tipificacion1">
+                        <option value="@tipificacion1">Seleccione un motivo</option>
+                        @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
+                        {
+                            <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
+                        }
+                    </select>
+
+                    <label for="GRUPO_MONTO">Tipificacion Asignada 1: </label>
+                    <input class="form-control mt-2" id="GRUPO_MONTO" type="text" value="@tipificacion1" readonly>
+                </div>
+            }
+        </div>
+
+        <!-- Teléfono 2 -->
+        <div class="form-group d-flex align-items-center mt-3">
+            <label for="Telefono2" class="me-2">Teléfono 2</label>
+            <input class="form-control me-2" id="Telefono2" type="text" value="@Model.Telefono2" readonly>
+            @if (@Model.Telefono2 != "0")
+            {
+                <div>
+                    <select class="form-select mt-2" name="Tipificacion2">
+                        <option value="">Seleccione un motivo</option>
+                        @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
+                        {
+                            <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+
+        <!-- Teléfono 3 -->
+        <div class="form-group d-flex align-items-center mt-3">
+            <label for="Telefono3" class="me-2">Teléfono 3</label>
+            <input class="form-control me-2" id="Telefono3" type="text" value="@Model.Telefono3" readonly>
+            @if (@Model.Telefono3 != "0")
+            {
+                <div>
+                    <select class="form-select mt-2" name="Tipificacion3">
+                        <option value="">Seleccione un motivo</option>
+                        @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
+                        {
+                            <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+
+        <div class="form-group d-flex align-items-center mt-3">
+            <label for="Telefono3" class="me-2">Teléfono 4</label>
+            <input class="form-control me-1" id="Telefono3" type="text" value="@Model.Telefono4" readonly>
+            @if (@Model.Telefono4 != "0")
+            {
+                <div>
+                    <select class="form-select mt-3" name="Tipificacion4">
+                        <option value="">Seleccione un motivo</option>
+                        @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
+                        {
+                            <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+
+        <div class="form-group d-flex align-items-center mt-3">
+            <label for="Telefono3" class="me-2">Teléfono 5</label>
+            <input class="form-control me-1" id="Telefono3" type="text" value="@Model.Telefono5" readonly>
+            @if (@Model.Telefono5 != "0")
+            {
+                <div>
+                    <select class="form-select mt-3" name="Tipificacion5">
+                        <option value="">Seleccione un motivo</option>
+                        @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
+                        {
+                            <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+    </div>
+
+    <br>
+
+    <div class="form-group">
+        <button class="btn btn-success" type="submit">Guardar</button>
+        <button type="button" class="btn btn-secondary" onclick="history.back()">Cancelar</button>
+    </div>
+</form>

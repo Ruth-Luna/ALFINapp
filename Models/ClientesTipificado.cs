@@ -18,4 +18,6 @@ public partial class ClientesTipificado
     public DateTime? FechaTipificacion { get; set; }
     [Column("origen")]
     public string? Origen { get; set; }
+    [Column("telefono_tipificado")]
+    public int? TelefonoTipificado {get; set; }
 }

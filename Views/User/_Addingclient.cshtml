@@ -1,0 +1,110 @@
+@model ALFINapp.Models.BaseCliente
+
+@{
+    ViewBag.Title = "Agregar Cliente";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/agregarcliente.css">
+}
+
+<div id="dni-section">
+    <div class="form-group">
+        <label for="DNI">Ingresa DNI</label>
+        <input type="text" id="DNI" class="form-control" placeholder="Ingrese DNI">
+        <br>
+        <button id="consultar-dni" class="btn btn-primary" onclick="validarDNI()">Consultar</button>
+    </div>
+</div>
+
+<div id="error-message" style="color: red; display: none;"></div>
+<form asp-action="AgregarCliente" asp-controller="User">
+    <div id="formulario-cliente" style="display:none; margin-top: 20px;">
+        <div class="form-group">
+            <label asp-for="Dni" for="DNIForm">DNI </label>
+            <input asp-for="Dni" class="form-control" id="DNIForm" type="text" readonly>
+            <span asp-validation-for="Dni" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="XAppaterno" for="ApellidoPaterno">Apellido Paterno </label>
+            <input asp-for="XAppaterno" class="form-control" id="ApellidoPaterno" type="text" placeholder="Apellido Paterno">
+            <span asp-validation-for="XAppaterno" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="XApmaterno" for="ApellidoPaterno">Apellido Materno </label>
+            <input asp-for="XApmaterno" class="form-control" id="ApellidoMaterno" type="text" placeholder="Apellido Materno">
+            <span asp-validation-for="XApmaterno" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="XNombre" for="Nombres">Nombres </label>
+            <input asp-for="XNombre" class="form-control" id="Nombres" type="text" placeholder="Nombres">
+            <span asp-validation-for="XNombre" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Edad" for="Nombres">Edad </label>
+            <input asp-for="Edad" class="form-control" id="Edad" type="text" placeholder="Edad">
+            <span asp-validation-for="Edad" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Departamento" for="Departamento">Departamento </label>
+            <input asp-for="Departamento" class="form-control" id="Departamento" type="text" placeholder="Departamento">
+            <span asp-validation-for="Departamento" class="text-danger"></span>
+        </div>
+
+        <br>
+        <button class="btn btn-success" type="submit">Agregar</button>
+    </div>
+</form>
+
+<script>
+    function validarDNI() {
+        const dniInput = document.getElementById("DNI");
+        const errorMessage = document.getElementById("error-message");
+        const formularioCliente = document.getElementById("formulario-cliente");
+        const dniForm = document.getElementById("DNIForm");
+
+        const dniValue = dniInput.value;
+
+        errorMessage.style.display = "none";
+        formularioCliente.style.display = "none";
+
+        if (dniValue === "") {
+            errorMessage.style.display = "block";
+            errorMessage.innerHTML = "El DNI no puede estar vacío.";
+        } else if (!/^\d{8}$/.test(dniValue)) {
+            errorMessage.style.display = "block";
+            errorMessage.innerHTML = "El DNI debe contener exactamente 8 dígitos y solo números.";
+        } else {
+            fetch(`/User/VerificarDNI?dni=${dniValue}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (!response.ok){
+                        throw new Error('Error en la respuesta del server');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('respuesta del servidor: ',data);
+                    if (data.existe) {
+                        errorMessage.style.display = "block";
+                        errorMessage.innerHTML = "El DNI ya existe en la base de datos.";
+                    } else {
+                        dniForm.value = dniValue;
+                        formularioCliente.style.display = "block";
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    errorMessage.style.display = "block";
+                    errorMessage.innerHTML = "Hubo un error al verificar el DNI.";
+                });
+        }
+    }
+</script>

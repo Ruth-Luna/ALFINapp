@@ -291,7 +291,7 @@ namespace ALFINapp.Controllers
 
             var tipificaciones_asignadas = (from t in _context.tipificaciones
                                             join ct in _context.clientes_tipificados on t.IdTipificacion equals ct.IdTipificacion
-                                            where ct.IdAsignacion == 4
+                                            where ct.IdAsignacion == ClienteAsignado.IdAsignacion
                                             select new
                                             {
                                                 t.DescripcionTipificacion,
@@ -300,9 +300,10 @@ namespace ALFINapp.Controllers
             ViewData["tipificaciones_asignadas"] = tipificaciones_asignadas.ToList();
             var dni = _context.base_clientes.FirstOrDefault(bc => bc.IdBase == id_base);
             ViewData["DNIcliente"] = dni != null ? dni.Dni : "El usuario No tiene DNI Registrado";
-            return View("Tipificarcliente", detalleTipificarCliente);
+            return PartialView("_Tipificarcliente", detalleTipificarCliente);
         }
 
+        [HttpGet]
         public IActionResult AddingClient()
         {
             if (HttpContext.Session.GetInt32("UsuarioId") == null)
@@ -310,7 +311,8 @@ namespace ALFINapp.Controllers
                 TempData["ErrorMessage"] = "No ha iniciado sesion";
                 return RedirectToAction("Index", "Home");
             }
-            return View("AddingClient");
+            Console.WriteLine("Cargando VISTA");
+            return PartialView("_AddingClient");
         }
 
         [HttpGet]
@@ -321,7 +323,7 @@ namespace ALFINapp.Controllers
         }
 
         [HttpPost]
-        public IActionResult TipificarMotivo(int IdAsignacion, int? Tipificacion1, int? Tipificacion2, int? Tipificacion3)
+        public IActionResult TipificarMotivo(int IdAsignacion, int? Tipificacion1, int? Tipificacion2, int? Tipificacion3, int? Tipificacion4, int? Tipificacion5, int? Telefono1 , int? Telefono2, int? Telefono3, int? Telefono4, int? Telefono5)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)
@@ -342,8 +344,6 @@ namespace ALFINapp.Controllers
 
             var clientesTipificados = new List<ClientesTipificado>();
             DateTime fechaTipificacion = DateTime.Now;
-            Console.WriteLine($"ENTRO A LA LINEA PREVIA A TIPIFICACION 1 {IdAsignacion}");
-            Console.WriteLine($"{Tipificacion1}");
             if (Tipificacion1.HasValue)
             {
                 var clienteTipificado = new ClientesTipificado
@@ -351,11 +351,10 @@ namespace ALFINapp.Controllers
                     IdAsignacion = IdAsignacion,
                     IdTipificacion = Tipificacion1.Value,
                     FechaTipificacion = fechaTipificacion,
-                    Origen = "nuevo"
+                    Origen = "nuevo",
+                    TelefonoTipificado = Telefono1
                 };
                 clientesTipificados.Add(clienteTipificado);
-                Console.WriteLine($"ENTRO A LA LINEA TIPIFICACION 1 {IdAsignacion}");
-                Console.WriteLine($"{Tipificacion1}");
             }
 
             // Procesamos la tipificación de Teléfono 2 si se seleccionó una opción
@@ -366,7 +365,8 @@ namespace ALFINapp.Controllers
                     IdAsignacion = IdAsignacion,
                     IdTipificacion = Tipificacion2.Value,
                     FechaTipificacion = fechaTipificacion,
-                    Origen = "nuevo"
+                    Origen = "nuevo",
+                    TelefonoTipificado = Telefono2
                 };
                 clientesTipificados.Add(clienteTipificado);
                 Console.WriteLine($"ENTRO A LA LINEA TIPIFICACION 2 {IdAsignacion}");
@@ -381,7 +381,36 @@ namespace ALFINapp.Controllers
                     IdAsignacion = IdAsignacion,
                     IdTipificacion = Tipificacion3.Value,
                     FechaTipificacion = fechaTipificacion,
-                    Origen = "nuevo"
+                    Origen = "nuevo",
+                    TelefonoTipificado = Telefono3
+                };
+                clientesTipificados.Add(clienteTipificado);
+                Console.WriteLine($"ENTRO A LA LINEA TIPIFICACION 3 {IdAsignacion}");
+                Console.WriteLine($"{Tipificacion3}");
+            }
+            if (Tipificacion4.HasValue)
+            {
+                var clienteTipificado = new ClientesTipificado
+                {
+                    IdAsignacion = IdAsignacion,
+                    IdTipificacion = Tipificacion4.Value,
+                    FechaTipificacion = fechaTipificacion,
+                    Origen = "nuevo",
+                    TelefonoTipificado = Telefono4
+                };
+                clientesTipificados.Add(clienteTipificado);
+                Console.WriteLine($"ENTRO A LA LINEA TIPIFICACION 3 {IdAsignacion}");
+                Console.WriteLine($"{Tipificacion3}");
+            }
+            if (Tipificacion5.HasValue)
+            {
+                var clienteTipificado = new ClientesTipificado
+                {
+                    IdAsignacion = IdAsignacion,
+                    IdTipificacion = Tipificacion5.Value,
+                    FechaTipificacion = fechaTipificacion,
+                    Origen = "nuevo",
+                    TelefonoTipificado = Telefono5
                 };
                 clientesTipificados.Add(clienteTipificado);
                 Console.WriteLine($"ENTRO A LA LINEA TIPIFICACION 3 {IdAsignacion}");
@@ -393,6 +422,5 @@ namespace ALFINapp.Controllers
 
             return RedirectToAction("Ventas");
         }
-
     }
 }

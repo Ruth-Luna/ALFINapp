@@ -1,5 +1,4 @@
 html {
-  margin-top: 30px;
   font-size: 14px;
 }
 
@@ -33,3 +32,8 @@ body {
 .top-container p {
   font-size: 35px;
 }
+
+.spacing {
+  margin-bottom: 20px;
+}
+
