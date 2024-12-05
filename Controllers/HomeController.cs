@@ -15,7 +15,11 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        return View();
+        if (TempData["Message"]!=null)
+        {
+            TempData["Message"] = TempData["Message"] + "Retornar a Index";
+        }
+        return View("Index");
     }
 
     public IActionResult Privacy()

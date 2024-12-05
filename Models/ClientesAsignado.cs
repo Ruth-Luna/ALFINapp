@@ -11,16 +11,13 @@ public partial class ClientesAsignado
     [Column("id_asignacion")]
     public int IdAsignacion { get; set; }
     [Column("id_cliente")]
-
     public int IdCliente { get; set; }
-    [Column("id_usuario")]
-
-    public int IdUsuario { get; set; }
-    [Column("fecha_asignacion")]
-
-    public DateTime? FechaAsignacion { get; set; }
-    [Column("origen")]
-
-    public string? Origen { get; set; }
-
+    [Column("id_usuarioS")]
+    public int IdUsuarioS { get; set; }    
+    [Column("fecha_asignacion_sup")]
+    public DateTime? FechaAsignacionSup { get; set; }
+    [Column("id_usuarioV")]
+    public int IdUsuarioV { get; set; }
+    [Column("fecha_asignacion_vendedor")]
+    public DateTime? FechaAsignacionVendedor { get; set; }
 }

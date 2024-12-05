@@ -236,7 +236,7 @@ public partial class DetalleBase
     [Column("usuario")]
     public string? Usuario { get; set; }
 
-    [Column("tipo_cliente_riesgos")]
+    [Column("tipo_cliente_riegos")]
     public string? TipoClienteRiegos { get; set; }
 
     [Column("incremento_monto_riesgos")]

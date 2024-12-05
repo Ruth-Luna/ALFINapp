@@ -9,8 +9,8 @@
     <nav class="navbar">
         <div class="container-fluid">
             <div class="form-container">
-                <h2>DNI Vendedor</h2>
-                <form action="@Url.Action("VerificarUsuario","User")" method="post">
+                <h2 class="dni-vendedor">DNI Vendedor</h2>
+                <form action="@Url.Action("VerificarUsuario","User")" method="post" class="form-to-enter">
                     <input type="text" name="dni" placeholder="Ingrese su DNI" required>
                     <button type="submit"><i class="fas fa-search"></i> Buscar </button>
                 </form>
@@ -25,3 +25,10 @@
 <div class="text-center">
     <h1 class="display-4">Innovacion y Experiencia a tu Servicio</h1>
 </div>
+
+@if (TempData["Message"] != null)
+{
+    <script>
+        alert('@TempData["Message"]');
+    </script>
+}

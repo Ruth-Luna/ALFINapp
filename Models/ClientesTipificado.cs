@@ -19,5 +19,5 @@ public partial class ClientesTipificado
     [Column("origen")]
     public string? Origen { get; set; }
     [Column("telefono_tipificado")]
-    public int? TelefonoTipificado {get; set; }
+    public string? TelefonoTipificado {get; set; }
 }

@@ -4,5 +4,16 @@ header {
     border-bottom: 2px solid #2980b9; /* Bordo inferior */
 }
 
+.dni-vendedor {
+    margin-top: 10px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    color: white;
+}
+
+.form-to-enter{
+    margin-top: 5px;
+}
+
+
 form input, form button {
 }

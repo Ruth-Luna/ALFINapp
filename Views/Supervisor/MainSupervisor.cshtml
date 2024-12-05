@@ -1,4 +1,4 @@
-@model IEnumerable<ALFINapp.Models.DetalleBaseClienteDTO>
+@model IEnumerable<ALFINapp.Models.SupervisorDTO>
 
 @{
     ViewData["Title"] = "Ventas del Usuario";
@@ -14,7 +14,6 @@
         <div class="top-container">
             <p><strong>Fecha actual:</strong> @DateTime.Now.ToString("dd/MM/yyyy")</p>
             <div class="buttons-container">
-                <a href="javascript:void(0);" class="btn btn-primary" onclick="openAddClientModal()">Agregar Cliente</a>
                 <a href="@Url.Action("CerrarSesion", "User")" class="btn btn-secondary">Cerrar Sesion</a>
             </div>
         </div>
@@ -24,34 +23,32 @@
 <div class="container mt-4">
 
     <h2>Ventas del Usuario - @usuarioNombre</h2>
+    <div class="buttons-container">
+                <a href="javascript:void(0);" class="btn btn-primary" onclick="loadAsignarClienteAVendedor()">Asignar Vendedor</a>
+            </div>
     <!-- Tabla para mostrar los DetalleBases/ventas -->
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Tipificación</th>
+                <th>Modificar Cliente</th>
+                <th>id Asignacion</th>
 
-                <th>DNI</th>
-                <th>Apellido Paterno</th>
-                <th>Apellido Materno</th>
-                <th>Nombre</th>
-
-                <th>Oferta Max</th>
-                <th>Campaña</th>
+                <th>id Cliente + DNI + Nombre</th>
+                <th>id Usuario Vendedor + Nombre</th>
+                <th>Fecha Asignacion Vendedor</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var ClienteDTO in Model)
+            @foreach (var SupervisorDTO in Model)
             {
                 <tr>
                     <td><a href="javascript:void(0);" class="btn btn-info"
-                            onclick="loadTipificarCliente(@ClienteDTO.IdBase)">Ver Cliente</a>
+                            onclick="loadTipificarCliente(@SupervisorDTO.IdCliente)">Modificar</a>
                     </td>
-                    <td>@ClienteDTO.Dni</td>
-                    <td>@ClienteDTO.XAppaterno</td>
-                    <td>@ClienteDTO.XApmaterno</td>
-                    <td>@ClienteDTO.XNombre</td>
-                    <td>@ClienteDTO.OfertaMax</td>
-                    <td>@ClienteDTO.Campaña</td>
+                    <td>@SupervisorDTO.IdAsignacion</td>
+                    <td>@SupervisorDTO.IdCliente - @SupervisorDTO.Dni - @SupervisorDTO.XNombre @SupervisorDTO.XAppaterno</td>
+                    <td>@SupervisorDTO.idUsuarioV - @SupervisorDTO.NombresCompletos @SupervisorDTO.ApellidoPaterno</td>
+                    <td>@SupervisorDTO.FechaAsignacionV</td>
                 </tr>
             }
         </tbody>
@@ -59,15 +56,15 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="tipificarClienteModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+<div class="modal fade" id="asignarVendModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalLabel">Tipificación del Cliente</h5>
+                <h5 class="modal-title" id="modalLabel">Asignar Vendedores</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div id="modalContentTipificar">
+                <div id="modalContentAsignarVend">
                     <!-- Aquí se cargará la vista parcial -->
                 </div>
             </div>
@@ -94,38 +91,21 @@
 
 
 <script>
-    function loadTipificarCliente(idBase) {
+    function loadAsignarClienteAVendedor() {
         $.ajax({
-            url: '/User/TipificarClienteView', // Controlador y acción
+            url: '/Supervisor/AsignarVendedorView',
             type: 'GET',
-            data: { id_base: idBase },
             success: function (result) {
-                $('#modalContentTipificar').html(result); // Inserta el contenido de la vista en el modal
-                $('#tipificarClienteModal').modal('show'); // Muestra el modal
+                $('#modalContentAsignarVend').html(result);
+                $('#asignarVendModal').modal('show');
             },
             error: function () {
                 alert('Error al cargar los datos del cliente.');
             }
         });
     }
-
-    function openAddClientModal() {
-        $.ajax({
-            url: '/User/AddingClient', // Acción para cargar la vista parcial
-            type: 'GET',
-            success: function (result) {
-                $('#modalContentAgregar').html(result); // Carga la vista parcial dentro del modal
-                $('#addClientModal').modal('show'); // Muestra el modal
-            },
-            error: function (xhr, status, error) {
-                console.log("Error:", status, error); // Muestra el error en consola
-                alert('Error al cargar el formulario de agregar cliente.');
-            }
-        });
-    }
-
-
 </script>
+
 @if (TempData["Message"] != null)
     {
         <script>

@@ -11,7 +11,7 @@
 <div id="dni-section">
     <div class="form-group">
         <label for="DNI">Ingresa DNI</label>
-        <input type="text" id="DNI" class="form-control" placeholder="Ingrese DNI">
+        <input type="text" id="dnicliente" class="form-control" placeholder="Ingrese DNI">
         <br>
         <button id="consultar-dni" class="btn btn-primary" onclick="validarDNI()">Consultar</button>
     </div>
@@ -61,22 +61,22 @@
 
 <script>
     function validarDNI() {
-        const dniInput = document.getElementById("DNI");
-        const errorMessage = document.getElementById("error-message");
+        const dniInput = document.getElementById("dnicliente");
+        const Message = document.getElementById("error-message");
         const formularioCliente = document.getElementById("formulario-cliente");
         const dniForm = document.getElementById("DNIForm");
 
         const dniValue = dniInput.value;
 
-        errorMessage.style.display = "none";
+        Message.style.display = "none";
         formularioCliente.style.display = "none";
 
         if (dniValue === "") {
-            errorMessage.style.display = "block";
-            errorMessage.innerHTML = "El DNI no puede estar vacío.";
+            Message.style.display = "block";
+            Message.innerHTML = "El DNI no puede estar vacío.";
         } else if (!/^\d{8}$/.test(dniValue)) {
-            errorMessage.style.display = "block";
-            errorMessage.innerHTML = "El DNI debe contener exactamente 8 dígitos y solo números.";
+            Message.style.display = "block";
+            Message.innerHTML = "El DNI debe contener exactamente 8 dígitos y solo números.";
         } else {
             fetch(`/User/VerificarDNI?dni=${dniValue}`, {
                 method: 'GET',
@@ -93,8 +93,8 @@
                 .then(data => {
                     console.log('respuesta del servidor: ',data);
                     if (data.existe) {
-                        errorMessage.style.display = "block";
-                        errorMessage.innerHTML = "El DNI ya existe en la base de datos.";
+                        Message.style.display = "block";
+                        Message.innerHTML = "El DNI ya existe en la base de datos.";
                     } else {
                         dniForm.value = dniValue;
                         formularioCliente.style.display = "block";
@@ -102,8 +102,8 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    errorMessage.style.display = "block";
-                    errorMessage.innerHTML = "Hubo un error al verificar el DNI.";
+                    Message.style.display = "block";
+                    Message.innerHTML = "Hubo un error al verificar el DNI.";
                 });
         }
     }

@@ -21,8 +21,9 @@ body {
   display: flex;
   justify-content: space-between; /* Asegura que los elementos estén al principio y al final */
   align-items: center; /* Alinea ambos elementos verticalmente al centro */
-  margin-bottom: 20px;
+  margin-top: 0px;
 }
+
 
 .buttons-container {
   display: flex;
@@ -30,7 +31,9 @@ body {
 }
 
 .top-container p {
+  margin-top: 10px;
   font-size: 35px;
+  color: aliceblue;
 }
 
 .spacing {

@@ -12,19 +12,19 @@ public partial class Usuario
     public int IdUsuario { get; set; }
     [Column("dni")]
 
-    public string Dni { get; set; } = null!;
+    public string? Dni { get; set; } = null!;
     [Column("Nombres_Completos")]
-    public string NombresCompletos { get; set; } = null!;
+    public string? NombresCompletos { get; set; } = null!;
     [Column("rol")]
-    public string Rol { get; set; } = null!;
+    public string? Rol { get; set; } = null!;
     [Column("departamento")]
-    public string Departamento { get; set; } = null!;
+    public string? Departamento { get; set; } = null!;
     [Column("provincia")]
-    public string Provincia { get; set; } = null!;
+    public string? Provincia { get; set; } = null!;
     [Column("distrito")]
-    public string Distrito { get; set; } = null!;
+    public string? Distrito { get; set; } = null!;
     [Column("telefono")]
-    public string Telefono { get; set; } = null!;
+    public string? Telefono { get; set; } = null!;
     [Column("fecha_registro")]
     public DateTime? FechaRegistro { get; set; }
     [Column("estado")]
