@@ -28,25 +28,23 @@ namespace ALFINapp.Controllers
             var supervisorData = from ca in _context.clientes_asignados
                                  join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
                                  join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
-                                 join u in _context.usuarios on ca.IdUsuarioV equals u.IdUsuario
+                                 join u in _context.usuarios on ca.IdUsuarioV equals u.IdUsuario into usuarioJoin
+                                 from u in usuarioJoin.DefaultIfEmpty()
                                  where ca.IdUsuarioS == usuarioId
                                  select new SupervisorDTO
                                  {
-                                     // Propiedades de la tabla clientes_asignados
                                      IdAsignacion = ca.IdAsignacion,
                                      IdCliente = ca.IdCliente,
-                                     idUsuarioV = ca.IdUsuarioV,
+                                     idUsuarioV = ca.IdUsuarioV.HasValue ? ca.IdUsuarioV.Value : 0,
                                      FechaAsignacionV = ca.FechaAsignacionVendedor,
 
-                                     // Propiedades de la tabla base_clientes
                                      Dni = bc.Dni,
                                      XAppaterno = bc.XAppaterno,
                                      XApmaterno = bc.XApmaterno,
                                      XNombre = bc.XNombre,
 
-                                     // Propiedades de la tabla usuarios
-                                     NombresCompletos = u.NombresCompletos,
-                                     ApellidoPaterno = u.ApellidoPaterno
+                                     NombresCompletos = u != null ? u.NombresCompletos : "No disponible",
+                                     ApellidoPaterno = u != null ? u.ApellidoPaterno : "No disponible" // Manejo de null para ApellidoPaterno
                                  };
             if (supervisorData == null)
             {
@@ -66,10 +64,11 @@ namespace ALFINapp.Controllers
                 TempData["Message"] = "No ha iniciado sesion";
                 return RedirectToAction("VistaMainSupervisor", "Supervisor");
             }
+            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             Console.WriteLine("HEmos pasado la Comprobacion");
             var vendedoresConClientes = (from u in _context.usuarios
-                                        where u.Rol == "VENDEDOR"
-                                        join ca in _context.clientes_asignados 
+                                        where u.Rol == "VENDEDOR" && u.IDUSUARIOSUP == usuarioId
+                                        join ca in _context.clientes_asignados  
                                         on u.IdUsuario equals ca.IdUsuarioV into clientes
                                         from ca in clientes.DefaultIfEmpty() // Esta parte asegura que incluso si no hay clientes, el vendedor se incluya
                                         group ca by new
@@ -100,7 +99,7 @@ namespace ALFINapp.Controllers
                 TempData["Message"] = "No ha iniciado sesión.";
                 return RedirectToAction("Index", "Home");
             }
-            int idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId").Value;
+            var idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId").Value;
             var clientesDisponibles = _context.clientes_asignados
                                             .Where(ca => ca.IdUsuarioS == idSupervisorActual && ca.IdUsuarioV == null)
                                             .Take(nclientes)

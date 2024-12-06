@@ -22,10 +22,11 @@
 
 <div class="container mt-4">
 
-    <h2>Ventas del Usuario - @usuarioNombre</h2>
-    <div class="buttons-container">
-                <a href="javascript:void(0);" class="btn btn-primary" onclick="loadAsignarClienteAVendedor()">Asignar Vendedor</a>
-            </div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Clientes Asignados al Usuario Supervisor - @usuarioNombre</h2>
+        <a href="javascript:void(0);" class="btn btn-success" onclick="loadAsignarClienteAVendedor()">Asignar
+            Vendedor</a>
+    </div>
     <!-- Tabla para mostrar los DetalleBases/ventas -->
     <table class="table table-bordered">
         <thead>
@@ -46,7 +47,8 @@
                             onclick="loadTipificarCliente(@SupervisorDTO.IdCliente)">Modificar</a>
                     </td>
                     <td>@SupervisorDTO.IdAsignacion</td>
-                    <td>@SupervisorDTO.IdCliente - @SupervisorDTO.Dni - @SupervisorDTO.XNombre @SupervisorDTO.XAppaterno</td>
+                    <td>@SupervisorDTO.IdCliente - @SupervisorDTO.Dni - @SupervisorDTO.XNombre @SupervisorDTO.XAppaterno
+                    </td>
                     <td>@SupervisorDTO.idUsuarioV - @SupervisorDTO.NombresCompletos @SupervisorDTO.ApellidoPaterno</td>
                     <td>@SupervisorDTO.FechaAsignacionV</td>
                 </tr>
@@ -107,8 +109,8 @@
 </script>
 
 @if (TempData["Message"] != null)
-    {
-        <script>
-            alert('@TempData["Message"]');
-        </script>
-    }
+{
+    <script>
+        alert('@TempData["Message"]');
+    </script>
+}

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace ALFINapp.Models;
 
@@ -37,7 +38,9 @@ public partial class Usuario
 
     public string? ApellidoMaterno { get; set; }
     [Column("Nombres")]
-
     public string? Nombres { get; set; }
-
+    [Column("ID_USUARIO_SUP")]
+    public int? IDUSUARIOSUP { get; set; }
+    [Column("RESPONSABLE_SUP")]
+    public string? RESPONSABLESUP { get; set; }
 }

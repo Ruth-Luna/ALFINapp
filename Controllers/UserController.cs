@@ -56,8 +56,10 @@ namespace ALFINapp.Controllers
                 TempData["Message"] = "Ingrese Solo Digitos";
                 return RedirectToAction("Index", "Home");
             }
+            dni = dni.Trim();
+            var usuario = _context.usuarios.FirstOrDefault(u => u.Dni.Trim() == dni);
 
-            var usuario = _context.usuarios.FirstOrDefault(u => u.Dni == dni);
+
             if (usuario == null)
             {
                 TempData["Message"] = "El Usuario a Buscar no se encuentra Registrado comunicarse con X";
@@ -92,36 +94,34 @@ namespace ALFINapp.Controllers
                 TempData["Message"] = "Ha ocurrido un error en la autenticacion";
                 return RedirectToAction("Index", "Home");
             }
-
+            // Obtener los clientes asignados al usuario
             var clientesAsignados = await _context.clientes_asignados
-            .Where(ca => ca.IdUsuarioV == usuarioId)
-            .Select(ca => ca.IdCliente)
-            .ToListAsync();
+                                            .Where(ca => ca.IdUsuarioV == usuarioId)
+                                            .Select(ca => ca.IdCliente)
+                                            .ToListAsync();
 
-            var clientesGralBase = await (
-            from ce in _context.clientes_enriquecidos
-            where clientesAsignados.Contains(ce.IdCliente)
-            select ce.IdBase
-            ).ToListAsync();
+            // Obtener las IdBase correspondientes a los clientes asignados
+            var clientesGralBase = await (from ce in _context.clientes_enriquecidos
+                                            where clientesAsignados.Contains(ce.IdCliente)
+                                            select ce.IdBase
+                                            ).ToListAsync();
 
             var clientes = await (from db in _context.detalle_base
-                                  join cg in clientesGralBase
-                                  on db.IdBase equals cg
-                                  join bc in _context.base_clientes
-                                  on db.IdBase equals bc.IdBase
+                                  join cg in clientesGralBase on db.IdBase equals cg
+                                  join bc in _context.base_clientes on db.IdBase equals bc.IdBase
+                                  group new { db, bc } by db.IdBase into grouped
                                   select new DetalleBaseClienteDTO
                                   {
-                                      Dni = bc.Dni,
-                                      XAppaterno = bc.XAppaterno,
-                                      XApmaterno = bc.XApmaterno,
-                                      XNombre = bc.XNombre,
+                                      Dni = grouped.OrderByDescending(x => x.db.FechaCarga).FirstOrDefault().bc.Dni,
+                                      XAppaterno = grouped.OrderByDescending(x => x.db.FechaCarga).FirstOrDefault().bc.XAppaterno,
+                                      XApmaterno = grouped.OrderByDescending(x => x.db.FechaCarga).FirstOrDefault().bc.XApmaterno,
+                                      XNombre = grouped.OrderByDescending(x => x.db.FechaCarga).FirstOrDefault().bc.XNombre,
 
-                                      OfertaMax = db.OfertaMax,
-                                      Campaña = db.Campaña,
+                                      OfertaMax = grouped.OrderByDescending(x => x.db.FechaCarga).FirstOrDefault().db.OfertaMax,
+                                      Campaña = grouped.OrderByDescending(x => x.db.FechaCarga).FirstOrDefault().db.Campaña,
 
-                                      IdBase = bc.IdBase
+                                      IdBase = grouped.Key
                                   })
-                                  .Distinct()
                                   .ToListAsync();
 
             if (clientes == null)
