@@ -14,7 +14,7 @@
         <div class="top-container">
             <p><strong>Fecha actual:</strong> @DateTime.Now.ToString("dd/MM/yyyy")</p>
             <div class="buttons-container">
-                <a href="@Url.Action("CerrarSesion", "User")" class="btn btn-secondary">Cerrar Sesion</a>
+                <a href="@Url.Action("CerrarSesion", "User")" class="btn btn-danger">Cerrar Sesion</a>
             </div>
         </div>
     </div>
@@ -28,33 +28,47 @@
             Vendedor</a>
     </div>
     <!-- Tabla para mostrar los DetalleBases/ventas -->
-    <table class="table table-bordered">
+    <div class="table-responsive">
+        <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Modificar Cliente</th>
-                <th>id Asignacion</th>
+                <th>Num. Cliente</th>
 
-                <th>id Cliente + DNI + Nombre</th>
-                <th>id Usuario Vendedor + Nombre</th>
+                <th>DNI Cliente</th>
+                <th>Nombres del Cliente</th>
+
+                <th>Vendedor Asignado</th>
+                <th>DNI Vendedor</th>
                 <th>Fecha Asignacion Vendedor</th>
+
+                <th>Asigne o Modique la Asignacion</th>
             </tr>
         </thead>
         <tbody>
+            @{
+                int contr = 1;
+            }
             @foreach (var SupervisorDTO in Model)
             {
                 <tr>
-                    <td><a href="javascript:void(0);" class="btn btn-info"
-                            onclick="loadTipificarCliente(@SupervisorDTO.IdCliente)">Modificar</a>
-                    </td>
-                    <td>@SupervisorDTO.IdAsignacion</td>
-                    <td>@SupervisorDTO.IdCliente - @SupervisorDTO.Dni - @SupervisorDTO.XNombre @SupervisorDTO.XAppaterno
-                    </td>
-                    <td>@SupervisorDTO.idUsuarioV - @SupervisorDTO.NombresCompletos @SupervisorDTO.ApellidoPaterno</td>
+                    <td>@contr</td>
+                    @{
+                        contr++;
+                    }
+                    <td>@SupervisorDTO.Dni</td>
+                    <td>@SupervisorDTO.XNombre @SupervisorDTO.XAppaterno @SupervisorDTO.XApmaterno</td>
+                    <td>@SupervisorDTO.NombresCompletos</td>
+                    <td>@SupervisorDTO.DniVendedor</td>
                     <td>@SupervisorDTO.FechaAsignacionV</td>
+
+                    <td><a href="javascript:void(0);" class="btn btn-primary"
+                            onclick="loadModificarVendedorAsignado(@SupervisorDTO.IdAsignacion)">Modificar</a>
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
+    </div>
 </div>
 
 <!-- Modal -->
@@ -74,23 +88,21 @@
     </div>
 </div>
 
-<!-- Modal para Agregar Cliente -->
-<div class="modal fade" id="addClientModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+<div class="modal fade" id="modificarVendModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalLabel">Agregar Cliente</h5>
+                <h5 class="modal-title" id="modalLabel">Asignar Vendedores</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div id="modalContentAgregar">
-                    <!-- Aquí se cargará el formulario de agregar cliente -->
+                <div id="modalContentModificarVendAsignar">
+                    <!-- Aquí se cargará la vista parcial -->
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 
 <script>
     function loadAsignarClienteAVendedor() {
@@ -100,6 +112,21 @@
             success: function (result) {
                 $('#modalContentAsignarVend').html(result);
                 $('#asignarVendModal').modal('show');
+            },
+            error: function () {
+                alert('Error al cargar los datos del cliente.');
+            }
+        });
+    }
+
+    function loadModificarVendedorAsignado(idAsignacion) {
+        $.ajax({
+            url: '/Supervisor/ModificarAsignacionVendedorView',
+            type: 'GET',
+            data: {id_asignacion: idAsignacion},
+            success: function (result) {
+                $('#modalContentModificarVendAsignar').html(result);
+                $('#modificarVendModal').modal('show');
             },
             error: function () {
                 alert('Error al cargar los datos del cliente.');

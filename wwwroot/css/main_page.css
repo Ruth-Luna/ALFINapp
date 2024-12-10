@@ -6,3 +6,68 @@ header {
 
 form input, form button {
 }
+
+.table thead tr {
+    background-color: #085394; /* Fondo azul */
+    color: white; /* Texto blanco */
+}
+
+
+.btn-forinformation {
+    background-color: #4caf50; /* Color de fondo */
+    border: 1px solid #4caf50; /* Borde */
+    color: white; /* Texto */
+    border-radius: 5px; /* Esquinas redondeadas */
+    padding: 10px 20px; /* Tamaño del botón */
+    text-decoration: none; /* Elimina el subrayado */
+    display: inline-block; /* Asegura que el botón mantenga su forma */
+}
+
+.modal-title{
+    color: white;
+}
+
+.modal-header{
+    background-color: #085394;
+}
+
+.label-fortip{
+    background-color: #085394;
+    color: white;
+    border-top: 15px solid #085394;
+    border-bottom: 18px solid #085394;
+}
+
+.uniform-font {
+    font-size: 16px;
+    line-height: 1.2;
+}
+
+
+
+/*Responsive*/
+
+@media (max-width: 767px) {
+    .top-container {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .buttons-container a {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+@media (max-width: 767px) {
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+

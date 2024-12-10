@@ -13,7 +13,7 @@ public partial class ClientesAsignado
     [Column("id_cliente")]
     public int IdCliente { get; set; }
     [Column("id_usuarioS")]
-    public int IdUsuarioS { get; set; }    
+    public int? IdUsuarioS { get; set; }    
     [Column("fecha_asignacion_sup")]
     public DateTime? FechaAsignacionSup { get; set; }
     [Column("id_usuarioV")]

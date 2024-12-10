@@ -43,8 +43,9 @@ namespace ALFINapp.Controllers
                                      XApmaterno = bc.XApmaterno,
                                      XNombre = bc.XNombre,
 
-                                     NombresCompletos = u != null ? u.NombresCompletos : "No disponible",
-                                     ApellidoPaterno = u != null ? u.ApellidoPaterno : "No disponible" // Manejo de null para ApellidoPaterno
+                                     NombresCompletos = u != null ? u.NombresCompletos : "Vendedor no Asignado",
+                                     ApellidoPaterno = u != null ? u.ApellidoPaterno : "No disponible", // Manejo de null para ApellidoPaterno
+                                     DniVendedor = u != null ? u.Dni : " ",
                                  };
             if (supervisorData == null)
             {
@@ -67,21 +68,21 @@ namespace ALFINapp.Controllers
             var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             Console.WriteLine("HEmos pasado la Comprobacion");
             var vendedoresConClientes = (from u in _context.usuarios
-                                        where u.Rol == "VENDEDOR" && u.IDUSUARIOSUP == usuarioId
-                                        join ca in _context.clientes_asignados  
-                                        on u.IdUsuario equals ca.IdUsuarioV into clientes
-                                        from ca in clientes.DefaultIfEmpty() // Esta parte asegura que incluso si no hay clientes, el vendedor se incluya
-                                        group ca by new
-                                        {
-                                            u.NombresCompletos,
-                                            u.IdUsuario,
-                                        } into grouped
-                                        select new VendedorConClientesDTO
-                                        {
-                                            NombresCompletos = grouped.Key.NombresCompletos,
-                                            IdUsuario = grouped.Key.IdUsuario,
-                                            NumeroClientes = grouped.Count(c => c != null) // Contamos solo los clientes asignados, ignorando los null
-                                        }).ToList();
+                                         where u.Rol == "VENDEDOR" && u.IDUSUARIOSUP == usuarioId
+                                         join ca in _context.clientes_asignados
+                                         on u.IdUsuario equals ca.IdUsuarioV into clientes
+                                         from ca in clientes.DefaultIfEmpty() // Esta parte asegura que incluso si no hay clientes, el vendedor se incluya
+                                         group ca by new
+                                         {
+                                             u.NombresCompletos,
+                                             u.IdUsuario,
+                                         } into grouped
+                                         select new VendedorConClientesDTO
+                                         {
+                                             NombresCompletos = grouped.Key.NombresCompletos,
+                                             IdUsuario = grouped.Key.IdUsuario,
+                                             NumeroClientes = grouped.Count(c => c != null) // Contamos solo los clientes asignados, ignorando los null
+                                         }).ToList();
             if (vendedoresConClientes == null)
             {
                 TempData["Message"] = "La consulta para dar vendedores ha fallado";
@@ -99,6 +100,13 @@ namespace ALFINapp.Controllers
                 TempData["Message"] = "No ha iniciado sesión.";
                 return RedirectToAction("Index", "Home");
             }
+
+            if (!int.TryParse(nclientes.ToString(), out int n_clientes) || nclientes <= 0)
+            {
+                TempData["Message"] = "La entrada debe de ser un numero valido y positivo.";
+                return RedirectToAction("VistaMainSupervisor");
+            }
+
             var idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId").Value;
             var clientesDisponibles = _context.clientes_asignados
                                             .Where(ca => ca.IdUsuarioS == idSupervisorActual && ca.IdUsuarioV == null)
@@ -122,6 +130,67 @@ namespace ALFINapp.Controllers
             // Guardar los cambios en la base de datos
             _context.SaveChanges();
             TempData["Message"] = $"{nclientes} clientes han sido asignados correctamente al vendedor.";
+            return RedirectToAction("VistaMainSupervisor");
+        }
+        [HttpGet]
+        public IActionResult ModificarAsignacionVendedorView(int id_asignacion)
+        {
+            if (HttpContext.Session.GetInt32("UsuarioId") == null)
+            {
+                TempData["Message"] = "No ha iniciado sesión.";
+                return RedirectToAction("Index", "Home");
+            }
+            var idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId").Value;
+
+            var vendedoresAsignados = (from u in _context.usuarios
+                                        where u.IDUSUARIOSUP == idSupervisorActual && u.Rol == "VENDEDOR"
+                                        join ca in _context.clientes_asignados
+                                        on u.IdUsuario equals ca.IdUsuarioV into clientes
+                                        from ca in clientes.DefaultIfEmpty()
+                                        group ca by new
+                                         {
+                                             u.NombresCompletos,
+                                             u.IdUsuario,
+                                         } into grouped
+                                        select new VendedorConClientesDTO
+                                         {
+                                             NombresCompletos = grouped.Key.NombresCompletos,
+                                             IdUsuario = grouped.Key.IdUsuario,
+                                             NumeroClientes = grouped.Count(c => c != null) // Contamos solo los clientes asignados, ignorando los null
+                                         }).ToList();
+            if (vendedoresAsignados == null)
+            {
+                TempData["Message"] = "La consulta para dar vendedores ha fallado";
+                return RedirectToAction("VistaMainSupervisor", "Supervisor");
+            }
+            
+            TempData["idAsignacion"] = id_asignacion;
+            return PartialView("_ModificarAsignacion", vendedoresAsignados);
+        }
+        [HttpGet]
+        public IActionResult ModificarAsignacionVendedor (int idasignado, int idVendedor)
+        {
+            var asignacion = _context.clientes_asignados.FirstOrDefault(c => c.IdAsignacion == idasignado);
+
+            if (asignacion.IdUsuarioV == idVendedor)
+            {
+                TempData["Message"] = "Debe seleccionar un Vendedor diferente";
+                return RedirectToAction("VistaMainSupervisor");
+            }
+            if (asignacion != null)
+            {
+                asignacion.IdUsuarioV = idVendedor;
+                asignacion.FechaAsignacionVendedor = DateTime.Now;
+                _context.SaveChanges();
+
+                TempData["Message"] = $"{asignacion.IdCliente} ha sido asignado al vendedor {idVendedor}.";
+            }
+
+            else
+            {
+                TempData["Message"] = "El id de Asignacion mandado es incorrecto";
+            }
+            
             return RedirectToAction("VistaMainSupervisor");
         }
     }

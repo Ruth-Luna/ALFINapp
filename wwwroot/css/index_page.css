@@ -1,19 +1,127 @@
 /* index.css */
+
+/* Estilo del header */
 header {
     background-color: #085394;
     border-bottom: 2px solid #2980b9; /* Bordo inferior */
 }
 
+.navbar {
+    background-color: #085394;
+    color: white;
+    padding: 10px 0;
+}
+
+/* Títulos */
 .dni-vendedor {
     margin-top: 10px;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     color: white;
+    font-size: 2rem;
 }
 
-.form-to-enter{
+.dni-vendedor.responsive {
+    font-size: 1.5rem;
+    margin-top: 2%;
+}
+
+/* Formularios */
+.form-to-enter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Espaciado entre el input y el botón */
     margin-top: 5px;
+    flex-wrap: nowrap; /* Evita que los elementos se acomoden en nuevas líneas */
 }
 
+.form-to-enter input {
+    padding: 10px;
+    font-size: 1rem;
+    width: 100%; /* Ancho fijo en pantallas grandes */
+    max-width: 100%; /* Asegura que no exceda el contenedor */
+    box-sizing: border-box; /* Padding incluido en el ancho */
+}
 
-form input, form button {
+/* Botón */
+.form-to-enter button {
+    padding: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    background-color: #28a745;
+    border: none;
+    color: white;
+    min-width: 120px; /* Define un ancho mínimo para el botón */
+    text-align: center;
+}
+
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap; /* Asegura que los elementos se acomoden bien en pantallas pequeñas */
+}
+
+/* Estilo de imágenes */
+.image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 75vh; /* Ajusta para evitar ocupación total */
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+}
+
+.image-container img,
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Títulos principales */
+.display-4 {
+    margin-top: 1rem;
+    font-size: 2rem;
+}
+
+@media (max-width: 767px) {
+    /* Ajustes para pantallas pequeñas */
+    .form-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+    }
+
+    .dni-vendedor {
+        font-size: 1.5rem;
+        margin-top: 2%;
+    }
+
+    .form-to-enter {
+        flex-direction: column; /* Coloca los elementos en columna */
+        gap: 10px; /* Espaciado vertical entre input y botón */
+        margin-top: 0%;
+        width: 100%;
+    }
+
+    .form-to-enter input {
+        width: 100%; /* Input ocupa el ancho completo */
+        background-color: white;
+
+    }
+
+    .form-to-enter button {
+        width: 100%; /* Botón también ocupa el ancho completo */
+    }
+
+    .display-4 {
+        font-size: 1.5rem;
+    }
+
+    .image-container {
+        height: auto; /* Deja que la altura dependa del contenido */
+    }
 }

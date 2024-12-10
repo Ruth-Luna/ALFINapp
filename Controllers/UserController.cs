@@ -100,38 +100,46 @@ namespace ALFINapp.Controllers
                                             .Select(ca => ca.IdCliente)
                                             .ToListAsync();
 
+
+
             // Obtener las IdBase correspondientes a los clientes asignados
             var clientesGralBase = await (from ce in _context.clientes_enriquecidos
-                                            where clientesAsignados.Contains(ce.IdCliente)
-                                            select ce.IdBase
+                                          where clientesAsignados.Contains(ce.IdCliente)
+                                          select ce.IdBase
                                             ).ToListAsync();
-
-            var clientes = await (from db in _context.detalle_base
+            var clientes = await (from db in _context.detalle_base.AsNoTracking()
                                   join cg in clientesGralBase on db.IdBase equals cg
-                                  join bc in _context.base_clientes on db.IdBase equals bc.IdBase
-                                  group new { db, bc } by db.IdBase into grouped
-                                  select new DetalleBaseClienteDTO
+                                  join bc in _context.base_clientes.AsNoTracking() on db.IdBase equals bc.IdBase
+                                  join ca in _context.clientes_asignados on usuarioId equals ca.IdUsuarioV
+                                  group new { db, bc, ca } by db.IdBase into grouped
+                                  select new
                                   {
-                                      Dni = grouped.OrderByDescending(x => x.db.FechaCarga).FirstOrDefault().bc.Dni,
-                                      XAppaterno = grouped.OrderByDescending(x => x.db.FechaCarga).FirstOrDefault().bc.XAppaterno,
-                                      XApmaterno = grouped.OrderByDescending(x => x.db.FechaCarga).FirstOrDefault().bc.XApmaterno,
-                                      XNombre = grouped.OrderByDescending(x => x.db.FechaCarga).FirstOrDefault().bc.XNombre,
-
-                                      OfertaMax = grouped.OrderByDescending(x => x.db.FechaCarga).FirstOrDefault().db.OfertaMax,
-                                      Campaña = grouped.OrderByDescending(x => x.db.FechaCarga).FirstOrDefault().db.Campaña,
-
-                                      IdBase = grouped.Key
+                                      IdBase = grouped.Key,
+                                      LatestRecord = grouped.OrderByDescending(x => x.db.FechaCarga)
+                                                            .FirstOrDefault(),
                                   })
                                   .ToListAsync();
 
-            if (clientes == null)
+            // Mapear los resultados a DTO
+            var detallesClientes = clientes.Select(cliente => new DetalleBaseClienteDTO
             {
-                return NotFound("El presente usuario no tiene clientes");
-            }
-            var usuario = await _context.usuarios.FirstOrDefaultAsync(u => u.IdUsuario == usuarioId);
+                Dni = cliente.LatestRecord?.bc.Dni ?? "",  // Default value in case of null
+                XAppaterno = cliente.LatestRecord?.bc.XAppaterno ?? "",
+                XApmaterno = cliente.LatestRecord?.bc.XApmaterno ?? "",
+                XNombre = cliente.LatestRecord?.bc.XNombre ?? "",
+                OfertaMax = cliente.LatestRecord?.db.OfertaMax ?? 0, // Default value in case of null
+                Campaña = cliente.LatestRecord?.db.Campaña ?? "",  // Default value in case of null
+                IdBase = cliente.IdBase,
+                IdAsignacion = cliente.LatestRecord?.ca.IdAsignacion,
+                FechaAsignacionVendedor = cliente.LatestRecord?.ca.FechaAsignacionVendedor
+            }).ToList();
 
+            // Obtener el usuario actual
+            var usuario = await _context.usuarios.AsNoTracking().FirstOrDefaultAsync(u => u.IdUsuario == usuarioId);
+
+            // Asignar el nombre del usuario a la vista
             ViewData["UsuarioNombre"] = usuario != null ? usuario.NombresCompletos : "Usuario No Encontrado";
-            return View("Main", clientes);
+            return View("Main", detallesClientes);
         }
 
         [HttpGet]
@@ -200,6 +208,17 @@ namespace ALFINapp.Controllers
                     return RedirectToAction("Ventas");
                 }
 
+                var idSupervisor = (from u in _context.usuarios
+                                    where u.IdUsuario == HttpContext.Session.GetInt32("UsuarioId")
+                                    select u.IDUSUARIOSUP
+                                ).FirstOrDefault();
+
+                if (idSupervisor == null)
+                {
+                    TempData["Message"] = "Usted no tiene un Supervisor Asignado, no puede agregar clientes.";
+                    return RedirectToAction("Ventas");
+                }
+
 
                 _context.base_clientes.Add(model);
                 _context.SaveChanges();
@@ -230,6 +249,7 @@ namespace ALFINapp.Controllers
                     IdUsuarioV = HttpContext.Session.GetInt32("UsuarioId") ?? 0,
                     FechaAsignacionVendedor = DateTime.Now,
                     FechaAsignacionSup = null,
+                    IdUsuarioS = idSupervisor
                 };
 
                 _context.clientes_asignados.Add(model3);

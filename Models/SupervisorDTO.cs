@@ -8,6 +8,7 @@ public class SupervisorDTO
     public int? IdCliente { get; set;}
     public int? idUsuarioV { get; set;}
     public DateTime? FechaAsignacionV { get;set;}
+    public string? DniVendedor {get; set;}
 
     //Propiedades de la tabla base_clientes
     public string? Dni { get; set; }

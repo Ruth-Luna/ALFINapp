@@ -41,6 +41,9 @@ public class DetalleBaseClienteDTO
     public int? Propension { get; set; }
 
     //Ids y demas NO MOSTRABLE
-    public int? IdDetalle { get; set; }
+    public int? IdAsignacion { get; set; }
     public int? IdBase { get; set; }
+
+    //Tabla clientes_asignados
+    public DateTime? FechaAsignacionVendedor { get; set; }
 }

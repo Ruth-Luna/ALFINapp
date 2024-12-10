@@ -9,13 +9,27 @@
     <link rel="stylesheet" href="~/css/main_page.css">
 }
 
+@{
+    var idAsignaciones = new List<int>();
+    var ultimaFechasTipificacion = new List<DateTime?>();
+    @if (ViewData["UltimasTipificacion"] is IEnumerable<dynamic> ultimasTipificaciones)
+    {
+        @foreach (var ultimaTipificacion in ultimasTipificaciones)
+        {
+            idAsignaciones.Add(ultimaTipificacion.idAsignacion);
+            ultimaFechasTipificacion.Add(ultimaTipificacion.UltimaFechaTipificacion);
+        }
+    }
+}
+
+
 <header>
     <div class="container-fluid">
         <div class="top-container">
             <p><strong>Fecha actual:</strong> @DateTime.Now.ToString("dd/MM/yyyy")</p>
             <div class="buttons-container">
-                <a href="javascript:void(0);" class="btn btn-primary" onclick="openAddClientModal()">Agregar Cliente</a>
-                <a href="@Url.Action("CerrarSesion", "User")" class="btn btn-secondary">Cerrar Sesion</a>
+                <a href="javascript:void(0);" class="btn btn-success" onclick="openAddClientModal()">Agregar Cliente</a>
+                <a href="@Url.Action("CerrarSesion", "User")" class="btn btn-danger">Cerrar Sesion</a>
             </div>
         </div>
     </div>
@@ -24,46 +38,50 @@
 <div class="container mt-4">
 
     <h2>Ventas del Usuario - @usuarioNombre</h2>
-    <!-- Tabla para mostrar los DetalleBases/ventas -->
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Tipificación</th>
-
-                <th>DNI</th>
-                <th>Apellido Paterno</th>
-                <th>Apellido Materno</th>
-                <th>Nombre</th>
-
-                <th>Oferta Max</th>
-                <th>Campaña</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var ClienteDTO in Model)
-            {
+    <div class="table-responsive">
+        <!-- Tabla para mostrar los DetalleBases/ventas -->
+        <table class="table table-bordered">
+            <thead>
                 <tr>
-                    <td><a href="javascript:void(0);" class="btn btn-info"
-                            onclick="loadTipificarCliente(@ClienteDTO.IdBase)">Ver Cliente</a>
-                    </td>
-                    <td>@ClienteDTO.Dni</td>
-                    <td>@ClienteDTO.XAppaterno</td>
-                    <td>@ClienteDTO.XApmaterno</td>
-                    <td>@ClienteDTO.XNombre</td>
-                    <td>@ClienteDTO.OfertaMax</td>
-                    <td>@ClienteDTO.Campaña</td>
+                    <th>Tipificación</th>
+
+                    <th>DNI</th>
+                    <th>Apellido Paterno</th>
+                    <th>Apellido Materno</th>
+                    <th>Nombre</th>
+
+                    <th>Oferta Max</th>
+                    <th>Campaña</th>
+                    <th>Fecha Asignacion</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var ClienteDTO in Model)
+                {
+                    <tr>
+                        <td><a href="javascript:void(0);" class="btn btn-primary"
+                                onclick="loadTipificarCliente(@ClienteDTO.IdBase)">Ver Cliente</a>
+                        </td>
+                        <td>@ClienteDTO.Dni</td>
+                        <td>@ClienteDTO.XAppaterno</td>
+                        <td>@ClienteDTO.XApmaterno</td>
+                        <td>@ClienteDTO.XNombre</td>
+                        <td>@ClienteDTO.OfertaMax</td>
+                        <td>@ClienteDTO.Campaña</td>
+                        <td>@ClienteDTO.FechaAsignacionVendedor</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!-- Modal -->
 <div class="modal fade" id="tipificarClienteModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalLabel">Tipificación del Cliente</h5>
+                <h3 class="modal-title" id="modalLabel">Tipificación del Cliente</h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -77,7 +95,7 @@
 
 <!-- Modal para Agregar Cliente -->
 <div class="modal fade" id="addClientModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalLabel">Agregar Cliente</h5>
@@ -124,11 +142,11 @@
         });
     }
 
-
 </script>
+
 @if (TempData["Message"] != null)
-    {
-        <script>
-            alert('@TempData["Message"]');
-        </script>
-    }
+{
+    <script>
+        alert('@TempData["Message"]');
+    </script>
+}

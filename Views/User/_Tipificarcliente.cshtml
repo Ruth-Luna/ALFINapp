@@ -4,6 +4,10 @@
     var dni = ViewData["DNIcliente"];
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/main_page.css">
+}
+
 <form action="">
     <div class="row">
         <!-- Primera Columna -->
@@ -97,7 +101,7 @@
 <div class="spacing"></div>
 <form asp-action="TipificarMotivo" asp-controller="User" method="post">
     <div class="row">
-        <h3>Tipificaciones Asignadas:</h3>
+        <h3 class="label-fortip">Tipificaciones Asignadas:</h3>
         @{
             int contador = 1;
             string? tipificacion1 = null;
@@ -120,40 +124,37 @@
                 contador++;
             }
         }
-
-        <div class="spacing"></div>
-
         <input type="hidden" name="IdAsignacion" value="@ViewData["ID_asignacion"]">
         <!-- Teléfono 1 -->
         <div class="form-group d-flex align-items-center">
-            <label for="Telefono1" class="me-2">Teléfono 1</label>
-            <input class="form-control me-2" name="Telefono1" id="Telefono1" type="text" value="@Model.Telefono1" style="width: 20%;" readonly>
+            <label for="Telefono1" class="me-2 mb-0 uniform-font" style="white-space: nowrap;">Teléfono 1</label>
+            <input class="form-control me-2 uniform-font" name="Telefono1" id="Telefono1" type="text" value="@Model.Telefono1" style="width: 17%;" readonly>
             @if (@Model.Telefono1 != "0")
             {
                 <div class="flex-grow-1">
-                    <select class="form-select form-select-lg mt-2" name="Tipificacion1" style="width: 100%;">
-                        <option value="@tipificacion1">Seleccione descripcion de Tipificacion</option>
+                    <select class="form-select form-select-lg mt-2" name="Tipificacion1" style="font-size: 16px;">
+                        <option value="" class="uniform-font">Seleccione la descripcion de Tipificacion</option>
                         @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
                         {
                             <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
                         }
                     </select>
 
-                    <label for="GRUPO_MONTO">Tipificacion Asignada 1: </label>
-                    <input class="form-control mt-2" id="GRUPO_MONTO" type="text" value="@tipificacion1" style="width: 100%;" readonly>
+                    <label for="GRUPO_MONTO" class="uniform-font">Tipificacion Asignada 1: </label>
+                    <input class="form-control mt-2 uniform-font" id="GRUPO_MONTO" type="text" value="@tipificacion1" readonly>
                 </div>
             }
         </div>
 
         <!-- Teléfono 2 -->
         <div class="form-group d-flex align-items-center mt-3">
-            <label for="Telefono2" class="me-2">Teléfono 2</label>
-            <input class="form-control me-2" name="Telefono2" id="Telefono2" type="text" value="@Model.Telefono2" style="width: 20%;" readonly>
+            <label for="Telefono2" class="me-2" style="white-space: nowrap;">Teléfono 2</label>
+            <input class="form-control me-2" name="Telefono2" id="Telefono2" type="text" value="@Model.Telefono2" style="width: 17%;" readonly>
             @if (@Model.Telefono2 != "0")
             {
                 <div class="flex-grow-1">
-                    <select class="form-select form-select-lg mt-2" name="Tipificacion2" style="width: 100%;">
-                        <option value="">Seleccione un motivo</option>
+                    <select class="form-select form-select-lg mt-2" name="Tipificacion2" style="font-size: 16px;">
+                        <option value="">Seleccione la descripcion de la Tipificacion</option>
                         @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
                         {
                             <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
@@ -161,65 +162,65 @@
                     </select>
 
                     <label for="GRUPO_MONTO">Tipificacion Asignada 2: </label>
-                    <input class="form-control mt-2" id="GRUPO_MONTO" type="text" value="@tipificacion2" style="width: 100%;" readonly>
+                    <input class="form-control mt-2" id="GRUPO_MONTO" type="text" value="@tipificacion2" readonly>
                 </div>
             }
         </div>
 
         <!-- Teléfono 3 -->
         <div class="form-group d-flex align-items-center mt-3">
-            <label for="Telefono3" class="me-2">Teléfono 3</label>
-            <input class="form-control me-2" name="Telefono3" id="Telefono3" type="text" value="@Model.Telefono3" style="width: 20%;" readonly>
+            <label for="Telefono3" class="me-2" style="white-space: nowrap;">Teléfono 3</label>
+            <input class="form-control me-2" name="Telefono3" id="Telefono3" type="text" value="@Model.Telefono3" style="width: 17%;" readonly>
             @if (@Model.Telefono3 != "0")
             {
                 <div class="flex-grow-1">
-                    <select class="form-select form-select-lg mt-2" name="Tipificacion3" style="width: 100%;">
-                        <option value="">Seleccione un motivo</option>
+                    <select class="form-select form-select-lg mt-2" name="Tipificacion3" style="font-size: 16px;">
+                        <option value="">Seleccione la descripcion de la Tipificacion</option>
                         @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
                         {
                             <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
                         }
                     </select>
                     <label for="GRUPO_MONTO">Tipificacion Asignada 3: </label>
-                    <input class="form-control mt-2" id="GRUPO_MONTO" type="text" value="@tipificacion3" style="width: 100%;" readonly>
+                    <input class="form-control mt-2" id="GRUPO_MONTO" type="text" value="@tipificacion3" readonly>
                 </div>
             }
         </div>
 
         <div class="form-group d-flex align-items-center mt-3">
-            <label for="Telefono3" class="me-2">Teléfono 4</label>
-            <input class="form-control me-2" name="Telefono4" id="Telefono4" type="text" value="@Model.Telefono4" style="width: 20%;" readonly>
+            <label for="Telefono3" class="me-2" style="white-space: nowrap;">Teléfono 4</label>
+            <input class="form-control me-2" name="Telefono4" id="Telefono4" type="text" value="@Model.Telefono4" style="width: 17%;" readonly>
             @if (@Model.Telefono4 != "0")
             {
                 <div class="flex-grow-1">
-                    <select class="form-select form-select-lg mt-2" name="Tipificacion4" style="width: 100%;">
-                        <option value="">Seleccione un motivo</option>
+                    <select class="form-select form-select-lg mt-2" name="Tipificacion4" style="font-size: 16px;">
+                        <option value="">Seleccione la descripcion de la Tipificacion</option>
                         @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
                         {
                             <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
                         }
                     </select>
                     <label for="GRUPO_MONTO">Tipificacion Asignada 4: </label>
-                    <input class="form-control mt-2" id="GRUPO_MONTO" type="text" value="@tipificacion4" style="width: 100%;" readonly>
+                    <input class="form-control mt-2" id="GRUPO_MONTO" type="text" value="@tipificacion4" readonly>
                 </div>
             }
         </div>
 
         <div class="form-group d-flex align-items-center mt-3">
-            <label for="Telefono3" class="me-2">Teléfono 5</label>
-            <input class="form-control me-2" name="Telefono5" id="Telefono5" type="text" value="@Model.Telefono5" style="width: 20%;" readonly>
+            <label for="Telefono3" class="me-2" style="white-space: nowrap;">Teléfono 5</label>
+            <input class="form-control me-2" name="Telefono5" id="Telefono5" type="text" value="@Model.Telefono5" style="width: 17%;" readonly>
             @if (@Model.Telefono5 != "0")
             {
                 <div class="flex-grow-1">
-                    <select class="form-select form-select-lg mt-2" name="Tipificacion5" style="width: 100%;">
-                        <option value="">Seleccione un motivo</option>
+                    <select class="form-select form-select-lg mt-2" name="Tipificacion5" style="font-size: 16px;">
+                        <option value="">Seleccione la descripcion de la Tipificacion</option>
                         @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
                         {
                             <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
                         }
                     </select>
                     <label for="GRUPO_MONTO">Tipificacion Asignada 5: </label>
-                    <input class="form-control mt-2" id="GRUPO_MONTO" type="text" value="@tipificacion5" style="width: 100%;" readonly>
+                    <input class="form-control mt-2" id="GRUPO_MONTO" type="text" value="@tipificacion5" readonly>
                 </div>
             }
         </div>
