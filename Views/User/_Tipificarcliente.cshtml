@@ -101,7 +101,7 @@
 <div class="spacing"></div>
 <form asp-action="TipificarMotivo" asp-controller="User" method="post">
     <div class="row">
-        <h3 class="label-fortip">Tipificaciones Asignadas:</h3>
+        <h3 class="label-fortip">Contacto con Cliente - Y Tipificaciones Asignadas:</h3>
         @{
             int contador = 1;
             string? tipificacion1 = null;
@@ -125,6 +125,7 @@
             }
         }
         <input type="hidden" name="IdAsignacion" value="@ViewData["ID_asignacion"]">
+        <!-- Teléfono 1 -->
         <!-- Teléfono 1 -->
         <div class="form-group d-flex align-items-center">
             <label for="Telefono1" class="me-2 mb-0 uniform-font" style="white-space: nowrap;">Teléfono 1</label>

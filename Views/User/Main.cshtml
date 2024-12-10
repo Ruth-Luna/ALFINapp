@@ -40,19 +40,43 @@
     <h2>Ventas del Usuario - @usuarioNombre</h2>
     <div class="table-responsive">
         <!-- Tabla para mostrar los DetalleBases/ventas -->
-        <table class="table table-bordered">
+        <table class="table table-bordered" id="clientesTable">
             <thead>
                 <tr>
                     <th>Tipificación</th>
 
                     <th>DNI</th>
-                    <th>Apellido Paterno</th>
-                    <th>Apellido Materno</th>
-                    <th>Nombre</th>
+                    <th>
+                        Apellido Paterno
+                        <button class="btn btn-link p-0"
+                            onclick="sortTable('clientesTable', 2, 'string')">Ordenar</button>
+                    </th>
+                    <th>
+                        Apellido Materno
+                        <button class="btn btn-link p-0"
+                            onclick="sortTable('clientesTable', 3, 'string')">Ordenar</button>
+                    </th>
+                    <th>
+                        Nombre
+                        <button class="btn btn-link p-0"
+                            onclick="sortTable('clientesTable', 4, 'string')">Ordenar</button>
+                    </th>
 
-                    <th>Oferta Max</th>
-                    <th>Campaña</th>
-                    <th>Fecha Asignacion</th>
+                    <th>
+                        Oferta Max
+                        <button class="btn btn-link p-0"
+                            onclick="sortTable('clientesTable', 5, 'number')">Ordenar</button>
+                    </th>
+                    <th>
+                        Campaña
+                        <button class="btn btn-link p-0"
+                            onclick="sortTable('clientesTable', 6, 'string')">Ordenar</button>
+                    </th>
+                    <th>
+                        Fecha Asignacion
+                        <button class="btn btn-link p-0"
+                            onclick="sortTable('clientesTable', 7, 'date')">Ordenar</button>
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -142,6 +166,36 @@
         });
     }
 
+</script>
+
+<script>
+    function sortTable(tableId, colIndex, type) {
+        const table = document.getElementById(tableId);
+        const rows = Array.from(table.rows).slice(1); // Exclude header
+        const isAscending = table.dataset.sortOrder !== 'asc';
+        table.dataset.sortOrder = isAscending ? 'asc' : 'desc';
+
+        rows.sort((a, b) => {
+            const aText = a.cells[colIndex].textContent.trim();
+            const bText = b.cells[colIndex].textContent.trim();
+
+            if (type === 'number') {
+                return isAscending
+                    ? parseFloat(aText) - parseFloat(bText)
+                    : parseFloat(bText) - parseFloat(aText);
+            }
+            if (type === 'date') {
+                return isAscending
+                    ? new Date(aText) - new Date(bText)
+                    : new Date(bText) - new Date(aText);
+            }
+            return isAscending
+                ? aText.localeCompare(bText)
+                : bText.localeCompare(aText);
+        });
+
+        rows.forEach(row => table.tBodies[0].appendChild(row)); // Re-attach sorted rows
+    }
 </script>
 
 @if (TempData["Message"] != null)
