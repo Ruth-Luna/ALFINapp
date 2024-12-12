@@ -37,15 +37,26 @@
 
 <div class="container mt-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>Ventas del Usuario - @usuarioNombre</h2>
+    <div class="container mb-3">
+        <div class="row align-items-center">
+            <!-- Título -->
+            <div class="col-12 col-md-6 mb-3 mb-md-0">
+                <h2 class="text-center text-md-start">Ventas del Usuario - @usuarioNombre</h2>
+            </div>
 
-    <!-- Barra de búsqueda -->
-        <div class="mb-3">
-            <label for="searchApellidoPaterno" class="form-label">Busqueda por Apellido:</label>
-            <input type="text" class="form-control" id="searchApellidoPaterno" placeholder="Ingrese Apellido Paterno">
+            <!-- Campo de búsqueda -->
+            <div class="col-12 col-md-6">
+                <div class="d-flex flex-column flex-md-row align-items-md-center">
+                    <label for="searchApellidoPaterno" class="form-label mb-2 mb-md-0 me-md-2">
+                        Búsqueda por Apellido:
+                    </label>
+                    <input type="text" class="form-control" id="searchApellidoPaterno"
+                        placeholder="Ingrese Apellido Paterno">
+                </div>
+            </div>
         </div>
     </div>
+
     <div class="table-responsive">
         <!-- Tabla para mostrar los DetalleBases/ventas -->
         <table class="table table-bordered" id="clientesTable">

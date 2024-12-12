@@ -138,11 +138,16 @@
             <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.GrupoMonto" readonly>
         </div>
         <div class="spacing"></div>
+
         <h4>Clickee el botón si ha culminado con el Cliente</h4>
+        <div class="spacing"></div>
         <form asp-action="culminarCliente" asp-controller="User">
             <input type="hidden" name="IdAsignacion" value="@id_asignacion" />
             <button class="btn btn-warning" type="submit">Culminar</button>
         </form>
+        <div class="spacing"></div>
+        <p>Activar este boton culminara con las tipificaciones del Cliente y sera notificado al Supervisor.
+            Esta accion no puede ser revertida</p>
     </div>
 </div>
 
@@ -205,8 +210,8 @@
                 <div class="col-12 col-md-8" id="botonesEdicion_Telefono1" style="display:none;">
                     <input class="form-control" name="NuevoTelefono1" id="NuevoTelefono1" type="text">
                     <a href="javascript:void(0);" class="btn btn-success"
-                        onclick="guardarTelefono(@id_asignacion,'NuevoTelefono1')">Guardar</a>
-                    <button type="button" class="btn btn-danger" onclick="cancelarEdicion('Telefono1')">Cancelar</button>
+                        onclick="guardarTelefono(@id_asignacion,'NuevoTelefono1')">Agregar</a>
+                    <button type="button" class="btn btn-secondary" onclick="cancelarEdicion('Telefono1')">Cancelar</button>
                 </div>
             }
         </div>
@@ -243,8 +248,8 @@
                 <div class="col-12 col-md-8" id="botonesEdicion_Telefono2" style="display:none;">
                     <input class="form-control" name="NuevoTelefono2" id="NuevoTelefono2" type="text">
                     <a href="javascript:void(0);" class="btn btn-success"
-                        onclick="guardarTelefono(@id_asignacion,'NuevoTelefono2')">Guardar</a>
-                    <button type="button" class="btn btn-danger" onclick="cancelarEdicion('Telefono2')">Cancelar</button>
+                        onclick="guardarTelefono(@id_asignacion,'NuevoTelefono2')">Agregar</a>
+                    <button type="button" class="btn btn-secondary" onclick="cancelarEdicion('Telefono2')">Cancelar</button>
                 </div>
             }
         </div>
@@ -281,8 +286,8 @@
                 <div class="col-12 col-md-8" id="botonesEdicion_Telefono3" style="display:none;">
                     <input class="form-control" name="NuevoTelefono3" id="NuevoTelefono3" type="text">
                     <a href="javascript:void(0);" class="btn btn-success"
-                        onclick="guardarTelefono(@id_asignacion,'NuevoTelefono3')">Guardar</a>
-                    <button type="button" class="btn btn-danger" onclick="cancelarEdicion('Telefono3')">Cancelar</button>
+                        onclick="guardarTelefono(@id_asignacion,'NuevoTelefono3')">Agregar</a>
+                    <button type="button" class="btn btn-secondary" onclick="cancelarEdicion('Telefono3')">Cancelar</button>
                 </div>
             }
         </div>
@@ -318,8 +323,8 @@
                 <div class="col-12 col-md-8" id="botonesEdicion_Telefono4" style="display:none;">
                     <input class="form-control" name="NuevoTelefono4" id="NuevoTelefono4" type="text">
                     <a href="javascript:void(0);" class="btn btn-success"
-                        onclick="guardarTelefono(@id_asignacion,'NuevoTelefono4')">Guardar</a>
-                    <button type="button" class="btn btn-danger" onclick="cancelarEdicion('Telefono4')">Cancelar</button>
+                        onclick="guardarTelefono(@id_asignacion,'NuevoTelefono4')">Agregar</a>
+                    <button type="button" class="btn btn-secondary" onclick="cancelarEdicion('Telefono4')">Cancelar</button>
                 </div>
             }
         </div>
@@ -355,8 +360,8 @@
                 <div class="col-12 col-md-8" id="botonesEdicion_Telefono5" style="display:none;">
                     <input class="form-control" name="NuevoTelefono5" id="NuevoTelefono5" type="text">
                     <a href="javascript:void(0);" class="btn btn-success"
-                        onclick="guardarTelefono(@id_asignacion,'NuevoTelefono5')">Guardar</a>
-                    <button type="button" class="btn btn-danger" onclick="cancelarEdicion('Telefono5')">Cancelar</button>
+                        onclick="guardarTelefono(@id_asignacion,'NuevoTelefono5')">Agregar</a>
+                    <button type="button" class="btn btn-secondary" onclick="cancelarEdicion('Telefono5')">Cancelar</button>
                 </div>
             }
         </div>
@@ -387,50 +392,77 @@
     }
 
     function guardarTelefono(idasignacion, campo) {
-        const valorTelefono = document.getElementById(campo).value;
-        const idBase = document.getElementById('IDBASEUSUARIO').value;
+        const userConfirmed = confirm('Advertencia: Recuerde que solo se puede tener un maximo de 5 numeros por cliente y esta insercion llenara un campo de telefono. ¿Está seguro de continuar?');
+        if (userConfirmed) {
+            const valorTelefono = document.getElementById(campo).value;
+            const idBase = document.getElementById('IDBASEUSUARIO').value;
 
 
-        if (!valorTelefono.trim()) {
-            alert('El número de teléfono no puede estar vacío.');
-            return;
-        }
-
-        if (!/^\d+$/.test(valorTelefono)) {
-            alert('Ingrese solo números');
-            return;
-        }
-
-        $.ajax({
-            url: '/User/AgregarTelefono',
-            type: 'POST',
-            data: {
-                IdAsignacion: idasignacion,
-                NuevoTelefono: valorTelefono,
-                NumTelefonoEdicion: campo
-            },
-            success: function (result) {
-                alert('Se ha actualizado el Numero del Cliente');
-            },
-            error: function () {
-                alert('Error al agregar un nuevo numero de Telefono' + errorThrown);
+            if (!valorTelefono.trim()) {
+                alert('El número de teléfono no puede estar vacío.');
+                return;
             }
-        });
+
+            if (!/^\d+$/.test(valorTelefono)) {
+                alert('Ingrese solo números');
+                return;
+            }
+
+            if (!/^\d{9}$/.test(valorTelefono)) {
+                alert('El número de teléfono debe tener exactamente 9 dígitos.');
+                return;
+            }
+
+            $.ajax({
+                url: '/User/AgregarTelefono',
+                type: 'POST',
+                data: {
+                    IdAsignacion: idasignacion,
+                    NuevoTelefono: valorTelefono,
+                    NumTelefonoEdicion: campo
+                },
+                success: function (result) {
+                    alert('Se ha actualizado el Numero del Cliente Recargue la Pagina para verificar los cambios');
+                },
+                error: function () {
+                    alert('Error al agregar un nuevo numero de Telefono' + errorThrown);
+                }
+            });
+        } else {
+            alert('La acción ha sido cancelada.');
+        }
     }
 
     function loadCulminacionCliente(id_asignacion) {
-        $.ajax({
-            url: '/User/culminarCliente',
-            type: 'POST',
-            data: {
-                "IdAsignacion": id_asignacion
-            },
-            success: function (result) {
-                alert('Se ha culminado con el Cliente Correctamente');
-            },
-            error: function () {
-                alert('Error al culminar con el Cliente');
-            }
-        });
+        // Validar que id_asignacion sea válido
+        if (!id_asignacion) {
+            alert('El ID de asignación no es válido.');
+            return;
+        }
+
+        // Mostrar cuadro de confirmación al usuario
+        const userConfirmed = confirm('Advertencia: Si culmina con el cliente, esta acción no se puede revertir. ¿Está seguro de continuar?');
+
+        if (userConfirmed) {
+            // Si el usuario confirma, se envía la solicitud AJAX
+            $.ajax({
+                url: '/User/culminarCliente',
+                type: 'POST',
+                data: { "IdAsignacion": id_asignacion },
+                success: function (result) {
+                    // Mostrar mensaje de éxito
+                    alert('Se ha culminado con el cliente correctamente.');
+                },
+                error: function (xhr, status, error) {
+                    // Manejar errores de manera más detallada
+                    console.error('Error al culminar con el cliente:', error);
+                    alert('Hubo un error al intentar culminar con el cliente. Por favor, inténtalo nuevamente.');
+                }
+            });
+        } else {
+            // Si el usuario cancela, muestra un mensaje opcional
+            alert('La acción ha sido cancelada.');
+        }
     }
+
 </script>
