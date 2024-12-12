@@ -46,5 +46,5 @@ public class DetalleBaseClienteDTO
 
     //Tabla clientes_asignados
     public DateTime? FechaAsignacionVendedor { get; set; }
-    public bool? FinalizarTipificacion { get; set; }
+    public bool FinalizarTipificacion { get; set; }
 }

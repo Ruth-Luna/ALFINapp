@@ -131,7 +131,7 @@ namespace ALFINapp.Controllers
                 IdBase = cliente.IdBase,
                 IdAsignacion = cliente.LatestRecord?.ca.IdAsignacion,
                 FechaAsignacionVendedor = cliente.LatestRecord?.ca.FechaAsignacionVendedor,
-                FinalizarTipificacion = cliente.LatestRecord?.ca.FinalizarTipificacion
+                FinalizarTipificacion = cliente.LatestRecord.ca.FinalizarTipificacion
             }).ToList();
 
             // Obtener el usuario actual
