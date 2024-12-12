@@ -71,3 +71,12 @@ form input, form button {
     }
 }
 
+.color-box {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #000;
+    border-radius: 4px;
+}
+.ml-2 {
+    margin-left: 8px; /* Espacio entre el color y el texto */
+}

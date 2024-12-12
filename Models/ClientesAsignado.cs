@@ -20,4 +20,7 @@ public partial class ClientesAsignado
     public int? IdUsuarioV { get; set; }
     [Column("fecha_asignacion_vendedor")]
     public DateTime? FechaAsignacionVendedor { get; set; }
+
+    [Column("finalizar_tipificacion")]
+    public bool FinalizarTipificacion { get; set; }
 }

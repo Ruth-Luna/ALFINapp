@@ -100,8 +100,6 @@ namespace ALFINapp.Controllers
                                             .Select(ca => ca.IdCliente)
                                             .ToListAsync();
 
-
-
             // Obtener las IdBase correspondientes a los clientes asignados
             var clientesGralBase = await (from ce in _context.clientes_enriquecidos
                                           where clientesAsignados.Contains(ce.IdCliente)
@@ -110,7 +108,8 @@ namespace ALFINapp.Controllers
             var clientes = await (from db in _context.detalle_base.AsNoTracking()
                                   join cg in clientesGralBase on db.IdBase equals cg
                                   join bc in _context.base_clientes.AsNoTracking() on db.IdBase equals bc.IdBase
-                                  join ca in _context.clientes_asignados on usuarioId equals ca.IdUsuarioV
+                                  join ce in _context.clientes_enriquecidos on bc.IdBase equals ce.IdBase
+                                  join ca in _context.clientes_asignados on ce.IdCliente equals ca.IdCliente
                                   group new { db, bc, ca } by db.IdBase into grouped
                                   select new
                                   {
@@ -131,7 +130,8 @@ namespace ALFINapp.Controllers
                 Campaña = cliente.LatestRecord?.db.Campaña ?? "",  // Default value in case of null
                 IdBase = cliente.IdBase,
                 IdAsignacion = cliente.LatestRecord?.ca.IdAsignacion,
-                FechaAsignacionVendedor = cliente.LatestRecord?.ca.FechaAsignacionVendedor
+                FechaAsignacionVendedor = cliente.LatestRecord?.ca.FechaAsignacionVendedor,
+                FinalizarTipificacion = cliente.LatestRecord?.ca.FinalizarTipificacion
             }).ToList();
 
             // Obtener el usuario actual
@@ -341,6 +341,7 @@ namespace ALFINapp.Controllers
                                                Departamento = baseCliente.Departamento,
                                                Provincia = baseCliente.Provincia,
                                                Distrito = baseCliente.Distrito,
+                                               IdBase = baseCliente.IdBase,
 
                                                // Propiedades de DetalleBase
                                                Campaña = detalleBase.Campaña,
@@ -355,6 +356,8 @@ namespace ALFINapp.Controllers
                                                Propension = detalleBase.Propension,
                                                TipoCliente = detalleBase.TipoCliente,
                                                ClienteNuevo = detalleBase.ClienteNuevo,
+                                               Color = detalleBase.Color,
+                                               ColorFinal = detalleBase.ColorFinal,
 
                                                // Propiedades de ClientesEnriquecido
                                                Telefono1 = clienteEnriquecido.Telefono1,
@@ -386,8 +389,6 @@ namespace ALFINapp.Controllers
                 return RedirectToAction("Ventas");
             }
 
-            ViewData["ID_asignacion"] = ClienteAsignado.IdAsignacion;
-
             var tipificaciones = _context.tipificaciones.Select(t => new { t.IdTipificacion, t.DescripcionTipificacion }).ToList();
             ViewData["Tipificaciones"] = tipificaciones;
 
@@ -415,6 +416,9 @@ namespace ALFINapp.Controllers
                                                 t.DescripcionTipificacion,
                                                 ct.IdAsignacion
                                             }).ToList();
+
+            ViewData["ID_asignacion"] = ClienteAsignado.IdAsignacion;
+            ViewData["ID_cliente"] = ClienteAsignado.IdCliente;
             ViewData["tipificaciones_asignadas"] = result.ToList();
             var dni = _context.base_clientes.FirstOrDefault(bc => bc.IdBase == id_base);
             ViewData["DNIcliente"] = dni != null ? dni.Dni : "El usuario No tiene DNI Registrado";
@@ -494,6 +498,88 @@ namespace ALFINapp.Controllers
             _context.SaveChanges();
             TempData["Message"] = "Las Tipificaciones se han guardado Correctamente";
 
+            return RedirectToAction("Ventas");
+        }
+        [HttpPost]
+        public IActionResult AgregarTelefono(int IdAsignacion, string NuevoTelefono, string NumTelefonoEdicion)
+        {
+            Console.WriteLine($"ID Asignacion: {IdAsignacion}, Telefono Nuevo {NuevoTelefono}, Edicion de Telefono {NumTelefonoEdicion}");
+            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+            {
+                TempData["Message"] = "Ha ocurrido un error en la autenticación";
+                return RedirectToAction("Index", "Home");
+            }
+
+            var clienteAsignadoConsulta = _context.clientes_asignados.FirstOrDefault(ca => ca.IdAsignacion == IdAsignacion && ca.IdUsuarioV == HttpContext.Session.GetInt32("UsuarioId"));
+            if (clienteAsignadoConsulta == null)
+            {
+                TempData["Message"] = "Usted no tiene acceso a este Usuario.";
+                return RedirectToAction("Ventas");
+            }
+            var ClientesEnriquecido = _context.clientes_enriquecidos.FirstOrDefault(ce => ce.IdCliente == clienteAsignadoConsulta.IdCliente);
+            if (ClientesEnriquecido == null)
+            {
+                TempData["Message"] = "No se encuentra un Cliente enriquecido con los datos proporcionados.";
+                return RedirectToAction("Ventas");
+            }
+
+            if (NumTelefonoEdicion == "NuevoTelefono1")
+            {
+                ClientesEnriquecido.Telefono1 = NuevoTelefono;
+            }
+
+            if (NumTelefonoEdicion == "NuevoTelefono2")
+            {
+                ClientesEnriquecido.Telefono2 = NuevoTelefono;
+            }
+
+            if (NumTelefonoEdicion == "NuevoTelefono3")
+            {
+                ClientesEnriquecido.Telefono3 = NuevoTelefono;
+            }
+
+            if (NumTelefonoEdicion == "NuevoTelefono4")
+            {
+                ClientesEnriquecido.Telefono4 = NuevoTelefono;
+            }
+
+            if (NumTelefonoEdicion == "NuevoTelefono5")
+            {
+                ClientesEnriquecido.Telefono5 = NuevoTelefono;
+            }
+
+            _context.SaveChanges();
+            return Json(new { success = true });
+        }
+
+        public IActionResult ObtenerDatosCliente(int idAsignacion)
+        {
+            var clienteAsignadoConsulta = _context.clientes_asignados.FirstOrDefault(ca => ca.IdAsignacion == idAsignacion && ca.IdUsuarioV == HttpContext.Session.GetInt32("UsuarioId"));
+            var ClientesEnriquecido = _context.clientes_enriquecidos.FirstOrDefault(ce => ce.IdCliente == clienteAsignadoConsulta.IdCliente);
+
+            return Json(ClientesEnriquecido);
+        }
+
+        [HttpPost]
+        public IActionResult culminarCliente(int IdAsignacion)
+        {
+            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+            {
+                TempData["Message"] = "Ha ocurrido un error en la autenticación";
+                return RedirectToAction("Index", "Home");
+            }
+            var ClienteAsignado = _context.clientes_asignados.FirstOrDefault(ca => ca.IdAsignacion == IdAsignacion && ca.IdUsuarioV == HttpContext.Session.GetInt32("UsuarioId"));
+            if (ClienteAsignado == null)
+            {
+                TempData["Message"] = "Usted no tiene acceso a este Usuario para su modificacion";
+                return RedirectToAction("Index", "Home");
+            }
+            ClienteAsignado.FinalizarTipificacion = true;
+            _context.SaveChanges();
+
+            TempData["Message"] = "Usted a Finalizado con las tipificaciones del Usuario";
             return RedirectToAction("Ventas");
         }
     }

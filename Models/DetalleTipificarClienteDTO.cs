@@ -12,6 +12,7 @@ public class DetalleTipificarClienteDTO
     public string? Departamento { get; set; }
     public string? Provincia { get; set; }
     public string? Distrito { get; set; }
+    public int? IdBase { get; set; }
 
     //Propiedades de la tabla DetalleBase
     public string? Campaña { get; set; }
@@ -26,6 +27,8 @@ public class DetalleTipificarClienteDTO
     public int? Propension { get; set; }
     public string? TipoCliente { get; set; }
     public string? ClienteNuevo { get; set; }
+    public string? Color { get; set; }
+    public string? ColorFinal { get; set; }
 
     //Propiedades de la Tabla ClientsEnriquecido
     public string? Telefono1 { get; set; }

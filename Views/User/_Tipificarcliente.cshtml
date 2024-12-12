@@ -2,102 +2,150 @@
 
 @{
     var dni = ViewData["DNIcliente"];
+    var id_asignacion = ViewData["ID_asignacion"];
+    var id_base = Model.IdBase;
 }
 
 @section Styles {
     <link rel="stylesheet" href="~/css/main_page.css">
+    <link rel="stylesheet" href="~/css/tipificar_page.css">
 }
 
-<form action="">
-    <div class="row">
-        <!-- Primera Columna -->
-        <div class="col-md-6">
-            <h3>Datos del Prospecto</h3>
-            <div class="form-group">
-                <label for="DNI">DNI</label>
-                <input class="form-control" id="DNI" type="text" value="@dni" readonly>
-            </div>
-            <div class="form-group">
-                <label for="X_APPATERNO">Apellido Paterno</label>
-                <input class="form-control" id="X_APPATERNO" type="text" value="@Model.XAppaterno" readonly>
-            </div>
-            <div class="form-group">
-                <label for="X_APMATERNO">Apellido Materno</label>
-                <input class="form-control" id="X_APMATERNO" type="text" value="@Model.XApmaterno" readonly>
-            </div>
-            <div class="form-group">
-                <label for="X_NOMBRE">Nombre</label>
-                <input class="form-control" id="X_NOMBRE" type="text" value="@Model.XNombre" readonly>
-            </div>
-            <div class="form-group">
-                <label for="EDAD">Edad</label>
-                <input class="form-control" id="EDAD" type="text" value="@Model.Edad" readonly>
-            </div>
-            <div class="form-group">
-                <label for="DEPARTAMENTO">Departamento</label>
-                <input class="form-control" id="DEPARTAMENTO" type="text" value="@Model.Departamento" readonly>
-            </div>
-            <div class="form-group">
-                <label for="PROVINCIA">Provincia</label>
-                <input class="form-control" id="PROVINCIA" type="text" value="@Model.Provincia" readonly>
-            </div>
-            <div class="form-group">
-                <label for="DISTRITO">Distrito</label>
-                <input class="form-control" id="DISTRITO" type="text" value="@Model.Distrito" readonly>
-            </div>
-            <div class="spacing"></div>
-            <h3>Tendencia del Prospecto</h3>
-            <div class="form-group">
-                <label for="PROPENSION">Propensión</label>
-                <input class="form-control" id="PROPENSION" type="text" value="@Model.Propension" readonly>
-            </div>
-            <div class="form-group">
-                <label for="TIPO_CLIENTE">Tipo de Cliente</label>
-                <input class="form-control" id="TIPO_CLIENTE" type="text" value="@Model.TipoCliente" readonly>
-            </div>
-            <div class="form-group">
-                <label for="CLIENTE_NUEVO">Cliente Nuevo</label>
-                <input class="form-control" id="CLIENTE_NUEVO" type="text" value="@Model.ClienteNuevo" readonly>
+@functions {
+    public string GetColorCode(string colorName)
+    {
+        return colorName.ToLower() switch
+        {
+            "verde" => "#008000",
+            "amarillo" => "#FFFF00",
+            "naranja" => "#FFA500",
+            "rojo" => "#FF0000",
+            "verde claro" => "#90EE90",
+            "verde oscuro" => "#006400",
+            "amarillo claro" => "#FFFFE0",
+            "amarillo oscuro" => "#FFD700",
+            "naranja claro" => "#FFDAB9",
+            "naranja oscuro" => "#FF8C00",
+            "rojo claro" => "#FF7F7F",
+            "rojo oscuro" => "#8B0000",
+            _ => "#FFFFFF"
+        };
+    }
+}
+
+<div class="row">
+    <!-- Primera Columna -->
+    <div class="col-md-6">
+        <h3>Datos del Prospecto @id_asignacion</h3>
+        <div class="form-group">
+            <label for="DNI">DNI</label>
+            <input class="form-control" id="DNI" type="text" value="@dni" readonly>
+        </div>
+        <div class="form-group">
+            <label for="X_APPATERNO">Apellido Paterno</label>
+            <input class="form-control" id="X_APPATERNO" type="text" value="@Model.XAppaterno" readonly>
+        </div>
+        <div class="form-group">
+            <label for="X_APMATERNO">Apellido Materno</label>
+            <input class="form-control" id="X_APMATERNO" type="text" value="@Model.XApmaterno" readonly>
+        </div>
+        <div class="form-group">
+            <label for="X_NOMBRE">Nombre</label>
+            <input class="form-control" id="X_NOMBRE" type="text" value="@Model.XNombre" readonly>
+        </div>
+        <div class="form-group">
+            <label for="EDAD">Edad</label>
+            <input class="form-control" id="EDAD" type="text" value="@Model.Edad" readonly>
+        </div>
+        <div class="form-group">
+            <label for="DEPARTAMENTO">Departamento</label>
+            <input class="form-control" id="DEPARTAMENTO" type="text" value="@Model.Departamento" readonly>
+        </div>
+        <div class="form-group">
+            <label for="PROVINCIA">Provincia</label>
+            <input class="form-control" id="PROVINCIA" type="text" value="@Model.Provincia" readonly>
+        </div>
+        <div class="form-group">
+            <label for="DISTRITO">Distrito</label>
+            <input class="form-control" id="DISTRITO" type="text" value="@Model.Distrito" readonly>
+        </div>
+        <div class="spacing"></div>
+        <h3>Tendencia del Prospecto</h3>
+        <div class="form-group">
+            <label for="PROPENSION">Propensión</label>
+            <input class="form-control" id="PROPENSION" type="text" value="@Model.Propension" readonly>
+        </div>
+        <div class="form-group">
+            <label for="TIPO_CLIENTE">Tipo de Cliente</label>
+            <input class="form-control" id="TIPO_CLIENTE" type="text" value="@Model.TipoCliente" readonly>
+        </div>
+        <div class="form-group">
+            <label for="CLIENTE_NUEVO">Antiguedad del Cliente</label>
+            <input class="form-control" id="CLIENTE_NUEVO" type="text" value="@Model.ClienteNuevo" readonly>
+        </div>
+        <!-- Colores -->
+        <div class="form-group">
+            <label for="COLOR">Color Principal</label>
+            <div class="d-flex align-items-center">
+                <input class="form-control ml-2" style="background-color: @GetColorCode(Model.Color); width: 10%;"
+                    readonly>
+                <input class="form-control ml-2" id="COLOR" type="text" value="@Model.Color" readonly>
             </div>
         </div>
-        <!-- Segunda Columna -->
-        <div class="col-md-6">
-            <h3>Detalles de la Campaña</h3>
-            <div class="form-group">
-                <label for="CAMPAÑA">Campaña</label>
-                <input class="form-control" id="CAMPAÑA" type="text" value="@Model.Campaña" readonly>
-            </div>
-            <div class="form-group">
-                <label for="OFERTA_MAX">Oferta Máxima</label>
-                <input class="form-control" id="OFERTA_MAX" type="text" value="@Model.OfertaMax" readonly>
-            </div>
-            <div class="form-group">
-                <label for="TASA_MINIMA">Tasa Mínima</label>
-                <input class="form-control" id="TASA_MINIMA" type="text" value="@Model.TasaMinima" readonly>
-            </div>
-            <div class="form-group">
-                <label for="SUCURSAL_COMERCIAL">Sucursal Comercial</label>
-                <input class="form-control" id="SUCURSAL_COMERCIAL" type="text" value="@Model.Sucursal" readonly>
-            </div>
-            <div class="form-group">
-                <label for="PLAZO">Plazo</label>
-                <input class="form-control" id="PLAZO" type="text" value="@Model.Plazo" readonly>
-            </div>
-            <div class="form-group">
-                <label for="CUOTA">Cuota</label>
-                <input class="form-control" id="CUOTA" type="text" value="@Model.Cuota" readonly>
-            </div>
-            <div class="form-group">
-                <label for="GRUPO_TASA">Grupo Tasa</label>
-                <input class="form-control" id="GRUPO_TASA" type="text" value="@Model.GrupoTasa" readonly>
-            </div>
-            <div class="form-group">
-                <label for="GRUPO_MONTO">Grupo Monto</label>
-                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.GrupoMonto" readonly>
+        <div class="form-group">
+            <label for="COLOR_FINAL">Color Final</label>
+            <div class="d-flex align-items-center">
+                <input class="form-control ml-2" style="background-color: @GetColorCode(Model.ColorFinal); width: 10%;"
+                    readonly>
+                <input class="form-control ml-2" id="COLOR_FINAL" type="text" value="@Model.ColorFinal" readonly>
             </div>
         </div>
     </div>
-</form>
+    <!-- Segunda Columna -->
+    <div class="col-md-6">
+        <h3>Detalles de la Campaña</h3>
+        <input class="form-control ml-2" id="IDBASEUSUARIO" value="@Model.IdBase" hidden>
+        <div class="form-group">
+            <label for="CAMPAÑA">Campaña</label>
+            <input class="form-control" id="CAMPAÑA" type="text" value="@Model.Campaña" readonly>
+        </div>
+        <div class="form-group">
+            <label for="OFERTA_MAX">Oferta Máxima</label>
+            <input class="form-control" id="OFERTA_MAX" type="text" value="@Model.OfertaMax" readonly>
+        </div>
+        <div class="form-group">
+            <label for="TASA_MINIMA">Tasa Mínima</label>
+            <input class="form-control" id="TASA_MINIMA" type="text" value="@Model.TasaMinima" readonly>
+        </div>
+        <div class="form-group">
+            <label for="SUCURSAL_COMERCIAL">Sucursal Comercial</label>
+            <input class="form-control" id="SUCURSAL_COMERCIAL" type="text" value="@Model.Sucursal" readonly>
+        </div>
+        <div class="form-group">
+            <label for="PLAZO">Plazo</label>
+            <input class="form-control" id="PLAZO" type="text" value="@Model.Plazo" readonly>
+        </div>
+        <div class="form-group">
+            <label for="CUOTA">Cuota</label>
+            <input class="form-control" id="CUOTA" type="text" value="@Model.Cuota" readonly>
+        </div>
+        <div class="form-group">
+            <label for="GRUPO_TASA">Grupo Tasa</label>
+            <input class="form-control" id="GRUPO_TASA" type="text" value="@Model.GrupoTasa" readonly>
+        </div>
+        <div class="form-group">
+            <label for="GRUPO_MONTO">Grupo Monto</label>
+            <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.GrupoMonto" readonly>
+        </div>
+        <div class="spacing"></div>
+        <h4>Clickee el botón si ha culminado con el Cliente</h4>
+        <form asp-action="culminarCliente" asp-controller="User">
+            <input type="hidden" name="IdAsignacion" value="@id_asignacion" />
+            <button class="btn btn-warning" type="submit">Culminar</button>
+        </form>
+    </div>
+</div>
+
 <div class="spacing"></div>
 <form asp-action="TipificarMotivo" asp-controller="User" method="post">
     <div class="row">
@@ -126,35 +174,54 @@
         }
         <input type="hidden" name="IdAsignacion" value="@ViewData["ID_asignacion"]">
         <!-- Teléfono 1 -->
-        <!-- Teléfono 1 -->
-        <div class="form-group d-flex align-items-center">
-            <label for="Telefono1" class="me-2 mb-0 uniform-font" style="white-space: nowrap;">Teléfono 1</label>
-            <input class="form-control me-2 uniform-font" name="Telefono1" id="Telefono1" type="text" value="@Model.Telefono1" style="width: 17%;" readonly>
+        <div class="form-group row align-items-center mb-3">
+            <div class="col-12 col-md-4">
+                <label for="Telefono1" class="form-label">Teléfono 1</label>
+                <input class="form-control" name="Telefono1" id="Telefono1" type="text" value="@Model.Telefono1"
+                    readonly>
+            </div>
+
             @if (@Model.Telefono1 != "0")
             {
-                <div class="flex-grow-1">
-                    <select class="form-select form-select-lg mt-2" name="Tipificacion1" style="font-size: 16px;">
-                        <option value="" class="uniform-font">Seleccione la descripcion de Tipificacion</option>
+                <div class="col-12 col-md-8 mt-2 mt-md-0">
+                    <select class="form-select" name="Tipificacion1">
+                        <option value="">Seleccione la descripcion de Tipificacion</option>
                         @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
                         {
                             <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
                         }
                     </select>
 
-                    <label for="GRUPO_MONTO" class="uniform-font">Tipificacion Asignada 1: </label>
-                    <input class="form-control mt-2 uniform-font" id="GRUPO_MONTO" type="text" value="@tipificacion1" readonly>
+                    <label for="GRUPO_MONTO" class="form-label mt-2">Tipificacion Asignada 1: </label>
+                    <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion1" readonly>
+                </div>
+            }
+            else
+            {
+                <div class="col-12 col-md-8 mt-2 mt-md-0" id="agregarTelefono_Telefono1">
+                    <button type="button" class="btn btn-primary" onclick="editarTelefono('Telefono1')">Agregar
+                        Teléfono</button>
+                </div>
+                <div class="col-12 col-md-8" id="botonesEdicion_Telefono1" style="display:none;">
+                    <input class="form-control" name="NuevoTelefono1" id="NuevoTelefono1" type="text">
+                    <a href="javascript:void(0);" class="btn btn-success"
+                        onclick="guardarTelefono(@id_asignacion,'NuevoTelefono1')">Guardar</a>
+                    <button type="button" class="btn btn-danger" onclick="cancelarEdicion('Telefono1')">Cancelar</button>
                 </div>
             }
         </div>
 
         <!-- Teléfono 2 -->
-        <div class="form-group d-flex align-items-center mt-3">
-            <label for="Telefono2" class="me-2" style="white-space: nowrap;">Teléfono 2</label>
-            <input class="form-control me-2" name="Telefono2" id="Telefono2" type="text" value="@Model.Telefono2" style="width: 17%;" readonly>
+        <div class="form-group row align-items-center mb-3">
+            <div class="col-12 col-md-4">
+                <label for="Telefono2" class="form-label">Teléfono 2</label>
+                <input class="form-control" name="Telefono2" id="Telefono2" type="text" value="@Model.Telefono2"
+                    readonly>
+            </div>
             @if (@Model.Telefono2 != "0")
             {
-                <div class="flex-grow-1">
-                    <select class="form-select form-select-lg mt-2" name="Tipificacion2" style="font-size: 16px;">
+                <div class="col-12 col-md-8 mt-2 mt-md-0">
+                    <select class="form-select" name="Tipificacion2">
                         <option value="">Seleccione la descripcion de la Tipificacion</option>
                         @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
                         {
@@ -162,66 +229,134 @@
                         }
                     </select>
 
-                    <label for="GRUPO_MONTO">Tipificacion Asignada 2: </label>
-                    <input class="form-control mt-2" id="GRUPO_MONTO" type="text" value="@tipificacion2" readonly>
+                    <label for="GRUPO_MONTO" class="form-label mt-2">Tipificacion Asignada 2: </label>
+                    <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion2" readonly>
+                </div>
+            }
+            else
+            {
+                <div class="col-12 col-md-8 mt-2 mt-md-0" id="agregarTelefono_Telefono2">
+                    <button type="button" class="btn btn-primary" onclick="editarTelefono('Telefono2')">Agregar
+                        Teléfono</button>
+                </div>
+
+                <div class="col-12 col-md-8" id="botonesEdicion_Telefono2" style="display:none;">
+                    <input class="form-control" name="NuevoTelefono2" id="NuevoTelefono2" type="text">
+                    <a href="javascript:void(0);" class="btn btn-success"
+                        onclick="guardarTelefono(@id_asignacion,'NuevoTelefono2')">Guardar</a>
+                    <button type="button" class="btn btn-danger" onclick="cancelarEdicion('Telefono2')">Cancelar</button>
                 </div>
             }
         </div>
 
         <!-- Teléfono 3 -->
-        <div class="form-group d-flex align-items-center mt-3">
-            <label for="Telefono3" class="me-2" style="white-space: nowrap;">Teléfono 3</label>
-            <input class="form-control me-2" name="Telefono3" id="Telefono3" type="text" value="@Model.Telefono3" style="width: 17%;" readonly>
+        <div class="form-group row align-items-center mb-3">
+            <div class="col-12 col-md-4">
+                <label for="Telefono3" class="form-label">Teléfono 3</label>
+                <input class="form-control" name="Telefono3" id="Telefono3" type="text" value="@Model.Telefono3"
+                    readonly>
+            </div>
+
             @if (@Model.Telefono3 != "0")
             {
-                <div class="flex-grow-1">
-                    <select class="form-select form-select-lg mt-2" name="Tipificacion3" style="font-size: 16px;">
+                <div class="col-12 col-md-8 mt-2 mt-md-0">
+                    <select class="form-select" name="Tipificacion3">
                         <option value="">Seleccione la descripcion de la Tipificacion</option>
                         @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
                         {
                             <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
                         }
                     </select>
-                    <label for="GRUPO_MONTO">Tipificacion Asignada 3: </label>
-                    <input class="form-control mt-2" id="GRUPO_MONTO" type="text" value="@tipificacion3" readonly>
+                    <label for="GRUPO_MONTO" class="form-label mt-2">Tipificacion Asignada 3: </label>
+                    <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion3" readonly>
+                </div>
+            }
+            else
+            {
+                <div class="col-12 col-md-8 mt-2 mt-md-0" id="agregarTelefono_Telefono3">
+                    <button type="button" class="btn btn-primary" onclick="editarTelefono('Telefono3')">Agregar
+                        Teléfono</button>
+                </div>
+
+                <div class="col-12 col-md-8" id="botonesEdicion_Telefono3" style="display:none;">
+                    <input class="form-control" name="NuevoTelefono3" id="NuevoTelefono3" type="text">
+                    <a href="javascript:void(0);" class="btn btn-success"
+                        onclick="guardarTelefono(@id_asignacion,'NuevoTelefono3')">Guardar</a>
+                    <button type="button" class="btn btn-danger" onclick="cancelarEdicion('Telefono3')">Cancelar</button>
                 </div>
             }
         </div>
 
-        <div class="form-group d-flex align-items-center mt-3">
-            <label for="Telefono3" class="me-2" style="white-space: nowrap;">Teléfono 4</label>
-            <input class="form-control me-2" name="Telefono4" id="Telefono4" type="text" value="@Model.Telefono4" style="width: 17%;" readonly>
+        <div class="form-group row align-items-center mb-3">
+            <div class="col-12 col-md-4">
+                <label for="Telefono4" class="form-label">Teléfono 4</label>
+                <input class="form-control" name="Telefono4" id="Telefono4" type="text" value="@Model.Telefono4"
+                    readonly>
+            </div>
+
             @if (@Model.Telefono4 != "0")
             {
-                <div class="flex-grow-1">
-                    <select class="form-select form-select-lg mt-2" name="Tipificacion4" style="font-size: 16px;">
+                <div class="col-12 col-md-8 mt-2 mt-md-0">
+                    <select class="form-select" name="Tipificacion4">
                         <option value="">Seleccione la descripcion de la Tipificacion</option>
                         @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
                         {
                             <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
                         }
                     </select>
-                    <label for="GRUPO_MONTO">Tipificacion Asignada 4: </label>
-                    <input class="form-control mt-2" id="GRUPO_MONTO" type="text" value="@tipificacion4" readonly>
+                    <label for="GRUPO_MONTO" class="form-label mt-2">Tipificacion Asignada 4: </label>
+                    <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion4" readonly>
+                </div>
+            }
+            else
+            {
+                <div class="col-12 col-md-8 mt-2 mt-md-0" id="agregarTelefono_Telefono4">
+                    <button type="button" class="btn btn-primary" onclick="editarTelefono('Telefono4')">Agregar
+                        Teléfono</button>
+                </div>
+
+                <div class="col-12 col-md-8" id="botonesEdicion_Telefono4" style="display:none;">
+                    <input class="form-control" name="NuevoTelefono4" id="NuevoTelefono4" type="text">
+                    <a href="javascript:void(0);" class="btn btn-success"
+                        onclick="guardarTelefono(@id_asignacion,'NuevoTelefono4')">Guardar</a>
+                    <button type="button" class="btn btn-danger" onclick="cancelarEdicion('Telefono4')">Cancelar</button>
                 </div>
             }
         </div>
 
-        <div class="form-group d-flex align-items-center mt-3">
-            <label for="Telefono3" class="me-2" style="white-space: nowrap;">Teléfono 5</label>
-            <input class="form-control me-2" name="Telefono5" id="Telefono5" type="text" value="@Model.Telefono5" style="width: 17%;" readonly>
+        <div class="form-group row align-items-center mb-3">
+            <div class="col-12 col-md-4">
+                <label for="Telefono5" class="form-label">Teléfono 5</label>
+                <input class="form-control" name="Telefono5" id="Telefono5" type="text" value="@Model.Telefono5"
+                    readonly>
+            </div>
+
             @if (@Model.Telefono5 != "0")
             {
-                <div class="flex-grow-1">
-                    <select class="form-select form-select-lg mt-2" name="Tipificacion5" style="font-size: 16px;">
+                <div class="col-12 col-md-8 mt-2 mt-md-0">
+                    <select class="form-select" name="Tipificacion5">
                         <option value="">Seleccione la descripcion de la Tipificacion</option>
                         @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
                         {
                             <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
                         }
                     </select>
-                    <label for="GRUPO_MONTO">Tipificacion Asignada 5: </label>
-                    <input class="form-control mt-2" id="GRUPO_MONTO" type="text" value="@tipificacion5" readonly>
+                    <label for="GRUPO_MONTO" class="form-label mt-2">Tipificacion Asignada 5: </label>
+                    <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion5" readonly>
+                </div>
+            }
+            else
+            {
+                <div class="col-12 col-md-8 mt-2 mt-md-0" id="agregarTelefono_Telefono5">
+                    <button type="button" class="btn btn-primary" onclick="editarTelefono('Telefono5')">Agregar
+                        Teléfono</button>
+                </div>
+
+                <div class="col-12 col-md-8" id="botonesEdicion_Telefono5" style="display:none;">
+                    <input class="form-control" name="NuevoTelefono5" id="NuevoTelefono5" type="text">
+                    <a href="javascript:void(0);" class="btn btn-success"
+                        onclick="guardarTelefono(@id_asignacion,'NuevoTelefono5')">Guardar</a>
+                    <button type="button" class="btn btn-danger" onclick="cancelarEdicion('Telefono5')">Cancelar</button>
                 </div>
             }
         </div>
@@ -231,6 +366,71 @@
 
     <div class="form-group">
         <button class="btn btn-success" type="submit">Guardar</button>
-        <button type="button" class="btn btn-secondary" onclick="history.back()">Cancelar</button>
+        <a href="@Url.Action("Ventas", "User")" class="btn btn-danger">Cancelar</a>
     </div>
 </form>
+
+
+<script>
+    function editarTelefono(campo) {
+        // Mostrar los botones de guardar y cancelar
+        document.getElementById('botonesEdicion_' + campo).style.display = 'block';
+
+        // Ocultar el botón de "Agregar Teléfono"
+        document.getElementById('agregarTelefono_' + campo).style.display = 'none';
+    }
+
+    function cancelarEdicion(campo) {
+        document.getElementById(campo).value = '0';
+        document.getElementById('agregarTelefono_' + campo).style.display = 'block';
+        document.getElementById('botonesEdicion_' + campo).style.display = 'none';
+    }
+
+    function guardarTelefono(idasignacion, campo) {
+        const valorTelefono = document.getElementById(campo).value;
+        const idBase = document.getElementById('IDBASEUSUARIO').value;
+
+
+        if (!valorTelefono.trim()) {
+            alert('El número de teléfono no puede estar vacío.');
+            return;
+        }
+
+        if (!/^\d+$/.test(valorTelefono)) {
+            alert('Ingrese solo números');
+            return;
+        }
+
+        $.ajax({
+            url: '/User/AgregarTelefono',
+            type: 'POST',
+            data: {
+                IdAsignacion: idasignacion,
+                NuevoTelefono: valorTelefono,
+                NumTelefonoEdicion: campo
+            },
+            success: function (result) {
+                alert('Se ha actualizado el Numero del Cliente');
+            },
+            error: function () {
+                alert('Error al agregar un nuevo numero de Telefono' + errorThrown);
+            }
+        });
+    }
+
+    function loadCulminacionCliente(id_asignacion) {
+        $.ajax({
+            url: '/User/culminarCliente',
+            type: 'POST',
+            data: {
+                "IdAsignacion": id_asignacion
+            },
+            success: function (result) {
+                alert('Se ha culminado con el Cliente Correctamente');
+            },
+            error: function () {
+                alert('Error al culminar con el Cliente');
+            }
+        });
+    }
+</script>

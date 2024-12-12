@@ -77,6 +77,11 @@
                         <button class="btn btn-link p-0"
                             onclick="sortTable('clientesTable', 7, 'date')">Ordenar</button>
                     </th>
+                    <th>
+                        Tipificacion Finalizada
+                        <button class="btn btn-link p-0"
+                            onclick="sortTable('clientesTable', 8, 'bool')">Ordenar</button>
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -93,6 +98,7 @@
                         <td>@ClienteDTO.OfertaMax</td>
                         <td>@ClienteDTO.Campaña</td>
                         <td>@ClienteDTO.FechaAsignacionVendedor</td>
+                        <td>@ClienteDTO.FinalizarTipificacion</td>
                     </tr>
                 }
             </tbody>
@@ -189,6 +195,12 @@
                     ? new Date(aText) - new Date(bText)
                     : new Date(bText) - new Date(aText);
             }
+            if (type === 'bool') {
+                return isAscending
+                    ? aText.toLowerCase() === 'true' ? -1 : 1
+                    : aText.toLowerCase() === 'true' ? 1 : -1;
+            }
+
             return isAscending
                 ? aText.localeCompare(bText)
                 : bText.localeCompare(aText);

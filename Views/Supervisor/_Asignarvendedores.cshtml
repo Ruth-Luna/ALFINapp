@@ -1,40 +1,48 @@
 @model IEnumerable<VendedorConClientesDTO>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Vendedor</th>
-            <th>Número de clientes asignados</th>
-            <th>Asignar número de clientes</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var vendedores in Model)
-        {
-            <tr>
-                <td>
-                    <input class="form-control" id="NombresCompletos" type="text" value="@vendedores.NombresCompletos"
-                        readonly>
-                </td>
 
-                <td>
-                    <input class="form-control" id="NClientes" type="text" value="@vendedores.NumeroClientes" readonly>
-                </td>
+<div class="container-fluid">
+    <div class="container-fluid">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Vendedor</th>
+                    <th>Número de clientes asignados</th>
+                    <th>Asignar número de clientes</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var vendedores in Model)
+                {
+                    <tr>
+                        <td>
+                            <textarea class="form-control" id="NombresCompletos" rows="3"
+                                readonly>@vendedores.NombresCompletos</textarea>
+                        </td>
 
-                <td>
-                    <form asp-action="AsignarVendedoresPorNumero" asp-controller="Supervisor" method="post">
-                        <div class="form-group row">
-                            <div class="col-md-8 col-8">
-                                <input name="nclientes" type="text" class="form-control" placeholder="Número de clientes">
-                            </div>
-                            <input name="id_vendedor" type="text" value="@vendedores.IdUsuario" hidden>
-                            <div class="col-md-4 col-4">
-                                <button class="btn btn-primary btn-sm" type="submit">Guardar</button>
-                            </div>
-                        </div>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                        <td>
+                            <input class="form-control" id="NClientes" type="text" value="@vendedores.NumeroClientes"
+                                readonly>
+                        </td>
+
+                        <td>
+                            <form asp-action="AsignarVendedoresPorNumero" asp-controller="Supervisor" method="post">
+                                <div class="form-group row">
+                                    <div class="col-12 col-sm-8 mb-2">
+                                        <input name="nclientes" type="text" class="form-control"
+                                            placeholder="Número de clientes">
+                                    </div>
+                                    <input name="id_vendedor" type="text" value="@vendedores.IdUsuario" hidden>
+                                    <div class="col-12 col-sm-4">
+                                        <button class="btn btn-primary btn-sm btn-block" type="submit">Guardar</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>
