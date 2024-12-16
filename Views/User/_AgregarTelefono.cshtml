@@ -1,0 +1,53 @@
+@{
+    var idCliente = TempData["idCliente"];
+}
+
+    <div class="row">
+        <div class="col-md-6">
+            <label for="telefonoVendedorAgregado" class="form-label">Teléfono:</label>
+            <input type="text" class="form-control" id="telefonoVendedorAgregado" name="telefonoVendedorAgregado" required />
+        </div>
+        <div class="form-group">
+            <a href="javascript:void(0);" class="btn btn-success"
+                        onclick="guardarTelefonoVendedor(@idCliente)">Agregar</a>
+        </div>
+    </div>
+
+
+<script>
+    function guardarTelefonoVendedor(idcliente) {
+        const numeroTelefono = document.getElementById('telefonoVendedorAgregado').value;
+        const idClienteTelefono = idcliente;
+
+        if (!numeroTelefono.trim()) {
+            alert('El número de teléfono no puede estar vacío.');
+            return;
+        }
+
+        if (!/^\d+$/.test(numeroTelefono)) {
+            alert('Ingrese solo números');
+            return;
+        }
+
+        if (!/^\d{9}$/.test(numeroTelefono)) {
+            alert('El número de teléfono debe tener exactamente 9 dígitos.');
+            return;
+        }
+
+        $.ajax({
+            url: '/User/AgregarTelefonoPorAsesor',
+            type: 'POST',
+            data: {
+                numeroTelefono: numeroTelefono,
+                idClienteTelefono: idClienteTelefono
+            },
+            success: function (result) {
+                alert('Se ha actualizado el Numero del Cliente Recargue la Pagina para verificar los cambios');
+                location.reload();
+            },
+            error: function () {
+                alert('Error al agregar un nuevo numero de Telefono' + errorThrown);
+            }
+        });
+    }
+</script>

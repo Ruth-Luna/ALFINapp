@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Ventas del Usuario";
     var usuarioNombre = ViewData["UsuarioNombre"];
+    var clientesPendientes = ViewData["ClientesPendientes"];
 }
 
 @section Styles {
@@ -41,7 +42,8 @@
         <div class="row align-items-center">
             <!-- Título -->
             <div class="col-12 col-md-6 mb-3 mb-md-0">
-                <h2 class="text-center text-md-start">Ventas del Usuario - @usuarioNombre</h2>
+                <h2 class="text-center text-md-start">ASESOR DE CREDITOS - @usuarioNombre</h2>
+                <p>Numero de Clientes Por Finalizar su Tipificacion: @clientesPendientes</p>
             </div>
 
             <!-- Campo de búsqueda -->

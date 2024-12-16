@@ -134,9 +134,13 @@ namespace ALFINapp.Controllers
                 FinalizarTipificacion = cliente.LatestRecord.ca.FinalizarTipificacion
             }).ToList();
 
+            // Filtrar y contar los clientes donde FinalizarTipificacion es false
+            int clientesPendientes = detallesClientes.Count(cliente => cliente.FinalizarTipificacion == false);
             // Obtener el usuario actual
             var usuario = await _context.usuarios.AsNoTracking().FirstOrDefaultAsync(u => u.IdUsuario == usuarioId);
 
+            // Asignar el nombre del usuario a la vista
+            ViewData["ClientesPendientes"] = clientesPendientes;
             // Asignar el nombre del usuario a la vista
             ViewData["UsuarioNombre"] = usuario != null ? usuario.NombresCompletos : "Usuario No Encontrado";
             return View("Main", detallesClientes);
@@ -324,48 +328,56 @@ namespace ALFINapp.Controllers
 
             Console.WriteLine($"DNI {id_base}");
 
-            var detalleTipificarCliente = (from baseCliente in _context.base_clientes
-                                           join detalleBase in _context.detalle_base
-                                           on baseCliente.IdBase equals detalleBase.IdBase
-                                           join clienteEnriquecido in _context.clientes_enriquecidos
-                                           on baseCliente.IdBase equals clienteEnriquecido.IdBase
-                                           where baseCliente.IdBase == id_base
-                                           select new DetalleTipificarClienteDTO
-                                           {
-                                               // Propiedades de BaseCliente
-                                               Dni = baseCliente.Dni,
-                                               XAppaterno = baseCliente.XAppaterno,
-                                               XApmaterno = baseCliente.XApmaterno,
-                                               XNombre = baseCliente.XNombre,
-                                               Edad = baseCliente.Edad,
-                                               Departamento = baseCliente.Departamento,
-                                               Provincia = baseCliente.Provincia,
-                                               Distrito = baseCliente.Distrito,
-                                               IdBase = baseCliente.IdBase,
+            var detallesClientes = (from bc in _context.base_clientes
+                                    join db in _context.detalle_base on bc.IdBase equals db.IdBase
+                                    join ce in _context.clientes_enriquecidos on bc.IdBase equals ce.IdBase
+                                    where bc.IdBase == id_base
+                                    group new { bc, db, ce } by db.IdBase into grouped
+                                    select new
+                                    {
+                                        // Propiedades de BaseCliente
+                                        IdBase = grouped.Key,
+                                        LatestRecord = grouped.OrderByDescending(x => x.db.FechaCarga).FirstOrDefault(),
+                                    }).FirstOrDefault();
 
-                                               // Propiedades de DetalleBase
-                                               Campaña = detalleBase.Campaña,
-                                               OfertaMax = detalleBase.OfertaMax,
-                                               TasaMinima = detalleBase.TasaMinima,
-                                               Sucursal = detalleBase.Sucursal,
-                                               AgenciaComercial = detalleBase.AgenciaComercial,
-                                               Plazo = detalleBase.Plazo,
-                                               Cuota = detalleBase.Cuota,
-                                               GrupoTasa = detalleBase.GrupoTasa,
-                                               GrupoMonto = detalleBase.GrupoMonto,
-                                               Propension = detalleBase.Propension,
-                                               TipoCliente = detalleBase.TipoCliente,
-                                               ClienteNuevo = detalleBase.ClienteNuevo,
-                                               Color = detalleBase.Color,
-                                               ColorFinal = detalleBase.ColorFinal,
+            var detalleTipificarCliente = detallesClientes?.LatestRecord != null
+                ? new DetalleTipificarClienteDTO
+                {
+                    // Propiedades de BaseCliente
+                    Dni = detallesClientes.LatestRecord.bc.Dni,
+                    XAppaterno = detallesClientes.LatestRecord.bc.XAppaterno,
+                    XApmaterno = detallesClientes.LatestRecord.bc.XApmaterno,
+                    XNombre = detallesClientes.LatestRecord.bc.XNombre,
+                    Edad = detallesClientes.LatestRecord.bc.Edad,
+                    Departamento = detallesClientes.LatestRecord.bc.Departamento,
+                    Provincia = detallesClientes.LatestRecord.bc.Provincia,
+                    Distrito = detallesClientes.LatestRecord.bc.Distrito,
+                    IdBase = detallesClientes.LatestRecord.bc.IdBase,
 
-                                               // Propiedades de ClientesEnriquecido
-                                               Telefono1 = clienteEnriquecido.Telefono1,
-                                               Telefono2 = clienteEnriquecido.Telefono2,
-                                               Telefono3 = clienteEnriquecido.Telefono3,
-                                               Telefono4 = clienteEnriquecido.Telefono4,
-                                               Telefono5 = clienteEnriquecido.Telefono5
-                                           }).FirstOrDefault();
+                    // Propiedades de DetalleBase
+                    Campaña = detallesClientes.LatestRecord.db.Campaña,
+                    OfertaMax = detallesClientes.LatestRecord.db.OfertaMax,
+                    TasaMinima = detallesClientes.LatestRecord.db.TasaMinima,
+                    Sucursal = detallesClientes.LatestRecord.db.Sucursal,
+                    AgenciaComercial = detallesClientes.LatestRecord.db.AgenciaComercial,
+                    Plazo = detallesClientes.LatestRecord.db.Plazo,
+                    Cuota = detallesClientes.LatestRecord.db.Cuota,
+                    GrupoTasa = detallesClientes.LatestRecord.db.GrupoTasa,
+                    GrupoMonto = detallesClientes.LatestRecord.db.GrupoMonto,
+                    Propension = detallesClientes.LatestRecord.db.Propension,
+                    TipoCliente = detallesClientes.LatestRecord.db.TipoCliente,
+                    ClienteNuevo = detallesClientes.LatestRecord.db.ClienteNuevo,
+                    Color = detallesClientes.LatestRecord.db.Color,
+                    ColorFinal = detallesClientes.LatestRecord.db.ColorFinal,
+
+                    // Propiedades de ClientesEnriquecido
+                    Telefono1 = detallesClientes.LatestRecord.ce.Telefono1,
+                    Telefono2 = detallesClientes.LatestRecord.ce.Telefono2,
+                    Telefono3 = detallesClientes.LatestRecord.ce.Telefono3,
+                    Telefono4 = detallesClientes.LatestRecord.ce.Telefono4,
+                    Telefono5 = detallesClientes.LatestRecord.ce.Telefono5
+                }
+                : null;
 
             if (detalleTipificarCliente == null)
             {
@@ -392,21 +404,27 @@ namespace ALFINapp.Controllers
             var tipificaciones = _context.tipificaciones.Select(t => new { t.IdTipificacion, t.DescripcionTipificacion }).ToList();
             ViewData["Tipificaciones"] = tipificaciones;
 
-            var result = (from ct in _context.clientes_tipificados
-                          join t in _context.tipificaciones on ct.IdTipificacion equals t.IdTipificacion
-                          where ct.IdAsignacion == ClienteAsignado.IdAsignacion &&
-                                ct.FechaTipificacion == (
-                                    from c in _context.clientes_tipificados
-                                    where c.TelefonoTipificado == ct.TelefonoTipificado
-                                    select c.FechaTipificacion
-                                ).Max()
-                          orderby ct.FechaTipificacion descending
-                          select new
-                          {
-                              ct.TelefonoTipificado,
-                              t.DescripcionTipificacion,
-                              ct.IdAsignacion
-                          }).Take(5).ToList();
+            var resultados_telefonos_tipificados_bd = (from ct in _context.clientes_tipificados
+                                                       join t in _context.tipificaciones on ct.IdTipificacion equals t.IdTipificacion
+                                                       join ca in _context.clientes_asignados on ct.IdAsignacion equals ca.IdAsignacion
+                                                       join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
+                                                       join ta in _context.telefonos_agregados.Where(x => x.AgregadoPor != "VENDEDOR")
+                                                         on ce.IdCliente equals ta.IdCliente into telefonosAgregados
+                                                       from ta in telefonosAgregados.DefaultIfEmpty()
+                                                       where ct.IdAsignacion == ClienteAsignado.IdAsignacion &&
+                                                             ta.IdCliente == null &&
+                                                             ct.FechaTipificacion == (
+                                                                 from c in _context.clientes_tipificados
+                                                                 where c.TelefonoTipificado == ct.TelefonoTipificado
+                                                                 select c.FechaTipificacion
+                                                             ).Max()
+                                                       orderby ct.FechaTipificacion descending
+                                                       select new
+                                                       {
+                                                           ct.TelefonoTipificado,
+                                                           t.DescripcionTipificacion,
+                                                           ct.IdAsignacion
+                                                       }).Take(5).ToList();
 
             var tipificaciones_asignadas = (from t in _context.tipificaciones
                                             join ct in _context.clientes_tipificados on t.IdTipificacion equals ct.IdTipificacion
@@ -417,11 +435,34 @@ namespace ALFINapp.Controllers
                                                 ct.IdAsignacion
                                             }).ToList();
 
+            var resultados_telefonos_tipificados_vendedor = ( from ta in _context.telefonos_agregados
+                                                                join ce in _context.clientes_enriquecidos on ta.IdCliente equals ce.IdCliente
+                                                                where ce.IdBase == 7161
+                                                                join ct in (
+                                                                    from ct_sub in _context.clientes_tipificados
+                                                                    join ultimas in (
+                                                                        from sub_ct in _context.clientes_tipificados
+                                                                        group sub_ct by sub_ct.TelefonoTipificado into g
+                                                                        select new { TelefonoTipificado = g.Key, UltimaFecha = g.Max(x => x.FechaTipificacion) }
+                                                                    ) on ct_sub.TelefonoTipificado equals ultimas.TelefonoTipificado
+                                                                    where ct_sub.FechaTipificacion == ultimas.UltimaFecha
+                                                                    select new { ct_sub.TelefonoTipificado, ct_sub.IdTipificacion }
+                                                                ) on ta.Telefono equals ct.TelefonoTipificado into ctJoin
+                                                                from ct in ctJoin.DefaultIfEmpty()
+                                                                join t in _context.tipificaciones on ct.IdTipificacion equals t.IdTipificacion into tJoin
+                                                                from t in tJoin.DefaultIfEmpty()
+                                                                select new
+                                                                {
+                                                                    TelefonoTipificado = ta.Telefono,
+                                                                    DescripcionTipificacion = t.DescripcionTipificacion
+                                                                }).ToList();
+            var dni = _context.base_clientes.FirstOrDefault(bc => bc.IdBase == id_base);
+            ViewData["numerosCreadosPorElUsuario"] = resultados_telefonos_tipificados_vendedor;
+            ViewData["DNIcliente"] = dni != null ? dni.Dni : "El usuario No tiene DNI Registrado";
             ViewData["ID_asignacion"] = ClienteAsignado.IdAsignacion;
             ViewData["ID_cliente"] = ClienteAsignado.IdCliente;
-            ViewData["tipificaciones_asignadas"] = result.ToList();
-            var dni = _context.base_clientes.FirstOrDefault(bc => bc.IdBase == id_base);
-            ViewData["DNIcliente"] = dni != null ? dni.Dni : "El usuario No tiene DNI Registrado";
+            ViewData["numerosTraidosPorlaDB"] = resultados_telefonos_tipificados_bd;
+
             return PartialView("_Tipificarcliente", detalleTipificarCliente);
         }
 
@@ -500,6 +541,7 @@ namespace ALFINapp.Controllers
 
             return RedirectToAction("Ventas");
         }
+
         [HttpPost]
         public IActionResult AgregarTelefono(int IdAsignacion, string NuevoTelefono, string NumTelefonoEdicion)
         {
@@ -580,6 +622,106 @@ namespace ALFINapp.Controllers
             _context.SaveChanges();
 
             TempData["Message"] = "Usted a Finalizado con las tipificaciones del Usuario";
+            return RedirectToAction("Ventas");
+        }
+
+        [HttpGet]
+        public IActionResult AgregarTelefonoView(int idCliente)
+        {
+            TempData["idCliente"] = idCliente;
+            return PartialView("_AgregarTelefono");
+        }
+
+        [HttpPost]
+        public IActionResult AgregarTelefonoPorAsesor(string numeroTelefono, int idClienteTelefono)
+        {
+            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+            {
+                TempData["Message"] = "Ha ocurrido un error en la autenticación";
+                return RedirectToAction("Index", "Home");
+            }
+
+            string telefono = numeroTelefono;
+            int idCliente = idClienteTelefono;
+
+            // Validar que el idCliente es un número entero
+            // Validar que el teléfono no esté vacío
+            if (string.IsNullOrWhiteSpace(telefono))
+            {
+                return Json(new { error = true, message = "El número de teléfono no puede estar vacío" });
+            }
+
+            // Validar que el teléfono tenga exactamente 9 dígitos y comience con un número entre 1 y 9
+            if (!System.Text.RegularExpressions.Regex.IsMatch(telefono, @"^[1-9]\d{8}$"))
+            {
+                return Json(new { error = true, message = "El número de teléfono debe tener exactamente 9 dígitos, comenzando con un número entre 1 y 9" });
+            }
+
+            // Crear nuevo teléfono
+            var NuevoTelefono = new TelefonosAgregados
+            {
+                IdCliente = idCliente,
+                Telefono = telefono,
+                AgregadoPor = "VENDEDOR" // Ajusta según sea necesario
+            };
+
+            _context.telefonos_agregados.Add(NuevoTelefono);
+            _context.SaveChanges();
+
+            TempData["Message"] = $"Usted ha agregado un número de teléfono: {telefono}";
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public IActionResult GuardarTipificacionesNumPersonales(List<TipificarClienteDTO> tipificaciones, int IdAsignacionCliente)
+        {
+            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+            {
+                TempData["Message"] = "Ha ocurrido un error en la autenticación";
+                return RedirectToAction("Index", "Home");
+            }
+
+            Console.WriteLine("GuardarTipificacionesNumPersonales ODAWDPIADWOADAOPWIDAOPI!@!@!12121");
+
+            if (tipificaciones == null || !tipificaciones.Any())
+            {
+                TempData["Message"] = "Las tipificaciones NO SE HAN GUARDADO Error 555.";
+                return RedirectToAction("Ventas");
+            }
+
+            DateTime fechaTipificacion = DateTime.Now;
+            Console.WriteLine($"IMPRIMIENDO TIPIFICACION {tipificaciones}");
+            Console.WriteLine($"IMPRIMIENDO TIPIFICACION {IdAsignacionCliente}");
+            foreach (var tipificacion in tipificaciones)
+            {
+                Console.WriteLine($"FOR EACH 1 !@ FAFA112233");
+                Console.WriteLine($"{IdAsignacionCliente}");
+                Console.WriteLine($"{tipificacion.TipificacionId}");
+                Console.WriteLine($"{tipificacion.Telefono}");
+
+                if (tipificacion.TipificacionId == 0)
+                {
+                    Console.WriteLine("TipificacionId es 0, omitiendo inserción.");
+                    continue; // Salta al siguiente registro sin hacer la inserción
+                }
+
+                var nuevaTipificacion = new ClientesTipificado
+                {
+                    IdAsignacion = IdAsignacionCliente,
+                    IdTipificacion = tipificacion.TipificacionId,
+                    FechaTipificacion = fechaTipificacion,
+                    Origen = "nuevo",
+                    TelefonoTipificado = tipificacion.Telefono
+                };
+
+                _context.clientes_tipificados.Add(nuevaTipificacion);
+            }
+            Console.WriteLine($"ANALIZANDO>>>...");
+
+            _context.SaveChanges();
+            TempData["Message"] = "Las tipificaciones se han guardado correctamente.";
             return RedirectToAction("Ventas");
         }
     }

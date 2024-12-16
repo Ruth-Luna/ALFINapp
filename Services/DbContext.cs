@@ -16,4 +16,5 @@ public class MDbContext : DbContext
     public DbSet<DetalleBase> detalle_base { get; set; }
     public DbSet<ClientesTipificado> clientes_tipificados { get; set; }
     public DbSet<Tipificaciones> tipificaciones { get; set; }
+    public DbSet<TelefonosAgregados> telefonos_agregados { get; set; }
 }

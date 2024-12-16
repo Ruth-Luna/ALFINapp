@@ -1,9 +1,12 @@
 @model ALFINapp.Models.DetalleTipificarClienteDTO
 
 @{
+    var numerosCreadosPorElUsuario = ViewData["numerosCreadosPorElUsuario"];
     var dni = ViewData["DNIcliente"];
     var id_asignacion = ViewData["ID_asignacion"];
     var id_base = Model.IdBase;
+    var id_cliente = ViewData["ID_cliente"];
+
 }
 
 @section Styles {
@@ -152,6 +155,76 @@
 </div>
 
 <div class="spacing"></div>
+
+
+<!-- SECCION TELEFONOS AGREGADOS Por El Usuario -->
+
+<div class="row">
+    <h3 class="label-fortip">Contactos Creados por el Usuario:</h3>
+
+    <div id="agregarTelefonoBtnCliente">
+        <a href="javascript:void(0);" class="btn btn-primary" id="agregarTelefonoBtn"
+            onclick="cargarEdicionDeTelefonos(@id_cliente)">Agregue un Nuevo Telefono</a>
+    </div>
+
+    <div id="cancelaragregarTelefonoBtnCliente" style="display: none;">
+        <a href="javascript:void(0);" class="btn btn-secondary" id="cancelaragregarTelefonoBtn"
+            onclick="descargarEdicionDeTelefonos()">Cancelar</a>
+    </div>
+
+    <!-- Aca aparecera el FORM -->
+    <div id="agregarTelefonoContainer">
+    </div>
+
+    @if (numerosCreadosPorElUsuario is IEnumerable<dynamic> numCreatedByUser && numCreatedByUser.Any())
+    {
+        int contadorNumeros = 0;
+        <form asp-action="GuardarTipificacionesNumPersonales" asp-controller="User" method="post">
+            <input type="hidden" name="IdAsignacionCliente" value="@ViewData["ID_asignacion"]">
+            <h3>Agregue las Tipificaciones a los clientes asignados</h3>
+            @foreach (var telefonosVendedor in numCreatedByUser)
+            {
+                <div class="form-group row align-items-center mb-3">
+                    <div class="col-12 col-md-4">
+                        <label for="Telefono[@contadorNumeros]" class="form-label">Teléfono @contadorNumeros</label>
+                        <input class="form-control" name="tipificaciones[@contadorNumeros].Telefono" 
+                            id="Telefono_@contadorNumeros" type="text" value="@telefonosVendedor.TelefonoTipificado" readonly />
+                    </div>
+                    <div class="col-12 col-md-8 mt-2 mt-md-0">
+                    <label for="GRUPO_MONTO" class="form-label mt-2">Tipificación Asignada @contadorNumeros: </label>
+                        <select class="form-select" name="tipificaciones[@contadorNumeros].TipificacionId">
+                            <option value="">Seleccione la descripción de Tipificación</option>
+                            @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
+                            {
+                                <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
+                            }
+                        </select>
+
+                        <input class="form-control" id="GRUPO_MONTO" type="text"
+                            value="@telefonosVendedor.DescripcionTipificacion" readonly />
+                    </div>
+                </div>
+                contadorNumeros++; // Incrementar el contador después de cada teléfono
+            }
+            <div class="spacing"></div>
+            <div class="form-group">
+                <button class="btn btn-success" type="submit">Guardar Tipificaciones</button>
+                <a href="@Url.Action("Ventas", "User")" class="btn btn-danger">Cancelar</a>
+            </div>
+        </form>
+    }
+
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            No tiene números de teléfonos asignados por el usuario.
+        </div>
+    }
+</div>
+
+<!-- SECCION TELEFONOS AGREGADOS Por LA DB -->
+
+<div class="spacing"></div>
 <form asp-action="TipificarMotivo" asp-controller="User" method="post">
     <div class="row">
         <h3 class="label-fortip">Contacto con Cliente - Y Tipificaciones Asignadas:</h3>
@@ -164,7 +237,7 @@
             string? tipificacion5 = null;
         }
 
-        @if (ViewData["tipificaciones_asignadas"] is IEnumerable<dynamic> tipificaciones)
+        @if (ViewData["numerosTraidosPorlaDB"] is IEnumerable<dynamic> tipificaciones)
         {
             @foreach (var tipificacion in tipificaciones)
             {
@@ -464,5 +537,37 @@
             alert('La acción ha sido cancelada.');
         }
     }
+</script>
 
+<script>
+    function cargarEdicionDeTelefonos(idcliente) {
+        if (!idcliente) {
+            alert('El ID del cliente no es valido.');
+            return;
+        }
+
+        const userConfirmed = confirm('Agregar un nuevo telefono Notificara al Supervisor. ¿Está seguro de continuar?');
+        if (userConfirmed) {
+            $.ajax({
+                url: '/User/AgregarTelefonoView',
+                type: 'GET',
+                data: { "idCliente": idcliente },
+                success: function (response) {
+                    document.getElementById('agregarTelefonoBtnCliente').style.display = 'none';
+                    document.getElementById('cancelaragregarTelefonoBtnCliente').style.display = 'block';
+                    document.getElementById('agregarTelefonoContainer').style.display = 'block';
+                    $('#agregarTelefonoContainer').html(response);
+                },
+                error: function () {
+                    alert('Hubo un error al cargar la vista.');
+                }
+            });
+        }
+    }
+
+    function descargarEdicionDeTelefonos(idcliente) {
+        document.getElementById('agregarTelefonoBtnCliente').style.display = 'block';
+        document.getElementById('cancelaragregarTelefonoBtnCliente').style.display = 'none';
+        document.getElementById('agregarTelefonoContainer').style.display = 'none';
+    }
 </script>

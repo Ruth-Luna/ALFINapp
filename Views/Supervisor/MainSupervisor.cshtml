@@ -3,6 +3,11 @@
 @{
     ViewData["Title"] = "Ventas del Usuario";
     var usuarioNombre = ViewData["UsuarioNombre"];
+
+    var currentPage = (int)ViewData["CurrentPage"];
+    var totalPages = (int)ViewData["TotalPages"];
+    var pageSize = (int)ViewData["PageSize"];
+    var clientesPendientesSupervisor = (int)ViewData["ClientesPendientesSupervisor"];
 }
 
 @section Styles {
@@ -24,61 +29,78 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="mb-0">Clientes Asignados al Usuario Supervisor - @usuarioNombre</h2>
+        <p>Clientes Pendientes: @clientesPendientesSupervisor</p>
         <a href="javascript:void(0);" class="btn btn-success" onclick="loadAsignarClienteAVendedor()">Asignar
             Vendedor</a>
     </div>
     <!-- Tabla para mostrar los DetalleBases/ventas -->
     <div class="table-responsive">
-        <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Num. Cliente</th>
-
-                <th>DNI Cliente</th>
-                <th>
-                    Nombres del Cliente
-                    <button onclick="sortTable(2, 'text')" class="btn btn-sm btn-link">Ordenar</button>
-                </th>
-
-                <th>
-                    Vendedor Asignado
-                    <button onclick="sortTable(3, 'text')" class="btn btn-sm btn-link">Ordenar</button>
-                </th>
-
-                <th>DNI Vendedor</th>
-                <th>
-                    Fecha Asignacion Vendedor
-                    <button onclick="sortTable(5, 'date')" class="btn btn-sm btn-link">Ordenar</button>
-                </th>
-
-                <th>Asigne o Modifique la Asignacion</th>
-            </tr>
-        </thead>
-        <tbody id="data-table">
-            @{
-                int contr = 1;
-            }
-            @foreach (var SupervisorDTO in Model)
-            {
+        <table class="table table-bordered" id="clientesTable">
+            <thead>
                 <tr>
-                    <td>@contr</td>
-                    @{
-                        contr++;
-                    }
-                    <td>@SupervisorDTO.Dni</td>
-                    <td>@SupervisorDTO.XNombre @SupervisorDTO.XAppaterno @SupervisorDTO.XApmaterno</td>
-                    <td>@SupervisorDTO.NombresCompletos</td>
-                    <td>@SupervisorDTO.DniVendedor</td>
-                    <td>@SupervisorDTO.FechaAsignacionV</td>
+                    <th>Num. Cliente</th>
 
-                    <td><a href="javascript:void(0);" class="btn btn-primary"
-                            onclick="loadModificarVendedorAsignado(@SupervisorDTO.IdAsignacion)">Modificar</a>
-                    </td>
+                    <th>DNI Cliente</th>
+                    <th>
+                        Nombres del Cliente
+                        <button class="btn btn-link p-0"
+                            onclick="sortTable('clientesTable', 2, 'string')">Ordenar</button>
+                    </th>
+
+                    <th>
+                        Vendedor Asignado
+                        <button class="btn btn-link p-0"
+                            onclick="sortTable('clientesTable', 3, 'string')">Ordenar</button>
+                    </th>
+
+                    <th>DNI Vendedor</th>
+                    <th>
+                        Fecha Asignacion Vendedor
+                        <button class="btn btn-link p-0"
+                            onclick="sortTable('clientesTable', 5, 'date')">Ordenar</button>
+                    </th>
+
+                    <th>Asigne o Modifique la Asignacion</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody id="data-table">
+                @{
+                    int contr = 1;
+                }
+                @foreach (var SupervisorDTO in Model)
+                {
+                    <tr>
+                        <td>@contr</td>
+                        @{
+                            contr++;
+                        }
+                        <td>@SupervisorDTO.Dni</td>
+                        <td>@SupervisorDTO.XNombre @SupervisorDTO.XAppaterno @SupervisorDTO.XApmaterno</td>
+                        <td>@SupervisorDTO.NombresCompletos</td>
+                        <td>@SupervisorDTO.DniVendedor</td>
+                        <td>@SupervisorDTO.FechaAsignacionV</td>
+
+                        <td><a href="javascript:void(0);" class="btn btn-primary"
+                                onclick="loadModificarVendedorAsignado(@SupervisorDTO.IdAsignacion)">Modificar</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
+    <div class="pagination">
+        @if (currentPage > 1)
+        {
+            <a href="?page=@(currentPage - 1)&pageSize=@pageSize">&laquo; Anterior</a>
+        }
+        <span>Página @currentPage de @totalPages</span>
+        @if (currentPage < totalPages)
+        {
+            <a href="?page=@(currentPage + 1)&pageSize=@pageSize">Siguiente &raquo;</a>
+        }
+    </div>
+    <div class="spacing"></div>
+    <div class="spacing"></div>
 </div>
 
 <!-- Modal -->
@@ -133,7 +155,7 @@
         $.ajax({
             url: '/Supervisor/ModificarAsignacionVendedorView',
             type: 'GET',
-            data: {id_asignacion: idAsignacion},
+            data: { id_asignacion: idAsignacion },
             success: function (result) {
                 $('#modalContentModificarVendAsignar').html(result);
                 $('#modificarVendModal').modal('show');
@@ -147,32 +169,39 @@
 
 <script>
     function sortTable(columnIndex, type) {
-        const tableBody = document.getElementById('data-table');
-        const rows = Array.from(tableBody.rows);
-        const isAscending = tableBody.getAttribute('data-sort-order') === 'asc';
-        tableBody.setAttribute('data-sort-order', isAscending ? 'desc' : 'asc');
+        const table = document.getElementById(tableId);
+        const rows = Array.from(table.rows).slice(1); // Exclude header
+        const isAscending = table.dataset.sortOrder !== 'asc';
+        table.dataset.sortOrder = isAscending ? 'asc' : 'desc';
 
         rows.sort((a, b) => {
-            let valueA = a.cells[columnIndex].innerText.trim();
-            let valueB = b.cells[columnIndex].innerText.trim();
+            const aText = a.cells[colIndex].textContent.trim();
+            const bText = b.cells[colIndex].textContent.trim();
 
             if (type === 'number') {
-                valueA = parseFloat(valueA) || 0;
-                valueB = parseFloat(valueB) || 0;
-            } else if (type === 'date') {
-                valueA = new Date(valueA);
-                valueB = new Date(valueB);
+                return isAscending
+                    ? parseFloat(aText) - parseFloat(bText)
+                    : parseFloat(bText) - parseFloat(aText);
+            }
+            if (type === 'date') {
+                return isAscending
+                    ? new Date(aText) - new Date(bText)
+                    : new Date(bText) - new Date(aText);
+            }
+            if (type === 'bool') {
+                return isAscending
+                    ? aText.toLowerCase() === 'true' ? -1 : 1
+                    : aText.toLowerCase() === 'true' ? 1 : -1;
             }
 
-            if (valueA > valueB) return isAscending ? 1 : -1;
-            if (valueA < valueB) return isAscending ? -1 : 1;
-            return 0;
+            return isAscending
+                ? aText.localeCompare(bText)
+                : bText.localeCompare(aText);
         });
 
-        rows.forEach(row => tableBody.appendChild(row));
+        rows.forEach(row => table.tBodies[0].appendChild(row));
     }
 </script>
-<script></script>
 
 @if (TempData["Message"] != null)
 {

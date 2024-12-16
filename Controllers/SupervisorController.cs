@@ -16,7 +16,7 @@ namespace ALFINapp.Controllers
             _context = context;
         }
         [HttpGet]
-        public async Task<IActionResult> VistaMainSupervisor()
+        public async Task<IActionResult> VistaMainSupervisor(int page = 1, int pageSize = 10)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)
@@ -51,10 +51,23 @@ namespace ALFINapp.Controllers
             {
                 return NotFound("El presente Usuario Supervisor no tiene clientes Asignados");
             }
+            // Contar los clientes pendientes (idUsuarioV es null)
+            int clientesPendientesSupervisor = supervisorData.Count(cliente => cliente.idUsuarioV == 0);
+
+            var totalClientes = supervisorData.Count();
+            var paginatedData = supervisorData
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
 
             var usuario = await _context.usuarios.FirstOrDefaultAsync(u => u.IdUsuario == usuarioId);
             ViewData["UsuarioNombre"] = usuario != null ? usuario.NombresCompletos : "Usuario No Encontrado";
-            return View("MainSupervisor", supervisorData);
+            ViewData["ClientesPendientesSupervisor"] = clientesPendientesSupervisor;
+            ViewData["CurrentPage"] = page;
+            ViewData["PageSize"] = pageSize;
+            ViewData["TotalPages"] = (int)Math.Ceiling(totalClientes / (double)pageSize);
+
+            return View("MainSupervisor", paginatedData);
         }
 
         [HttpGet]
@@ -191,6 +204,54 @@ namespace ALFINapp.Controllers
                 TempData["Message"] = "El id de Asignacion mandado es incorrecto";
             }
             
+            return RedirectToAction("VistaMainSupervisor");
+        }
+
+        [HttpPost]
+        public IActionResult GuardarAsesoresAsignados (List<AsignarAsesorDTO> asignacionasesor)
+        {
+            int? idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
+            if (idSupervisorActual == null)
+            {
+                TempData["Message"] = "Error en la autenticación. Intente iniciar sesión nuevamente.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            
+            var mensajes = new List<string>();
+
+            foreach (var asignacion in asignacionasesor)
+            {
+                Console.WriteLine($"GuardarAsesoresAsignados*************************");
+                Console.WriteLine($"IdVendedor: {asignacion.IdVendedor}, NumClientes: {asignacion.NumClientes}");
+                if (asignacion.NumClientes == 0)
+                {
+                    mensajes.Add($"No se asignaron clientes al vendedor {asignacion.IdVendedor} porque el número de clientes es 0.");
+                    continue;
+                }
+
+                int Contador = 0;
+                int nClientes = asignacion.NumClientes;
+                var clientesDisponibles = _context.clientes_asignados
+                                        .Where(ca => ca.IdUsuarioS == idSupervisorActual && ca.IdUsuarioV == null)
+                                        .Take(nClientes)
+                                        .ToList();
+
+                if (clientesDisponibles.Count < nClientes)
+                {
+                    mensajes.Add($"Solo hay {clientesDisponibles.Count} clientes disponibles para asignar al vendedor {asignacion.IdVendedor}. La asignación fue pausada.");
+                    break;
+                }
+
+                foreach (var cliente in clientesDisponibles)
+                {
+                    cliente.IdUsuarioV = asignacion.IdVendedor;
+                    cliente.FechaAsignacionVendedor = DateTime.Now;
+                }
+                _context.SaveChanges();
+                mensajes.Add($"{nClientes} clientes fueron asignados correctamente al vendedor {asignacion.IdVendedor}.");
+            }
+            TempData["Message"] = "Las Siguientes Asignaciones fueron Hechas:" + string.Join(" ", mensajes);
             return RedirectToAction("VistaMainSupervisor");
         }
     }
