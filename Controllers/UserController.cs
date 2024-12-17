@@ -513,13 +513,30 @@ namespace ALFINapp.Controllers
 
             // Fecha de tipificación
             var fechaTipificacion = DateTime.Now;
+            string? descripcionTipificacionMayorPeso = null;
+            int? pesoMayor = 0;
             for (int i = 0; i < telefonos.Count; i++)
             {
                 var telefono = telefonos[i];
                 var tipificacion = tipificaciones[i];
-
+                
                 if (telefono != "0" && tipificacion.HasValue)
                 {
+                    var tipificacionInfo = _context.tipificaciones
+                        .Where(t => t.IdTipificacion == tipificacion.Value)
+                        .Select(t => new { t.Peso, t.DescripcionTipificacion })
+                        .FirstOrDefault();
+
+                    if (tipificacionInfo != null)
+                    {
+                        // Actualizar tipificación de mayor peso si aplica
+                        if (tipificacionInfo.Peso > pesoMayor)
+                        {
+                            pesoMayor = tipificacionInfo.Peso;
+                            descripcionTipificacionMayorPeso = tipificacionInfo.DescripcionTipificacion;
+                        }
+                    }
+
                     // Verificar si el teléfono ya está tipificado
                     var clienteTipificado = _context.clientes_tipificados
                         .FirstOrDefault(ct => ct.TelefonoTipificado == telefono);
@@ -536,6 +553,13 @@ namespace ALFINapp.Controllers
                     _context.clientes_tipificados.Add(nuevoClienteTipificado);
 
                 }
+            }
+            
+            if (!string.IsNullOrEmpty(descripcionTipificacionMayorPeso) && pesoMayor > (ClienteAsignado.PesoTipificacionMayor ?? 0))
+            {
+                ClienteAsignado.TipificacionMayorPeso = descripcionTipificacionMayorPeso; // Almacena la descripción
+                ClienteAsignado.PesoTipificacionMayor = pesoMayor; // Almacena el peso
+                _context.clientes_asignados.Update(ClienteAsignado);
             }
 
             // Guardar cambios en la base de datos
@@ -695,15 +719,20 @@ namespace ALFINapp.Controllers
             }
 
             DateTime fechaTipificacion = DateTime.Now;
-            Console.WriteLine($"IMPRIMIENDO TIPIFICACION {tipificaciones}");
-            Console.WriteLine($"IMPRIMIENDO TIPIFICACION {IdAsignacionCliente}");
+
+            var ClienteAsignado = _context.clientes_asignados.FirstOrDefault(ca => ca.IdAsignacion == IdAsignacionCliente);
+            if (ClienteAsignado == null)
+            {
+                TempData["Message"] = "Cliente no encontrado.";
+                return RedirectToAction("Ventas");
+            }
+
+            int? tipificacionMayorPeso = null;
+            int? pesoMayor = null;
+            string descripcionTipificacionMayorPeso = null;
+
             foreach (var tipificacion in tipificaciones)
             {
-                Console.WriteLine($"FOR EACH 1 !@ FAFA112233");
-                Console.WriteLine($"{IdAsignacionCliente}");
-                Console.WriteLine($"{tipificacion.TipificacionId}");
-                Console.WriteLine($"{tipificacion.Telefono}");
-
                 if (tipificacion.TipificacionId == 0)
                 {
                     Console.WriteLine("TipificacionId es 0, omitiendo inserción.");
@@ -720,8 +749,30 @@ namespace ALFINapp.Controllers
                 };
 
                 _context.clientes_tipificados.Add(nuevaTipificacion);
+                // Verificar si esta tipificación tiene el mayor peso
+                var tipificacionActual = _context.tipificaciones.FirstOrDefault(t => t.IdTipificacion == tipificacion.TipificacionId);
+                if (tipificacionActual != null && tipificacionActual.Peso.HasValue)
+                {
+                    int pesoActual = tipificacionActual.Peso.Value;
+
+                    if (pesoMayor == null || pesoActual > pesoMayor)
+                    {
+                        pesoMayor = pesoActual;
+                        tipificacionMayorPeso = tipificacion.TipificacionId;
+                        descripcionTipificacionMayorPeso = tipificacionActual.DescripcionTipificacion;
+                    }
+                }
             }
-            Console.WriteLine($"ANALIZANDO>>>...");
+
+            if (tipificacionMayorPeso.HasValue && pesoMayor.HasValue)
+            {
+                if (pesoMayor > (ClienteAsignado.PesoTipificacionMayor ?? 0))
+                {
+                    ClienteAsignado.TipificacionMayorPeso = descripcionTipificacionMayorPeso;
+                    ClienteAsignado.PesoTipificacionMayor = pesoMayor;
+                    _context.clientes_asignados.Update(ClienteAsignado);
+                }
+            }
 
             _context.SaveChanges();
             TempData["Message"] = "Las tipificaciones se han guardado correctamente.";

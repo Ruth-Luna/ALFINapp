@@ -30,5 +30,5 @@ public partial class ClientesAsignado
     [Column("tipificacion_mayor_peso")]
     public string? TipificacionMayorPeso { get; set; }
     [Column("peso_tipificacion_mayor")]
-    public string? PesoTipificacionMayor { get; set; }
+    public int? PesoTipificacionMayor { get; set; }
 }

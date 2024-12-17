@@ -159,7 +159,6 @@
 
 
 <!-- SECCION TELEFONOS AGREGADOS Por El Usuario -->
-
 <div class="row">
     <h3 class="label-fortip">Contactos Creados por el Usuario:</h3>
 
@@ -187,14 +186,29 @@
                         </a>
                     </div>
                     <div class="col-12 col-md-8 mt-2 mt-md-0">
-                        <label for="GRUPO_MONTO" class="form-label mt-2">Tipificación Asignada @contadorNumeros: </label>
-                        <select class="form-select" name="tipificaciones[@contadorNumeros].TipificacionId">
+
+                        <!-- Select de Tipificación -->
+
+                        <input type="hidden" name="tipificaciones[@contadorNumeros].TipificacionId"
+                            id="tipificacionId_@contadorNumeros" />
+
+                        <!-- Datalist para el filtrado -->
+
+                        <label for="tipificacionSelect_@contadorNumeros" class="form-label mt-2">Tipificación Asignada
+                            @contadorNumeros: </label>
+                        <input class="form-control" list="tipificacionesList_@contadorNumeros"
+                            name="tipificaciones[@contadorNumeros].TipificacionDescripcion"
+                            id="tipificacionSelect_@contadorNumeros" placeholder="Presione 2 veces para ver las tipificaciones"
+                            oninput="actualizarIdTipificacion(@contadorNumeros)" />
+
+                        <datalist id="tipificacionesList_@contadorNumeros">
                             <option value="">Seleccione la descripción de Tipificación</option>
                             @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
                             {
-                                <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
+                                <option value="@tipificacion.DescripcionTipificacion" data-id="@tipificacion.IdTipificacion">
+                                    @tipificacion.DescripcionTipificacion</option>
                             }
-                        </select>
+                        </datalist>
                         <input class="form-control" id="GRUPO_MONTO" type="text"
                             value="@telefonosVendedor.DescripcionTipificacion" readonly />
                     </div>
@@ -203,8 +217,11 @@
 
                 contadorNumeros++; // Incrementar el contador después de cada teléfono
             }
-            <div class="spacing"></div>
+
             <div class="form-group">
+                <div class="alert alert-info" role="alert">
+                    Use este boton para agregar las Tipificaciones de los numeros de TELEFONOS ASIGNADOS POR USTED
+                </div>
                 <button class="btn btn-success" type="submit">Guardar Tipificaciones</button>
                 <a href="@Url.Action("Ventas", "User")" class="btn btn-danger">Cancelar</a>
             </div>
@@ -217,6 +234,8 @@
             No tiene números de teléfonos asignados por el usuario.
         </div>
     }
+    <div class="spacing"></div>
+    <div class="spacing"></div>
     <div>
         <h4>Agregue numeros de Telefono Personales</h4>
         <div>
@@ -278,29 +297,26 @@
             @if (@Model.Telefono1 != "0")
             {
                 <div class="col-12 col-md-8 mt-2 mt-md-0">
-                    <select class="form-select" name="Tipificacion1">
-                        <option value="">Seleccione la descripcion de Tipificacion</option>
+
+                    <input type="hidden" name="Tipificacion1" id="tipificacionId_db1" />
+
+                    <label for="tipificacionSelect_db1" class="form-label mt-2">Tipificación Asignada 1: </label>
+
+                    <input class="form-control" list="tipificacionesList_db1"
+                        name="tipificacionesdb1.TipificacionDescripcion" id="tipificacionSelect_db1"
+                        placeholder="Presione 2 veces para ver las tipificaciones"
+                        oninput="actualizarIdTipificacion('db1')" />
+
+                    <datalist id="tipificacionesList_db1">
+                        <option value="">Seleccione la descripción de Tipificación</option>
                         @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
                         {
-                            <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
+                            <option value="@tipificacion.DescripcionTipificacion" data-id="@tipificacion.IdTipificacion">
+                                @tipificacion.DescripcionTipificacion</option>
                         }
-                    </select>
+                    </datalist>
 
-                    <label for="GRUPO_MONTO" class="form-label mt-2">Tipificacion Asignada 1: </label>
                     <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion1" readonly>
-                </div>
-            }
-            else
-            {
-                <div class="col-12 col-md-8 mt-2 mt-md-0" id="agregarTelefono_Telefono1">
-                    <button type="button" class="btn btn-primary" onclick="editarTelefono('Telefono1')">Agregar
-                        Teléfono</button>
-                </div>
-                <div class="col-12 col-md-8" id="botonesEdicion_Telefono1" style="display:none;">
-                    <input class="form-control" name="NuevoTelefono1" id="NuevoTelefono1" type="text">
-                    <a href="javascript:void(0);" class="btn btn-success"
-                        onclick="guardarTelefono(@id_asignacion,'NuevoTelefono1')">Agregar</a>
-                    <button type="button" class="btn btn-secondary" onclick="cancelarEdicion('Telefono1')">Cancelar</button>
                 </div>
             }
         </div>
@@ -315,30 +331,24 @@
             @if (@Model.Telefono2 != "0")
             {
                 <div class="col-12 col-md-8 mt-2 mt-md-0">
-                    <select class="form-select" name="Tipificacion2">
-                        <option value="">Seleccione la descripcion de la Tipificacion</option>
+                    <input type="hidden" name="Tipificacion2" id="tipificacionId_db2" />
+
+                    <label for="tipificacionSelect_db2" class="form-label mt-2">Tipificación Asignada 2: </label>
+
+                    <input class="form-control" list="tipificacionesList_db2"
+                        name="tipificacionesdb2.TipificacionDescripcion" id="tipificacionSelect_db2"
+                        placeholder="Presione 2 veces para ver las tipificaciones"
+                        oninput="actualizarIdTipificacion('db2')" />
+
+                    <datalist id="tipificacionesList_db2">
+                        <option value="">Seleccione la descripción de Tipificación</option>
                         @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
                         {
-                            <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
+                            <option value="@tipificacion.DescripcionTipificacion" data-id="@tipificacion.IdTipificacion">
+                                @tipificacion.DescripcionTipificacion</option>
                         }
-                    </select>
-
-                    <label for="GRUPO_MONTO" class="form-label mt-2">Tipificacion Asignada 2: </label>
+                    </datalist>
                     <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion2" readonly>
-                </div>
-            }
-            else
-            {
-                <div class="col-12 col-md-8 mt-2 mt-md-0" id="agregarTelefono_Telefono2">
-                    <button type="button" class="btn btn-primary" onclick="editarTelefono('Telefono2')">Agregar
-                        Teléfono</button>
-                </div>
-
-                <div class="col-12 col-md-8" id="botonesEdicion_Telefono2" style="display:none;">
-                    <input class="form-control" name="NuevoTelefono2" id="NuevoTelefono2" type="text">
-                    <a href="javascript:void(0);" class="btn btn-success"
-                        onclick="guardarTelefono(@id_asignacion,'NuevoTelefono2')">Agregar</a>
-                    <button type="button" class="btn btn-secondary" onclick="cancelarEdicion('Telefono2')">Cancelar</button>
                 </div>
             }
         </div>
@@ -354,29 +364,24 @@
             @if (@Model.Telefono3 != "0")
             {
                 <div class="col-12 col-md-8 mt-2 mt-md-0">
-                    <select class="form-select" name="Tipificacion3">
-                        <option value="">Seleccione la descripcion de la Tipificacion</option>
+                    <input type="hidden" name="Tipificacion3" id="tipificacionId_db3" />
+
+                    <label for="tipificacionSelect_db3" class="form-label mt-2">Tipificación Asignada 3: </label>
+                        
+                    <input class="form-control" list="tipificacionesList_db3"
+                        name="tipificacionesdb3.TipificacionDescripcion"
+                        id="tipificacionSelect_db3" placeholder="Presione 2 veces para ver las tipificaciones"
+                        oninput="actualizarIdTipificacion('db3')" />
+
+                    <datalist id="tipificacionesList_db3">
+                        <option value="">Seleccione la descripción de Tipificación</option>
                         @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
                         {
-                            <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
+                            <option value="@tipificacion.DescripcionTipificacion" data-id="@tipificacion.IdTipificacion">
+                                @tipificacion.DescripcionTipificacion</option>
                         }
-                    </select>
-                    <label for="GRUPO_MONTO" class="form-label mt-2">Tipificacion Asignada 3: </label>
+                    </datalist>
                     <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion3" readonly>
-                </div>
-            }
-            else
-            {
-                <div class="col-12 col-md-8 mt-2 mt-md-0" id="agregarTelefono_Telefono3">
-                    <button type="button" class="btn btn-primary" onclick="editarTelefono('Telefono3')">Agregar
-                        Teléfono</button>
-                </div>
-
-                <div class="col-12 col-md-8" id="botonesEdicion_Telefono3" style="display:none;">
-                    <input class="form-control" name="NuevoTelefono3" id="NuevoTelefono3" type="text">
-                    <a href="javascript:void(0);" class="btn btn-success"
-                        onclick="guardarTelefono(@id_asignacion,'NuevoTelefono3')">Agregar</a>
-                    <button type="button" class="btn btn-secondary" onclick="cancelarEdicion('Telefono3')">Cancelar</button>
                 </div>
             }
         </div>
@@ -391,29 +396,24 @@
             @if (@Model.Telefono4 != "0")
             {
                 <div class="col-12 col-md-8 mt-2 mt-md-0">
-                    <select class="form-select" name="Tipificacion4">
-                        <option value="">Seleccione la descripcion de la Tipificacion</option>
+                    <input type="hidden" name="Tipificacion4" id="tipificacionId_db4" />
+
+                    <label for="tipificacionSelect_db4" class="form-label mt-2">Tipificación Asignada 4: </label>
+                        
+                    <input class="form-control" list="tipificacionesList_db4"
+                        name="tipificacionesdb4.TipificacionDescripcion"
+                        id="tipificacionSelect_db4" placeholder="Presione 2 veces para ver las tipificaciones"
+                        oninput="actualizarIdTipificacion('db4')" />
+
+                    <datalist id="tipificacionesList_db4">
+                        <option value="">Seleccione la descripción de Tipificación</option>
                         @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
                         {
-                            <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
+                            <option value="@tipificacion.DescripcionTipificacion" data-id="@tipificacion.IdTipificacion">
+                                @tipificacion.DescripcionTipificacion</option>
                         }
-                    </select>
-                    <label for="GRUPO_MONTO" class="form-label mt-2">Tipificacion Asignada 4: </label>
+                    </datalist>
                     <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion4" readonly>
-                </div>
-            }
-            else
-            {
-                <div class="col-12 col-md-8 mt-2 mt-md-0" id="agregarTelefono_Telefono4">
-                    <button type="button" class="btn btn-primary" onclick="editarTelefono('Telefono4')">Agregar
-                        Teléfono</button>
-                </div>
-
-                <div class="col-12 col-md-8" id="botonesEdicion_Telefono4" style="display:none;">
-                    <input class="form-control" name="NuevoTelefono4" id="NuevoTelefono4" type="text">
-                    <a href="javascript:void(0);" class="btn btn-success"
-                        onclick="guardarTelefono(@id_asignacion,'NuevoTelefono4')">Agregar</a>
-                    <button type="button" class="btn btn-secondary" onclick="cancelarEdicion('Telefono4')">Cancelar</button>
                 </div>
             }
         </div>
@@ -428,29 +428,24 @@
             @if (@Model.Telefono5 != "0")
             {
                 <div class="col-12 col-md-8 mt-2 mt-md-0">
-                    <select class="form-select" name="Tipificacion5">
-                        <option value="">Seleccione la descripcion de la Tipificacion</option>
+                    <input type="hidden" name="Tipificacion5" id="tipificacionId_db5" />
+
+                    <label for="tipificacionSelect_db5" class="form-label mt-2">Tipificación Asignada 5: </label>
+                        
+                    <input class="form-control" list="tipificacionesList_db5"
+                        name="tipificacionesdb5.TipificacionDescripcion"
+                        id="tipificacionSelect_db5" placeholder="Presione 2 veces para ver las tipificaciones"
+                        oninput="actualizarIdTipificacion('db5')" />
+
+                    <datalist id="tipificacionesList_db5">
+                        <option value="">Seleccione la descripción de Tipificación</option>
                         @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
                         {
-                            <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
+                            <option value="@tipificacion.DescripcionTipificacion" data-id="@tipificacion.IdTipificacion">
+                                @tipificacion.DescripcionTipificacion</option>
                         }
-                    </select>
-                    <label for="GRUPO_MONTO" class="form-label mt-2">Tipificacion Asignada 5: </label>
+                    </datalist>
                     <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion5" readonly>
-                </div>
-            }
-            else
-            {
-                <div class="col-12 col-md-8 mt-2 mt-md-0" id="agregarTelefono_Telefono5">
-                    <button type="button" class="btn btn-primary" onclick="editarTelefono('Telefono5')">Agregar
-                        Teléfono</button>
-                </div>
-
-                <div class="col-12 col-md-8" id="botonesEdicion_Telefono5" style="display:none;">
-                    <input class="form-control" name="NuevoTelefono5" id="NuevoTelefono5" type="text">
-                    <a href="javascript:void(0);" class="btn btn-success"
-                        onclick="guardarTelefono(@id_asignacion,'NuevoTelefono5')">Agregar</a>
-                    <button type="button" class="btn btn-secondary" onclick="cancelarEdicion('Telefono5')">Cancelar</button>
                 </div>
             }
         </div>
@@ -459,7 +454,10 @@
     <br>
 
     <div class="form-group">
-        <button class="btn btn-success" type="submit">Guardar</button>
+        <div class="alert alert-info" role="alert">
+            Use este boton para agregar las tipificaciones de los numeros de TELEFONOS ASIGNADOS POR LA EMPRESA
+        </div>
+        <button class="btn btn-success" type="submit">Guardar Tipificaciones</button>
         <a href="@Url.Action("Ventas", "User")" class="btn btn-danger">Cancelar</a>
     </div>
 </form>
@@ -523,27 +521,22 @@
     }
 
     function loadCulminacionCliente(id_asignacion) {
-        // Validar que id_asignacion sea válido
         if (!id_asignacion) {
             alert('El ID de asignación no es válido.');
             return;
         }
 
-        // Mostrar cuadro de confirmación al usuario
         const userConfirmed = confirm('Advertencia: Si culmina con el cliente, esta acción no se puede revertir. ¿Está seguro de continuar?');
 
         if (userConfirmed) {
-            // Si el usuario confirma, se envía la solicitud AJAX
             $.ajax({
                 url: '/User/culminarCliente',
                 type: 'POST',
                 data: { "IdAsignacion": id_asignacion },
                 success: function (result) {
-                    // Mostrar mensaje de éxito
                     alert('Se ha culminado con el cliente correctamente.');
                 },
                 error: function (xhr, status, error) {
-                    // Manejar errores de manera más detallada
                     console.error('Error al culminar con el cliente:', error);
                     alert('Hubo un error al intentar culminar con el cliente. Por favor, inténtalo nuevamente.');
                 }
@@ -621,5 +614,23 @@
             }
         });
     }
+</script>
 
+<script>
+    // Función para actualizar el ID de la tipificación cuando se selecciona una opción del datalist
+    function actualizarIdTipificacion(contadorNumeros) {
+        var inputText = document.getElementById('tipificacionSelect_' + contadorNumeros);
+        var datalist = document.getElementById('tipificacionesList_' + contadorNumeros);
+        var hiddenInput = document.getElementById('tipificacionId_' + contadorNumeros);
+
+        // Buscar la opción correspondiente en el datalist
+        for (var option of datalist.options) {
+            if (option.value === inputText.value) {
+                hiddenInput.value = option.getAttribute('data-id'); // Actualizar el ID oculto
+                return;
+            }
+        }
+
+        hiddenInput.value = ''; // Si no hay coincidencia, limpiar el ID
+    }
 </script>

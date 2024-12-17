@@ -47,13 +47,24 @@
             </div>
 
             <!-- Campo de búsqueda -->
+
             <div class="col-12 col-md-6">
                 <div class="d-flex flex-column flex-md-row align-items-md-center">
-                    <label for="searchApellidoPaterno" class="form-label mb-2 mb-md-0 me-md-2">
-                        Búsqueda por Apellido:
+                    <label for="searchField" class="form-label mb-2 mb-md-0 me-md-2">
+                        Buscar por:
                     </label>
-                    <input type="text" class="form-control" id="searchApellidoPaterno"
-                        placeholder="Ingrese Apellido Paterno">
+                    <select id="searchField" class="form-control me-md-2">
+                        <option value="apellidoPaterno">Apellido Paterno</option>
+                        <option value="apellidoMaterno">Apellido Materno</option>
+                        <option value="nombre">Nombre</option>
+                        <option value="campaña">Campaña</option>
+                        <option value="ofertaMax">Oferta Max</option>
+                        <option value="comentarioPrincipal">Comentario Principal</option>
+                        <option value="tipificacionRelevante">Tipificación más Relevante</option>
+                        <option value="dni">DNI</option>
+                    </select>
+
+                    <input type="text" class="form-control" id="searchInput" placeholder="Ingrese valor de búsqueda">
                 </div>
             </div>
         </div>
@@ -65,49 +76,86 @@
             <thead>
                 <tr>
                     <th>Tipificación</th>
+                    <th>
+                        <div style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
+                            <span>
+                                DNI
+                            </span>
+                        </div>
+                    </th>
+                    <th>
+                        <div style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
+                            <span>Apellido Paterno</span>
+                            <button class="btn btn-warning p-0" style="width: 100%; margin-top: 5px;"
+                                onclick="sortTable('clientesTable', 2, 'string')">
+                                &#x25BC; <!-- Flecha inicial -->
+                            </button>
+                        </div>
+                    </th>
+                    <th>
+                        <div style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
+                            <span>Apellido Materno</span>
+                            <button class="btn btn-warning p-0" style="width: 100%; margin-top: 5px;"
+                                onclick="sortTable('clientesTable', 3, 'string')">
+                                &#x25BC; <!-- Flecha inicial -->
+                            </button>
+                        </div>
+                    </th>
+                    <th>
+                        <div style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
+                            <span>Nombre</span>
+                            <button class="btn btn-warning p-0" style="width: 100%; margin-top: 5px;"
+                                onclick="sortTable('clientesTable', 4, 'string')">
+                                &#x25BC;
+                            </button>
+                        </div>
+                    </th>
 
-                    <th>DNI</th>
                     <th>
-                        Apellido Paterno
-                        <button class="btn btn-link p-0"
-                            onclick="sortTable('clientesTable', 2, 'string')">Ordenar</button>
+                        <div style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
+                            <span>Oferta Max</span>
+                            <button class="btn btn-warning p-0" style="width: 100%; margin-top: 5px;"
+                                onclick="sortTable('clientesTable', 5, 'number')">
+                                &#x25BC;
+                            </button>
+                        </div>
                     </th>
                     <th>
-                        Apellido Materno
-                        <button class="btn btn-link p-0"
-                            onclick="sortTable('clientesTable', 3, 'string')">Ordenar</button>
+                        <div style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
+                            <span>Campaña</span>
+                            <button class="btn btn-warning p-0" style="width: 100%; margin-top: 5px;"
+                                onclick="sortTable('clientesTable', 6, 'string')">
+                                &#x25BC;
+                            </button>
+                        </div>
                     </th>
                     <th>
-                        Nombre
-                        <button class="btn btn-link p-0"
-                            onclick="sortTable('clientesTable', 4, 'string')">Ordenar</button>
-                    </th>
-
-                    <th>
-                        Oferta Max
-                        <button class="btn btn-link p-0"
-                            onclick="sortTable('clientesTable', 5, 'number')">Ordenar</button>
+                        <div style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
+                            <span>Fecha Asignacion</span>
+                        </div>
                     </th>
                     <th>
-                        Campaña
-                        <button class="btn btn-link p-0"
-                            onclick="sortTable('clientesTable', 6, 'string')">Ordenar</button>
+                        <div style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
+                            <span>Tipificacion Finalizada</span>
+                            <button class="btn btn-warning p-0" style="width: 100%; margin-top: 5px;"
+                                onclick="sortTable('clientesTable', 8, 'bool')">
+                                &#x25BC;
+                            </button>
+                        </div>
                     </th>
                     <th>
-                        Fecha Asignacion
-                        <button class="btn btn-link p-0"
-                            onclick="sortTable('clientesTable', 7, 'date')">Ordenar</button>
+                        <div style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
+                            <span>
+                                Comentario Principal
+                            </span>
+                        </div>
                     </th>
                     <th>
-                        Tipificacion Finalizada
-                        <button class="btn btn-link p-0"
-                            onclick="sortTable('clientesTable', 8, 'bool')">Ordenar</button>
-                    </th>
-                    <th>
-                        Comentario Principal
-                    </th>
-                    <th>
-                        Tipificacion mas Relevante
+                        <div style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
+                            <span>
+                                Tipificacion mas Relevante
+                            </span>
+                        </div>
                     </th>
                 </tr>
             </thead>
@@ -237,18 +285,57 @@
         });
 
         rows.forEach(row => table.tBodies[0].appendChild(row)); // Re-attach sorted rows
+
+        // Cambiar el símbolo de la flecha
+        const header = table.rows[0].cells[colIndex];
+        const button = header.querySelector('button');
+        if (button) {
+            button.innerHTML = isAscending ? '&#x25B2;' : '&#x25BC;'; // ▲ para ascendente, ▼ para descendente
+        }
     }
 </script>
 
 <script>
-    document.getElementById('searchApellidoPaterno').addEventListener('input', function () {
+    document.getElementById('searchInput').addEventListener('input', function () {
+        const searchField = document.getElementById('searchField').value;
         const filter = this.value.toLowerCase();
         const table = document.getElementById('clientesTable');
         const rows = table.tBodies[0].rows;
 
         Array.from(rows).forEach(row => {
-            const apellidoPaterno = row.cells[2].textContent.toLowerCase(); // Columna de Apellido Paterno
-            if (apellidoPaterno.includes(filter)) {
+            let cellValue = '';
+
+            switch (searchField) {
+                case 'apellidoPaterno':
+                    cellValue = row.cells[2].textContent.toLowerCase(); // Apellido Paterno
+                    break;
+                case 'apellidoMaterno':
+                    cellValue = row.cells[3].textContent.toLowerCase(); // Columna de Apellido Materno
+                    break;
+                case 'nombre':
+                    cellValue = row.cells[4].textContent.toLowerCase(); // Columna de Nombre
+                    break;
+                case 'ofertaMax':
+                    cellValue = row.cells[5].textContent.toLowerCase(); // Columna de Oferta Max
+                    break;
+                case 'comentarioPrincipal':
+                    cellValue = row.cells[9].textContent.toLowerCase(); // Columna de Comentario Principal
+                    break;
+                case 'dni':
+                    cellValue = row.cells[1].textContent.toLowerCase(); // DNI
+                    break;
+                case 'campaña':
+                    cellValue = row.cells[6].textContent.toLowerCase(); // Campaña
+                    break;
+                case 'tipificacionRelevante':
+                    cellValue = row.cells[10].textContent.toLowerCase(); // Tipificación más Relevante
+                    break;
+                default:
+                    cellValue = ''; // En caso de no coincidir con ninguna opción
+                    break;
+            }
+
+            if (cellValue.includes(filter)) {
                 row.style.display = ''; // Muestra la fila
             } else {
                 row.style.display = 'none'; // Oculta la fila
