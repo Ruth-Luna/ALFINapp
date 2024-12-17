@@ -103,6 +103,12 @@
                         <button class="btn btn-link p-0"
                             onclick="sortTable('clientesTable', 8, 'bool')">Ordenar</button>
                     </th>
+                    <th>
+                        Comentario Principal
+                    </th>
+                    <th>
+                        Tipificacion mas Relevante
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -121,6 +127,8 @@
                         <td>@ClienteDTO.Campaña</td>
                         <td>@ClienteDTO.FechaAsignacionVendedor</td>
                         <td>@ClienteDTO.FinalizarTipificacion</td>
+                        <td><textarea name="" id="">@ClienteDTO.ComentarioGeneral</textarea></td>
+                        <td>@ClienteDTO.TipificacionDeMayorPeso</td>
                     </tr>
                 }
             </tbody>

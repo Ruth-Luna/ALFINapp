@@ -131,7 +131,9 @@ namespace ALFINapp.Controllers
                 IdBase = cliente.IdBase,
                 IdAsignacion = cliente.LatestRecord?.ca.IdAsignacion,
                 FechaAsignacionVendedor = cliente.LatestRecord?.ca.FechaAsignacionVendedor,
-                FinalizarTipificacion = cliente.LatestRecord.ca.FinalizarTipificacion
+                FinalizarTipificacion = cliente.LatestRecord.ca.FinalizarTipificacion,
+                ComentarioGeneral = cliente.LatestRecord.ca.ComentarioGeneral,
+                TipificacionDeMayorPeso = cliente.LatestRecord.ca.TipificacionMayorPeso
             }).ToList();
 
             // Filtrar y contar los clientes donde FinalizarTipificacion es false
@@ -435,27 +437,28 @@ namespace ALFINapp.Controllers
                                                 ct.IdAsignacion
                                             }).ToList();
 
-            var resultados_telefonos_tipificados_vendedor = ( from ta in _context.telefonos_agregados
-                                                                join ce in _context.clientes_enriquecidos on ta.IdCliente equals ce.IdCliente
-                                                                where ce.IdBase == 7161
-                                                                join ct in (
-                                                                    from ct_sub in _context.clientes_tipificados
-                                                                    join ultimas in (
-                                                                        from sub_ct in _context.clientes_tipificados
-                                                                        group sub_ct by sub_ct.TelefonoTipificado into g
-                                                                        select new { TelefonoTipificado = g.Key, UltimaFecha = g.Max(x => x.FechaTipificacion) }
-                                                                    ) on ct_sub.TelefonoTipificado equals ultimas.TelefonoTipificado
-                                                                    where ct_sub.FechaTipificacion == ultimas.UltimaFecha
-                                                                    select new { ct_sub.TelefonoTipificado, ct_sub.IdTipificacion }
-                                                                ) on ta.Telefono equals ct.TelefonoTipificado into ctJoin
-                                                                from ct in ctJoin.DefaultIfEmpty()
-                                                                join t in _context.tipificaciones on ct.IdTipificacion equals t.IdTipificacion into tJoin
-                                                                from t in tJoin.DefaultIfEmpty()
-                                                                select new
-                                                                {
-                                                                    TelefonoTipificado = ta.Telefono,
-                                                                    DescripcionTipificacion = t.DescripcionTipificacion
-                                                                }).ToList();
+            var resultados_telefonos_tipificados_vendedor = (from ta in _context.telefonos_agregados
+                                                             join ce in _context.clientes_enriquecidos on ta.IdCliente equals ce.IdCliente
+                                                             where ce.IdBase == id_base
+                                                             join ct in (
+                                                                 from ct_sub in _context.clientes_tipificados
+                                                                 join ultimas in (
+                                                                     from sub_ct in _context.clientes_tipificados
+                                                                     group sub_ct by sub_ct.TelefonoTipificado into g
+                                                                     select new { TelefonoTipificado = g.Key, UltimaFecha = g.Max(x => x.FechaTipificacion) }
+                                                                 ) on ct_sub.TelefonoTipificado equals ultimas.TelefonoTipificado
+                                                                 where ct_sub.FechaTipificacion == ultimas.UltimaFecha
+                                                                 select new { ct_sub.TelefonoTipificado, ct_sub.IdTipificacion }
+                                                             ) on ta.Telefono equals ct.TelefonoTipificado into ctJoin
+                                                             from ct in ctJoin.DefaultIfEmpty()
+                                                             join t in _context.tipificaciones on ct.IdTipificacion equals t.IdTipificacion into tJoin
+                                                             from t in tJoin.DefaultIfEmpty()
+                                                             select new
+                                                             {
+                                                                 TelefonoTipificado = ta.Telefono,
+                                                                 DescripcionTipificacion = t.DescripcionTipificacion,
+                                                                 ComentarioTelefono = ta.Comentario
+                                                             }).ToList();
             var dni = _context.base_clientes.FirstOrDefault(bc => bc.IdBase == id_base);
             ViewData["numerosCreadosPorElUsuario"] = resultados_telefonos_tipificados_vendedor;
             ViewData["DNIcliente"] = dni != null ? dni.Dni : "El usuario No tiene DNI Registrado";
@@ -723,6 +726,42 @@ namespace ALFINapp.Controllers
             _context.SaveChanges();
             TempData["Message"] = "Las tipificaciones se han guardado correctamente.";
             return RedirectToAction("Ventas");
+        }
+        [HttpPost]
+        public IActionResult EnviarComentario(string Telefono, int IdCliente, string Comentario)
+        {
+            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+            {
+                TempData["Message"] = "Ha ocurrido un error en la autenticación";
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (string.IsNullOrEmpty(Telefono) || string.IsNullOrEmpty(Comentario))
+            {
+                return Json(new { success = false, message = "Datos inválidos." });
+            }
+
+            try
+            {
+                // Lógica para agregar o actualizar el comentario en la base de datos
+                var registro = _context.telefonos_agregados.FirstOrDefault(ta => ta.Telefono == Telefono && ta.IdCliente == IdCliente);
+                if (registro != null)
+                {
+                    registro.Comentario = Comentario;
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Número no encontrado." });
+                }
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
     }
 }

@@ -23,4 +23,12 @@ public partial class ClientesAsignado
 
     [Column("finalizar_tipificacion")]
     public bool FinalizarTipificacion { get; set; }
+
+    [Column("comentario_general")]
+    public string? ComentarioGeneral { get; set; }
+
+    [Column("tipificacion_mayor_peso")]
+    public string? TipificacionMayorPeso { get; set; }
+    [Column("peso_tipificacion_mayor")]
+    public string? PesoTipificacionMayor { get; set; }
 }

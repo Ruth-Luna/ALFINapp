@@ -15,8 +15,8 @@ public partial class TelefonosAgregados
     public string? Comentario { get; set; }
     [Column("agregado_por")]
     public string? AgregadoPor { get; set; }
-    [Column("tipificacion_mayor_peso")]
-    public string? TipificacionMayorPeso { get; set; }
+    [Column("ultima_tipificacion")]
+    public string? UltimaTipificacion { get; set; }
     [Key]
     [Column("id_telefono")]
     public int IdTelefono { get; set; }

@@ -39,7 +39,7 @@
 <div class="row">
     <!-- Primera Columna -->
     <div class="col-md-6">
-        <h3>Datos del Prospecto @id_asignacion</h3>
+        <h3>Datos del Prospecto</h3>
         <div class="form-group">
             <label for="DNI">DNI</label>
             <input class="form-control" id="DNI" type="text" value="@dni" readonly>
@@ -122,7 +122,8 @@
         </div>
         <div class="form-group">
             <label for="SUCURSAL_COMERCIAL">Sucursal Comercial</label>
-            <input class="form-control" id="SUCURSAL_COMERCIAL" type="text" value="@Model.Sucursal" readonly>
+            <input class="form-control" id="SUCURSAL_COMERCIAL" type="text"
+                value="@Model.Sucursal --> @Model.AgenciaComercial" readonly>
         </div>
         <div class="form-group">
             <label for="PLAZO">Plazo</label>
@@ -162,20 +163,6 @@
 <div class="row">
     <h3 class="label-fortip">Contactos Creados por el Usuario:</h3>
 
-    <div id="agregarTelefonoBtnCliente">
-        <a href="javascript:void(0);" class="btn btn-primary" id="agregarTelefonoBtn"
-            onclick="cargarEdicionDeTelefonos(@id_cliente)">Agregue un Nuevo Telefono</a>
-    </div>
-
-    <div id="cancelaragregarTelefonoBtnCliente" style="display: none;">
-        <a href="javascript:void(0);" class="btn btn-secondary" id="cancelaragregarTelefonoBtn"
-            onclick="descargarEdicionDeTelefonos()">Cancelar</a>
-    </div>
-
-    <!-- Aca aparecera el FORM -->
-    <div id="agregarTelefonoContainer">
-    </div>
-
     @if (numerosCreadosPorElUsuario is IEnumerable<dynamic> numCreatedByUser && numCreatedByUser.Any())
     {
         int contadorNumeros = 0;
@@ -187,11 +174,20 @@
                 <div class="form-group row align-items-center mb-3">
                     <div class="col-12 col-md-4">
                         <label for="Telefono[@contadorNumeros]" class="form-label">Teléfono @contadorNumeros</label>
-                        <input class="form-control" name="tipificaciones[@contadorNumeros].Telefono" 
+                        <input class="form-control" name="tipificaciones[@contadorNumeros].Telefono"
                             id="Telefono_@contadorNumeros" type="text" value="@telefonosVendedor.TelefonoTipificado" readonly />
+                        <div class="spacing"></div>
+                        <textarea class="form-control" id="comentarioAsesor_@contadorNumeros"
+                            data-telefono="@telefonosVendedor.TelefonoTipificado"
+                            data-id-cliente="@id_cliente">@telefonosVendedor.ComentarioTelefono</textarea>
+                        <div class="spacing"></div>
+                        <a href="javascript:void(0);" class="btn btn-primary"
+                            onclick="enviarComentario('@id_cliente', '@telefonosVendedor.TelefonoTipificado', 'comentarioAsesor_@contadorNumeros')">
+                            Agregue un Comentario
+                        </a>
                     </div>
                     <div class="col-12 col-md-8 mt-2 mt-md-0">
-                    <label for="GRUPO_MONTO" class="form-label mt-2">Tipificación Asignada @contadorNumeros: </label>
+                        <label for="GRUPO_MONTO" class="form-label mt-2">Tipificación Asignada @contadorNumeros: </label>
                         <select class="form-select" name="tipificaciones[@contadorNumeros].TipificacionId">
                             <option value="">Seleccione la descripción de Tipificación</option>
                             @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
@@ -199,11 +195,12 @@
                                 <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
                             }
                         </select>
-
                         <input class="form-control" id="GRUPO_MONTO" type="text"
                             value="@telefonosVendedor.DescripcionTipificacion" readonly />
                     </div>
+                    <div class="spacing"></div>
                 </div>
+
                 contadorNumeros++; // Incrementar el contador después de cada teléfono
             }
             <div class="spacing"></div>
@@ -220,6 +217,25 @@
             No tiene números de teléfonos asignados por el usuario.
         </div>
     }
+    <div>
+        <h4>Agregue numeros de Telefono Personales</h4>
+        <div>
+            <div id="agregarTelefonoBtnCliente">
+                <a href="javascript:void(0);" class="btn btn-primary" id="agregarTelefonoBtn"
+                    onclick="cargarEdicionDeTelefonos(@id_cliente)">Agregue un Nuevo Telefono</a>
+            </div>
+            <div id="cancelaragregarTelefonoBtnCliente" style="display: none;">
+                <a href="javascript:void(0);" class="btn btn-secondary" id="cancelaragregarTelefonoBtn"
+                    onclick="descargarEdicionDeTelefonos()">Cancelar</a>
+            </div>
+        </div>
+
+        <div class="spacing"></div>
+        <!-- Aca aparecera el FORM -->
+        <div id="agregarTelefonoContainer">
+        </div>
+        <div class="spacing"></div>
+    </div>
 </div>
 
 <!-- SECCION TELEFONOS AGREGADOS Por LA DB -->
@@ -570,4 +586,40 @@
         document.getElementById('cancelaragregarTelefonoBtnCliente').style.display = 'none';
         document.getElementById('agregarTelefonoContainer').style.display = 'none';
     }
+</script>
+<script>
+    function enviarComentario(idCliente, telefono, textareaId) {
+        const comentario = document.getElementById(textareaId).value;
+
+        if (!comentario) {
+            alert('Por favor, ingrese un comentario antes de enviarlo.');
+            return;
+        }
+
+        // Enviar la solicitud POST con los datos al controlador
+        $.ajax({
+            url: '/User/EnviarComentario', // Asegúrate de que coincida con la ruta del controlador
+            type: 'POST', // Especificar método POST
+            data: {
+                Telefono: telefono,
+                IdCliente: idCliente,
+                Comentario: comentario
+            },
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() // Anti-CSRF
+            },
+            success: function (response) {
+                if (response.success) {
+                    alert('Comentario agregado correctamente.');
+                } else {
+                    alert('Error: ' + response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error al enviar comentario:', error);
+                alert('Hubo un error inesperado al enviar el comentario.');
+            }
+        });
+    }
+
 </script>
