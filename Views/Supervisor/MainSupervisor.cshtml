@@ -30,8 +30,13 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="mb-0">Clientes Asignados al Usuario Supervisor - @usuarioNombre</h2>
         <p>Clientes Pendientes: @clientesPendientesSupervisor</p>
-        <a href="javascript:void(0);" class="btn btn-success" onclick="loadAsignarClienteAVendedor()">Asignar
+
+        <div class="buttons-container">
+            <a href="javascript:void(0);" class="btn btn-success" onclick="loadAsignarClienteAVendedor()">Asignar
             Vendedor</a>
+            <a href="@Url.Action("DescargarClientesAsignados", "Excel")" class="btn btn-primary">Descargar Datos</a>
+        </div>
+        
     </div>
     <!-- Tabla para mostrar los DetalleBases/ventas -->
     <div class="table-responsive">
