@@ -75,7 +75,7 @@
         <table class="table table-bordered" id="clientesTable">
             <thead>
                 <tr>
-                    <th>Tipificación</th>
+                    <th>Ver Cliente:</th>
                     <th>
                         <div style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
                             <span>
@@ -164,9 +164,13 @@
                 {
                     var rowClass = ClienteDTO.FinalizarTipificacion ? "table-success" : "";
                     <tr class="@rowClass">
-                        <td><a href="javascript:void(0);" class="btn btn-primary"
-                                onclick="loadTipificarCliente(@ClienteDTO.IdBase)">Ver Cliente</a>
+                        <td>
+                            <a href="javascript:void(0);" class="btn btn-primary"
+                                onclick="loadTipificarCliente(@ClienteDTO.IdBase)">
+                                <i class="bi bi-eye"></i>
+                            </a>
                         </td>
+
                         <td>@ClienteDTO.Dni</td>
                         <td>@ClienteDTO.XAppaterno</td>
                         <td>@ClienteDTO.XApmaterno</td>
