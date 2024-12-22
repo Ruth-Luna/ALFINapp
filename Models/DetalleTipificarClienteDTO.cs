@@ -16,8 +16,6 @@ public class DetalleTipificarClienteDTO
 
     //Propiedades de la tabla DetalleBase
     public string? Campaña { get; set; }
-    public decimal? OfertaMax { get; set; }
-    public decimal? TasaMinima { get; set; }
     public string? Sucursal { get; set; }
     public string? AgenciaComercial { get; set; }
     public int? Plazo { get; set; }
@@ -36,4 +34,21 @@ public class DetalleTipificarClienteDTO
     public string? Telefono3 { get; set; }
     public string? Telefono4 { get; set; }
     public string? Telefono5 { get; set; }
+
+    //Propiedas de Tasa
+    public decimal? OfertaMax { get; set; }
+    public decimal? TasaMinima { get; set; }
+    public decimal? Oferta12m { get; set; }
+    public decimal? Tasa12m { get; set; }
+    public decimal? Cuota12m { get; set; }
+    public decimal? Oferta18m { get; set; }
+    public decimal? Tasa18m { get; set; }
+    public decimal? Cuota18m { get; set; }
+    public decimal? Oferta24m { get; set; }
+    public decimal? Tasa24m { get; set; }
+    public decimal? Cuota24m { get; set; }
+    public decimal? Oferta36m { get; set; }
+    public decimal? Tasa36m { get; set; }
+    public decimal? Cuota36m { get; set; }
+
 }

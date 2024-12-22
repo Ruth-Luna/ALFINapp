@@ -48,5 +48,6 @@ public class DetalleBaseClienteDTO
     public DateTime? FechaAsignacionVendedor { get; set; }
     public bool FinalizarTipificacion { get; set; }
     public string? ComentarioGeneral { get; set; }
-    public string? TipificacionDeMayorPeso { get; set;}
+    public string? TipificacionDeMayorPeso { get; set; }
+    public int? PesoTipificacionMayor { get; set; }
 }

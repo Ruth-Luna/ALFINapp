@@ -12,6 +12,30 @@ form input, form button {
     color: white; /* Texto blanco */
 }
 
+.table thead th {
+    text-align: center; /* Centra el texto horizontalmente */
+    vertical-align: top; /* Alinea el contenido hacia arriba */
+    background-color: #085394; /* Fondo azul */
+    color: white; /* Texto blanco */
+    padding: 10px; /* Espaciado interno */
+    font-size: 14px; /* Tamaño de fuente */
+    border: 1px solid #2980b9; /* Bordes */
+    position: relative; /* Permite posicionamiento de los elementos internos */
+}
+
+.table td .btn {
+    width: 100%;
+    height: 100%;
+    display: block; /* Hace que el botón se comporte como un bloque para llenar toda la celda */
+}
+
+
+@media (max-width: 767px) {
+    .table thead th {
+        font-size: 12px; /* Tamaño de fuente reducido en pantallas pequeñas */
+        padding: 8px; /* Espaciado interno ajustado */
+    }
+}
 
 .btn-forinformation {
     background-color: #4caf50; /* Color de fondo */
@@ -84,5 +108,15 @@ form input, form button {
 
 .table-success {
     background-color: #d4edda; /* Verde claro */
-    color: #155724; /* Verde oscuro para el texto */
+    color: #185827; /* Verde oscuro para el texto */
+}
+
+.table-danger {
+    background-color: #f0b3b3; /* Verde claro */
+    color: #940000; /* Verde oscuro para el texto */
+}
+
+.table-tipificada {
+    background-color: #beb3f0; /* Verde claro */
+    color: #261e46; /* Verde oscuro para el texto */
 }

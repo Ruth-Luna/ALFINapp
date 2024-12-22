@@ -143,8 +143,8 @@
         </div>
         <div class="spacing"></div>
 
-        <h4>Clickee el botón si ha culminado con el Cliente</h4>
-        <div class="spacing"></div>
+        <h2>Detalles de las Ofertas</h2>
+        <!--<div class="spacing"></div>
         <form asp-action="culminarCliente" asp-controller="User">
             <input type="hidden" name="IdAsignacion" value="@id_asignacion" />
             <button class="btn btn-warning" type="submit">Culminar</button>
@@ -152,6 +152,46 @@
         <div class="spacing"></div>
         <p>Activar este boton culminara con las tipificaciones del Cliente y sera notificado al Supervisor.
             Esta accion no puede ser revertida</p>
+        -->
+        <div class="spacing"></div>
+        <div class="form-group">
+            <label for="GRUPO_MONTO">Oferta 12 Meses</label>
+            <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Oferta12m" readonly>
+        </div>
+        <div class="form-group">
+            <label for="GRUPO_MONTO">Tasa 12 Meses</label>
+            <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Tasa12m" readonly>
+        </div>
+        <div class="form-group">
+            <label for="GRUPO_MONTO">Cuota 12 Meses</label>
+            <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Cuota12m" readonly>
+        </div>
+        <div class="spacing"></div>
+        <div class="form-group">
+            <label for="GRUPO_MONTO">Oferta 24 Meses</label>
+            <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Oferta24m" readonly>
+        </div>
+        <div class="form-group">
+            <label for="GRUPO_MONTO">Tasa 24 Meses</label>
+            <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Tasa24m" readonly>
+        </div>
+        <div class="form-group">
+            <label for="GRUPO_MONTO">Cuota 24 Meses</label>
+            <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Cuota24m" readonly>
+        </div>
+        <div class="spacing"></div>
+        <div class="form-group">
+            <label for="GRUPO_MONTO">Oferta 36 Meses</label>
+            <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Oferta36m" readonly>
+        </div>
+        <div class="form-group">
+            <label for="GRUPO_MONTO">Tasa 36 Meses</label>
+            <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Tasa36m" readonly>
+        </div>
+        <div class="form-group">
+            <label for="GRUPO_MONTO">Cuota 36 Meses</label>
+            <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Cuota36m" readonly>
+        </div>
     </div>
 </div>
 

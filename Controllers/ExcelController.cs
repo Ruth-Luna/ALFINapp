@@ -6,6 +6,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using OfficeOpenXml;
+using CsvHelper;
+using CsvHelper.Configuration;
+using Microsoft.AspNetCore.Http;
+using System.Globalization; // Necesaria para CultureInfo
+using System.IO;           // Necesaria para StreamReader
+using System.Linq;         // Necesaria para operaciones como Except
+using System.Collections.Generic;
+using System.Security.AccessControl; // Necesaria para List<>
 
 namespace ALFINapp.Controllers
 {
@@ -124,6 +132,20 @@ namespace ALFINapp.Controllers
                     AGENCIA_COMERCIAL = detallesClientes.LatestRecord.db.AgenciaComercial,
                     PLAZO = detallesClientes.LatestRecord.db.Plazo,
                     CUOTA = detallesClientes.LatestRecord.db.Cuota,
+
+                    OFERTA12M = detallesClientes.LatestRecord.db.Oferta12m,
+                    TASA12M = detallesClientes.LatestRecord.db.Tasa12m,
+                    CUOTA12M = detallesClientes.LatestRecord.db.Cuota12m,
+                    OFERTA18M = detallesClientes.LatestRecord.db.Oferta18m,
+                    TASA18M = detallesClientes.LatestRecord.db.Tasa18m,
+                    CUOTA18M = detallesClientes.LatestRecord.db.Cuota18m,
+                    OFERTA24M = detallesClientes.LatestRecord.db.Oferta24m,
+                    TASA24M = detallesClientes.LatestRecord.db.Tasa24m,
+                    CUOTA24M = detallesClientes.LatestRecord.db.Cuota24m,
+                    OFERTA36M = detallesClientes.LatestRecord.db.Oferta36m,
+                    TASA36M = detallesClientes.LatestRecord.db.Tasa36m,
+                    CUOTA36M = detallesClientes.LatestRecord.db.Cuota36m,
+
                     GRUPO_TASA = detallesClientes.LatestRecord.db.GrupoTasa,
                     GRUPO_MONTO = detallesClientes.LatestRecord.db.GrupoMonto,
                     PROPENSION = detallesClientes.LatestRecord.db.Propension,
@@ -158,18 +180,32 @@ namespace ALFINapp.Controllers
                     worksheet.Cells[1, 13].Value = "AGENCIA_COMERCIAL";
                     worksheet.Cells[1, 14].Value = "PLAZO";
                     worksheet.Cells[1, 15].Value = "CUOTA";
-                    worksheet.Cells[1, 16].Value = "GRUPO_TASA";
-                    worksheet.Cells[1, 17].Value = "GRUPO_MONTO";
-                    worksheet.Cells[1, 18].Value = "PROPENSION";
-                    worksheet.Cells[1, 19].Value = "TIPO_CLIENTE";
-                    worksheet.Cells[1, 20].Value = "CLIENTE_NUEVO";
-                    worksheet.Cells[1, 21].Value = "COLOR";
-                    worksheet.Cells[1, 22].Value = "COLOR_FINAL";
-                    worksheet.Cells[1, 23].Value = "TELEFONO1";
-                    worksheet.Cells[1, 24].Value = "TELEFONO2";
-                    worksheet.Cells[1, 25].Value = "TELEFONO3";
-                    worksheet.Cells[1, 26].Value = "TELEFONO4";
-                    worksheet.Cells[1, 27].Value = "TELEFONO5";
+
+                    worksheet.Cells[1, 16].Value = "OFERTA12M";
+                    worksheet.Cells[1, 17].Value = "TASA12M";
+                    worksheet.Cells[1, 18].Value = "CUOTA12M";
+                    worksheet.Cells[1, 19].Value = "OFERTA18M";
+                    worksheet.Cells[1, 20].Value = "TASA18M";
+                    worksheet.Cells[1, 21].Value = "CUOTA18M";
+                    worksheet.Cells[1, 22].Value = "OFERTA24M";
+                    worksheet.Cells[1, 23].Value = "TASA24M";
+                    worksheet.Cells[1, 24].Value = "CUOTA24M";
+                    worksheet.Cells[1, 25].Value = "OFERTA36M";
+                    worksheet.Cells[1, 26].Value = "TASA36M";
+                    worksheet.Cells[1, 27].Value = "CUOTA36M";
+
+                    worksheet.Cells[1, 28].Value = "GRUPO_TASA";
+                    worksheet.Cells[1, 29].Value = "GRUPO_MONTO";
+                    worksheet.Cells[1, 30].Value = "PROPENSION";
+                    worksheet.Cells[1, 31].Value = "TIPO_CLIENTE";
+                    worksheet.Cells[1, 32].Value = "CLIENTE_NUEVO";
+                    worksheet.Cells[1, 33].Value = "COLOR";
+                    worksheet.Cells[1, 34].Value = "COLOR_FINAL";
+                    worksheet.Cells[1, 35].Value = "TELEFONO1";
+                    worksheet.Cells[1, 36].Value = "TELEFONO2";
+                    worksheet.Cells[1, 37].Value = "TELEFONO3";
+                    worksheet.Cells[1, 38].Value = "TELEFONO4";
+                    worksheet.Cells[1, 39].Value = "TELEFONO5";
 
                     // Llena los datos
                     int row = 2;
@@ -190,18 +226,33 @@ namespace ALFINapp.Controllers
                         worksheet.Cells[row, 13].Value = data.AGENCIA_COMERCIAL;
                         worksheet.Cells[row, 14].Value = data.PLAZO;
                         worksheet.Cells[row, 15].Value = data.CUOTA;
-                        worksheet.Cells[row, 16].Value = data.GRUPO_TASA;
-                        worksheet.Cells[row, 17].Value = data.GRUPO_MONTO;
-                        worksheet.Cells[row, 18].Value = data.PROPENSION;
-                        worksheet.Cells[row, 19].Value = data.TIPO_CLIENTE;
-                        worksheet.Cells[row, 20].Value = data.CLIENTE_NUEVO;
-                        worksheet.Cells[row, 21].Value = data.COLOR;
-                        worksheet.Cells[row, 22].Value = data.COLOR_FINAL;
-                        worksheet.Cells[row, 23].Value = data.TELEFONO1;
-                        worksheet.Cells[row, 24].Value = data.TELEFONO2;
-                        worksheet.Cells[row, 25].Value = data.TELEFONO3;
-                        worksheet.Cells[row, 26].Value = data.TELEFONO4;
-                        worksheet.Cells[row, 27].Value = data.TELEFONO5;
+
+                        worksheet.Cells[row, 16].Value = data.OFERTA12M;
+                        worksheet.Cells[row, 17].Value = data.TASA12M;
+                        worksheet.Cells[row, 18].Value = data.CUOTA12M;
+                        worksheet.Cells[row, 19].Value = data.OFERTA18M;
+                        worksheet.Cells[row, 20].Value = data.TASA18M;
+                        worksheet.Cells[row, 21].Value = data.CUOTA18M;
+                        worksheet.Cells[row, 22].Value = data.OFERTA24M;
+                        worksheet.Cells[row, 23].Value = data.TASA24M;
+                        worksheet.Cells[row, 24].Value = data.CUOTA24M;
+                        worksheet.Cells[row, 25].Value = data.OFERTA36M;
+                        worksheet.Cells[row, 26].Value = data.TASA36M;
+                        worksheet.Cells[row, 27].Value = data.CUOTA36M;
+
+                        worksheet.Cells[row, 28].Value = data.GRUPO_TASA;
+                        worksheet.Cells[row, 29].Value = data.GRUPO_MONTO;
+                        worksheet.Cells[row, 30].Value = data.PROPENSION;
+                        worksheet.Cells[row, 31].Value = data.TIPO_CLIENTE;
+                        worksheet.Cells[row, 32].Value = data.CLIENTE_NUEVO;
+                        worksheet.Cells[row, 33].Value = data.COLOR;
+                        worksheet.Cells[row, 34].Value = data.COLOR_FINAL;
+                        worksheet.Cells[row, 35].Value = data.TELEFONO1;
+                        worksheet.Cells[row, 36].Value = data.TELEFONO2;
+                        worksheet.Cells[row, 37].Value = data.TELEFONO3;
+                        worksheet.Cells[row, 38].Value = data.TELEFONO4;
+                        worksheet.Cells[row, 39].Value = data.TELEFONO5;
+
                         row++;
                     }
 
@@ -221,13 +272,99 @@ namespace ALFINapp.Controllers
         }
         public IActionResult SubirArchivo(IFormFile archivo)
         {
+            if (archivo == null || archivo.Length == 0)
+            {
+                TempData["Error"] = "Por favor, seleccione un archivo válido.";
+                return RedirectToAction("Index", "Home");
+            }
             try
             {
+                // Leer el archivo CSV
+                using (var reader = new StreamReader(archivo.OpenReadStream()))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)))
+                {
+                    // Obtener los encabezados del archivo
+                    csv.Read();
+                    csv.ReadHeader();
+                    var encabezadosArchivo = csv.HeaderRecord;
+
+                    // Encabezados esperados según el DTO
+                    var encabezadosEsperados = new[]
+                    {
+                        "COD_CANAL", "CANAL", "DNI", "FECHA_ENVIO", "FECHA_GESTION",
+                        "HORA_GESTION", "TELEFONO", "ORIGEN_TELEFONO", "COD_CAMPAÑA", "COD_TIP",
+                        "OFERTA", "DNI_ASESOR"
+                    };
+
+                    // Verificar que los encabezados coincidan
+                    var faltantes = encabezadosEsperados.Except(encabezadosArchivo).ToList();
+                    if (faltantes.Any())
+                    {
+                        TempData["Error"] = $"Faltan los siguientes encabezados: {string.Join(", ", faltantes)}";
+                        return RedirectToAction("Index", "Home");
+                    }
+
+                    // Leer y procesar los datos del archivo
+                    var registros = new List<SubidaDeArchivosDTO>();
+                    while (csv.Read())
+                    {
+                        var registro = csv.GetRecord<SubidaDeArchivosDTO>();
+                        registros.Add(registro);
+                    }
+
+                    // Agregar el campo adicional "tipo_base"
+                    foreach (var registro in registros)
+                    {
+                        BaseCliente model1 = new BaseCliente
+                        {
+                            Dni = registro.DNI,
+                        };
+
+
+                        // Lo añades al contexto
+                        _context.base_clientes.Add(model1);
+
+                        // Guardas los cambios al final
+                        _context.SaveChanges();
+
+                        // Obtienes el id del nuevo registro
+                        var idBase = model1.IdBase;
+
+                        // Creas el segundo modelo con el id correspondiente
+                        DetalleBase model3 = new DetalleBase
+                        {
+                            IdBase = idBase,
+                            Canal = registro.CANAL,
+                            FechaCarga = registro.HORA_GESTION,
+                            Campaña = registro.COD_CAMPAÑA,
+                            OfertaMax = registro.OFERTA
+                        };
+                        // Lo añades al contexto
+                        _context.detalle_base.Add(model3);
+
+                        // Guardas los cambios al final
+                        _context.SaveChanges();
+                        CargaManualCsv model4 = new CargaManualCsv
+                        {
+                            IdUsuario = HttpContext.Session.GetInt32("UsuarioId"),
+                            FechaDeCarga = DateTime.Now,
+                            IdBase = idBase
+                        };
+                        
+                    }
+
+                    // Guardar los registros en la base de datos
+                    // Tu lógica de persistencia aquí (por ejemplo, usando Entity Framework)
+
+                    TempData["Success"] = "Archivo procesado correctamente.";
+                }
+
                 return RedirectToAction("Index", "Home");
             }
             catch (System.Exception ex)
             {
-                Console.WriteLine($"Error al verificar : {ex.Message}");
+                Console.WriteLine($"Error al procesar el archivo: {ex.Message}");
+                TempData["Error"] = "Ocurrió un error al procesar el archivo. Verifique su formato y vuelva a intentarlo.";
                 return RedirectToAction("Index", "Home");
             }
         }

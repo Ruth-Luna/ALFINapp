@@ -43,7 +43,24 @@
             <!-- Título -->
             <div class="col-12 col-md-6 mb-3 mb-md-0">
                 <h2 class="text-center text-md-start">ASESOR DE CREDITOS - @usuarioNombre</h2>
-                <p>Numero de Clientes Por Finalizar su Tipificacion: @clientesPendientes</p>
+                <div>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Total Clientes</th>
+                                <th>Clientes Tipificados</th>
+                                <th>Clientes Pendientes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>@ViewData["TotalClientes"]</td>
+                                <td>@ViewData["ClientesTipificados"]</td>
+                                <td>@clientesPendientes</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- Campo de búsqueda -->
@@ -77,97 +94,102 @@
                 <tr>
                     <th>Ver Cliente:</th>
                     <th>
-                        <div style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
-                            <span>
-                                DNI
-                            </span>
-                        </div>
+                        <span>DNI</span>
                     </th>
                     <th>
-                        <div style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
-                            <span>Apellido Paterno</span>
-                            <button class="btn btn-warning p-0" style="width: 100%; margin-top: 5px;"
-                                onclick="sortTable('clientesTable', 2, 'string')">
-                                &#x25BC; <!-- Flecha inicial -->
-                            </button>
-                        </div>
+                        <span>Apellido Paterno</span>
                     </th>
                     <th>
-                        <div style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
-                            <span>Apellido Materno</span>
-                            <button class="btn btn-warning p-0" style="width: 100%; margin-top: 5px;"
-                                onclick="sortTable('clientesTable', 3, 'string')">
-                                &#x25BC; <!-- Flecha inicial -->
-                            </button>
-                        </div>
+                        <span>Apellido Materno</span>
                     </th>
                     <th>
-                        <div style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
-                            <span>Nombre</span>
-                            <button class="btn btn-warning p-0" style="width: 100%; margin-top: 5px;"
-                                onclick="sortTable('clientesTable', 4, 'string')">
-                                &#x25BC;
-                            </button>
-                        </div>
-                    </th>
-
-                    <th>
-                        <div style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
-                            <span>Oferta Max</span>
-                            <button class="btn btn-warning p-0" style="width: 100%; margin-top: 5px;"
-                                onclick="sortTable('clientesTable', 5, 'number')">
-                                &#x25BC;
-                            </button>
-                        </div>
+                        <span>Nombre</span>
                     </th>
                     <th>
-                        <div style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
-                            <span>Campaña</span>
-                            <button class="btn btn-warning p-0" style="width: 100%; margin-top: 5px;"
-                                onclick="sortTable('clientesTable', 6, 'string')">
-                                &#x25BC;
-                            </button>
-                        </div>
+                        <span>Oferta Max</span>
                     </th>
                     <th>
-                        <div style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
-                            <span>Fecha Asignacion</span>
-                        </div>
+                        <span>Campaña</span>
                     </th>
                     <th>
-                        <div style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
-                            <span>Tipificacion Finalizada</span>
-                            <button class="btn btn-warning p-0" style="width: 100%; margin-top: 5px;"
-                                onclick="sortTable('clientesTable', 8, 'bool')">
-                                &#x25BC;
-                            </button>
-                        </div>
+                        <span>Fecha Asignacion</span>
                     </th>
                     <th>
-                        <div style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
-                            <span>
-                                Comentario Principal
-                            </span>
-                        </div>
+                        <span>Comentario Principal</span>
                     </th>
                     <th>
-                        <div style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
-                            <span>
-                                Tipificacion mas Relevante
-                            </span>
-                        </div>
+                        <span>Tipificacion mas Relevante</span>
                     </th>
                 </tr>
             </thead>
+
             <tbody>
+                <tr>
+                    <td></td>
+                    <td>
+                    <td>
+                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 2, 'string')"
+                            data-sort-ignore>
+                            &#x25BC;
+                        </button>
+                    </td>
+                    </td>
+                    <td>
+                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 3, 'string')"
+                            data-sort-ignore>
+                            &#x25BC;
+                        </button>
+
+                    </td>
+                    <td>
+                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 4, 'string')"
+                            data-sort-ignore>
+                            &#x25BC;
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 5, 'number')"
+                            data-sort-ignore>
+                            &#x25BC;
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 6, 'string')"
+                            data-sort-ignore>
+                            &#x25BC;
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 7, 'date')"
+                            data-sort-ignore>
+                            &#x25BC;
+                        </button>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
                 @foreach (var ClienteDTO in Model)
                 {
-                    var rowClass = ClienteDTO.FinalizarTipificacion ? "table-success" : "";
+                    var pesotipMayor = ClienteDTO.PesoTipificacionMayor;
+                    var rowClass = ""; // Inicializa como cadena vacía
+                    if (pesotipMayor != null)
+                    {
+                        rowClass = "table-tipificada"; // Clase base para filas con tipificación
+
+                        if (pesotipMayor > 100)
+                        {
+                            rowClass += " table-danger"; // Clase adicional para peso mayor a 100
+                        }
+                        else if (pesotipMayor > 95)
+                        {
+                            rowClass += " table-success"; // Clase adicional para peso mayor a 90
+                        }
+                    }
                     <tr class="@rowClass">
                         <td>
                             <a href="javascript:void(0);" class="btn btn-primary"
                                 onclick="loadTipificarCliente(@ClienteDTO.IdBase)">
-                                <i class="bi bi-eye"></i>
+                                <i class="fa fa-eye"></i>
                             </a>
                         </td>
 
@@ -178,7 +200,6 @@
                         <td>@ClienteDTO.OfertaMax</td>
                         <td>@ClienteDTO.Campaña</td>
                         <td>@ClienteDTO.FechaAsignacionVendedor</td>
-                        <td>@ClienteDTO.FinalizarTipificacion</td>
                         <td><textarea name="" id="">@ClienteDTO.ComentarioGeneral</textarea></td>
                         <td>@ClienteDTO.TipificacionDeMayorPeso</td>
                     </tr>
@@ -264,6 +285,8 @@
         table.dataset.sortOrder = isAscending ? 'asc' : 'desc';
 
         rows.sort((a, b) => {
+            if (a.cells[colIndex].querySelector('button')) return 0;
+
             const aText = a.cells[colIndex].textContent.trim();
             const bText = b.cells[colIndex].textContent.trim();
 
@@ -273,9 +296,16 @@
                     : parseFloat(bText) - parseFloat(aText);
             }
             if (type === 'date') {
+                const aDate = aText ? new Date(aText) : null;
+                const bDate = bText ? new Date(bText) : null;
+
+                if (!aDate && !bDate) return 0; // Ambos vacíos
+                if (!aDate) return isAscending ? 1 : -1; // a vacío
+                if (!bDate) return isAscending ? -1 : 1; // b vacío
+
                 return isAscending
-                    ? new Date(aText) - new Date(bText)
-                    : new Date(bText) - new Date(aText);
+                    ? aDate - bDate
+                    : bDate - aDate;
             }
             if (type === 'bool') {
                 return isAscending
@@ -332,7 +362,7 @@
                     cellValue = row.cells[6].textContent.toLowerCase(); // Campaña
                     break;
                 case 'tipificacionRelevante':
-                    cellValue = row.cells[10].textContent.toLowerCase(); // Tipificación más Relevante
+                    cellValue = row.cells[9].textContent.toLowerCase(); // Tipificación más Relevante
                     break;
                 default:
                     cellValue = ''; // En caso de no coincidir con ninguna opción

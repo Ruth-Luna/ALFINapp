@@ -131,18 +131,26 @@ namespace ALFINapp.Controllers
                 IdBase = cliente.IdBase,
                 IdAsignacion = cliente.LatestRecord?.ca.IdAsignacion,
                 FechaAsignacionVendedor = cliente.LatestRecord?.ca.FechaAsignacionVendedor,
-                FinalizarTipificacion = cliente.LatestRecord.ca.FinalizarTipificacion,
                 ComentarioGeneral = cliente.LatestRecord.ca.ComentarioGeneral,
-                TipificacionDeMayorPeso = cliente.LatestRecord.ca.TipificacionMayorPeso
+                TipificacionDeMayorPeso = cliente.LatestRecord.ca.TipificacionMayorPeso,
+                PesoTipificacionMayor = cliente.LatestRecord.ca.PesoTipificacionMayor
             }).ToList();
 
-            // Filtrar y contar los clientes donde FinalizarTipificacion es false
-            int clientesPendientes = detallesClientes.Count(cliente => cliente.FinalizarTipificacion == false);
+            // Total de clientes
+            int totalClientes = detallesClientes.Count;
+
+            // Clientes aún no tipificados (su campo 'TipificacionDeMayorPeso' es null o vacío)
+            int clientesPendientes = detallesClientes.Count(dc => string.IsNullOrEmpty(dc.TipificacionDeMayorPeso));
+
+            // Clientes ya tipificados (su campo 'TipificacionDeMayorPeso' no es null ni vacío)
+            int clientesTipificados = detallesClientes.Count(dc => !string.IsNullOrEmpty(dc.TipificacionDeMayorPeso));
+
             // Obtener el usuario actual
             var usuario = await _context.usuarios.AsNoTracking().FirstOrDefaultAsync(u => u.IdUsuario == usuarioId);
 
-            // Asignar el nombre del usuario a la vista
+            ViewData["TotalClientes"] = totalClientes;
             ViewData["ClientesPendientes"] = clientesPendientes;
+            ViewData["ClientesTipificados"] = clientesTipificados;
             // Asignar el nombre del usuario a la vista
             ViewData["UsuarioNombre"] = usuario != null ? usuario.NombresCompletos : "Usuario No Encontrado";
             return View("Main", detallesClientes);
@@ -377,7 +385,21 @@ namespace ALFINapp.Controllers
                     Telefono2 = detallesClientes.LatestRecord.ce.Telefono2,
                     Telefono3 = detallesClientes.LatestRecord.ce.Telefono3,
                     Telefono4 = detallesClientes.LatestRecord.ce.Telefono4,
-                    Telefono5 = detallesClientes.LatestRecord.ce.Telefono5
+                    Telefono5 = detallesClientes.LatestRecord.ce.Telefono5,
+
+                    //Propiedades Tasas y Detalles
+                    Oferta12m = detallesClientes.LatestRecord.db.Oferta12m,
+                    Tasa12m = detallesClientes.LatestRecord.db.Tasa12m,
+                    Cuota12m = detallesClientes.LatestRecord.db.Cuota12m,
+                    Oferta18m = detallesClientes.LatestRecord.db.Oferta18m,
+                    Tasa18m = detallesClientes.LatestRecord.db.Tasa18m,
+                    Cuota18m = detallesClientes.LatestRecord.db.Cuota18m,
+                    Oferta24m = detallesClientes.LatestRecord.db.Oferta24m,
+                    Tasa24m = detallesClientes.LatestRecord.db.Tasa24m,
+                    Cuota24m = detallesClientes.LatestRecord.db.Cuota24m,
+                    Oferta36m = detallesClientes.LatestRecord.db.Oferta36m,
+                    Tasa36m = detallesClientes.LatestRecord.db.Tasa36m,
+                    Cuota36m = detallesClientes.LatestRecord.db.Cuota36m,
                 }
                 : null;
 
