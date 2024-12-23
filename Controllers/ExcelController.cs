@@ -25,6 +25,14 @@ namespace ALFINapp.Controllers
             _context = context;
         }
 
+        private bool IsValidDni(float dni)
+        {
+            // Convertir el DNI a string
+            string dniString = dni.ToString();
+
+            // Comprobar que el DNI tenga exactamente 8 caracteres y que todos sean números
+            return dniString.Length > 7;
+        }
 
 
         [HttpGet]
@@ -95,7 +103,7 @@ namespace ALFINapp.Controllers
 
                     PERO ACA SOLO CONSIGUE LAS TIPIFICACIONES DE 1 USUARIO, ACA DEBE ENCONTRAR TODAS LAS TIPIFICACIONES DE 
                     TODOS LOS USUARIOS ASIGNADOS A AQUEL SUPERVISOR, COMO TAL ESTA PARTE DE SER POSIBLE ASIGNALA EN OTRO
-                    ARCHIVO DE EXCEL
+                    csvFile DE EXCEL
                  */
 
                 // Obtén los datos necesarios (simplificado para mostrar la idea)
@@ -159,7 +167,7 @@ namespace ALFINapp.Controllers
                     TELEFONO4 = detallesClientes.LatestRecord.ce.Telefono4,
                     TELEFONO5 = detallesClientes.LatestRecord.ce.Telefono5,
                 }).ToList();
-                // Genera el archivo Excel
+                // Genera el csvFile Excel
                 using (var package = new ExcelPackage())
                 {
                     var worksheet = package.Workbook.Worksheets.Add("Clientes Asignados");
@@ -259,7 +267,7 @@ namespace ALFINapp.Controllers
                     // Estiliza las columnas
                     worksheet.Cells.AutoFitColumns();
 
-                    // Devuelve el archivo
+                    // Devuelve el csvFile
                     var excelBytes = package.GetAsByteArray();
                     return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ClientesAsignados.xlsx");
                 }
@@ -270,23 +278,26 @@ namespace ALFINapp.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
-        public IActionResult SubirArchivo(IFormFile archivo)
+        public IActionResult SubircsvFile(IFormFile csvFile)
         {
-            if (archivo == null || archivo.Length == 0)
+            if (csvFile == null || csvFile.Length == 0)
             {
-                TempData["Error"] = "Por favor, seleccione un archivo válido.";
+                TempData["Message"] = "Por favor, seleccione un csvFile valido. ";
                 return RedirectToAction("Index", "Home");
             }
             try
             {
-                // Leer el archivo CSV
-                using (var reader = new StreamReader(archivo.OpenReadStream()))
+                // Leer el csvFile CSV
+                using (var reader = new StreamReader(csvFile.OpenReadStream()))
                 using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)))
                 {
-                    // Obtener los encabezados del archivo
+                    // Registrar mapeo personalizado
+                    csv.Context.RegisterClassMap<SubidaDeArchivosDTOMapping>();
+
+                    // Obtener los encabezados del csvFile
                     csv.Read();
                     csv.ReadHeader();
-                    var encabezadosArchivo = csv.HeaderRecord;
+                    var encabezadoscsvFile = csv.HeaderRecord;
 
                     // Encabezados esperados según el DTO
                     var encabezadosEsperados = new[]
@@ -297,75 +308,81 @@ namespace ALFINapp.Controllers
                     };
 
                     // Verificar que los encabezados coincidan
-                    var faltantes = encabezadosEsperados.Except(encabezadosArchivo).ToList();
+                    var faltantes = encabezadosEsperados.Except(encabezadoscsvFile).ToList();
                     if (faltantes.Any())
                     {
-                        TempData["Error"] = $"Faltan los siguientes encabezados: {string.Join(", ", faltantes)}";
+                        TempData["Message"] = $"Faltan los siguientes encabezados: {string.Join(", ", faltantes)}";
                         return RedirectToAction("Index", "Home");
                     }
 
-                    // Leer y procesar los datos del archivo
+                    // Leer y procesar los datos del csvFile
                     var registros = new List<SubidaDeArchivosDTO>();
                     while (csv.Read())
                     {
                         var registro = csv.GetRecord<SubidaDeArchivosDTO>();
+
+                        // Validación del DNI
+                        if (registro.DNI == null)
+                        {
+                            TempData["Message"] = $"El DNI {registro.DNI} no es valido. Debe ser un numero.";
+                            return RedirectToAction("Index", "Home");
+                        }
+
+                        // Validación de otros campos del DTO
+                        if (registro.FECHA_ENVIO == null || registro.FECHA_GESTION == null || string.IsNullOrEmpty(registro.COD_CANAL))
+                        {
+                            TempData["Message"] = $"Algunos campos obligatorios están vacíos en el registro con DNI {registro.DNI}.";
+                            return RedirectToAction("Index", "Home");
+                        }
+
+                        // Verificar si el registro ya existe
+                        var registroExistente = _context.CORREGIDO_FEED.FirstOrDefault(cf => cf.Dni == registro.DNI);
+                        if (registroExistente != null)
+                        {
+                            TempData["Message"] = $"El registro con DNI {registroExistente.Dni} ya existe. La subida de archivos se canceló.";
+                            return RedirectToAction("VistaMainSupervisor", "Supervisor");
+                        }
+
+                        // Si todas las validaciones pasan, agregar el registro a la lista
                         registros.Add(registro);
                     }
 
-                    // Agregar el campo adicional "tipo_base"
+                    // Procesar y guardar los registros válidos
                     foreach (var registro in registros)
                     {
-                        BaseCliente model1 = new BaseCliente
+                        var modelf = new CorregidoFeed
                         {
+                            Canal = registro.COD_CANAL,
+                            Canal1 = registro.CANAL,
                             Dni = registro.DNI,
-                        };
-
-
-                        // Lo añades al contexto
-                        _context.base_clientes.Add(model1);
-
-                        // Guardas los cambios al final
-                        _context.SaveChanges();
-
-                        // Obtienes el id del nuevo registro
-                        var idBase = model1.IdBase;
-
-                        // Creas el segundo modelo con el id correspondiente
-                        DetalleBase model3 = new DetalleBase
-                        {
-                            IdBase = idBase,
-                            Canal = registro.CANAL,
-                            FechaCarga = registro.HORA_GESTION,
+                            FechaEnvio = registro.FECHA_ENVIO,
+                            FechaGestion = registro.FECHA_GESTION,
+                            HoraGestion = registro.HORA_GESTION,
+                            Telefono1 = registro.TELEFONO,
+                            OrigenTelefono = registro.ORIGEN_TELEFONO,
                             Campaña = registro.COD_CAMPAÑA,
-                            OfertaMax = registro.OFERTA
+                            CodTipo = registro.COD_TIP,
+                            Oferta = registro.OFERTA,
+                            DniAsesor = registro.DNI_ASESOR
                         };
-                        // Lo añades al contexto
-                        _context.detalle_base.Add(model3);
 
-                        // Guardas los cambios al final
-                        _context.SaveChanges();
-                        CargaManualCsv model4 = new CargaManualCsv
-                        {
-                            IdUsuario = HttpContext.Session.GetInt32("UsuarioId"),
-                            FechaDeCarga = DateTime.Now,
-                            IdBase = idBase
-                        };
-                        
+                        // Guardar el modelo en la base de datos
+                        _context.CORREGIDO_FEED.Add(modelf);
                     }
 
-                    // Guardar los registros en la base de datos
-                    // Tu lógica de persistencia aquí (por ejemplo, usando Entity Framework)
+                    // Guardar los cambios en la base de datos
+                    _context.SaveChanges();
 
-                    TempData["Success"] = "Archivo procesado correctamente.";
+                    TempData["Message"] = "csvFile procesado correctamente.";
                 }
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("VistaMainSupervisor", "Supervisor");
             }
             catch (System.Exception ex)
             {
-                Console.WriteLine($"Error al procesar el archivo: {ex.Message}");
-                TempData["Error"] = "Ocurrió un error al procesar el archivo. Verifique su formato y vuelva a intentarlo.";
-                return RedirectToAction("Index", "Home");
+                Console.WriteLine($"Error al procesar el csvFile: {ex.Message}");
+                TempData["Message"] = "Ocurrió un error al procesar el csvFile. Verifique su formato y vuelva a intentarlo.";
+                return RedirectToAction("VistaMainSupervisor", "Supervisor");
             }
         }
     }

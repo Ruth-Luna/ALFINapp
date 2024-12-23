@@ -166,7 +166,12 @@
                         </button>
                     </td>
                     <td></td>
-                    <td></td>
+                    <td>
+                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 9, 'string')"
+                            data-sort-ignore>
+                            &#x25BC;
+                        </button>
+                    </td>
                 </tr>
                 @foreach (var ClienteDTO in Model)
                 {
@@ -200,7 +205,12 @@
                         <td>@ClienteDTO.OfertaMax</td>
                         <td>@ClienteDTO.Campaña</td>
                         <td>@ClienteDTO.FechaAsignacionVendedor</td>
-                        <td><textarea name="" id="">@ClienteDTO.ComentarioGeneral</textarea></td>
+                        <td><textarea name="" id="comentarioGeneral[@ClienteDTO.IdAsignacion]">@ClienteDTO.ComentarioGeneral</textarea>
+                            <a href="javascript:void(0);" class="btn btn-primary"
+                                onclick="savingComentario(@ClienteDTO.IdAsignacion)">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                        </td>
                         <td>@ClienteDTO.TipificacionDeMayorPeso</td>
                     </tr>
                 }
@@ -245,6 +255,34 @@
 
 
 <script>
+    function savingComentario(idAsignacion) {
+        let id_to_find = `comentarioGeneral[${idAsignacion}]`;
+        const comentarioGeneral = document.getElementById(id_to_find).value;
+        if (!comentarioGeneral) { // Validación de campo vacío
+            alert('El comentario no puede estar vacío.');
+            return;
+        }
+        $.ajax({
+            url: '/User/EnviarComentarioGeneral', // Controlador y acción
+            type: 'POST',
+            data: {
+                idAsignacion: idAsignacion,
+                comentarioGeneral: comentarioGeneral
+            },
+            success: function (response) {
+                if (response.success) {
+                    alert('Comentario agregado correctamente.');
+                } else {
+                    alert('Error: ' + response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error al enviar comentario:', error);
+                alert('Hubo un error inesperado al enviar el comentario.');
+            }
+        });
+    }
+
     function loadTipificarCliente(idBase) {
         $.ajax({
             url: '/User/TipificarClienteView', // Controlador y acción

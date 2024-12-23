@@ -836,5 +836,34 @@ namespace ALFINapp.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+        [HttpPost]
+        public IActionResult EnviarComentarioGeneral(int idAsignacion, string comentarioGeneral)
+        {
+            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+            {
+                TempData["Message"] = "Ha ocurrido un error en la autenticación";
+                return RedirectToAction("Index", "Home");
+            }
+            try
+            {
+                var modificarComentarioGeneral = _context.clientes_asignados.FirstOrDefault(ca => ca.IdAsignacion == idAsignacion);
+                if (modificarComentarioGeneral != null)
+                {
+                    modificarComentarioGeneral.ComentarioGeneral = comentarioGeneral;
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Número no encontrado." });
+                }
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
     }
 }
