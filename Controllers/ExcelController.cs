@@ -285,6 +285,12 @@ namespace ALFINapp.Controllers
                 TempData["Message"] = "Por favor, seleccione un csvFile valido. ";
                 return RedirectToAction("Index", "Home");
             }
+            int? idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
+                if (idSupervisorActual == null)
+                {
+                    TempData["Message"] = "Error en la autenticación. Intente iniciar sesión nuevamente.";
+                    return RedirectToAction("Index", "Home");
+                }
             try
             {
                 // Leer el csvFile CSV
@@ -368,6 +374,15 @@ namespace ALFINapp.Controllers
 
                         // Guardar el modelo en la base de datos
                         _context.CORREGIDO_FEED.Add(modelf);
+
+                        var modelforFechas = new CargaManualCsv
+                        {
+                            IdUsuario = idSupervisorActual,
+                            FechaDeCarga = DateTime.Now,
+                            DniUsuarioAgregado = (int)registro.DNI
+                        };
+
+                        _context.carga_manual_csv.Add(modelforFechas);
                     }
 
                     // Guardar los cambios en la base de datos
