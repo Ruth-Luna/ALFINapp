@@ -34,6 +34,11 @@ public class DetalleTipificarClienteDTO
     public string? Telefono3 { get; set; }
     public string? Telefono4 { get; set; }
     public string? Telefono5 { get; set; }
+    public string? ComentarioTelefono1 { get; set; }
+    public string? ComentarioTelefono2 { get; set; }
+    public string? ComentarioTelefono3 { get; set; }
+    public string? ComentarioTelefono4 { get; set; }
+    public string? ComentarioTelefono5 { get; set; }
 
     //Propiedas de Tasa
     public decimal? OfertaMax { get; set; }

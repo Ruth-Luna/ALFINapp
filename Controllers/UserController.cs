@@ -392,6 +392,11 @@ namespace ALFINapp.Controllers
                     Telefono3 = detallesClientes.LatestRecord.ce.Telefono3,
                     Telefono4 = detallesClientes.LatestRecord.ce.Telefono4,
                     Telefono5 = detallesClientes.LatestRecord.ce.Telefono5,
+                    ComentarioTelefono1 = detallesClientes.LatestRecord.ce.ComentarioTelefono1,
+                    ComentarioTelefono2 = detallesClientes.LatestRecord.ce.ComentarioTelefono2,
+                    ComentarioTelefono3 = detallesClientes.LatestRecord.ce.ComentarioTelefono3,
+                    ComentarioTelefono4 = detallesClientes.LatestRecord.ce.ComentarioTelefono4,
+                    ComentarioTelefono5 = detallesClientes.LatestRecord.ce.ComentarioTelefono5,
 
                     //Propiedades Tasas y Detalles
                     Oferta12m = detallesClientes.LatestRecord.db.Oferta12m,
@@ -835,6 +840,74 @@ namespace ALFINapp.Controllers
                     return Json(new { success = false, message = "Número no encontrado." });
                 }
 
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult EnviarComentarioTelefonoDB(string Telefono, int IdCliente, string Comentario, int numeroTelefono)
+        {
+            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+            {
+                TempData["Message"] = "Ha ocurrido un error en la autenticación";
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (string.IsNullOrEmpty(Telefono) || string.IsNullOrEmpty(Comentario))
+            {
+                return Json(new { success = false, message = "Datos inválidos." });
+            }
+
+            try
+            {
+                var clienteEnriquecido = _context.clientes_enriquecidos.FirstOrDefault(ce => ce.IdCliente == IdCliente);
+                if (clienteEnriquecido == null)
+                {
+                    return Json(new { success = false, message = "Cliente no encontrado." });
+                }
+
+                switch (numeroTelefono)
+                {
+                    case 1:
+                        if (clienteEnriquecido.Telefono1 == Telefono)
+                        {
+                            clienteEnriquecido.ComentarioTelefono1 = Comentario;
+                        }
+                        break;
+                    case 2:
+                        if (clienteEnriquecido.Telefono2 == Telefono)
+                        {
+                            clienteEnriquecido.ComentarioTelefono2 = Comentario;
+                        }
+                        break;
+                    case 3:
+                        if (clienteEnriquecido.Telefono3 == Telefono)
+                        {
+                            clienteEnriquecido.ComentarioTelefono3 = Comentario;
+                        }
+                        break;
+                    case 4:
+                        if (clienteEnriquecido.Telefono4 == Telefono)
+                        {
+                            clienteEnriquecido.ComentarioTelefono4 = Comentario;
+                        }
+                        break;
+                    case 5:
+                        if (clienteEnriquecido.Telefono5 == Telefono)
+                        {
+                            clienteEnriquecido.ComentarioTelefono5 = Comentario;
+                        }
+                        break;
+                    default:
+                        return Json(new { success = false, message = "Número de teléfono inválido." });
+                }
+
+                _context.SaveChanges();
                 return Json(new { success = true });
             }
             catch (Exception ex)

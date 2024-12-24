@@ -243,14 +243,16 @@
                         <label for="Telefono[@contadorNumeros]" class="form-label">Teléfono @contadorNumeros</label>
                         <input class="form-control" name="tipificaciones[@contadorNumeros].Telefono"
                             id="Telefono_@contadorNumeros" type="text" value="@telefonosVendedor.TelefonoTipificado" readonly />
+
                         <div class="spacing"></div>
+
                         <textarea class="form-control" id="comentarioAsesor_@contadorNumeros"
                             data-telefono="@telefonosVendedor.TelefonoTipificado"
                             data-id-cliente="@id_cliente">@telefonosVendedor.ComentarioTelefono</textarea>
                         <div class="spacing"></div>
                         <a href="javascript:void(0);" class="btn btn-primary"
                             onclick="enviarComentario('@id_cliente', '@telefonosVendedor.TelefonoTipificado', 'comentarioAsesor_@contadorNumeros')">
-                            Agregue un Comentario
+                            <i class="fa fa-pencil"></i>
                         </a>
                     </div>
                     <div class="col-12 col-md-8 mt-2 mt-md-0">
@@ -360,9 +362,21 @@
                 <label for="Telefono1" class="form-label">Teléfono 1</label>
                 <input class="form-control" name="Telefono1" id="Telefono1" type="text" value="@Model.Telefono1"
                     readonly>
+
+                <div class="spacing"></div>
+
+                <textarea class="form-control" id="comentarioAsesor_teldb1"
+                    data-telefono="@Model.Telefono1"
+                    data-id-cliente="@id_cliente">@Model.ComentarioTelefono1</textarea>
+                <div class="spacing"></div>
+                <a href="javascript:void(0);" class="btn btn-primary"
+                    onclick="enviarComentarioTelefonoDB('@id_cliente', '@Model.Telefono1', 'comentarioAsesor_teldb1', 1)">
+                    <i class="fa fa-pencil"></i>
+                </a>
+
             </div>
 
-            @if (@Model.Telefono1 != "0")
+            @if (@Model.Telefono1 != "0" && !string.IsNullOrEmpty(Model.Telefono1))
             {
                 <div class="col-12 col-md-8 mt-2 mt-md-0">
 
@@ -395,8 +409,20 @@
                 <label for="Telefono2" class="form-label">Teléfono 2</label>
                 <input class="form-control" name="Telefono2" id="Telefono2" type="text" value="@Model.Telefono2"
                     readonly>
+
+                <div class="spacing"></div>
+
+                <textarea class="form-control" id="comentarioAsesor_teldb2"
+                    data-telefono="@Model.Telefono2"
+                    data-id-cliente="@id_cliente">@Model.ComentarioTelefono2</textarea>
+                <div class="spacing"></div>
+                <a href="javascript:void(0);" class="btn btn-primary"
+                    onclick="enviarComentarioTelefonoDB('@id_cliente', '@Model.Telefono2', 'comentarioAsesor_teldb2', 2)">
+                    <i class="fa fa-pencil"></i>
+                </a>
+
             </div>
-            @if (@Model.Telefono2 != "0")
+            @if (@Model.Telefono2 != "0" && !string.IsNullOrEmpty(Model.Telefono2))
             {
                 <div class="col-12 col-md-8 mt-2 mt-md-0">
                     <input type="hidden" name="Tipificacion2" id="tipificacionId_db2" />
@@ -427,9 +453,20 @@
                 <label for="Telefono3" class="form-label">Teléfono 3</label>
                 <input class="form-control" name="Telefono3" id="Telefono3" type="text" value="@Model.Telefono3"
                     readonly>
+
+                <div class="spacing"></div>
+
+                <textarea class="form-control" id="comentarioAsesor_teldb3"
+                    data-telefono="@Model.Telefono3"
+                    data-id-cliente="@id_cliente">@Model.ComentarioTelefono3</textarea>
+                <div class="spacing"></div>
+                <a href="javascript:void(0);" class="btn btn-primary"
+                    onclick="enviarComentarioTelefonoDB('@id_cliente', '@Model.Telefono3', 'comentarioAsesor_teldb3', 3)">
+                    <i class="fa fa-pencil"></i>
+                </a>
             </div>
 
-            @if (@Model.Telefono3 != "0")
+            @if (@Model.Telefono3 != "0" && !string.IsNullOrEmpty(Model.Telefono3))
             {
                 <div class="col-12 col-md-8 mt-2 mt-md-0">
                     <input type="hidden" name="Tipificacion3" id="tipificacionId_db3" />
@@ -459,9 +496,20 @@
                 <label for="Telefono4" class="form-label">Teléfono 4</label>
                 <input class="form-control" name="Telefono4" id="Telefono4" type="text" value="@Model.Telefono4"
                     readonly>
+
+                <div class="spacing"></div>
+
+                <textarea class="form-control" id="comentarioAsesor_teldb4"
+                    data-telefono="@Model.Telefono4"
+                    data-id-cliente="@id_cliente">@Model.ComentarioTelefono4</textarea>
+                <div class="spacing"></div>
+                <a href="javascript:void(0);" class="btn btn-primary"
+                    onclick="enviarComentarioTelefonoDB('@id_cliente', '@Model.Telefono4', 'comentarioAsesor_teldb4', 4)">
+                    <i class="fa fa-pencil"></i>
+                </a>
             </div>
 
-            @if (@Model.Telefono4 != "0")
+            @if (@Model.Telefono4 != "0" && !string.IsNullOrEmpty(Model.Telefono4))
             {
                 <div class="col-12 col-md-8 mt-2 mt-md-0">
                     <input type="hidden" name="Tipificacion4" id="tipificacionId_db4" />
@@ -491,9 +539,20 @@
                 <label for="Telefono5" class="form-label">Teléfono 5</label>
                 <input class="form-control" name="Telefono5" id="Telefono5" type="text" value="@Model.Telefono5"
                     readonly>
+
+                <div class="spacing"></div>
+
+                <textarea class="form-control" id="comentarioAsesor_teldb5"
+                    data-telefono="@Model.Telefono5"
+                    data-id-cliente="@id_cliente">@Model.ComentarioTelefono5</textarea>
+                <div class="spacing"></div>
+                <a href="javascript:void(0);" class="btn btn-primary"
+                    onclick="enviarComentarioTelefonoDB('@id_cliente', '@Model.Telefono5', 'comentarioAsesor_teldb5', 5)">
+                    <i class="fa fa-pencil"></i>
+                </a>
             </div>
 
-            @if (@Model.Telefono5 != "0")
+            @if (@Model.Telefono5 != "0" && !string.IsNullOrEmpty(Model.Telefono5))
             {
                 <div class="col-12 col-md-8 mt-2 mt-md-0">
                     <input type="hidden" name="Tipificacion5" id="tipificacionId_db5" />
@@ -519,7 +578,7 @@
         </div>
     </div>
 
-    <br>
+    <div class="spacing"></div>
 
     <div class="form-group">
         <div class="alert alert-info" role="alert">
@@ -528,6 +587,7 @@
         <button class="btn btn-success" type="submit">Guardar Tipificaciones</button>
         <a href="@Url.Action("Ventas", "User")" class="btn btn-danger">Cancelar</a>
     </div>
+
 </form>
 
 
@@ -648,6 +708,7 @@
         document.getElementById('agregarTelefonoContainer').style.display = 'none';
     }
 </script>
+
 <script>
     function enviarComentario(idCliente, telefono, textareaId) {
         const comentario = document.getElementById(textareaId).value;
@@ -682,9 +743,7 @@
             }
         });
     }
-</script>
 
-<script>
     // Función para actualizar el ID de la tipificación cuando se selecciona una opción del datalist
     function actualizarIdTipificacion(contadorNumeros) {
         var inputText = document.getElementById('tipificacionSelect_' + contadorNumeros);
@@ -700,5 +759,40 @@
         }
 
         hiddenInput.value = ''; // Si no hay coincidencia, limpiar el ID
+    }
+
+    function enviarComentarioTelefonoDB(idCliente, telefono, textareaId, numTelefono) {
+        const comentario = document.getElementById(textareaId).value;
+
+        if (!comentario) {
+            alert('Por favor, ingrese un comentario antes de enviarlo.');
+            return;
+        }
+
+        // Enviar la solicitud POST con los datos al controlador
+        $.ajax({
+            url: '/User/EnviarComentarioTelefonoDB', // Asegúrate de que coincida con la ruta del controlador
+            type: 'POST', // Especificar método POST
+            data: {
+                Telefono: telefono,
+                IdCliente: idCliente,
+                Comentario: comentario,
+                numeroTelefono: numTelefono
+            },
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() // Anti-CSRF
+            },
+            success: function (response) {
+                if (response.success) {
+                    alert('Comentario agregado correctamente.');
+                } else {
+                    alert('Error: ' + response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error al enviar comentario:', error);
+                alert('Hubo un error inesperado al enviar el comentario.');
+            }
+        });
     }
 </script>

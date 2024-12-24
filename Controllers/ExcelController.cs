@@ -286,11 +286,11 @@ namespace ALFINapp.Controllers
                 return RedirectToAction("Index", "Home");
             }
             int? idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
-                if (idSupervisorActual == null)
-                {
-                    TempData["Message"] = "Error en la autenticación. Intente iniciar sesión nuevamente.";
-                    return RedirectToAction("Index", "Home");
-                }
+            if (idSupervisorActual == null)
+            {
+                TempData["Message"] = "Error en la autenticación. Intente iniciar sesión nuevamente.";
+                return RedirectToAction("Index", "Home");
+            }
             try
             {
                 // Leer el csvFile CSV
@@ -342,10 +342,12 @@ namespace ALFINapp.Controllers
                         }
 
                         // Verificar si el registro ya existe
-                        var registroExistente = _context.SUBIR_FEED.FirstOrDefault(cf => cf.Dni == registro.DNI);
-                        if (registroExistente != null)
+                        var registroExistente = _context.SUBIR_FEED
+                            .AsNoTracking()
+                            .Any(sf => sf.Dni == registro.DNI);
+                        if (registroExistente)
                         {
-                            TempData["Message"] = $"El registro con DNI {registroExistente.Dni} ya existe. La subida de archivos se canceló.";
+                            TempData["Message"] = $"El registro con DNI {registro.DNI} ya existe. La subida de archivos se canceló.";
                             return RedirectToAction("VistaMainSupervisor", "Supervisor");
                         }
 
@@ -379,7 +381,7 @@ namespace ALFINapp.Controllers
                         {
                             IdUsuario = idSupervisorActual,
                             FechaDeCarga = DateTime.Now,
-                            DniUsuarioAgregado =registro.DNI
+                            DniUsuarioAgregado = registro.DNI
                         };
 
                         _context.carga_manual_csv.Add(modelforFechas);
