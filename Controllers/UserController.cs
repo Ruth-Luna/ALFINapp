@@ -110,14 +110,17 @@ namespace ALFINapp.Controllers
                                   join bc in _context.base_clientes.AsNoTracking() on db.IdBase equals bc.IdBase
                                   join ce in _context.clientes_enriquecidos on bc.IdBase equals ce.IdBase
                                   join ca in _context.clientes_asignados on ce.IdCliente equals ca.IdCliente
+                                  where db.TipoBase == ca.FuenteBase // Filtramos por FuenteBase
+                                        && (ca.ClienteDesembolso != true) // Excluimos clientes con ClienteDesembolso == true
+                                        && (ca.ClienteRetirado != true)
                                   group new { db, bc, ca } by db.IdBase into grouped
                                   select new
                                   {
-                                      IdBase = grouped.Key,
-                                      LatestRecord = grouped.OrderByDescending(x => x.db.FechaCarga)
-                                                            .FirstOrDefault(),
-                                  })
-                                  .ToListAsync();
+                                      IdBase = grouped.Key, // Este es el valor agrupado (db.IdBase)
+                                      LatestRecord = grouped.OrderByDescending(x => x.db.FechaCarga) // Ordenamos por FechaCarga
+                                                            .FirstOrDefault() // Obtenemos el primer (más reciente) registro
+                                  }).ToListAsync();
+
 
             // Mapear los resultados a DTO
             var detallesClientes = clientes.Select(cliente => new DetalleBaseClienteDTO
@@ -341,13 +344,16 @@ namespace ALFINapp.Controllers
             var detallesClientes = (from bc in _context.base_clientes
                                     join db in _context.detalle_base on bc.IdBase equals db.IdBase
                                     join ce in _context.clientes_enriquecidos on bc.IdBase equals ce.IdBase
-                                    where bc.IdBase == id_base
+                                    join ca in _context.clientes_asignados on ce.IdCliente equals ca.IdCliente
+
+                                    where bc.IdBase == id_base && db.TipoBase == ca.FuenteBase &&
+                                          ca.IdUsuarioV == HttpContext.Session.GetInt32("UsuarioId")
                                     group new { bc, db, ce } by db.IdBase into grouped
                                     select new
                                     {
                                         // Propiedades de BaseCliente
                                         IdBase = grouped.Key,
-                                        LatestRecord = grouped.OrderByDescending(x => x.db.FechaCarga).FirstOrDefault(),
+                                        LatestRecord = grouped.FirstOrDefault(),
                                     }).FirstOrDefault();
 
             var detalleTipificarCliente = detallesClientes?.LatestRecord != null
@@ -541,7 +547,7 @@ namespace ALFINapp.Controllers
             {
                 var telefono = telefonos[i];
                 var tipificacion = tipificaciones[i];
-                
+
                 if (telefono != "0" && tipificacion.HasValue)
                 {
                     var tipificacionInfo = _context.tipificaciones
@@ -576,7 +582,7 @@ namespace ALFINapp.Controllers
 
                 }
             }
-            
+
             if (!string.IsNullOrEmpty(descripcionTipificacionMayorPeso) && pesoMayor > (ClienteAsignado.PesoTipificacionMayor ?? 0))
             {
                 ClienteAsignado.TipificacionMayorPeso = descripcionTipificacionMayorPeso; // Almacena la descripción

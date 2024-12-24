@@ -17,6 +17,6 @@ public class MDbContext : DbContext
     public DbSet<ClientesTipificado> clientes_tipificados { get; set; }
     public DbSet<Tipificaciones> tipificaciones { get; set; }
     public DbSet<TelefonosAgregados> telefonos_agregados { get; set; }
-    public DbSet<CorregidoFeed> CORREGIDO_FEED { get; set; }
+    public DbSet<SubirFeed> SUBIR_FEED { get; set; }
     public DbSet<CargaManualCsv> carga_manual_csv { get; set; }
 }

@@ -37,114 +37,85 @@
 }
 
 <div class="row">
-    <!-- Primera Columna -->
-    <div class="col-md-6">
-        <h3>Datos del Prospecto</h3>
-        <div class="form-group">
-            <label for="DNI">DNI</label>
-            <input class="form-control" id="DNI" type="text" value="@dni" readonly>
-        </div>
-        <div class="form-group">
-            <label for="X_APPATERNO">Apellido Paterno</label>
-            <input class="form-control" id="X_APPATERNO" type="text" value="@Model.XAppaterno" readonly>
-        </div>
-        <div class="form-group">
-            <label for="X_APMATERNO">Apellido Materno</label>
-            <input class="form-control" id="X_APMATERNO" type="text" value="@Model.XApmaterno" readonly>
-        </div>
-        <div class="form-group">
-            <label for="X_NOMBRE">Nombre</label>
-            <input class="form-control" id="X_NOMBRE" type="text" value="@Model.XNombre" readonly>
-        </div>
-        <div class="form-group">
-            <label for="EDAD">Edad</label>
-            <input class="form-control" id="EDAD" type="text" value="@Model.Edad" readonly>
-        </div>
-        <div class="form-group">
-            <label for="DEPARTAMENTO">Departamento</label>
-            <input class="form-control" id="DEPARTAMENTO" type="text" value="@Model.Departamento" readonly>
-        </div>
-        <div class="form-group">
-            <label for="PROVINCIA">Provincia</label>
-            <input class="form-control" id="PROVINCIA" type="text" value="@Model.Provincia" readonly>
-        </div>
-        <div class="form-group">
-            <label for="DISTRITO">Distrito</label>
-            <input class="form-control" id="DISTRITO" type="text" value="@Model.Distrito" readonly>
-        </div>
-        <div class="spacing"></div>
-        <h3>Tendencia del Prospecto</h3>
-        <div class="form-group">
-            <label for="PROPENSION">Propensión</label>
-            <input class="form-control" id="PROPENSION" type="text" value="@Model.Propension" readonly>
-        </div>
-        <div class="form-group">
-            <label for="TIPO_CLIENTE">Tipo de Cliente</label>
-            <input class="form-control" id="TIPO_CLIENTE" type="text" value="@Model.TipoCliente" readonly>
-        </div>
-        <div class="form-group">
-            <label for="CLIENTE_NUEVO">Antiguedad del Cliente</label>
-            <input class="form-control" id="CLIENTE_NUEVO" type="text" value="@Model.ClienteNuevo" readonly>
-        </div>
-        <!-- Colores -->
-        <div class="form-group">
-            <label for="COLOR">Color Principal</label>
-            <div class="d-flex align-items-center">
-                <input class="form-control ml-2" style="background-color: @GetColorCode(Model.Color); width: 10%;"
-                    readonly>
-                <input class="form-control ml-2" id="COLOR" type="text" value="@Model.Color" readonly>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="COLOR_FINAL">Color Final</label>
-            <div class="d-flex align-items-center">
-                <input class="form-control ml-2" style="background-color: @GetColorCode(Model.ColorFinal); width: 10%;"
-                    readonly>
-                <input class="form-control ml-2" id="COLOR_FINAL" type="text" value="@Model.ColorFinal" readonly>
-            </div>
-        </div>
-    </div>
-    <!-- Segunda Columna -->
-    <div class="col-md-6">
-        <h3>Detalles de la Campaña</h3>
-        <input class="form-control ml-2" id="IDBASEUSUARIO" value="@Model.IdBase" hidden>
-        <div class="form-group">
-            <label for="CAMPAÑA">Campaña</label>
-            <input class="form-control" id="CAMPAÑA" type="text" value="@Model.Campaña" readonly>
-        </div>
-        <div class="form-group">
-            <label for="OFERTA_MAX">Oferta Máxima</label>
-            <input class="form-control" id="OFERTA_MAX" type="text" value="@Model.OfertaMax" readonly>
-        </div>
-        <div class="form-group">
-            <label for="TASA_MINIMA">Tasa Mínima</label>
-            <input class="form-control" id="TASA_MINIMA" type="text" value="@Model.TasaMinima" readonly>
-        </div>
-        <div class="form-group">
-            <label for="SUCURSAL_COMERCIAL">Sucursal Comercial</label>
-            <input class="form-control" id="SUCURSAL_COMERCIAL" type="text"
-                value="@Model.Sucursal --> @Model.AgenciaComercial" readonly>
-        </div>
-        <div class="form-group">
-            <label for="PLAZO">Plazo</label>
-            <input class="form-control" id="PLAZO" type="text" value="@Model.Plazo" readonly>
-        </div>
-        <div class="form-group">
-            <label for="CUOTA">Cuota</label>
-            <input class="form-control" id="CUOTA" type="text" value="@Model.Cuota" readonly>
-        </div>
-        <div class="form-group">
-            <label for="GRUPO_TASA">Grupo Tasa</label>
-            <input class="form-control" id="GRUPO_TASA" type="text" value="@Model.GrupoTasa" readonly>
-        </div>
-        <div class="form-group">
-            <label for="GRUPO_MONTO">Grupo Monto</label>
-            <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.GrupoMonto" readonly>
-        </div>
-        <div class="spacing"></div>
 
-        <h2>Detalles de las Ofertas</h2>
-        <!--<div class="spacing"></div>
+    <div class="row">
+        <!-- Primera Columna -->
+        <div class="col-md-6">
+            <h3>Datos del Prospecto</h3>
+            <div class="form-group">
+                <label for="DNI">DNI</label>
+                <input class="form-control" id="DNI" type="text" value="@dni" readonly>
+            </div>
+            <div class="form-group">
+                <label for="X_APPATERNO">Apellido Paterno</label>
+                <input class="form-control" id="X_APPATERNO" type="text" value="@Model.XAppaterno" readonly>
+            </div>
+            <div class="form-group">
+                <label for="X_APMATERNO">Apellido Materno</label>
+                <input class="form-control" id="X_APMATERNO" type="text" value="@Model.XApmaterno" readonly>
+            </div>
+            <div class="form-group">
+                <label for="X_NOMBRE">Nombre</label>
+                <input class="form-control" id="X_NOMBRE" type="text" value="@Model.XNombre" readonly>
+            </div>
+            <div class="form-group">
+                <label for="EDAD">Edad</label>
+                <input class="form-control" id="EDAD" type="text" value="@Model.Edad" readonly>
+            </div>
+            <div class="form-group">
+                <label for="DEPARTAMENTO">Departamento</label>
+                <input class="form-control" id="DEPARTAMENTO" type="text" value="@Model.Departamento" readonly>
+            </div>
+            <div class="form-group">
+                <label for="PROVINCIA">Provincia</label>
+                <input class="form-control" id="PROVINCIA" type="text" value="@Model.Provincia" readonly>
+            </div>
+            <div class="form-group">
+                <label for="DISTRITO">Distrito</label>
+                <input class="form-control" id="DISTRITO" type="text" value="@Model.Distrito" readonly>
+            </div>
+            <div class="spacing"></div>
+        </div>
+        <!-- Segunda Columna -->
+        <div class="col-md-6">
+            <h3>Detalles de la Campaña</h3>
+            <input class="form-control ml-2" id="IDBASEUSUARIO" value="@Model.IdBase" hidden>
+            <div class="form-group">
+                <label for="CAMPAÑA">Campaña</label>
+                <input class="form-control" id="CAMPAÑA" type="text" value="@Model.Campaña" readonly>
+            </div>
+            <div class="form-group">
+                <label for="OFERTA_MAX">Oferta Máxima</label>
+                <input class="form-control" id="OFERTA_MAX" type="text" value="@Model.OfertaMax" readonly>
+            </div>
+            <div class="form-group">
+                <label for="TASA_MINIMA">Tasa Mínima</label>
+                <input class="form-control" id="TASA_MINIMA" type="text" value="@Model.TasaMinima" readonly>
+            </div>
+            <div class="form-group">
+                <label for="SUCURSAL_COMERCIAL">Sucursal Comercial</label>
+                <input class="form-control" id="SUCURSAL_COMERCIAL" type="text"
+                    value="@Model.Sucursal --> @Model.AgenciaComercial" readonly>
+            </div>
+            <div class="form-group">
+                <label for="PLAZO">Plazo</label>
+                <input class="form-control" id="PLAZO" type="text" value="@Model.Plazo" readonly>
+            </div>
+            <div class="form-group">
+                <label for="CUOTA">Cuota</label>
+                <input class="form-control" id="CUOTA" type="text" value="@Model.Cuota" readonly>
+            </div>
+            <div class="form-group">
+                <label for="GRUPO_TASA">Grupo Tasa</label>
+                <input class="form-control" id="GRUPO_TASA" type="text" value="@Model.GrupoTasa" readonly>
+            </div>
+            <div class="form-group">
+                <label for="GRUPO_MONTO">Grupo Monto</label>
+                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.GrupoMonto" readonly>
+            </div>
+            <div class="spacing"></div>
+
+            <!--<div class="spacing"></div>
         <form asp-action="culminarCliente" asp-controller="User">
             <input type="hidden" name="IdAsignacion" value="@id_asignacion" />
             <button class="btn btn-warning" type="submit">Culminar</button>
@@ -153,44 +124,101 @@
         <p>Activar este boton culminara con las tipificaciones del Cliente y sera notificado al Supervisor.
             Esta accion no puede ser revertida</p>
         -->
-        <div class="spacing"></div>
-        <div class="form-group">
-            <label for="GRUPO_MONTO">Oferta 12 Meses</label>
-            <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Oferta12m" readonly>
         </div>
-        <div class="form-group">
-            <label for="GRUPO_MONTO">Tasa 12 Meses</label>
-            <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Tasa12m" readonly>
+    </div>
+
+    <div class="row">
+        <h3>Detalles de las Ofertas</h3>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="GRUPO_MONTO">Oferta 12 Meses</label>
+                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Oferta12m" readonly>
+            </div>
+            <div class="form-group">
+                <label for="GRUPO_MONTO">Tasa 12 Meses</label>
+                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Tasa12m" readonly>
+            </div>
+            <div class="form-group">
+                <label for="GRUPO_MONTO">Cuota 12 Meses</label>
+                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Cuota12m" readonly>
+            </div>
+            <div class="spacing"></div>
+            <div class="form-group">
+                <label for="GRUPO_MONTO">Oferta 18 Meses</label>
+                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Oferta18m" readonly>
+            </div>
+            <div class="form-group">
+                <label for="GRUPO_MONTO">Tasa 18 Meses</label>
+                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Tasa18m" readonly>
+            </div>
+            <div class="form-group">
+                <label for="GRUPO_MONTO">Cuota 18 Meses</label>
+                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Cuota18m" readonly>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="GRUPO_MONTO">Cuota 12 Meses</label>
-            <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Cuota12m" readonly>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="GRUPO_MONTO">Oferta 24 Meses</label>
+                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Oferta24m" readonly>
+            </div>
+            <div class="form-group">
+                <label for="GRUPO_MONTO">Tasa 24 Meses</label>
+                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Tasa24m" readonly>
+            </div>
+            <div class="form-group">
+                <label for="GRUPO_MONTO">Cuota 24 Meses</label>
+                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Cuota24m" readonly>
+            </div>
+            <div class="spacing"></div>
+            <div class="form-group">
+                <label for="GRUPO_MONTO">Oferta 36 Meses</label>
+                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Oferta36m" readonly>
+            </div>
+            <div class="form-group">
+                <label for="GRUPO_MONTO">Tasa 36 Meses</label>
+                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Tasa36m" readonly>
+            </div>
+            <div class="form-group">
+                <label for="GRUPO_MONTO">Cuota 36 Meses</label>
+                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Cuota36m" readonly>
+            </div>
         </div>
-        <div class="spacing"></div>
-        <div class="form-group">
-            <label for="GRUPO_MONTO">Oferta 24 Meses</label>
-            <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Oferta24m" readonly>
+    </div>
+    <div class="spacing"></div>
+    <div class="row">
+        <h3>Tendencia del Prospecto</h3>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="PROPENSION">Propensión</label>
+                <input class="form-control" id="PROPENSION" type="text" value="@Model.Propension" readonly>
+            </div>
+            <div class="form-group">
+                <label for="TIPO_CLIENTE">Tipo de Cliente</label>
+                <input class="form-control" id="TIPO_CLIENTE" type="text" value="@Model.TipoCliente" readonly>
+            </div>
+            <div class="form-group">
+                <label for="CLIENTE_NUEVO">Antiguedad del Cliente</label>
+                <input class="form-control" id="CLIENTE_NUEVO" type="text" value="@Model.ClienteNuevo" readonly>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="GRUPO_MONTO">Tasa 24 Meses</label>
-            <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Tasa24m" readonly>
-        </div>
-        <div class="form-group">
-            <label for="GRUPO_MONTO">Cuota 24 Meses</label>
-            <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Cuota24m" readonly>
-        </div>
-        <div class="spacing"></div>
-        <div class="form-group">
-            <label for="GRUPO_MONTO">Oferta 36 Meses</label>
-            <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Oferta36m" readonly>
-        </div>
-        <div class="form-group">
-            <label for="GRUPO_MONTO">Tasa 36 Meses</label>
-            <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Tasa36m" readonly>
-        </div>
-        <div class="form-group">
-            <label for="GRUPO_MONTO">Cuota 36 Meses</label>
-            <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Cuota36m" readonly>
+        <div class="col-md-6">
+            <!-- Colores -->
+            <div class="form-group">
+                <label for="COLOR">Color Principal</label>
+                <div class="d-flex align-items-center">
+                    <input class="form-control ml-2" style="background-color: @GetColorCode(Model.Color); width: 10%;"
+                        readonly>
+                    <input class="form-control ml-2" id="COLOR" type="text" value="@Model.Color" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="COLOR_FINAL">Color Final</label>
+                <div class="d-flex align-items-center">
+                    <input class="form-control ml-2"
+                        style="background-color: @GetColorCode(Model.ColorFinal); width: 10%;" readonly>
+                    <input class="form-control ml-2" id="COLOR_FINAL" type="text" value="@Model.ColorFinal" readonly>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -407,10 +435,10 @@
                     <input type="hidden" name="Tipificacion3" id="tipificacionId_db3" />
 
                     <label for="tipificacionSelect_db3" class="form-label mt-2">Tipificación Asignada 3: </label>
-                        
+
                     <input class="form-control" list="tipificacionesList_db3"
-                        name="tipificacionesdb3.TipificacionDescripcion"
-                        id="tipificacionSelect_db3" placeholder="Presione 2 veces para ver las tipificaciones"
+                        name="tipificacionesdb3.TipificacionDescripcion" id="tipificacionSelect_db3"
+                        placeholder="Presione 2 veces para ver las tipificaciones"
                         oninput="actualizarIdTipificacion('db3')" />
 
                     <datalist id="tipificacionesList_db3">
@@ -439,10 +467,10 @@
                     <input type="hidden" name="Tipificacion4" id="tipificacionId_db4" />
 
                     <label for="tipificacionSelect_db4" class="form-label mt-2">Tipificación Asignada 4: </label>
-                        
+
                     <input class="form-control" list="tipificacionesList_db4"
-                        name="tipificacionesdb4.TipificacionDescripcion"
-                        id="tipificacionSelect_db4" placeholder="Presione 2 veces para ver las tipificaciones"
+                        name="tipificacionesdb4.TipificacionDescripcion" id="tipificacionSelect_db4"
+                        placeholder="Presione 2 veces para ver las tipificaciones"
                         oninput="actualizarIdTipificacion('db4')" />
 
                     <datalist id="tipificacionesList_db4">
@@ -471,10 +499,10 @@
                     <input type="hidden" name="Tipificacion5" id="tipificacionId_db5" />
 
                     <label for="tipificacionSelect_db5" class="form-label mt-2">Tipificación Asignada 5: </label>
-                        
+
                     <input class="form-control" list="tipificacionesList_db5"
-                        name="tipificacionesdb5.TipificacionDescripcion"
-                        id="tipificacionSelect_db5" placeholder="Presione 2 veces para ver las tipificaciones"
+                        name="tipificacionesdb5.TipificacionDescripcion" id="tipificacionSelect_db5"
+                        placeholder="Presione 2 veces para ver las tipificaciones"
                         oninput="actualizarIdTipificacion('db5')" />
 
                     <datalist id="tipificacionesList_db5">

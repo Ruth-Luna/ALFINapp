@@ -30,7 +30,9 @@ namespace ALFINapp.Controllers
                                  join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
                                  join u in _context.usuarios on ca.IdUsuarioV equals u.IdUsuario into usuarioJoin
                                  from u in usuarioJoin.DefaultIfEmpty()
-                                 where ca.IdUsuarioS == usuarioId
+                                 where ca.IdUsuarioS == usuarioId 
+                                        && ca.ClienteDesembolso != true
+                                        && ca.ClienteRetirado != true
                                  select new SupervisorDTO
                                  {
                                      IdAsignacion = ca.IdAsignacion,

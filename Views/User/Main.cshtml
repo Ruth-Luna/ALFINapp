@@ -334,13 +334,6 @@
                     : parseFloat(bText) - parseFloat(aText);
             }
             if (type === 'date') {
-                const aDate = aText ? new Date(aText) : null;
-                const bDate = bText ? new Date(bText) : null;
-
-                if (!aDate && !bDate) return 0; // Ambos vacíos
-                if (!aDate) return isAscending ? 1 : -1; // a vacío
-                if (!bDate) return isAscending ? -1 : 1; // b vacío
-
                 return isAscending
                     ? aDate - bDate
                     : bDate - aDate;
@@ -350,20 +343,12 @@
                     ? aText.toLowerCase() === 'true' ? -1 : 1
                     : aText.toLowerCase() === 'true' ? 1 : -1;
             }
-
             return isAscending
                 ? aText.localeCompare(bText)
                 : bText.localeCompare(aText);
         });
 
         rows.forEach(row => table.tBodies[0].appendChild(row)); // Re-attach sorted rows
-
-        // Cambiar el símbolo de la flecha
-        const header = table.rows[0].cells[colIndex];
-        const button = header.querySelector('button');
-        if (button) {
-            button.innerHTML = isAscending ? '&#x25B2;' : '&#x25BC;'; // ▲ para ascendente, ▼ para descendente
-        }
     }
 </script>
 

@@ -15,5 +15,5 @@ public partial class CargaManualCsv
     [Column("fecha_de_carga")]
     public DateTime? FechaDeCarga { get; set; }
     [Column("dni_usuario_agregado")]
-    public int DniUsuarioAgregado { get; set; }
+    public string DniUsuarioAgregado { get; set; }
 }

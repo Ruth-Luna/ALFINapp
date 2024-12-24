@@ -20,6 +20,8 @@ public partial class ClientesAsignado
     public int? IdUsuarioV { get; set; }
     [Column("fecha_asignacion_vendedor")]
     public DateTime? FechaAsignacionVendedor { get; set; }
+    [Column("fuente_base")]
+    public string? FuenteBase { get; set; }
 
     [Column("finalizar_tipificacion")]
     public bool FinalizarTipificacion { get; set; }
@@ -31,4 +33,8 @@ public partial class ClientesAsignado
     public string? TipificacionMayorPeso { get; set; }
     [Column("peso_tipificacion_mayor")]
     public int? PesoTipificacionMayor { get; set; }
+    [Column("cliente_desembolso")]
+    public bool? ClienteDesembolso { get; set; }
+    [Column("cliente_retirado")]
+    public bool? ClienteRetirado { get; set; }
 }

@@ -342,7 +342,7 @@ namespace ALFINapp.Controllers
                         }
 
                         // Verificar si el registro ya existe
-                        var registroExistente = _context.CORREGIDO_FEED.FirstOrDefault(cf => cf.Dni == registro.DNI);
+                        var registroExistente = _context.SUBIR_FEED.FirstOrDefault(cf => cf.Dni == registro.DNI);
                         if (registroExistente != null)
                         {
                             TempData["Message"] = $"El registro con DNI {registroExistente.Dni} ya existe. La subida de archivos se canceló.";
@@ -356,30 +356,30 @@ namespace ALFINapp.Controllers
                     // Procesar y guardar los registros válidos
                     foreach (var registro in registros)
                     {
-                        var modelf = new CorregidoFeed
+                        var modelf = new SubirFeed
                         {
-                            Canal = registro.COD_CANAL,
-                            Canal1 = registro.CANAL,
+                            CodCanal = registro.COD_CANAL,
+                            Canal = registro.CANAL,
                             Dni = registro.DNI,
                             FechaEnvio = registro.FECHA_ENVIO,
                             FechaGestion = registro.FECHA_GESTION,
                             HoraGestion = registro.HORA_GESTION,
-                            Telefono1 = registro.TELEFONO,
+                            Telefono = registro.TELEFONO,
                             OrigenTelefono = registro.ORIGEN_TELEFONO,
-                            Campaña = registro.COD_CAMPAÑA,
-                            CodTipo = registro.COD_TIP,
+                            CodCampana = registro.COD_CAMPAÑA,
+                            CodTip = registro.COD_TIP,
                             Oferta = registro.OFERTA,
                             DniAsesor = registro.DNI_ASESOR
                         };
 
                         // Guardar el modelo en la base de datos
-                        _context.CORREGIDO_FEED.Add(modelf);
+                        _context.SUBIR_FEED.Add(modelf);
 
                         var modelforFechas = new CargaManualCsv
                         {
                             IdUsuario = idSupervisorActual,
                             FechaDeCarga = DateTime.Now,
-                            DniUsuarioAgregado = (int)registro.DNI
+                            DniUsuarioAgregado =registro.DNI
                         };
 
                         _context.carga_manual_csv.Add(modelforFechas);
