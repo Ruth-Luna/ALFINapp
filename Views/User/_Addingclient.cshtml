@@ -28,13 +28,15 @@
 
         <div class="form-group">
             <label asp-for="XAppaterno" for="ApellidoPaterno">Apellido Paterno </label>
-            <input asp-for="XAppaterno" class="form-control" id="ApellidoPaterno" type="text" placeholder="Apellido Paterno">
+            <input asp-for="XAppaterno" class="form-control" id="ApellidoPaterno" type="text"
+                placeholder="Apellido Paterno">
             <span asp-validation-for="XAppaterno" class="text-danger"></span>
         </div>
 
         <div class="form-group">
             <label asp-for="XApmaterno" for="ApellidoPaterno">Apellido Materno </label>
-            <input asp-for="XApmaterno" class="form-control" id="ApellidoMaterno" type="text" placeholder="Apellido Materno">
+            <input asp-for="XApmaterno" class="form-control" id="ApellidoMaterno" type="text"
+                placeholder="Apellido Materno">
             <span asp-validation-for="XApmaterno" class="text-danger"></span>
         </div>
         <div class="form-group">
@@ -78,20 +80,12 @@
             Message.style.display = "block";
             Message.innerHTML = "El DNI debe contener exactamente 8 dígitos y solo números.";
         } else {
-            fetch(`/User/VerificarDNI?dni=${dniValue}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-                .then(response => {
-                    if (!response.ok){
-                        throw new Error('Error en la respuesta del server');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('respuesta del servidor: ',data);
+            $.ajax({
+                url: `/Datos/VerificarDNI`,
+                type: 'GET',
+                data: { dni: dniValue },
+                success: function (data) {
+                    console.log('respuesta del servidor: ', data);
                     if (data.existe) {
                         Message.style.display = "block";
                         Message.innerHTML = "El DNI ya existe en la base de datos.";
@@ -99,12 +93,13 @@
                         dniForm.value = dniValue;
                         formularioCliente.style.display = "block";
                     }
-                })
-                .catch(error => {
+                },
+                error: function (xhr, status, error) {
                     console.error('Error:', error);
                     Message.style.display = "block";
                     Message.innerHTML = "Hubo un error al verificar el DNI.";
-                });
+                }
+            });
         }
     }
 </script>

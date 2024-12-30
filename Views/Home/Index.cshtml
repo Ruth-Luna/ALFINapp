@@ -24,9 +24,28 @@
 </div>
 
 
-@if (TempData["Message"] != null)
-{
-    <script>
-        alert('@TempData["Message"]');
-    </script>
+@section Scripts {
+    @if (TempData["Message"] != null)
+    {
+        <script>
+            Swal.fire({
+                title: 'Mensaje', // Título del mensaje
+                text: '@Html.Raw(TempData["Message"] as string)', // Usamos Html.Raw para evitar que se escape el texto
+                icon: 'success', // Tipo de ícono (info, success, error, warning)
+                confirmButtonText: 'Aceptar' // Texto del botón de confirmación
+            });
+        </script>
+    }
+
+    @if (TempData["MessageError"] != null)
+    {
+        <script>
+            Swal.fire({
+                title: 'Error', // Título del mensaje
+                text: '@Html.Raw(TempData["MessageError"] as string)', // Usamos Html.Raw para evitar que se escape el texto
+                icon: 'error', // Tipo de ícono (info, success, error, warning)
+                confirmButtonText: 'Aceptar' // Texto del botón de confirmación
+            });
+        </script>
+    }
 }

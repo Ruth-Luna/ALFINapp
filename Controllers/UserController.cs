@@ -53,7 +53,7 @@ namespace ALFINapp.Controllers
         {
             if (!dni.All(char.IsDigit))
             {
-                TempData["Message"] = "Ingrese Solo Digitos";
+                TempData["MessageError"] = "Ingrese Solo Numeros en el DNI";
                 return RedirectToAction("Index", "Home");
             }
             dni = dni.Trim();
@@ -62,12 +62,12 @@ namespace ALFINapp.Controllers
 
             if (usuario == null)
             {
-                TempData["Message"] = "El Usuario a Buscar no se encuentra Registrado comunicarse con X";
+                TempData["MessageError"] = "El Usuario a Buscar no se encuentra Registrado comunicarse con su Supervisor.";
                 return RedirectToAction("Index", "Home");
             }
             if (string.IsNullOrEmpty(usuario.Rol))
             {
-                TempData["Message"] = "El rol del usuario no está definido. Comuníquese con X.";
+                TempData["MessageError"] = "El rol del usuario no está definido. Comuníquese con su Supervisor.";
                 return RedirectToAction("Index", "Home");
             }
             if (usuario.Rol == "VENDEDOR")
@@ -80,7 +80,7 @@ namespace ALFINapp.Controllers
                 HttpContext.Session.SetInt32("UsuarioId", usuario.IdUsuario);
                 return RedirectToAction("VistaMainSupervisor", "Supervisor");
             }
-            TempData["Message"] = "Algo salio Mal en la Autenticacion";
+            TempData["MessageError"] = "Algo salio Mal en la Autenticacion";
             return RedirectToAction("Index", "Home");
         }
 
@@ -91,7 +91,7 @@ namespace ALFINapp.Controllers
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)
             {
-                TempData["Message"] = "Ha ocurrido un error en la autenticacion";
+                TempData["MessageError"] = "Ha ocurrido un error en la autenticacion";
                 return RedirectToAction("Index", "Home");
             }
             // Obtener los clientes asignados al usuario
@@ -105,6 +105,7 @@ namespace ALFINapp.Controllers
                                           where clientesAsignados.Contains(ce.IdCliente)
                                           select ce.IdBase
                                             ).ToListAsync();
+
             var clientes = await (from db in _context.detalle_base.AsNoTracking()
                                   join cg in clientesGralBase on db.IdBase equals cg
                                   join bc in _context.base_clientes.AsNoTracking() on db.IdBase equals bc.IdBase
@@ -159,21 +160,6 @@ namespace ALFINapp.Controllers
             return View("Main", detallesClientes);
         }
 
-        [HttpGet]
-        public JsonResult VerificarDNI(string dni)
-        {
-            try
-            {
-                Console.WriteLine($"DNI recibido: {dni}");
-                var clienteExistente = _context.base_clientes.FirstOrDefault(c => c.Dni == dni);
-                return Json(new { existe = clienteExistente != null });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al verificar el DNI: {ex.Message}");
-                return Json(new { existe = false, error = true, message = ex.Message });
-            }
-        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -188,7 +174,7 @@ namespace ALFINapp.Controllers
                     model.Edad == null ||
                     string.IsNullOrWhiteSpace(model.Departamento))
                 {
-                    TempData["Message"] = "Debe llenar todos los campos!";
+                    TempData["MessageError"] = "Debe llenar todos los campos!";
                     return RedirectToAction("Ventas");
                 }
 
@@ -196,32 +182,32 @@ namespace ALFINapp.Controllers
 
                 if (!regexNoNumeros.IsMatch(model.XAppaterno))
                 {
-                    TempData["Message"] = "El apellido paterno no debe contener números.";
+                    TempData["MessageError"] = "El apellido paterno no debe contener números.";
                     return RedirectToAction("Ventas");
                 }
 
                 if (!regexNoNumeros.IsMatch(model.XApmaterno))
                 {
-                    TempData["Message"] = "El apellido materno no debe contener números.";
+                    TempData["MessageError"] = "El apellido materno no debe contener números.";
                     return RedirectToAction("Ventas");
                 }
 
                 if (!regexNoNumeros.IsMatch(model.XNombre))
                 {
-                    TempData["Message"] = "El nombre no debe contener números.";
+                    TempData["MessageError"] = "El nombre no debe contener números.";
                     return RedirectToAction("Ventas");
                 }
 
                 if (!regexNoNumeros.IsMatch(model.Departamento))
                 {
-                    TempData["Message"] = "El departamento no debe contener números.";
+                    TempData["MessageError"] = "El departamento no debe contener números.";
                     return RedirectToAction("Ventas");
                 }
 
                 // Validar que la edad sea un número positivo.
                 if (!int.TryParse(model.Edad.ToString(), out int edad) || edad <= 0)
                 {
-                    TempData["Message"] = "La edad debe ser un número válido y mayor que cero.";
+                    TempData["MessageError"] = "La edad debe ser un número válido y mayor que cero.";
                     return RedirectToAction("Ventas");
                 }
 
@@ -232,7 +218,7 @@ namespace ALFINapp.Controllers
 
                 if (idSupervisor == null)
                 {
-                    TempData["Message"] = "Usted no tiene un Supervisor Asignado, no puede agregar clientes.";
+                    TempData["MessageError"] = "Usted no tiene un Supervisor Asignado, no puede agregar clientes.";
                     return RedirectToAction("Ventas");
                 }
 
@@ -266,7 +252,8 @@ namespace ALFINapp.Controllers
                     IdUsuarioV = HttpContext.Session.GetInt32("UsuarioId") ?? 0,
                     FechaAsignacionVendedor = DateTime.Now,
                     FechaAsignacionSup = null,
-                    IdUsuarioS = idSupervisor
+                    IdUsuarioS = idSupervisor,
+                    FuenteBase = "BASE_CAMPO_ASESORES"
                 };
 
                 _context.clientes_asignados.Add(model3);
@@ -277,7 +264,7 @@ namespace ALFINapp.Controllers
                     IdBase = idBase,
                     TipoClienteRiegos = "3.NO CLIENTE",
                     FechaCarga = DateTime.Now,
-                    TipoBase = "BASE_CAMPO_DIC"
+                    TipoBase = "BASE_CAMPO_ASESORES"
                 };
 
                 _context.detalle_base.Add(model4);
@@ -286,7 +273,7 @@ namespace ALFINapp.Controllers
                 TempData["Message"] = "Cliente agregado con exito!";
                 return RedirectToAction("Ventas");
             }
-            TempData["Message"] = "El modelo enviado no es valido";
+            TempData["MessageError"] = "El modelo enviado no es valido Comunicarse con servicio tecnico.";
             return RedirectToAction("Ventas");
         }
 
@@ -299,7 +286,7 @@ namespace ALFINapp.Controllers
                                                         ca.IdUsuarioV == HttpContext.Session.GetInt32("UsuarioId"));
             if (ClientesAsignado == null)
             {
-                TempData["Message"] = "No tiene permiso para tipificar este cliente";
+                TempData["MessageError"] = "No tiene permiso para tipificar este cliente (se ha hecho el envio de datos manualmente, esta accion sera notificada).";
                 return RedirectToAction("Ventas");
             }
             if (ModelState.IsValid)
@@ -321,10 +308,10 @@ namespace ALFINapp.Controllers
                 }
                 else
                 {
-                    TempData["Message"] = "Cliente no encontrado";
+                    TempData["MessageError"] = "El cliente enriquecido no se ha encontrado.";
                     return RedirectToAction("Ventas");
                 }
-                TempData["Message"] = "Cliente actualizado con éxito!";
+                TempData["Message"] = "Cliente actualizado con exito!";
                 return RedirectToAction("Ventas");
             }
             return RedirectToAction("Ventas");
@@ -335,7 +322,7 @@ namespace ALFINapp.Controllers
         {
             if (HttpContext.Session.GetInt32("UsuarioId") == null)
             {
-                TempData["Message"] = "No ha iniciado sesion";
+                TempData["MessageError"] = "No ha iniciado sesion, por favor inicie sesion.";
                 return RedirectToAction("Index", "Home");
             }
 
@@ -416,7 +403,7 @@ namespace ALFINapp.Controllers
 
             if (detalleTipificarCliente == null)
             {
-                TempData["Message"] = "El Cliente no se le permite ser Tipificado";
+                TempData["MessageError"] = "Al cliente no se le permite tipificarlo.";
                 Console.WriteLine("El cliente fue Eliminado manualmente de la Tabla clientes_tipificado");
                 return RedirectToAction("Ventas");
             }
@@ -424,7 +411,7 @@ namespace ALFINapp.Controllers
             var clienteEnriquecidoConsult = _context.clientes_enriquecidos.FirstOrDefault(ce => ce.IdBase == id_base);
             if (clienteEnriquecidoConsult == null)
             {
-                TempData["Message"] = "No se encontró un cliente enriquecido con los criterios proporcionados.";
+                TempData["MessageError"] = "No se encontró un cliente enriquecido con los criterios proporcionados.";
                 return RedirectToAction("Ventas");
             }
 
@@ -432,7 +419,7 @@ namespace ALFINapp.Controllers
 
             if (ClienteAsignado == null)
             {
-                TempData["Message"] = "No tiene permiso para tipificar este cliente";
+                TempData["MessageError"] = "No tiene permiso para tipificar este cliente (este incidente sera notificado).";
                 return RedirectToAction("Ventas");
             }
 
@@ -496,6 +483,7 @@ namespace ALFINapp.Controllers
             ViewData["numerosCreadosPorElUsuario"] = resultados_telefonos_tipificados_vendedor;
             ViewData["DNIcliente"] = dni != null ? dni.Dni : "El usuario No tiene DNI Registrado";
             ViewData["ID_asignacion"] = ClienteAsignado.IdAsignacion;
+            ViewData["Fuente_BD"] = ClienteAsignado.FuenteBase;
             ViewData["ID_cliente"] = ClienteAsignado.IdCliente;
             ViewData["numerosTraidosPorlaDB"] = resultados_telefonos_tipificados_bd;
 
@@ -507,7 +495,7 @@ namespace ALFINapp.Controllers
         {
             if (HttpContext.Session.GetInt32("UsuarioId") == null)
             {
-                TempData["Message"] = "No ha iniciado sesion";
+                TempData["Message"] = "No ha iniciado sesion, por favor inicie sesion.";
                 return RedirectToAction("Index", "Home");
             }
             Console.WriteLine("Cargando VISTA");
@@ -522,12 +510,17 @@ namespace ALFINapp.Controllers
         }
 
         [HttpPost]
-        public IActionResult TipificarMotivo(int IdAsignacion, int? Tipificacion1, int? Tipificacion2, int? Tipificacion3, int? Tipificacion4, int? Tipificacion5, string? Telefono1, string? Telefono2, string? Telefono3, string? Telefono4, string? Telefono5)
+        public IActionResult TipificarMotivo(int IdAsignacion, int? Tipificacion1, int? Tipificacion2,
+                                                int? Tipificacion3, int? Tipificacion4, int? Tipificacion5,
+                                                string? Telefono1, string? Telefono2, string? Telefono3,
+                                                string? Telefono4, string? Telefono5, DateTime? DerivacionDb1,
+                                                DateTime? DerivacionDb2, DateTime? DerivacionDb3, DateTime? DerivacionDb4,
+                                                DateTime? DerivacionDb5)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)
             {
-                TempData["Message"] = "Ha ocurrido un error en la autenticación";
+                TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
                 return RedirectToAction("Index", "Home");
             }
 
@@ -535,7 +528,7 @@ namespace ALFINapp.Controllers
 
             if (ClienteAsignado == null)
             {
-                TempData["Message"] = "No tiene permiso para tipificar este cliente";
+                TempData["MessageError"] = "No tiene permiso para tipificar este cliente";
                 Console.WriteLine($"{IdAsignacion}");
                 Console.WriteLine($"{Tipificacion1}");
                 return RedirectToAction("Ventas");
@@ -543,18 +536,30 @@ namespace ALFINapp.Controllers
 
             var telefonos = new List<string?> { Telefono1, Telefono2, Telefono3, Telefono4, Telefono5 };
             var tipificaciones = new List<int?> { Tipificacion1, Tipificacion2, Tipificacion3, Tipificacion4, Tipificacion5 };
+            var derivaciones = new List<DateTime?> { DerivacionDb1, DerivacionDb2, DerivacionDb3, DerivacionDb4, DerivacionDb5 };
 
             // Fecha de tipificación
             var fechaTipificacion = DateTime.Now;
             string? descripcionTipificacionMayorPeso = null;
             int? pesoMayor = 0;
+
+            var ClientesEnriquecido = _context.clientes_enriquecidos.FirstOrDefault(ce => ce.IdCliente == ClienteAsignado.IdCliente);
+            if (ClientesEnriquecido == null)
+            {
+                TempData["MessageError"] = "Cliente enriquecido no encontrado.";
+                return RedirectToAction("Ventas");
+            }
+            var agregado = false;
+
             for (int i = 0; i < telefonos.Count; i++)
             {
                 var telefono = telefonos[i];
                 var tipificacion = tipificaciones[i];
+                var derivacion = derivaciones[i];
 
-                if (telefono != "0" && tipificacion.HasValue)
+                if (!string.IsNullOrEmpty(telefono) && telefono != "0" && tipificacion.HasValue)
                 {
+                    agregado = true;
                     var tipificacionInfo = _context.tipificaciones
                         .Where(t => t.IdTipificacion == tipificacion.Value)
                         .Select(t => new { t.Peso, t.DescripcionTipificacion })
@@ -581,48 +586,79 @@ namespace ALFINapp.Controllers
                         IdTipificacion = tipificacion.Value,
                         FechaTipificacion = fechaTipificacion,
                         Origen = "nuevo",
-                        TelefonoTipificado = telefono
+                        TelefonoTipificado = telefono,
+                        DerivacionFecha = derivacion
                     };
                     _context.clientes_tipificados.Add(nuevoClienteTipificado);
 
+                    // Actualizar última tipificación en clientes_enriquecidos
+                    var tipificacion_guardada = _context.tipificaciones.FirstOrDefault(t => t.IdTipificacion == tipificacion.Value);
+                    switch (i + 1)
+                    {
+                        case 1:
+                            ClientesEnriquecido.UltimaTipificacionTelefono1 = tipificacion_guardada.DescripcionTipificacion;
+
+                            break;
+                        case 2:
+                            ClientesEnriquecido.UltimaTipificacionTelefono2 = tipificacion_guardada.DescripcionTipificacion;
+                            break;
+                        case 3:
+                            ClientesEnriquecido.UltimaTipificacionTelefono3 = tipificacion_guardada.DescripcionTipificacion;
+                            break;
+                        case 4:
+                            ClientesEnriquecido.UltimaTipificacionTelefono4 = tipificacion_guardada.DescripcionTipificacion;
+                            break;
+                        case 5:
+                            ClientesEnriquecido.UltimaTipificacionTelefono5 = tipificacion_guardada.DescripcionTipificacion;
+                            break;
+                    }
                 }
             }
 
-            if (!string.IsNullOrEmpty(descripcionTipificacionMayorPeso) && pesoMayor > (ClienteAsignado.PesoTipificacionMayor ?? 0))
+            if (agregado == false)
             {
-                ClienteAsignado.TipificacionMayorPeso = descripcionTipificacionMayorPeso; // Almacena la descripción
-                ClienteAsignado.PesoTipificacionMayor = pesoMayor; // Almacena el peso
-                _context.clientes_asignados.Update(ClienteAsignado);
+                TempData["MessageError"] = "Hay Campos Llenados Incorrectamente o no se ha llenado ningun campo";
+                return RedirectToAction("Ventas");
             }
 
-            // Guardar cambios en la base de datos
-            _context.SaveChanges();
-            TempData["Message"] = "Las Tipificaciones se han guardado Correctamente";
+            else
+            {
+                if (!string.IsNullOrEmpty(descripcionTipificacionMayorPeso) && pesoMayor > (ClienteAsignado.PesoTipificacionMayor ?? 0))
+                {
+                    ClienteAsignado.TipificacionMayorPeso = descripcionTipificacionMayorPeso; // Almacena la descripción
+                    ClienteAsignado.PesoTipificacionMayor = pesoMayor; // Almacena el peso
+                    _context.clientes_asignados.Update(ClienteAsignado);
+                }
 
-            return RedirectToAction("Ventas");
+                // Guardar cambios en la base de datos
+                _context.clientes_enriquecidos.Update(ClientesEnriquecido);
+                _context.SaveChanges();
+                TempData["Message"] = "Las tipificaciones se han guardado correctamente (Se han Obviado los campos Vacios y los campos que fueron llenados con datos incorrectos)";
+                return RedirectToAction("Ventas");
+            }
         }
 
-        [HttpPost]
+        /*[HttpPost]
         public IActionResult AgregarTelefono(int IdAsignacion, string NuevoTelefono, string NumTelefonoEdicion)
         {
             Console.WriteLine($"ID Asignacion: {IdAsignacion}, Telefono Nuevo {NuevoTelefono}, Edicion de Telefono {NumTelefonoEdicion}");
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)
             {
-                TempData["Message"] = "Ha ocurrido un error en la autenticación";
+                TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
                 return RedirectToAction("Index", "Home");
             }
 
             var clienteAsignadoConsulta = _context.clientes_asignados.FirstOrDefault(ca => ca.IdAsignacion == IdAsignacion && ca.IdUsuarioV == HttpContext.Session.GetInt32("UsuarioId"));
             if (clienteAsignadoConsulta == null)
             {
-                TempData["Message"] = "Usted no tiene acceso a este Usuario.";
+                TempData["MessageError"] = "Usted no tiene acceso a este Usuario.";
                 return RedirectToAction("Ventas");
             }
             var ClientesEnriquecido = _context.clientes_enriquecidos.FirstOrDefault(ce => ce.IdCliente == clienteAsignadoConsulta.IdCliente);
             if (ClientesEnriquecido == null)
             {
-                TempData["Message"] = "No se encuentra un Cliente enriquecido con los datos proporcionados.";
+                TempData["MessageError"] = "No se encuentra un Cliente enriquecido con los datos proporcionados.";
                 return RedirectToAction("Ventas");
             }
 
@@ -653,29 +689,21 @@ namespace ALFINapp.Controllers
 
             _context.SaveChanges();
             return Json(new { success = true });
-        }
+        }*/
 
-        public IActionResult ObtenerDatosCliente(int idAsignacion)
-        {
-            var clienteAsignadoConsulta = _context.clientes_asignados.FirstOrDefault(ca => ca.IdAsignacion == idAsignacion && ca.IdUsuarioV == HttpContext.Session.GetInt32("UsuarioId"));
-            var ClientesEnriquecido = _context.clientes_enriquecidos.FirstOrDefault(ce => ce.IdCliente == clienteAsignadoConsulta.IdCliente);
-
-            return Json(ClientesEnriquecido);
-        }
-
-        [HttpPost]
+        /*[HttpPost]
         public IActionResult culminarCliente(int IdAsignacion)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)
             {
-                TempData["Message"] = "Ha ocurrido un error en la autenticación";
+                TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
                 return RedirectToAction("Index", "Home");
             }
             var ClienteAsignado = _context.clientes_asignados.FirstOrDefault(ca => ca.IdAsignacion == IdAsignacion && ca.IdUsuarioV == HttpContext.Session.GetInt32("UsuarioId"));
             if (ClienteAsignado == null)
             {
-                TempData["Message"] = "Usted no tiene acceso a este Usuario para su modificacion";
+                TempData["MessageError"] = "Usted no tiene acceso a este Usuario para su modificacion";
                 return RedirectToAction("Index", "Home");
             }
             ClienteAsignado.FinalizarTipificacion = true;
@@ -683,54 +711,21 @@ namespace ALFINapp.Controllers
 
             TempData["Message"] = "Usted a Finalizado con las tipificaciones del Usuario";
             return RedirectToAction("Ventas");
-        }
+        }*/
 
         [HttpGet]
         public IActionResult AgregarTelefonoView(int idCliente)
         {
-            TempData["idCliente"] = idCliente;
-            return PartialView("_AgregarTelefono");
-        }
-
-        [HttpPost]
-        public IActionResult AgregarTelefonoPorAsesor(string numeroTelefono, int idClienteTelefono)
-        {
-            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId == null)
+            try
             {
-                TempData["Message"] = "Ha ocurrido un error en la autenticación";
-                return RedirectToAction("Index", "Home");
+                TempData["idCliente"] = idCliente;
+                return PartialView("_AgregarTelefono");
             }
-
-            string telefono = numeroTelefono;
-            int idCliente = idClienteTelefono;
-
-            // Validar que el idCliente es un número entero
-            // Validar que el teléfono no esté vacío
-            if (string.IsNullOrWhiteSpace(telefono))
+            catch (System.Exception)
             {
-                return Json(new { error = true, message = "El número de teléfono no puede estar vacío" });
+                return Json(new { error = false});
+                throw;
             }
-
-            // Validar que el teléfono tenga exactamente 9 dígitos y comience con un número entre 1 y 9
-            if (!System.Text.RegularExpressions.Regex.IsMatch(telefono, @"^[1-9]\d{8}$"))
-            {
-                return Json(new { error = true, message = "El número de teléfono debe tener exactamente 9 dígitos, comenzando con un número entre 1 y 9" });
-            }
-
-            // Crear nuevo teléfono
-            var NuevoTelefono = new TelefonosAgregados
-            {
-                IdCliente = idCliente,
-                Telefono = telefono,
-                AgregadoPor = "VENDEDOR" // Ajusta según sea necesario
-            };
-
-            _context.telefonos_agregados.Add(NuevoTelefono);
-            _context.SaveChanges();
-
-            TempData["Message"] = $"Usted ha agregado un número de teléfono: {telefono}";
-            return Json(new { success = true });
         }
 
         [HttpPost]
@@ -739,15 +734,13 @@ namespace ALFINapp.Controllers
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)
             {
-                TempData["Message"] = "Ha ocurrido un error en la autenticación";
+                TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
                 return RedirectToAction("Index", "Home");
             }
 
-            Console.WriteLine("GuardarTipificacionesNumPersonales ODAWDPIADWOADAOPWIDAOPI!@!@!12121");
-
             if (tipificaciones == null || !tipificaciones.Any())
             {
-                TempData["Message"] = "Las tipificaciones NO SE HAN GUARDADO Error 555.";
+                TempData["MessageError"] = "No se estan enviando datos para guardar (Comunicarse con Servicio Tecnico).";
                 return RedirectToAction("Ventas");
             }
 
@@ -756,13 +749,14 @@ namespace ALFINapp.Controllers
             var ClienteAsignado = _context.clientes_asignados.FirstOrDefault(ca => ca.IdAsignacion == IdAsignacionCliente);
             if (ClienteAsignado == null)
             {
-                TempData["Message"] = "Cliente no encontrado.";
+                TempData["MessageError"] = "El cliente asignado no ha sido encontrado (Probablemente fue eliminado Manualmente).";
                 return RedirectToAction("Ventas");
             }
 
             int? tipificacionMayorPeso = null;
             int? pesoMayor = null;
             string descripcionTipificacionMayorPeso = null;
+            var agregado = false;
 
             foreach (var tipificacion in tipificaciones)
             {
@@ -772,13 +766,16 @@ namespace ALFINapp.Controllers
                     continue; // Salta al siguiente registro sin hacer la inserción
                 }
 
+                agregado = true;
+
                 var nuevaTipificacion = new ClientesTipificado
                 {
                     IdAsignacion = IdAsignacionCliente,
                     IdTipificacion = tipificacion.TipificacionId,
                     FechaTipificacion = fechaTipificacion,
                     Origen = "nuevo",
-                    TelefonoTipificado = tipificacion.Telefono
+                    TelefonoTipificado = tipificacion.Telefono,
+                    DerivacionFecha = tipificacion.FechaVisita
                 };
 
                 _context.clientes_tipificados.Add(nuevaTipificacion);
@@ -795,153 +792,41 @@ namespace ALFINapp.Controllers
                         descripcionTipificacionMayorPeso = tipificacionActual.DescripcionTipificacion;
                     }
                 }
-            }
-
-            if (tipificacionMayorPeso.HasValue && pesoMayor.HasValue)
-            {
-                if (pesoMayor > (ClienteAsignado.PesoTipificacionMayor ?? 0))
+                var telefonoTipificado = _context.telefonos_agregados.FirstOrDefault(ta => ta.Telefono == tipificacion.Telefono && ta.IdCliente == ClienteAsignado.IdCliente);
+                if (telefonoTipificado == null)
                 {
-                    ClienteAsignado.TipificacionMayorPeso = descripcionTipificacionMayorPeso;
-                    ClienteAsignado.PesoTipificacionMayor = pesoMayor;
-                    _context.clientes_asignados.Update(ClienteAsignado);
-                }
-            }
-
-            _context.SaveChanges();
-            TempData["Message"] = "Las tipificaciones se han guardado correctamente.";
-            return RedirectToAction("Ventas");
-        }
-        [HttpPost]
-        public IActionResult EnviarComentario(string Telefono, int IdCliente, string Comentario)
-        {
-            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId == null)
-            {
-                TempData["Message"] = "Ha ocurrido un error en la autenticación";
-                return RedirectToAction("Index", "Home");
-            }
-
-            if (string.IsNullOrEmpty(Telefono) || string.IsNullOrEmpty(Comentario))
-            {
-                return Json(new { success = false, message = "Datos inválidos." });
-            }
-
-            try
-            {
-                // Lógica para agregar o actualizar el comentario en la base de datos
-                var registro = _context.telefonos_agregados.FirstOrDefault(ta => ta.Telefono == Telefono && ta.IdCliente == IdCliente);
-                if (registro != null)
-                {
-                    registro.Comentario = Comentario;
-                    _context.SaveChanges();
+                    TempData["MessageError"] = "El Numero de Telefono Agregado no ha sido encontrado.";
+                    return RedirectToAction("Ventas");
                 }
                 else
                 {
-                    return Json(new { success = false, message = "Número no encontrado." });
+                    var tipificacionUltima = _context.tipificaciones.FirstOrDefault(t => t.IdTipificacion == tipificacion.TipificacionId);
+                    telefonoTipificado.UltimaTipificacion = tipificacionUltima.DescripcionTipificacion;
+                    _context.telefonos_agregados.Update(telefonoTipificado);
                 }
-
-                return Json(new { success = true });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
-        }
-
-        [HttpPost]
-        public IActionResult EnviarComentarioTelefonoDB(string Telefono, int IdCliente, string Comentario, int numeroTelefono)
-        {
-            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId == null)
-            {
-                TempData["Message"] = "Ha ocurrido un error en la autenticación";
-                return RedirectToAction("Index", "Home");
             }
 
-            if (string.IsNullOrEmpty(Telefono) || string.IsNullOrEmpty(Comentario))
+            if (agregado == false)
             {
-                return Json(new { success = false, message = "Datos inválidos." });
+                TempData["MessageError"] = "No se ha llenado ningun campo o se han llenado incorrectamente.";
+                return RedirectToAction("Ventas");
             }
 
-            try
+            else
             {
-                var clienteEnriquecido = _context.clientes_enriquecidos.FirstOrDefault(ce => ce.IdCliente == IdCliente);
-                if (clienteEnriquecido == null)
+                if (tipificacionMayorPeso.HasValue && pesoMayor.HasValue)
                 {
-                    return Json(new { success = false, message = "Cliente no encontrado." });
-                }
-
-                switch (numeroTelefono)
-                {
-                    case 1:
-                        if (clienteEnriquecido.Telefono1 == Telefono)
-                        {
-                            clienteEnriquecido.ComentarioTelefono1 = Comentario;
-                        }
-                        break;
-                    case 2:
-                        if (clienteEnriquecido.Telefono2 == Telefono)
-                        {
-                            clienteEnriquecido.ComentarioTelefono2 = Comentario;
-                        }
-                        break;
-                    case 3:
-                        if (clienteEnriquecido.Telefono3 == Telefono)
-                        {
-                            clienteEnriquecido.ComentarioTelefono3 = Comentario;
-                        }
-                        break;
-                    case 4:
-                        if (clienteEnriquecido.Telefono4 == Telefono)
-                        {
-                            clienteEnriquecido.ComentarioTelefono4 = Comentario;
-                        }
-                        break;
-                    case 5:
-                        if (clienteEnriquecido.Telefono5 == Telefono)
-                        {
-                            clienteEnriquecido.ComentarioTelefono5 = Comentario;
-                        }
-                        break;
-                    default:
-                        return Json(new { success = false, message = "Número de teléfono inválido." });
+                    if (pesoMayor > (ClienteAsignado.PesoTipificacionMayor ?? 0))
+                    {
+                        ClienteAsignado.TipificacionMayorPeso = descripcionTipificacionMayorPeso;
+                        ClienteAsignado.PesoTipificacionMayor = pesoMayor;
+                        _context.clientes_asignados.Update(ClienteAsignado);
+                    }
                 }
 
                 _context.SaveChanges();
-                return Json(new { success = true });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
-        }
-        [HttpPost]
-        public IActionResult EnviarComentarioGeneral(int idAsignacion, string comentarioGeneral)
-        {
-            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId == null)
-            {
-                TempData["Message"] = "Ha ocurrido un error en la autenticación";
-                return RedirectToAction("Index", "Home");
-            }
-            try
-            {
-                var modificarComentarioGeneral = _context.clientes_asignados.FirstOrDefault(ca => ca.IdAsignacion == idAsignacion);
-                if (modificarComentarioGeneral != null)
-                {
-                    modificarComentarioGeneral.ComentarioGeneral = comentarioGeneral;
-                    _context.SaveChanges();
-                }
-                else
-                {
-                    return Json(new { success = false, message = "Número no encontrado." });
-                }
-
-                return Json(new { success = true });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
+                TempData["Message"] = "Las tipificaciones se han guardado correctamente (Se han Obviado los campos Vacios y los campos que fueron llenados con datos incorrectos).";
+                return RedirectToAction("Ventas");
             }
         }
     }

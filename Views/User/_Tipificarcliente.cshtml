@@ -6,7 +6,8 @@
     var id_asignacion = ViewData["ID_asignacion"];
     var id_base = Model.IdBase;
     var id_cliente = ViewData["ID_cliente"];
-
+    var base_DB = ViewData["Fuente_BD"];
+    bool isEditable = base_DB?.ToString() == "BASE_CAMPO_ASESORES";
 }
 
 @section Styles {
@@ -17,6 +18,10 @@
 @functions {
     public string GetColorCode(string colorName)
     {
+        if (string.IsNullOrEmpty(colorName))
+        {
+            return "#FFFFFF";
+        }
         return colorName.ToLower() switch
         {
             "verde" => "#008000",
@@ -37,6 +42,13 @@
 }
 
 <div class="row">
+    @if (isEditable)
+    {
+        <div class="alert alert-info" role="alert">
+            Este Cliente fue agregado por un Asesor, por ende se pueden modificar los campos.
+        </div>
+    }
+
 
     <div class="row">
         <!-- Primera Columna -->
@@ -44,7 +56,7 @@
             <h3>Datos del Prospecto</h3>
             <div class="form-group">
                 <label for="DNI">DNI</label>
-                <input class="form-control" id="DNI" type="text" value="@dni" readonly>
+                <input class="form-control" id="DNI" type="text" value="@Model.Dni" readonly>
             </div>
             <div class="form-group">
                 <label for="X_APPATERNO">Apellido Paterno</label>
@@ -68,11 +80,11 @@
             </div>
             <div class="form-group">
                 <label for="PROVINCIA">Provincia</label>
-                <input class="form-control" id="PROVINCIA" type="text" value="@Model.Provincia" readonly>
+                <input class="form-control form-control-editable" id="PROVINCIA" type="text" value="@Model.Provincia" @(isEditable ? "" : "readonly")>
             </div>
             <div class="form-group">
                 <label for="DISTRITO">Distrito</label>
-                <input class="form-control" id="DISTRITO" type="text" value="@Model.Distrito" readonly>
+                <input class="form-control form-control-editable" id="DISTRITO" type="text" value="@Model.Distrito" @(isEditable ? "" : "readonly")>
             </div>
             <div class="spacing"></div>
         </div>
@@ -82,36 +94,41 @@
             <input class="form-control ml-2" id="IDBASEUSUARIO" value="@Model.IdBase" hidden>
             <div class="form-group">
                 <label for="CAMPAÑA">Campaña</label>
-                <input class="form-control" id="CAMPAÑA" type="text" value="@Model.Campaña" readonly>
+                <input class="form-control form-control-editable" id="CAMPAÑA" type="text" value="@Model.Campaña" @(isEditable ? "" :
+                    "readonly")>
             </div>
             <div class="form-group">
                 <label for="OFERTA_MAX">Oferta Máxima</label>
-                <input class="form-control" id="OFERTA_MAX" type="text" value="@Model.OfertaMax" readonly>
+                <input class="form-control form-control-editable" id="OFERTA_MAX" type="text" value="@Model.OfertaMax" @(isEditable ? "" :
+                    "readonly")>
             </div>
             <div class="form-group">
                 <label for="TASA_MINIMA">Tasa Mínima</label>
-                <input class="form-control" id="TASA_MINIMA" type="text" value="@Model.TasaMinima" readonly>
+                <input class="form-control form-control-editable" id="TASA_MINIMA" type="text" value="@Model.TasaMinima" @(isEditable ? "" :
+                    "readonly")>
             </div>
             <div class="form-group">
                 <label for="SUCURSAL_COMERCIAL">Sucursal Comercial</label>
-                <input class="form-control" id="SUCURSAL_COMERCIAL" type="text"
-                    value="@Model.Sucursal --> @Model.AgenciaComercial" readonly>
+                <input class="form-control form-control-editable" id="SUCURSAL_COMERCIAL" type="text"
+                    value="@Model.Sucursal @Model.AgenciaComercial" @(isEditable ? "" : "readonly")>
             </div>
             <div class="form-group">
                 <label for="PLAZO">Plazo</label>
-                <input class="form-control" id="PLAZO" type="text" value="@Model.Plazo" readonly>
+                <input class="form-control form-control-editable" id="PLAZO" type="text" value="@Model.Plazo" @(isEditable ? "" : "readonly")>
             </div>
             <div class="form-group">
                 <label for="CUOTA">Cuota</label>
-                <input class="form-control" id="CUOTA" type="text" value="@Model.Cuota" readonly>
+                <input class="form-control form-control-editable" id="CUOTA" type="text" value="@Model.Cuota" @(isEditable ? "" : "readonly")>
             </div>
             <div class="form-group">
                 <label for="GRUPO_TASA">Grupo Tasa</label>
-                <input class="form-control" id="GRUPO_TASA" type="text" value="@Model.GrupoTasa" readonly>
+                <input class="form-control form-control-editable" id="GRUPO_TASA" type="text" value="@Model.GrupoTasa" @(isEditable ? "" :
+                    "readonly")>
             </div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Grupo Monto</label>
-                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.GrupoMonto" readonly>
+                <input class="form-control form-control-editable" id="GRUPO_MONTO" type="text" value="@Model.GrupoMonto" @(isEditable ? "" :
+                    "readonly")>
             </div>
             <div class="spacing"></div>
 
@@ -132,55 +149,67 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="GRUPO_MONTO">Oferta 12 Meses</label>
-                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Oferta12m" readonly>
+                <input class="form-control form-control-editable" id="OFERTA12M" type="text" value="@Model.Oferta12m" @(isEditable ? "" :
+                    "readonly")>
             </div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Tasa 12 Meses</label>
-                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Tasa12m" readonly>
+                <input class="form-control form-control-editable" id="TASA12M" type="text" value="@Model.Tasa12m" @(isEditable ? "" :
+                    "readonly")>
             </div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Cuota 12 Meses</label>
-                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Cuota12m" readonly>
+                <input class="form-control form-control-editable" id="CUOTA12M" type="text" value="@Model.Cuota12m" @(isEditable ? "" :
+                    "readonly")>
             </div>
             <div class="spacing"></div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Oferta 18 Meses</label>
-                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Oferta18m" readonly>
+                <input class="form-control form-control-editable" id="OFERTA18M" type="text" value="@Model.Oferta18m" @(isEditable ? "" :
+                    "readonly")>
             </div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Tasa 18 Meses</label>
-                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Tasa18m" readonly>
+                <input class="form-control form-control-editable" id="TASA18M" type="text" value="@Model.Tasa18m" @(isEditable ? "" :
+                    "readonly")>
             </div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Cuota 18 Meses</label>
-                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Cuota18m" readonly>
+                <input class="form-control form-control-editable" id="CUOTA18M" type="text" value="@Model.Cuota18m" @(isEditable ? "" :
+                    "readonly")>
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-group">
                 <label for="GRUPO_MONTO">Oferta 24 Meses</label>
-                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Oferta24m" readonly>
+                <input class="form-control form-control-editable" id="OFERTA24M" type="text" value="@Model.Oferta24m" @(isEditable ? "" :
+                    "readonly")>
             </div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Tasa 24 Meses</label>
-                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Tasa24m" readonly>
+                <input class="form-control form-control-editable" id="TASA24M" type="text" value="@Model.Tasa24m" @(isEditable ? "" :
+                    "readonly")>
             </div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Cuota 24 Meses</label>
-                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Cuota24m" readonly>
+                <input class="form-control form-control-editable" id="CUOTA24M" type="text" value="@Model.Cuota24m" @(isEditable ? "" :
+                    "readonly")>
             </div>
             <div class="spacing"></div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Oferta 36 Meses</label>
-                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Oferta36m" readonly>
+                <input class="form-control form-control-editable" id="OFERTA36M" type="text" value="@Model.Oferta36m" @(isEditable ? "" :
+                    "readonly")>
             </div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Tasa 36 Meses</label>
-                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Tasa36m" readonly>
+                <input class="form-control form-control-editable" id="TASA36M" type="text" value="@Model.Tasa36m" @(isEditable ? "" :
+                    "readonly")>
             </div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Cuota 36 Meses</label>
-                <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Cuota36m" readonly>
+                <input class="form-control form-control-editable" id="CUOTA36M" type="text" value="@Model.Cuota36m" @(isEditable ? "" :
+                    "readonly")>
             </div>
         </div>
     </div>
@@ -190,15 +219,17 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="PROPENSION">Propensión</label>
-                <input class="form-control" id="PROPENSION" type="text" value="@Model.Propension" readonly>
+                <input class="form-control form-control-editable" id="PROPENSION" type="text" value="@Model.Propension" @(isEditable ? "" :
+                    "readonly")>
             </div>
             <div class="form-group">
                 <label for="TIPO_CLIENTE">Tipo de Cliente</label>
-                <input class="form-control" id="TIPO_CLIENTE" type="text" value="@Model.TipoCliente" readonly>
+                <input class="form-control form-control-editable" id="TIPO_CLIENTE" type="text" value="@Model.TipoCliente" @(isEditable ? "" :
+                    "readonly")>
             </div>
             <div class="form-group">
                 <label for="CLIENTE_NUEVO">Antiguedad del Cliente</label>
-                <input class="form-control" id="CLIENTE_NUEVO" type="text" value="@Model.ClienteNuevo" readonly>
+                <input class="form-control form-control-editable" id="CLIENTE_NUEVO" type="text" value="@Model.ClienteNuevo" readonly>
             </div>
         </div>
         <div class="col-md-6">
@@ -221,10 +252,24 @@
             </div>
         </div>
     </div>
+
+    @if (isEditable)
+    {
+        <div class="spacing"></div>
+        <div class="row">
+            <div class="alert alert-info" role="alert">
+                Use este boton para guardar los cambios realizados en los campos de la sección "Datos del Prospecto"
+                "Detalles de la campaña" y "Detalles de las Ofertas"
+            </div>
+            <div class="col-md-6">
+                <a href="javascript:void(0);" class="btn btn-primary" href="javascript:void(0)" id="saveChangesButton" onclick="guardarCambiosPorAsesor()">Guardar Cambios</a>
+            </div>
+        </div>
+    }
+
 </div>
 
 <div class="spacing"></div>
-
 
 <!-- SECCION TELEFONOS AGREGADOS Por El Usuario -->
 <div class="row">
@@ -238,6 +283,7 @@
             <h3>Agregue las Tipificaciones a los clientes asignados</h3>
             @foreach (var telefonosVendedor in numCreatedByUser)
             {
+                <hr>
                 <div class="form-group row align-items-center mb-3">
                     <div class="col-12 col-md-4">
                         <label for="Telefono[@contadorNumeros]" class="form-label">Teléfono @contadorNumeros</label>
@@ -269,7 +315,7 @@
                         <input class="form-control" list="tipificacionesList_@contadorNumeros"
                             name="tipificaciones[@contadorNumeros].TipificacionDescripcion"
                             id="tipificacionSelect_@contadorNumeros" placeholder="Presione 2 veces para ver las tipificaciones"
-                            oninput="actualizarIdTipificacion(@contadorNumeros)" />
+                            oninput="actualizarIdTipificacion(@contadorNumeros); verificarTipificacion(@contadorNumeros)"/>
 
                         <datalist id="tipificacionesList_@contadorNumeros">
                             <option value="">Seleccione la descripción de Tipificación</option>
@@ -279,6 +325,14 @@
                                     @tipificacion.DescripcionTipificacion</option>
                             }
                         </datalist>
+
+                        <!-- Campo de Fecha Oculto por Defecto FECHA VISITA-->
+                        <div class="form-group mt-3" id="fechaVisitaContainer_@contadorNumeros" style="display: none;">
+                            <label for="fechaVisita_@contadorNumeros" class="form-label">Fecha de Visita</label>
+                            <input class="form-control" type="date" name="tipificaciones[@contadorNumeros].FechaVisita"
+                                id="fechaVisita_@contadorNumeros" />
+                        </div>
+
                         <input class="form-control" id="GRUPO_MONTO" type="text"
                             value="@telefonosVendedor.DescripcionTipificacion" readonly />
                     </div>
@@ -293,19 +347,22 @@
                     Use este boton para agregar las Tipificaciones de los numeros de TELEFONOS ASIGNADOS POR USTED
                 </div>
                 <button class="btn btn-success" type="submit">Guardar Tipificaciones</button>
-                <a href="@Url.Action("Ventas", "User")" class="btn btn-danger">Cancelar</a>
             </div>
         </form>
     }
 
     else
     {
-        <div class="alert alert-info" role="alert">
-            No tiene números de teléfonos asignados por el usuario.
+        <div class="row">
+            <div class="alert alert-info" role="alert">
+                No tiene números de teléfonos asignados por el usuario.
+            </div>
         </div>
+
     }
+    
     <div class="spacing"></div>
-    <div class="spacing"></div>
+    <hr>
     <div>
         <h4>Agregue numeros de Telefono Personales</h4>
         <div>
@@ -362,20 +419,18 @@
                 <label for="Telefono1" class="form-label">Teléfono 1</label>
                 <input class="form-control" name="Telefono1" id="Telefono1" type="text" value="@Model.Telefono1"
                     readonly>
-
                 <div class="spacing"></div>
-
-                <textarea class="form-control" id="comentarioAsesor_teldb1"
-                    data-telefono="@Model.Telefono1"
-                    data-id-cliente="@id_cliente">@Model.ComentarioTelefono1</textarea>
-                <div class="spacing"></div>
-                <a href="javascript:void(0);" class="btn btn-primary"
-                    onclick="enviarComentarioTelefonoDB('@id_cliente', '@Model.Telefono1', 'comentarioAsesor_teldb1', 1)">
-                    <i class="fa fa-pencil"></i>
-                </a>
-
+                @if (@Model.Telefono1 != "0" && !string.IsNullOrEmpty(Model.Telefono1))
+                {
+                    <textarea class="form-control" id="comentarioAsesor_teldb1" data-telefono="@Model.Telefono1"
+                        data-id-cliente="@id_cliente">@Model.ComentarioTelefono1</textarea>
+                    <div class="spacing"></div>
+                    <a href="javascript:void(0);" class="btn btn-primary"
+                        onclick="enviarComentarioTelefonoDB('@id_cliente', '@Model.Telefono1', 'comentarioAsesor_teldb1', 1)">
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                }
             </div>
-
             @if (@Model.Telefono1 != "0" && !string.IsNullOrEmpty(Model.Telefono1))
             {
                 <div class="col-12 col-md-8 mt-2 mt-md-0">
@@ -387,7 +442,7 @@
                     <input class="form-control" list="tipificacionesList_db1"
                         name="tipificacionesdb1.TipificacionDescripcion" id="tipificacionSelect_db1"
                         placeholder="Presione 2 veces para ver las tipificaciones"
-                        oninput="actualizarIdTipificacion('db1')" />
+                        oninput="actualizarIdTipificacion('db1'); verificarTipificacion('db1')" />
 
                     <datalist id="tipificacionesList_db1">
                         <option value="">Seleccione la descripción de Tipificación</option>
@@ -398,10 +453,19 @@
                         }
                     </datalist>
 
+                    <!-- Campo de Fecha Oculto por Defecto FECHA VISITA-->
+                    <div class="form-group mt-3" id="fechaVisitaContainer_db1" style="display: none;">
+                        <label for="fechaVisita_db1" class="form-label">Fecha de Visita</label>
+                        <input class="form-control" type="date" name="DerivacionDb1"
+                            id="fechaVisita_db1" />
+                    </div>
+
                     <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion1" readonly>
                 </div>
             }
         </div>
+
+        <hr>
 
         <!-- Teléfono 2 -->
         <div class="form-group row align-items-center mb-3">
@@ -411,15 +475,16 @@
                     readonly>
 
                 <div class="spacing"></div>
-
-                <textarea class="form-control" id="comentarioAsesor_teldb2"
-                    data-telefono="@Model.Telefono2"
-                    data-id-cliente="@id_cliente">@Model.ComentarioTelefono2</textarea>
-                <div class="spacing"></div>
-                <a href="javascript:void(0);" class="btn btn-primary"
-                    onclick="enviarComentarioTelefonoDB('@id_cliente', '@Model.Telefono2', 'comentarioAsesor_teldb2', 2)">
-                    <i class="fa fa-pencil"></i>
-                </a>
+                @if (@Model.Telefono2 != "0" && !string.IsNullOrEmpty(Model.Telefono2))
+                {
+                    <textarea class="form-control" id="comentarioAsesor_teldb2" data-telefono="@Model.Telefono2"
+                        data-id-cliente="@id_cliente">@Model.ComentarioTelefono2</textarea>
+                    <div class="spacing"></div>
+                    <a href="javascript:void(0);" class="btn btn-primary"
+                        onclick="enviarComentarioTelefonoDB('@id_cliente', '@Model.Telefono2', 'comentarioAsesor_teldb2', 2)">
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                }
 
             </div>
             @if (@Model.Telefono2 != "0" && !string.IsNullOrEmpty(Model.Telefono2))
@@ -432,7 +497,7 @@
                     <input class="form-control" list="tipificacionesList_db2"
                         name="tipificacionesdb2.TipificacionDescripcion" id="tipificacionSelect_db2"
                         placeholder="Presione 2 veces para ver las tipificaciones"
-                        oninput="actualizarIdTipificacion('db2')" />
+                        oninput="actualizarIdTipificacion('db2'); verificarTipificacion('db2')" />
 
                     <datalist id="tipificacionesList_db2">
                         <option value="">Seleccione la descripción de Tipificación</option>
@@ -442,10 +507,20 @@
                                 @tipificacion.DescripcionTipificacion</option>
                         }
                     </datalist>
+                    
+                    <!-- Campo de Fecha Oculto por Defecto FECHA VISITA-->
+                    <div class="form-group mt-3" id="fechaVisitaContainer_db2" style="display: none;">
+                        <label for="fechaVisita_db2" class="form-label">Fecha de Visita</label>
+                        <input class="form-control" type="date" name="DerivacionDb2"
+                            id="fechaVisita_db2" />
+                    </div>
+
                     <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion2" readonly>
                 </div>
             }
         </div>
+
+        <hr>
 
         <!-- Teléfono 3 -->
         <div class="form-group row align-items-center mb-3">
@@ -456,14 +531,16 @@
 
                 <div class="spacing"></div>
 
-                <textarea class="form-control" id="comentarioAsesor_teldb3"
-                    data-telefono="@Model.Telefono3"
-                    data-id-cliente="@id_cliente">@Model.ComentarioTelefono3</textarea>
-                <div class="spacing"></div>
-                <a href="javascript:void(0);" class="btn btn-primary"
-                    onclick="enviarComentarioTelefonoDB('@id_cliente', '@Model.Telefono3', 'comentarioAsesor_teldb3', 3)">
-                    <i class="fa fa-pencil"></i>
-                </a>
+                @if (@Model.Telefono3 != "0" && !string.IsNullOrEmpty(Model.Telefono3))
+                {
+                    <textarea class="form-control" id="comentarioAsesor_teldb3" data-telefono="@Model.Telefono3"
+                        data-id-cliente="@id_cliente">@Model.ComentarioTelefono3</textarea>
+                    <div class="spacing"></div>
+                    <a href="javascript:void(0);" class="btn btn-primary"
+                        onclick="enviarComentarioTelefonoDB('@id_cliente', '@Model.Telefono3', 'comentarioAsesor_teldb3', 3)">
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                }
             </div>
 
             @if (@Model.Telefono3 != "0" && !string.IsNullOrEmpty(Model.Telefono3))
@@ -476,7 +553,7 @@
                     <input class="form-control" list="tipificacionesList_db3"
                         name="tipificacionesdb3.TipificacionDescripcion" id="tipificacionSelect_db3"
                         placeholder="Presione 2 veces para ver las tipificaciones"
-                        oninput="actualizarIdTipificacion('db3')" />
+                        oninput="actualizarIdTipificacion('db3'); verificarTipificacion('db3')" />
 
                     <datalist id="tipificacionesList_db3">
                         <option value="">Seleccione la descripción de Tipificación</option>
@@ -486,10 +563,20 @@
                                 @tipificacion.DescripcionTipificacion</option>
                         }
                     </datalist>
+
+                    <!-- Campo de Fecha Oculto por Defecto FECHA VISITA-->
+                    <div class="form-group mt-3" id="fechaVisitaContainer_db3" style="display: none;">
+                        <label for="fechaVisita_db3" class="form-label">Fecha de Visita</label>
+                        <input class="form-control" type="date" name="DerivacionDb3"
+                            id="fechaVisita_db3" />
+                    </div>
+
                     <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion3" readonly>
                 </div>
             }
         </div>
+
+        <hr>
 
         <div class="form-group row align-items-center mb-3">
             <div class="col-12 col-md-4">
@@ -498,15 +585,16 @@
                     readonly>
 
                 <div class="spacing"></div>
-
-                <textarea class="form-control" id="comentarioAsesor_teldb4"
-                    data-telefono="@Model.Telefono4"
-                    data-id-cliente="@id_cliente">@Model.ComentarioTelefono4</textarea>
-                <div class="spacing"></div>
-                <a href="javascript:void(0);" class="btn btn-primary"
-                    onclick="enviarComentarioTelefonoDB('@id_cliente', '@Model.Telefono4', 'comentarioAsesor_teldb4', 4)">
-                    <i class="fa fa-pencil"></i>
-                </a>
+                @if (@Model.Telefono4 != "0" && !string.IsNullOrEmpty(Model.Telefono4))
+                {
+                    <textarea class="form-control" id="comentarioAsesor_teldb4" data-telefono="@Model.Telefono4"
+                        data-id-cliente="@id_cliente">@Model.ComentarioTelefono4</textarea>
+                    <div class="spacing"></div>
+                    <a href="javascript:void(0);" class="btn btn-primary"
+                        onclick="enviarComentarioTelefonoDB('@id_cliente', '@Model.Telefono4', 'comentarioAsesor_teldb4', 4)">
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                }
             </div>
 
             @if (@Model.Telefono4 != "0" && !string.IsNullOrEmpty(Model.Telefono4))
@@ -519,7 +607,7 @@
                     <input class="form-control" list="tipificacionesList_db4"
                         name="tipificacionesdb4.TipificacionDescripcion" id="tipificacionSelect_db4"
                         placeholder="Presione 2 veces para ver las tipificaciones"
-                        oninput="actualizarIdTipificacion('db4')" />
+                        oninput="actualizarIdTipificacion('db4'); verificarTipificacion('db4')" />
 
                     <datalist id="tipificacionesList_db4">
                         <option value="">Seleccione la descripción de Tipificación</option>
@@ -529,10 +617,20 @@
                                 @tipificacion.DescripcionTipificacion</option>
                         }
                     </datalist>
+
+                    <!-- Campo de Fecha Oculto por Defecto FECHA VISITA-->
+                    <div class="form-group mt-3" id="fechaVisitaContainer_db4" style="display: none;">
+                        <label for="fechaVisita_db4" class="form-label">Fecha de Visita</label>
+                        <input class="form-control" type="date" name="DerivacionDb4"
+                            id="fechaVisita_db4" />
+                    </div>
+
                     <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion4" readonly>
                 </div>
             }
         </div>
+
+        <hr>
 
         <div class="form-group row align-items-center mb-3">
             <div class="col-12 col-md-4">
@@ -541,17 +639,17 @@
                     readonly>
 
                 <div class="spacing"></div>
-
-                <textarea class="form-control" id="comentarioAsesor_teldb5"
-                    data-telefono="@Model.Telefono5"
-                    data-id-cliente="@id_cliente">@Model.ComentarioTelefono5</textarea>
-                <div class="spacing"></div>
-                <a href="javascript:void(0);" class="btn btn-primary"
-                    onclick="enviarComentarioTelefonoDB('@id_cliente', '@Model.Telefono5', 'comentarioAsesor_teldb5', 5)">
-                    <i class="fa fa-pencil"></i>
-                </a>
+                @if (@Model.Telefono5 != "0" && !string.IsNullOrEmpty(Model.Telefono5))
+                {
+                    <textarea class="form-control" id="comentarioAsesor_teldb5" data-telefono="@Model.Telefono5"
+                        data-id-cliente="@id_cliente">@Model.ComentarioTelefono5</textarea>
+                    <div class="spacing"></div>
+                    <a href="javascript:void(0);" class="btn btn-primary"
+                        onclick="enviarComentarioTelefonoDB('@id_cliente', '@Model.Telefono5', 'comentarioAsesor_teldb5', 5)">
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                }
             </div>
-
             @if (@Model.Telefono5 != "0" && !string.IsNullOrEmpty(Model.Telefono5))
             {
                 <div class="col-12 col-md-8 mt-2 mt-md-0">
@@ -562,7 +660,7 @@
                     <input class="form-control" list="tipificacionesList_db5"
                         name="tipificacionesdb5.TipificacionDescripcion" id="tipificacionSelect_db5"
                         placeholder="Presione 2 veces para ver las tipificaciones"
-                        oninput="actualizarIdTipificacion('db5')" />
+                        oninput="actualizarIdTipificacion('db5'); verificarTipificacion('db5')" />
 
                     <datalist id="tipificacionesList_db5">
                         <option value="">Seleccione la descripción de Tipificación</option>
@@ -572,6 +670,14 @@
                                 @tipificacion.DescripcionTipificacion</option>
                         }
                     </datalist>
+
+                    <!-- Campo de Fecha Oculto por Defecto FECHA VISITA-->
+                    <div class="form-group mt-3" id="fechaVisitaContainer_db5" style="display: none;">
+                        <label for="fechaVisita_db5" class="form-label">Fecha de Visita</label>
+                        <input class="form-control" type="date" name="DerivacionDb5"
+                            id="fechaVisita_db5" />
+                    </div>
+
                     <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion5" readonly>
                 </div>
             }
@@ -585,214 +691,11 @@
             Use este boton para agregar las tipificaciones de los numeros de TELEFONOS ASIGNADOS POR LA EMPRESA
         </div>
         <button class="btn btn-success" type="submit">Guardar Tipificaciones</button>
-        <a href="@Url.Action("Ventas", "User")" class="btn btn-danger">Cancelar</a>
+        <button type="button" class="btn-danger" data-bs-dismiss="modal" aria-label="Close">Cancelar</button>
     </div>
-
 </form>
 
 
 <script>
-    function editarTelefono(campo) {
-        // Mostrar los botones de guardar y cancelar
-        document.getElementById('botonesEdicion_' + campo).style.display = 'block';
-
-        // Ocultar el botón de "Agregar Teléfono"
-        document.getElementById('agregarTelefono_' + campo).style.display = 'none';
-    }
-
-    function cancelarEdicion(campo) {
-        document.getElementById(campo).value = '0';
-        document.getElementById('agregarTelefono_' + campo).style.display = 'block';
-        document.getElementById('botonesEdicion_' + campo).style.display = 'none';
-    }
-
-    function guardarTelefono(idasignacion, campo) {
-        const userConfirmed = confirm('Advertencia: Recuerde que solo se puede tener un maximo de 5 numeros por cliente y esta insercion llenara un campo de telefono. ¿Está seguro de continuar?');
-        if (userConfirmed) {
-            const valorTelefono = document.getElementById(campo).value;
-            const idBase = document.getElementById('IDBASEUSUARIO').value;
-
-
-            if (!valorTelefono.trim()) {
-                alert('El número de teléfono no puede estar vacío.');
-                return;
-            }
-
-            if (!/^\d+$/.test(valorTelefono)) {
-                alert('Ingrese solo números');
-                return;
-            }
-
-            if (!/^\d{9}$/.test(valorTelefono)) {
-                alert('El número de teléfono debe tener exactamente 9 dígitos.');
-                return;
-            }
-
-            $.ajax({
-                url: '/User/AgregarTelefono',
-                type: 'POST',
-                data: {
-                    IdAsignacion: idasignacion,
-                    NuevoTelefono: valorTelefono,
-                    NumTelefonoEdicion: campo
-                },
-                success: function (result) {
-                    alert('Se ha actualizado el Numero del Cliente Recargue la Pagina para verificar los cambios');
-                },
-                error: function () {
-                    alert('Error al agregar un nuevo numero de Telefono' + errorThrown);
-                }
-            });
-        } else {
-            alert('La acción ha sido cancelada.');
-        }
-    }
-
-    function loadCulminacionCliente(id_asignacion) {
-        if (!id_asignacion) {
-            alert('El ID de asignación no es válido.');
-            return;
-        }
-
-        const userConfirmed = confirm('Advertencia: Si culmina con el cliente, esta acción no se puede revertir. ¿Está seguro de continuar?');
-
-        if (userConfirmed) {
-            $.ajax({
-                url: '/User/culminarCliente',
-                type: 'POST',
-                data: { "IdAsignacion": id_asignacion },
-                success: function (result) {
-                    alert('Se ha culminado con el cliente correctamente.');
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error al culminar con el cliente:', error);
-                    alert('Hubo un error al intentar culminar con el cliente. Por favor, inténtalo nuevamente.');
-                }
-            });
-        } else {
-            // Si el usuario cancela, muestra un mensaje opcional
-            alert('La acción ha sido cancelada.');
-        }
-    }
-</script>
-
-<script>
-    function cargarEdicionDeTelefonos(idcliente) {
-        if (!idcliente) {
-            alert('El ID del cliente no es valido.');
-            return;
-        }
-
-        const userConfirmed = confirm('Agregar un nuevo telefono Notificara al Supervisor. ¿Está seguro de continuar?');
-        if (userConfirmed) {
-            $.ajax({
-                url: '/User/AgregarTelefonoView',
-                type: 'GET',
-                data: { "idCliente": idcliente },
-                success: function (response) {
-                    document.getElementById('agregarTelefonoBtnCliente').style.display = 'none';
-                    document.getElementById('cancelaragregarTelefonoBtnCliente').style.display = 'block';
-                    document.getElementById('agregarTelefonoContainer').style.display = 'block';
-                    $('#agregarTelefonoContainer').html(response);
-                },
-                error: function () {
-                    alert('Hubo un error al cargar la vista.');
-                }
-            });
-        }
-    }
-
-    function descargarEdicionDeTelefonos(idcliente) {
-        document.getElementById('agregarTelefonoBtnCliente').style.display = 'block';
-        document.getElementById('cancelaragregarTelefonoBtnCliente').style.display = 'none';
-        document.getElementById('agregarTelefonoContainer').style.display = 'none';
-    }
-</script>
-
-<script>
-    function enviarComentario(idCliente, telefono, textareaId) {
-        const comentario = document.getElementById(textareaId).value;
-
-        if (!comentario) {
-            alert('Por favor, ingrese un comentario antes de enviarlo.');
-            return;
-        }
-
-        // Enviar la solicitud POST con los datos al controlador
-        $.ajax({
-            url: '/User/EnviarComentario', // Asegúrate de que coincida con la ruta del controlador
-            type: 'POST', // Especificar método POST
-            data: {
-                Telefono: telefono,
-                IdCliente: idCliente,
-                Comentario: comentario
-            },
-            headers: {
-                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() // Anti-CSRF
-            },
-            success: function (response) {
-                if (response.success) {
-                    alert('Comentario agregado correctamente.');
-                } else {
-                    alert('Error: ' + response.message);
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('Error al enviar comentario:', error);
-                alert('Hubo un error inesperado al enviar el comentario.');
-            }
-        });
-    }
-
-    // Función para actualizar el ID de la tipificación cuando se selecciona una opción del datalist
-    function actualizarIdTipificacion(contadorNumeros) {
-        var inputText = document.getElementById('tipificacionSelect_' + contadorNumeros);
-        var datalist = document.getElementById('tipificacionesList_' + contadorNumeros);
-        var hiddenInput = document.getElementById('tipificacionId_' + contadorNumeros);
-
-        // Buscar la opción correspondiente en el datalist
-        for (var option of datalist.options) {
-            if (option.value === inputText.value) {
-                hiddenInput.value = option.getAttribute('data-id'); // Actualizar el ID oculto
-                return;
-            }
-        }
-
-        hiddenInput.value = ''; // Si no hay coincidencia, limpiar el ID
-    }
-
-    function enviarComentarioTelefonoDB(idCliente, telefono, textareaId, numTelefono) {
-        const comentario = document.getElementById(textareaId).value;
-
-        if (!comentario) {
-            alert('Por favor, ingrese un comentario antes de enviarlo.');
-            return;
-        }
-
-        // Enviar la solicitud POST con los datos al controlador
-        $.ajax({
-            url: '/User/EnviarComentarioTelefonoDB', // Asegúrate de que coincida con la ruta del controlador
-            type: 'POST', // Especificar método POST
-            data: {
-                Telefono: telefono,
-                IdCliente: idCliente,
-                Comentario: comentario,
-                numeroTelefono: numTelefono
-            },
-            headers: {
-                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() // Anti-CSRF
-            },
-            success: function (response) {
-                if (response.success) {
-                    alert('Comentario agregado correctamente.');
-                } else {
-                    alert('Error: ' + response.message);
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('Error al enviar comentario:', error);
-                alert('Hubo un error inesperado al enviar el comentario.');
-            }
-        });
-    }
+    
 </script>

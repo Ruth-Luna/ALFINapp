@@ -17,7 +17,7 @@
 <header>
     <div class="container-fluid">
         <div class="top-container">
-            <p><strong>Fecha actual:</strong> @DateTime.Now.ToString("dd/MM/yyyy")</p>
+            <p><strong>Fecha y hora actual:</strong> @DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")</p>
             <div class="buttons-container">
                 <a href="@Url.Action("CerrarSesion", "User")" class="btn btn-danger">Cerrar Sesion</a>
             </div>
@@ -31,6 +31,7 @@
         <div class="row align-items-center">
             <div class="col-12 col-md-6 mb-3 mb-md-0">
                 <h2 class="mb-0">Supervisor - @usuarioNombre</h2>
+                <div class="spacing"></div>
                 <div>
                     <table class="table table-bordered">
                         <thead>
@@ -50,25 +51,23 @@
                     </table>
                 </div>
             </div>
-            <div class="col-12 col-md-6 d-flex justify-content-end">
-                <div class="buttons-container">
-                    <a href="javascript:void(0);" class="btn btn-success"
-                        onclick="loadAsignarClienteAVendedor()">Asignar Vendedor</a>
-                    <a href="@Url.Action("DescargarClientesAsignados", "Excel")" class="btn btn-primary">Descargar
-                        Datos</a>
-                    <form action="@Url.Action("SubircsvFile", "Excel")" method="post" enctype="multipart/form-data">
-                        <label class="btn btn-warning">
-                            Subir CSV
-                            <input type="file" name="csvFile" id="csvFileInput" accept=".csv" hidden
-                                onchange="showFileName()">
-                        </label>
-                        <!-- Contenedor para el nombre del archivo -->
-                        <span id="fileNameDisplay" class="ml-2 text-info"></span>
-                        <button type="submit" class="btn btn-primary mt-2">Cargar</button>
-                    </form>
+            <div class="col-12 col-md-6 d-flex flex-column align-items-center">
+                <div class="d-flex flex-column align-items-center w-100">
+                    <div class="d-flex justify-content-between w-100 mb-3">
+                        <div class="me-2">
+                            <label for="fechaInicio">Fecha Inicio:</label>
+                            <input type="date" id="fechaInicio" class="form-control" />
+                            <label for="fechaFin">Fecha Fin:</label>
+                            <input type="date" id="fechaFin" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between w-100">
+                        <a href="javascript:void(0);" class="btn btn-primary mb-3" onclick="descargarDatos()">Descargar Datos</a>
+                        <a href="javascript:void(0);" class="btn btn-success mb-3 ms-2" onclick="loadAsignarClienteAVendedor()">Asignar Asesores</a>
+                        <!--<a href="javascript:void(0);" class="btn btn-success mb-3 ms-2" onclick="loadFuncionalidadAsesores()">Modificar Asesor</a>-->
+                    </div>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -87,14 +86,14 @@
                     </th>
 
                     <th>
-                        Vendedor Asignado
+                        Asesor Asignado
                         <!--<button class="btn btn-link p-0"
                             onclick="sortTable('clientesTable', 3, 'string')">Ordenar</button>-->
                     </th>
 
-                    <th>DNI Vendedor</th>
+                    <th>DNI Asesor</th>
                     <th>
-                        Fecha Asignacion Vendedor
+                        Fecha Asignacion Asesor
                         <!--<button class="btn btn-link p-0"
                             onclick="sortTable('clientesTable', 5, 'date')">Ordenar</button>-->
                     </th>
@@ -114,8 +113,9 @@
                             contr++;
                         }
                         <td>@SupervisorDTO.Dni</td>
-                        <td>@SupervisorDTO.XNombre @SupervisorDTO.XAppaterno @SupervisorDTO.XApmaterno</td>
-                        <td>@SupervisorDTO.NombresCompletos</td>
+                        <td>@SupervisorDTO.XNombre.ToUpper() @SupervisorDTO.XAppaterno.ToUpper()
+                            @SupervisorDTO.XApmaterno.ToUpper()</td>
+                        <td>@SupervisorDTO.NombresCompletos.ToUpper()</td>
                         <td>@SupervisorDTO.DniVendedor</td>
                         <td>@SupervisorDTO.FechaAsignacionV</td>
 
@@ -147,7 +147,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalLabel">Asignar Vendedores</h5>
+                <h5 class="modal-title" id="modalLabel">Asignar Asesores</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -163,7 +163,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalLabel">Asignar Vendedores</h5>
+                <h5 class="modal-title" id="modalLabel">Asignar Asesores</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -175,89 +175,48 @@
     </div>
 </div>
 
-<script>
-    function loadAsignarClienteAVendedor() {
-        $.ajax({
-            url: '/Supervisor/AsignarVendedorView',
-            type: 'GET',
-            success: function (result) {
-                $('#modalContentAsignarVend').html(result);
-                $('#asignarVendModal').modal('show');
-            },
-            error: function () {
-                alert('Error al cargar los datos del cliente.');
-            }
-        });
+<!-- Modal USUARIOS-->
+
+<div class="modal fade" id="modificarAsesorModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Agregar Modificar o Desactivar Asesores</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalContentModificarAsesorModal">
+                    <!-- Aquí se cargará la vista parcial -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @if (TempData["Message"] != null)
+    {
+        <script>
+            Swal.fire({
+                title: 'Mensaje', // Título del mensaje
+                text: '@Html.Raw(TempData["Message"] as string)', // Usamos Html.Raw para evitar que se escape el texto
+                icon: 'info', // Tipo de ícono (info, success, error, warning)
+                confirmButtonText: 'Aceptar' // Texto del botón de confirmación
+            });
+        </script>
     }
 
-    function loadModificarVendedorAsignado(idAsignacion) {
-        $.ajax({
-            url: '/Supervisor/ModificarAsignacionVendedorView',
-            type: 'GET',
-            data: { id_asignacion: idAsignacion },
-            success: function (result) {
-                $('#modalContentModificarVendAsignar').html(result);
-                $('#modificarVendModal').modal('show');
-            },
-            error: function () {
-                alert('Error al cargar los datos del cliente.');
-            }
-        });
-    }
-</script>
-
-<script>
-    function sortTable(columnIndex, type) {
-        const table = document.getElementById(tableId);
-        const rows = Array.from(table.rows).slice(1); // Exclude header
-        const isAscending = table.dataset.sortOrder !== 'asc';
-        table.dataset.sortOrder = isAscending ? 'asc' : 'desc';
-
-        rows.sort((a, b) => {
-            const aText = a.cells[colIndex].textContent.trim();
-            const bText = b.cells[colIndex].textContent.trim();
-
-            if (type === 'number') {
-                return isAscending
-                    ? parseFloat(aText) - parseFloat(bText)
-                    : parseFloat(bText) - parseFloat(aText);
-            }
-            if (type === 'date') {
-                return isAscending
-                    ? new Date(aText) - new Date(bText)
-                    : new Date(bText) - new Date(aText);
-            }
-            if (type === 'bool') {
-                return isAscending
-                    ? aText.toLowerCase() === 'true' ? -1 : 1
-                    : aText.toLowerCase() === 'true' ? 1 : -1;
-            }
-
-            return isAscending
-                ? aText.localeCompare(bText)
-                : bText.localeCompare(aText);
-        });
-
-        rows.forEach(row => table.tBodies[0].appendChild(row));
+    @if (TempData["MessageError"] != null)
+    {
+        <script>
+            Swal.fire({
+                title: 'Error', // Título del mensaje
+                text: '@Html.Raw(TempData["MessageError"] as string)', // Usamos Html.Raw para evitar que se escape el texto
+                icon: 'Error', // Tipo de ícono (info, success, error, warning)
+                confirmButtonText: 'Aceptar' // Texto del botón de confirmación
+            });
+        </script>
     }
 
-    function showFileName() {
-        const fileInput = document.getElementById('csvFileInput');
-        const fileNameDisplay = document.getElementById('fileNameDisplay');
-
-        // Si se selecciona un archivo, muestra su nombre
-        if (fileInput.files && fileInput.files[0]) {
-            fileNameDisplay.textContent = fileInput.files[0].name;
-        } else {
-            fileNameDisplay.textContent = ''; // Si no hay archivo, limpia el texto
-        }
-    }
-
-</script>
-
-@if (TempData["Message"] != null)
-{
-    <script>
-        alert('@TempData["Message"]');
-    </script>
+    <script src="~/js/mainsupervisorfunctions.js"></script>
 }

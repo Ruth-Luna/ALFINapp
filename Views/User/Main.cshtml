@@ -27,7 +27,7 @@
 <header>
     <div class="container-fluid">
         <div class="top-container">
-            <p><strong>Fecha actual:</strong> @DateTime.Now.ToString("dd/MM/yyyy")</p>
+            <p><strong>Fecha y hora actual:</strong> @DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")</p>
             <div class="buttons-container">
                 <a href="javascript:void(0);" class="btn btn-success" onclick="openAddClientModal()">Agregar Cliente</a>
                 <a href="@Url.Action("CerrarSesion", "User")" class="btn btn-danger">Cerrar Sesion</a>
@@ -47,9 +47,9 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>Total Clientes</th>
-                                <th>Clientes Tipificados</th>
-                                <th>Clientes Pendientes</th>
+                                <th>Asignado</th>
+                                <th>Gestionado</th>
+                                <th>Sin Gestionar</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -79,9 +79,16 @@
                         <option value="comentarioPrincipal">Comentario Principal</option>
                         <option value="tipificacionRelevante">Tipificación más Relevante</option>
                         <option value="dni">DNI</option>
+                        <option value="fechaAsignacion">Fecha de Asignacion</option>
                     </select>
 
                     <input type="text" class="form-control" id="searchInput" placeholder="Ingrese valor de búsqueda">
+
+                    <!-- Campos de fecha (inicial y final), ocultos por defecto -->
+                    <input type="date" class="form-control mt-2" id="startDate" style="display: none;"
+                        placeholder="Fecha Inicial">
+                    <input type="date" class="form-control mt-2" id="endDate" style="display: none;"
+                        placeholder="Fecha Final">
                 </div>
             </div>
         </div>
@@ -179,15 +186,11 @@
                     var rowClass = ""; // Inicializa como cadena vacía
                     if (pesotipMayor != null)
                     {
-                        rowClass = "table-tipificada"; // Clase base para filas con tipificación
+                        rowClass = "table-success"; // Clase base para filas con tipificación
 
                         if (pesotipMayor > 100)
                         {
                             rowClass += " table-danger"; // Clase adicional para peso mayor a 100
-                        }
-                        else if (pesotipMayor > 95)
-                        {
-                            rowClass += " table-success"; // Clase adicional para peso mayor a 90
                         }
                     }
                     <tr class="@rowClass">
@@ -199,15 +202,16 @@
                         </td>
 
                         <td>@ClienteDTO.Dni</td>
-                        <td>@ClienteDTO.XAppaterno</td>
-                        <td>@ClienteDTO.XApmaterno</td>
-                        <td>@ClienteDTO.XNombre</td>
+                        <td>@ClienteDTO.XAppaterno.ToUpper()</td>
+                        <td>@ClienteDTO.XApmaterno.ToUpper()</td>
+                        <td>@ClienteDTO.XNombre.ToUpper()</td>
                         <td>@ClienteDTO.OfertaMax</td>
-                        <td>@ClienteDTO.Campaña</td>
+                        <td>@ClienteDTO.Campaña.ToUpper()</td>
                         <td>@ClienteDTO.FechaAsignacionVendedor</td>
-                        <td><textarea name="" id="comentarioGeneral[@ClienteDTO.IdAsignacion]">@ClienteDTO.ComentarioGeneral</textarea>
+                        <td><textarea name=""
+                                id="comentarioGeneral[@ClienteDTO.IdAsignacion]">@ClienteDTO.ComentarioGeneral</textarea>
                             <a href="javascript:void(0);" class="btn btn-primary"
-                                onclick="savingComentario(@ClienteDTO.IdAsignacion)">
+                                onclick="guardarComentarioGeneral(@ClienteDTO.IdAsignacion)">
                                 <i class="fa fa-pencil"></i>
                             </a>
                         </td>
@@ -253,157 +257,34 @@
     </div>
 </div>
 
-
-<script>
-    function savingComentario(idAsignacion) {
-        let id_to_find = `comentarioGeneral[${idAsignacion}]`;
-        const comentarioGeneral = document.getElementById(id_to_find).value;
-        if (!comentarioGeneral) { // Validación de campo vacío
-            alert('El comentario no puede estar vacío.');
-            return;
-        }
-        $.ajax({
-            url: '/User/EnviarComentarioGeneral', // Controlador y acción
-            type: 'POST',
-            data: {
-                idAsignacion: idAsignacion,
-                comentarioGeneral: comentarioGeneral
-            },
-            success: function (response) {
-                if (response.success) {
-                    alert('Comentario agregado correctamente.');
-                } else {
-                    alert('Error: ' + response.message);
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('Error al enviar comentario:', error);
-                alert('Hubo un error inesperado al enviar el comentario.');
-            }
-        });
+@section Scripts {
+    @if (TempData["Message"] != null)
+    {
+        <script>
+            Swal.fire({
+                title: 'Mensaje', // Título del mensaje
+                text: '@Html.Raw(TempData["Message"] as string)', // Usamos Html.Raw para evitar que se escape el texto
+                icon: 'info', // Tipo de ícono (info, success, error, warning)
+                confirmButtonText: 'Aceptar' // Texto del botón de confirmación
+            });
+        </script>
     }
 
-    function loadTipificarCliente(idBase) {
-        $.ajax({
-            url: '/User/TipificarClienteView', // Controlador y acción
-            type: 'GET',
-            data: { id_base: idBase },
-            success: function (result) {
-                $('#modalContentTipificar').html(result); // Inserta el contenido de la vista en el modal
-                $('#tipificarClienteModal').modal('show'); // Muestra el modal
-            },
-            error: function () {
-                alert('Error al cargar los datos del cliente.');
-            }
-        });
+    @if (TempData["MessageError"] != null)
+    {
+        <script>
+            Swal.fire({
+                title: 'Mensaje', // Título del mensaje
+                text: '@Html.Raw(TempData["MessageError"] as string)', // Usamos Html.Raw para evitar que se escape el texto
+                icon: 'info', // Tipo de ícono (info, success, error, warning)
+                confirmButtonText: 'Aceptar' // Texto del botón de confirmación
+            });
+        </script>
     }
 
-    function openAddClientModal() {
-        $.ajax({
-            url: '/User/AddingClient', // Acción para cargar la vista parcial
-            type: 'GET',
-            success: function (result) {
-                $('#modalContentAgregar').html(result); // Carga la vista parcial dentro del modal
-                $('#addClientModal').modal('show'); // Muestra el modal
-            },
-            error: function (xhr, status, error) {
-                console.log("Error:", status, error); // Muestra el error en consola
-                alert('Error al cargar el formulario de agregar cliente.');
-            }
-        });
-    }
-
-</script>
-
-<script>
-    function sortTable(tableId, colIndex, type) {
-        const table = document.getElementById(tableId);
-        const rows = Array.from(table.rows).slice(1); // Exclude header
-        const isAscending = table.dataset.sortOrder !== 'asc';
-        table.dataset.sortOrder = isAscending ? 'asc' : 'desc';
-
-        rows.sort((a, b) => {
-            if (a.cells[colIndex].querySelector('button')) return 0;
-
-            const aText = a.cells[colIndex].textContent.trim();
-            const bText = b.cells[colIndex].textContent.trim();
-
-            if (type === 'number') {
-                return isAscending
-                    ? parseFloat(aText) - parseFloat(bText)
-                    : parseFloat(bText) - parseFloat(aText);
-            }
-            if (type === 'date') {
-                return isAscending
-                    ? aDate - bDate
-                    : bDate - aDate;
-            }
-            if (type === 'bool') {
-                return isAscending
-                    ? aText.toLowerCase() === 'true' ? -1 : 1
-                    : aText.toLowerCase() === 'true' ? 1 : -1;
-            }
-            return isAscending
-                ? aText.localeCompare(bText)
-                : bText.localeCompare(aText);
-        });
-
-        rows.forEach(row => table.tBodies[0].appendChild(row)); // Re-attach sorted rows
-    }
-</script>
-
-<script>
-    document.getElementById('searchInput').addEventListener('input', function () {
-        const searchField = document.getElementById('searchField').value;
-        const filter = this.value.toLowerCase();
-        const table = document.getElementById('clientesTable');
-        const rows = table.tBodies[0].rows;
-
-        Array.from(rows).forEach(row => {
-            let cellValue = '';
-
-            switch (searchField) {
-                case 'apellidoPaterno':
-                    cellValue = row.cells[2].textContent.toLowerCase(); // Apellido Paterno
-                    break;
-                case 'apellidoMaterno':
-                    cellValue = row.cells[3].textContent.toLowerCase(); // Columna de Apellido Materno
-                    break;
-                case 'nombre':
-                    cellValue = row.cells[4].textContent.toLowerCase(); // Columna de Nombre
-                    break;
-                case 'ofertaMax':
-                    cellValue = row.cells[5].textContent.toLowerCase(); // Columna de Oferta Max
-                    break;
-                case 'comentarioPrincipal':
-                    cellValue = row.cells[9].textContent.toLowerCase(); // Columna de Comentario Principal
-                    break;
-                case 'dni':
-                    cellValue = row.cells[1].textContent.toLowerCase(); // DNI
-                    break;
-                case 'campaña':
-                    cellValue = row.cells[6].textContent.toLowerCase(); // Campaña
-                    break;
-                case 'tipificacionRelevante':
-                    cellValue = row.cells[9].textContent.toLowerCase(); // Tipificación más Relevante
-                    break;
-                default:
-                    cellValue = ''; // En caso de no coincidir con ninguna opción
-                    break;
-            }
-
-            if (cellValue.includes(filter)) {
-                row.style.display = ''; // Muestra la fila
-            } else {
-                row.style.display = 'none'; // Oculta la fila
-            }
-        });
-    });
-</script>
-
-@if (TempData["Message"] != null)
-{
-    <script>
-        alert('@TempData["Message"]');
-    </script>
+    <script src="~/js/mainfunctions.js"></script>
+    <script src="~/js/commentfunctions.js"></script>
+    <script src="~/js/telefonosfunctions.js"></script>
+    <script src="~/js/tipificacionesfunctions.js"></script>
+    <script src="~/js/tablefunctions.js"></script>
 }

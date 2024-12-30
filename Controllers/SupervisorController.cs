@@ -21,7 +21,7 @@ namespace ALFINapp.Controllers
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)
             {
-                TempData["Message"] = "Ha ocurrido un error en la autenticacion";
+                TempData["MessageError"] = "Ha ocurrido un error en la autenticacion";
                 return RedirectToAction("Index", "Home");
             }
 
@@ -45,7 +45,7 @@ namespace ALFINapp.Controllers
                                      XApmaterno = bc.XApmaterno,
                                      XNombre = bc.XNombre,
 
-                                     NombresCompletos = u != null ? u.NombresCompletos : "Vendedor no Asignado",
+                                     NombresCompletos = u != null ? u.NombresCompletos : "Asesor no Asignado",
                                      ApellidoPaterno = u != null ? u.ApellidoPaterno : "No disponible", // Manejo de null para ApellidoPaterno
                                      DniVendedor = u != null ? u.Dni : " ",
                                  };
@@ -82,11 +82,11 @@ namespace ALFINapp.Controllers
         {
             if (HttpContext.Session.GetInt32("UsuarioId") == null)
             {
-                TempData["Message"] = "No ha iniciado sesion";
+                TempData["MessageError"] = "No ha iniciado sesion, por favor inicie sesion.";
                 return RedirectToAction("VistaMainSupervisor", "Supervisor");
             }
             var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            Console.WriteLine("HEmos pasado la Comprobacion");
+            Console.WriteLine("Hemos pasado la Comprobacion");
             var vendedoresConClientes = (from u in _context.usuarios
                                          where u.Rol == "VENDEDOR" && u.IDUSUARIOSUP == usuarioId
                                          join ca in _context.clientes_asignados
@@ -105,7 +105,7 @@ namespace ALFINapp.Controllers
                                          }).ToList();
             if (vendedoresConClientes == null)
             {
-                TempData["Message"] = "La consulta para dar vendedores ha fallado";
+                TempData["MessageError"] = "La consulta para dar asesores ha fallado";
                 return RedirectToAction("VistaMainSupervisor", "Supervisor");
             }
             return PartialView("_Asignarvendedores", vendedoresConClientes);
@@ -114,16 +114,15 @@ namespace ALFINapp.Controllers
         [HttpPost]
         public IActionResult AsignarVendedoresPorNumero(int nclientes, int id_vendedor)
         {
-            Console.WriteLine($"IMPRIMIENTO LEER IMPORTANTE");
             if (HttpContext.Session.GetInt32("UsuarioId") == null)
             {
-                TempData["Message"] = "No ha iniciado sesión.";
+                TempData["MessageError"] = "No ha iniciado sesion, por favor inicie sesion.";
                 return RedirectToAction("Index", "Home");
             }
 
             if (!int.TryParse(nclientes.ToString(), out int n_clientes) || nclientes <= 0)
             {
-                TempData["Message"] = "La entrada debe de ser un numero valido y positivo.";
+                TempData["MessageError"] = "La entrada debe de ser un numero valido y positivo.";
                 return RedirectToAction("VistaMainSupervisor");
             }
 
@@ -136,20 +135,20 @@ namespace ALFINapp.Controllers
 
             if (clientesDisponibles.Count < nclientes)
             {
-                TempData["Message"] = $"Solo hay {clientesDisponibles.Count} clientes disponibles para asignar.";
+                TempData["MessageError"] = $"Solo hay {clientesDisponibles.Count} clientes disponibles para asignar.";
                 return RedirectToAction("VistaMainSupervisor");
             }
 
             foreach (var cliente in clientesDisponibles)
             {
-                Console.WriteLine($"Estamo asignando el cliente {cliente.IdCliente}");
+                Console.WriteLine($"Estamos asignando el cliente {cliente.IdCliente}");
                 cliente.IdUsuarioV = id_vendedor;
                 cliente.FechaAsignacionVendedor = DateTime.Now;
             }
 
             // Guardar los cambios en la base de datos
             _context.SaveChanges();
-            TempData["Message"] = $"{nclientes} clientes han sido asignados correctamente al vendedor.";
+            TempData["Message"] = $"{nclientes} clientes han sido asignados correctamente al Asesor.";
             return RedirectToAction("VistaMainSupervisor");
         }
         [HttpGet]
@@ -157,7 +156,7 @@ namespace ALFINapp.Controllers
         {
             if (HttpContext.Session.GetInt32("UsuarioId") == null)
             {
-                TempData["Message"] = "No ha iniciado sesión.";
+                TempData["MessageError"] = "No ha iniciado sesion, por favor inicie sesion.";
                 return RedirectToAction("Index", "Home");
             }
             var idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId").Value;
@@ -180,7 +179,7 @@ namespace ALFINapp.Controllers
                                        }).ToList();
             if (vendedoresAsignados == null)
             {
-                TempData["Message"] = "La consulta para dar vendedores ha fallado";
+                TempData["MessageError"] = "La consulta para dar asesores ha fallado";
                 return RedirectToAction("VistaMainSupervisor", "Supervisor");
             }
 
@@ -194,7 +193,7 @@ namespace ALFINapp.Controllers
 
             if (asignacion.IdUsuarioV == idVendedor)
             {
-                TempData["Message"] = "Debe seleccionar un Vendedor diferente";
+                TempData["MessageError"] = "Debe seleccionar un Asesor diferente, ya que el Asesor actual es el mismo.";
                 return RedirectToAction("VistaMainSupervisor");
             }
             if (asignacion != null)
@@ -203,7 +202,7 @@ namespace ALFINapp.Controllers
                 asignacion.FechaAsignacionVendedor = DateTime.Now;
                 _context.SaveChanges();
 
-                TempData["Message"] = $"{asignacion.IdCliente} ha sido asignado al vendedor {idVendedor}.";
+                TempData["Message"] = $"{asignacion.IdCliente} ha sido asignado al Asesor {idVendedor}.";
             }
 
             else
@@ -220,7 +219,7 @@ namespace ALFINapp.Controllers
             int? idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
             if (idSupervisorActual == null)
             {
-                TempData["Message"] = "Error en la autenticación. Intente iniciar sesión nuevamente.";
+                TempData["MessageError"] = "Error en la autenticacion. Intente iniciar sesion nuevamente.";
                 return RedirectToAction("Index", "Home");
             }
 
@@ -229,11 +228,10 @@ namespace ALFINapp.Controllers
 
             foreach (var asignacion in asignacionasesor)
             {
-                Console.WriteLine($"GuardarAsesoresAsignados*************************");
                 Console.WriteLine($"IdVendedor: {asignacion.IdVendedor}, NumClientes: {asignacion.NumClientes}");
                 if (asignacion.NumClientes == 0)
                 {
-                    mensajes.Add($"No se asignaron clientes al vendedor {asignacion.IdVendedor} porque el número de clientes es 0.");
+                    mensajes.Add($"No se asignaron clientes al Asesor {asignacion.IdVendedor} porque el numero de clientes es 0. \n");
                     continue;
                 }
 
@@ -246,7 +244,7 @@ namespace ALFINapp.Controllers
 
                 if (clientesDisponibles.Count < nClientes)
                 {
-                    mensajes.Add($"Solo hay {clientesDisponibles.Count} clientes disponibles para asignar al vendedor {asignacion.IdVendedor}. La asignación fue pausada.");
+                    mensajes.Add($"Solo hay {clientesDisponibles.Count} clientes disponibles para asignar al Asesor {asignacion.IdVendedor}. La asignacion fue pausada. \n");
                     break;
                 }
 
@@ -256,10 +254,14 @@ namespace ALFINapp.Controllers
                     cliente.FechaAsignacionVendedor = DateTime.Now;
                 }
                 _context.SaveChanges();
-                mensajes.Add($"{nClientes} clientes fueron asignados correctamente al vendedor {asignacion.IdVendedor}.");
+                mensajes.Add($"{nClientes} clientes fueron asignados correctamente al Asesor {asignacion.IdVendedor}. \n");
             }
-            TempData["Message"] = "Las Siguientes Asignaciones fueron Hechas:" + string.Join(" ", mensajes);
+            TempData["Message"] = "Las Siguientes Asignaciones fueron Hechas:" + string.Join("\n", mensajes);
             return RedirectToAction("VistaMainSupervisor");
+        }
+        public IActionResult ModificarAsesoresView()
+        {
+            return PartialView("_ModificarAsesores");
         }
     }
 }

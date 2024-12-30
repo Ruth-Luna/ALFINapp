@@ -15,10 +15,6 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        if (TempData["Message"]!=null)
-        {
-            TempData["Message"] = TempData["Message"] + "Retornar a Index";
-        }
         return View("Index");
     }
 

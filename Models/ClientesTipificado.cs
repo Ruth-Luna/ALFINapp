@@ -19,5 +19,8 @@ public partial class ClientesTipificado
     [Column("origen")]
     public string? Origen { get; set; }
     [Column("telefono_tipificado")]
-    public string? TelefonoTipificado {get; set; }
+    public string? TelefonoTipificado { get; set; }
+    [Column("derivacion_fecha")]
+    public DateTime? DerivacionFecha { get; set; }
+    
 }

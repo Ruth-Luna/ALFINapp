@@ -36,7 +36,7 @@ namespace ALFINapp.Controllers
 
 
         [HttpGet]
-        public IActionResult DescargarClientesAsignados()
+        public IActionResult DescargarClientesAsignados(DateTime fechaInicio, DateTime fechaFin)
         {
             try
             {
@@ -113,7 +113,9 @@ namespace ALFINapp.Controllers
                                       join db in _context.detalle_base on bc.IdBase equals db.IdBase
                                       join u in _context.usuarios on ca.IdUsuarioV equals u.IdUsuario into usuarioJoin
                                       from u in usuarioJoin.DefaultIfEmpty()
-                                      where ca.IdUsuarioS == idSupervisorActual
+                                      where ca.IdUsuarioS == idSupervisorActual 
+                                                && db.FechaCarga >= fechaInicio 
+                                                && db.FechaCarga <= fechaFin
                                       group new { db, bc, ca, ce } by db.IdBase into grouped
                                       select new
                                       {
