@@ -40,7 +40,7 @@ function guardarTelefonoVendedor(idcliente) {
             idClienteTelefono: idClienteTelefono
         },
         success: function (result) {
-            if (result.success = true) {
+            if (result.success === true) {
                 Swal.fire({
                     title: 'Mensaje de Confirmación',
                     text: result.message,

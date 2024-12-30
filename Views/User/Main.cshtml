@@ -274,9 +274,9 @@
     {
         <script>
             Swal.fire({
-                title: 'Mensaje', // Título del mensaje
+                title: 'Error', // Título del mensaje
                 text: '@Html.Raw(TempData["MessageError"] as string)', // Usamos Html.Raw para evitar que se escape el texto
-                icon: 'info', // Tipo de ícono (info, success, error, warning)
+                icon: 'error', // Tipo de ícono (info, success, error, warning)
                 confirmButtonText: 'Aceptar' // Texto del botón de confirmación
             });
         </script>

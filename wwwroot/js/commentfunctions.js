@@ -24,7 +24,7 @@ function enviarComentario(idCliente, telefono, textareaId) {
             'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() // Anti-CSRF
         },
         success: function (response) {
-            if (response.success) {
+            if (response.success === true) {
                 Swal.fire({
                     title: 'Comentario enviado',
                     text: response.message,
@@ -80,7 +80,7 @@ function enviarComentarioTelefonoDB(idCliente, telefono, textareaId, numTelefono
             'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() // Anti-CSRF
         },
         success: function (response) {
-            if (response.success) {
+            if (response.success === true) {
                 Swal.fire({
                     title: 'Comentario enviado',
                     text: response.message,

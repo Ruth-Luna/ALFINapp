@@ -111,9 +111,9 @@ namespace ALFINapp.Controllers
                                   join bc in _context.base_clientes.AsNoTracking() on db.IdBase equals bc.IdBase
                                   join ce in _context.clientes_enriquecidos on bc.IdBase equals ce.IdBase
                                   join ca in _context.clientes_asignados on ce.IdCliente equals ca.IdCliente
-                                  where db.TipoBase == ca.FuenteBase // Filtramos por FuenteBase
-                                        && (ca.ClienteDesembolso != true) // Excluimos clientes con ClienteDesembolso == true
+                                  where (ca.ClienteDesembolso != true) // Excluimos clientes con ClienteDesembolso == true
                                         && (ca.ClienteRetirado != true)
+                                        || (db.TipoBase == ca.FuenteBase) // Filtramos por FuenteBase
                                   group new { db, bc, ca } by db.IdBase into grouped
                                   select new
                                   {
@@ -121,7 +121,6 @@ namespace ALFINapp.Controllers
                                       LatestRecord = grouped.OrderByDescending(x => x.db.FechaCarga) // Ordenamos por FechaCarga
                                                             .FirstOrDefault() // Obtenemos el primer (más reciente) registro
                                   }).ToListAsync();
-
 
             // Mapear los resultados a DTO
             var detallesClientes = clientes.Select(cliente => new DetalleBaseClienteDTO
@@ -253,7 +252,7 @@ namespace ALFINapp.Controllers
                     FechaAsignacionVendedor = DateTime.Now,
                     FechaAsignacionSup = null,
                     IdUsuarioS = idSupervisor,
-                    FuenteBase = "BASE_CAMPO_ASESORES"
+                    FuenteBase = "BASE_ASESORES"
                 };
 
                 _context.clientes_asignados.Add(model3);
@@ -264,7 +263,7 @@ namespace ALFINapp.Controllers
                     IdBase = idBase,
                     TipoClienteRiegos = "3.NO CLIENTE",
                     FechaCarga = DateTime.Now,
-                    TipoBase = "BASE_CAMPO_ASESORES"
+                    TipoBase = "BASE_ASESORES"
                 };
 
                 _context.detalle_base.Add(model4);
@@ -529,8 +528,6 @@ namespace ALFINapp.Controllers
             if (ClienteAsignado == null)
             {
                 TempData["MessageError"] = "No tiene permiso para tipificar este cliente";
-                Console.WriteLine($"{IdAsignacion}");
-                Console.WriteLine($"{Tipificacion1}");
                 return RedirectToAction("Ventas");
             }
 
@@ -557,85 +554,109 @@ namespace ALFINapp.Controllers
                 var tipificacion = tipificaciones[i];
                 var derivacion = derivaciones[i];
 
-                if (!string.IsNullOrEmpty(telefono) && telefono != "0" && tipificacion.HasValue)
+                if (!tipificacion.HasValue)
                 {
-                    agregado = true;
-                    var tipificacionInfo = _context.tipificaciones
-                        .Where(t => t.IdTipificacion == tipificacion.Value)
-                        .Select(t => new { t.Peso, t.DescripcionTipificacion })
-                        .FirstOrDefault();
+                    Console.WriteLine("TipificacionId es NULL, no se revisara este campo.");
+                    continue; // Salta al siguiente registro sin hacer la inserción
+                }
 
-                    if (tipificacionInfo != null)
+                if (string.IsNullOrEmpty(telefono) || telefono == "0")
+                {
+                    Console.WriteLine("El Telefono es NULL o 0, este campo debe tener un numero.");
+                    TempData["MessageError"] = "Se debe mandar un número de teléfono válido (Se obviaron las inserciones).";
+                    return RedirectToAction("Ventas");
+                }
+
+                if (derivacion == null && tipificacion == 2)
+                {
+                    TempData["MessageError"] = "Debe ingresar una fecha de derivación para la tipificación CLIENTE ACEPTO OFERTA DERIVACION (Se obviaron las inserciones).";
+                    return RedirectToAction("Ventas");
+                }
+                agregado = true;
+            }
+
+            for (int i = 0; i < telefonos.Count; i++)
+            {
+                var telefono = telefonos[i];
+                var tipificacion = tipificaciones[i];
+                var derivacion = derivaciones[i];
+
+                if (!tipificacion.HasValue)
+                {
+                    Console.WriteLine($"Tipificacion {i + 1} es nulo, se omite la inserción.");
+                    continue; // Salta al siguiente registro sin hacer la inserción
+                }
+
+                agregado = true;
+
+                var tipificacionInfo = _context.tipificaciones
+                    .Where(t => t.IdTipificacion == tipificacion.Value)
+                    .Select(t => new { t.Peso, t.DescripcionTipificacion })
+                    .FirstOrDefault();
+
+                if (tipificacionInfo != null)
+                {
+                    // Actualizar tipificación de mayor peso si aplica
+                    if (tipificacionInfo.Peso > pesoMayor)
                     {
-                        // Actualizar tipificación de mayor peso si aplica
-                        if (tipificacionInfo.Peso > pesoMayor)
-                        {
-                            pesoMayor = tipificacionInfo.Peso;
-                            descripcionTipificacionMayorPeso = tipificacionInfo.DescripcionTipificacion;
-                        }
-                    }
-
-                    // Verificar si el teléfono ya está tipificado
-                    var clienteTipificado = _context.clientes_tipificados
-                        .FirstOrDefault(ct => ct.TelefonoTipificado == telefono);
-
-                    // Agregar un nuevo registro
-                    var nuevoClienteTipificado = new ClientesTipificado
-                    {
-                        IdAsignacion = IdAsignacion,
-                        IdTipificacion = tipificacion.Value,
-                        FechaTipificacion = fechaTipificacion,
-                        Origen = "nuevo",
-                        TelefonoTipificado = telefono,
-                        DerivacionFecha = derivacion
-                    };
-                    _context.clientes_tipificados.Add(nuevoClienteTipificado);
-
-                    // Actualizar última tipificación en clientes_enriquecidos
-                    var tipificacion_guardada = _context.tipificaciones.FirstOrDefault(t => t.IdTipificacion == tipificacion.Value);
-                    switch (i + 1)
-                    {
-                        case 1:
-                            ClientesEnriquecido.UltimaTipificacionTelefono1 = tipificacion_guardada.DescripcionTipificacion;
-
-                            break;
-                        case 2:
-                            ClientesEnriquecido.UltimaTipificacionTelefono2 = tipificacion_guardada.DescripcionTipificacion;
-                            break;
-                        case 3:
-                            ClientesEnriquecido.UltimaTipificacionTelefono3 = tipificacion_guardada.DescripcionTipificacion;
-                            break;
-                        case 4:
-                            ClientesEnriquecido.UltimaTipificacionTelefono4 = tipificacion_guardada.DescripcionTipificacion;
-                            break;
-                        case 5:
-                            ClientesEnriquecido.UltimaTipificacionTelefono5 = tipificacion_guardada.DescripcionTipificacion;
-                            break;
+                        pesoMayor = tipificacionInfo.Peso;
+                        descripcionTipificacionMayorPeso = tipificacionInfo.DescripcionTipificacion;
                     }
                 }
+
+                // Agregar un nuevo registro
+                var nuevoClienteTipificado = new ClientesTipificado
+                {
+                    IdAsignacion = IdAsignacion,
+                    IdTipificacion = tipificacion.Value,
+                    FechaTipificacion = fechaTipificacion,
+                    Origen = "nuevo",
+                    TelefonoTipificado = telefono,
+                    DerivacionFecha = derivacion
+                };
+                _context.clientes_tipificados.Add(nuevoClienteTipificado);
+
+                // Actualizar última tipificación en clientes_enriquecidos
+                var tipificacion_guardada = _context.tipificaciones.FirstOrDefault(t => t.IdTipificacion == tipificacion.Value);
+                switch (i + 1)
+                {
+                    case 1:
+                        ClientesEnriquecido.UltimaTipificacionTelefono1 = tipificacion_guardada.DescripcionTipificacion;
+                        break;
+                    case 2:
+                        ClientesEnriquecido.UltimaTipificacionTelefono2 = tipificacion_guardada.DescripcionTipificacion;
+                        break;
+                    case 3:
+                        ClientesEnriquecido.UltimaTipificacionTelefono3 = tipificacion_guardada.DescripcionTipificacion;
+                        break;
+                    case 4:
+                        ClientesEnriquecido.UltimaTipificacionTelefono4 = tipificacion_guardada.DescripcionTipificacion;
+                        break;
+                    case 5:
+                        ClientesEnriquecido.UltimaTipificacionTelefono5 = tipificacion_guardada.DescripcionTipificacion;
+                        break;
+                }
+
             }
 
             if (agregado == false)
             {
-                TempData["MessageError"] = "Hay Campos Llenados Incorrectamente o no se ha llenado ningun campo";
+                TempData["MessageError"] = "No se ha llenado ningun campo o se han llenado incorrectamente.";
                 return RedirectToAction("Ventas");
             }
 
-            else
+            if (!string.IsNullOrEmpty(descripcionTipificacionMayorPeso) && pesoMayor > (ClienteAsignado.PesoTipificacionMayor ?? 0))
             {
-                if (!string.IsNullOrEmpty(descripcionTipificacionMayorPeso) && pesoMayor > (ClienteAsignado.PesoTipificacionMayor ?? 0))
-                {
-                    ClienteAsignado.TipificacionMayorPeso = descripcionTipificacionMayorPeso; // Almacena la descripción
-                    ClienteAsignado.PesoTipificacionMayor = pesoMayor; // Almacena el peso
-                    _context.clientes_asignados.Update(ClienteAsignado);
-                }
-
-                // Guardar cambios en la base de datos
-                _context.clientes_enriquecidos.Update(ClientesEnriquecido);
-                _context.SaveChanges();
-                TempData["Message"] = "Las tipificaciones se han guardado correctamente (Se han Obviado los campos Vacios y los campos que fueron llenados con datos incorrectos)";
-                return RedirectToAction("Ventas");
+                ClienteAsignado.TipificacionMayorPeso = descripcionTipificacionMayorPeso; // Almacena la descripción
+                ClienteAsignado.PesoTipificacionMayor = pesoMayor; // Almacena el peso
+                _context.clientes_asignados.Update(ClienteAsignado);
             }
+
+            // Guardar cambios en la base de datos
+            _context.clientes_enriquecidos.Update(ClientesEnriquecido);
+            _context.SaveChanges();
+            TempData["Message"] = "Las tipificaciones se han guardado correctamente (Se han Obviado los campos Vacios y los campos que fueron llenados con datos incorrectos)";
+            return RedirectToAction("Ventas");
         }
 
         /*[HttpPost]
@@ -723,7 +744,7 @@ namespace ALFINapp.Controllers
             }
             catch (System.Exception)
             {
-                return Json(new { error = false});
+                return Json(new { error = false });
                 throw;
             }
         }
@@ -762,11 +783,25 @@ namespace ALFINapp.Controllers
             {
                 if (tipificacion.TipificacionId == 0)
                 {
-                    Console.WriteLine("TipificacionId es 0, omitiendo inserción.");
+                    Console.WriteLine("TipificacionId es 0, no se revisara este campo.");
                     continue; // Salta al siguiente registro sin hacer la inserción
                 }
 
+                if (tipificacion.FechaVisita == null && tipificacion.TipificacionId == 2)
+                {
+                    TempData["MessageError"] = "Debe ingresar una fecha de derivación para la tipificación CLIENTE ACEPTO OFERTA DERIVACION (Se obviaron las inserciones).";
+                    return RedirectToAction("Ventas");
+                }
                 agregado = true;
+            }
+
+            foreach (var tipificacion in tipificaciones)
+            {
+                if (tipificacion.TipificacionId == 0)
+                {
+                    Console.WriteLine("TipificacionId es 0, omitiendo inserción.");
+                    continue; // Salta al siguiente registro sin hacer la inserción
+                }
 
                 var nuevaTipificacion = new ClientesTipificado
                 {
@@ -811,7 +846,6 @@ namespace ALFINapp.Controllers
                 TempData["MessageError"] = "No se ha llenado ningun campo o se han llenado incorrectamente.";
                 return RedirectToAction("Ventas");
             }
-
             else
             {
                 if (tipificacionMayorPeso.HasValue && pesoMayor.HasValue)

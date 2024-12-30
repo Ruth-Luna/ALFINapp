@@ -53,12 +53,24 @@ function guardarCambiosPorAsesor() {
             idBase: idBase,
         },
         success: function (result) {
-            Swal.fire({
-                title: 'Cambios guardados',
-                text: 'Se han guardado los cambios correctamente.',
-                icon: 'success',
-                confirmButtonText: 'Aceptar'
-            });
+            if (result.success === true) {
+                Swal.fire({
+                    title: 'Cambios guardados',
+                    text: result.message,
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+            else
+            {
+                Swal.fire({
+                    title: 'Error en la operación',
+                    text: result.message,
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+            
         },
         error: function (xhr, status, error) {
             Swal.fire({

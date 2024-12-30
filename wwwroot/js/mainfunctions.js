@@ -30,7 +30,7 @@ function guardarComentarioGeneral(idAsignacion) {
             comentarioGeneral: comentarioGeneral
         },
         success: function (response) {
-            if (response.success) {
+            if (response.success === true) {
                 Swal.fire({
                     title: 'Comentario enviado',
                     text: response.message,

@@ -1,59 +1,173 @@
-<form id="agregarUsuarioForm">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="mb-3">
-                <label for="dni" class="form-label">DNI</label>
-                <input type="text" class="form-control" id="dni" name="dni" required>
+@model List<ALFINapp.Models.UsuarioAsesorDTO>
+
+@{
+    var asesoresConClientes = ViewData["asesoresConClientes"] as List<dynamic>;
+    int contador = 0;
+}
+
+<div class="row">
+    <h2>Seccion Desactivar Asesores</h2>
+
+    @foreach (var AsesorAsignados in Model)
+    {
+        <div class="row mt-10">
+            <div class="col-md-6">
+                <h3>@AsesorAsignados.NombresCompletos</h3>
+                <div class="mb-3">
+                    <label for="dni" class="form-label">DNI</label>
+                    <input type="text" class="form-control" id="dni" name="dni" value="@AsesorAsignados.Dni" required
+                        readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="rol" class="form-label">Rol</label>
+                    <input type="text" class="form-control" id="rol" name="rol" value="@AsesorAsignados.Rol" readonly>
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="nombresCompletos" class="form-label">Nombres Completos</label>
-                <input type="text" class="form-control" id="nombresCompletos" name="nombresCompletos" required>
-            </div>
-            <div class="mb-3">
-                <label for="rol" class="form-label">Rol</label>
-                <input type="text" class="form-control" id="rol" name="rol">
-            </div>
-            <div class="mb-3">
-                <label for="departamento" class="form-label">Departamento</label>
-                <input type="text" class="form-control" id="departamento" name="departamento">
-            </div>
-            <div class="mb-3">
-                <label for="provincia" class="form-label">Provincia</label>
-                <input type="text" class="form-control" id="provincia" name="provincia">
-            </div>
-            <div class="mb-3">
-                <label for="distrito" class="form-label">Distrito</label>
-                <input type="text" class="form-control" id="distrito" name="distrito">
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="mb-3">
-                <label for="telefono" class="form-label">Teléfono</label>
-                <input type="text" class="form-control" id="telefono" name="telefono">
-            </div>
-            <div class="mb-3">
-                <label for="estado" class="form-label">Estado</label>
-                <select class="form-control" id="estado" name="estado">
-                    <option value="Activo">Activo</option>
-                    <option value="Inactivo">Inactivo</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="apellidoPaterno" class="form-label">Apellido Paterno</label>
-                <input type="text" class="form-control" id="apellidoPaterno" name="apellidoPaterno">
-            </div>
-            <div class="mb-3">
-                <label for="apellidoMaterno" class="form-label">Apellido Materno</label>
-                <input type="text" class="form-control" id="apellidoMaterno" name="apellidoMaterno">
-            </div>
-            <div class="mb-3">
-                <label for="nombres" class="form-label">Nombres</label>
-                <input type="text" class="form-control" id="nombres" name="nombres">
+
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="departamento" class="form-label">Departamento</label>
+                    <input type="text" class="form-control" id="departamento" name="departamento"
+                        value="@AsesorAsignados.Departamento" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="provincia" class="form-label">Provincia</label>
+                    <input type="text" class="form-control" id="provincia" name="provincia"
+                        value="@AsesorAsignados.Provincia" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="distrito" class="form-label">Distrito</label>
+                    <input type="text" class="form-control" id="distrito" name="distrito" value="@AsesorAsignados.Distrito"
+                        readonly>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="text-end">
-        <button type="submit" class="btn btn-primary">Guardar</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-    </div>
-</form>
+
+        <div class="spacing"> </div>
+
+        <div class="row mt-10">
+            <h3>Seccion Mover Clientes Asignados a otros Asesores</h3>
+            <div class="alert alert-info" role="alert">
+                En esta Seccion podra modificar las asignaciones de cada uno de los Clientes a Asesores
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="totalClientesAsignados" class="form-label">Total Clientes Asignados</label>
+                    <input type="number" class="form-control" id="totalClientesAsignados" name="totalClientesAsignados"
+                        value="@AsesorAsignados.TotalClientesAsignados" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="clientesTrabajando" class="form-label">Clientes Trabajando</label>
+                    <input type="number" class="form-control" id="clientesTrabajando" name="clientesTrabajando"
+                        value="@AsesorAsignados.ClientesTrabajando" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="clientesSinTrabajar" class="form-label">Clientes Sin Trabajar</label>
+                    <input type="number" class="form-control" id="clientesSinTrabajar" name="clientesSinTrabajar"
+                        value="@AsesorAsignados.ClientesSinTrabajar" readonly>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div id="seccionModificarAsignaciones_@AsesorAsignados.IdUsuario" style="display: none;">
+
+                </div>
+            </div>
+        </div>
+
+        @if (AsesorAsignados.Estado == "ACTIVO")
+        {
+            <div class="button-container mb-10">
+                <a href="javascript:void(0)" class="btn btn-primary"
+                    onclick="modificarAsignacionesAsesor('@AsesorAsignados.IdUsuario', '@AsesorAsignados.Dni')">
+                    Modificar Clientes Asignados
+                </a>
+                <a href="javascript:void(0);" class="btn btn-danger btn-sm"
+                    onclick="desactivarAsesor('@AsesorAsignados.Dni', @AsesorAsignados.IdUsuario)">
+                    Desactivar
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="button-container mb-10">
+                <a href="javascript:void(0)" class="btn btn-primary"
+                    onclick="modificarAsignacionesAsesor('@AsesorAsignados.IdUsuario', '@AsesorAsignados.Dni')">
+                    Modificar Clientes Asignados
+                </a>
+                <a href="javascript:void(0);" class="btn btn-success bm-10"
+                    onclick="activarAsesor('@AsesorAsignados.Dni', @AsesorAsignados.IdUsuario)">
+                    Activar
+                </a>
+            </div>
+        }
+        <div class="spacing"></div>
+        <hr>
+    }
+
+    
+
+    <script>
+        function desactivarAsesor(dni, idUsuario) {
+            $.ajax({
+                type: "POST",
+                url: "/Asesor/DesactivarAsesor",
+                data: {
+                    dni: dni,
+                    idUsuario: idUsuario
+                },
+                success: function (response) {
+                    if (response) {
+                        alert("Asesor desactivado correctamente.");
+                    } else {
+                        alert("Error al desactivar el Asesor.");
+                    }
+                },
+                error: function (message) {
+                    alert("Error al activar el Asesor.");
+                }
+            });
+        }
+
+        function activarAsesor(dni, idUsuario) {
+            $.ajax({
+                type: "POST",
+                url: "/Asesor/ActivarAsesor",
+                data: {
+                    dni: dni,
+                    idUsuario: idUsuario
+                },
+                success: function (message) {
+                    if (response) {
+                        alert("Asesor activado correctamente.");
+                    } else {
+                        alert("Error al activar el Asesor.");
+                    }
+                },
+                error: function (message) {
+                    alert("Error al activar el Asesor.");
+                }
+            });
+        }
+
+        function modificarAsignacionesAsesor(IdUsuario, dni) {
+            var labelForAsesor = document.getElementById('seccionModificarAsignaciones_' + IdUsuario);
+            // Realiza una llamada AJAX para cargar la vista parcial
+            $.ajax({
+                url: "/Supervisor/ObtenerVistaModificarAsignaciones", // URL del controlador que devuelve la vista parcial
+                type: "GET",
+                data: {
+                    IdUsuario: IdUsuario,
+                    dni: dni
+                },
+                success: function (response) {
+                    labelForAsesor.style.display = 'block';
+                    $('#seccionModificarAsignaciones_' + IdUsuario).html(response);
+                },
+                error: function () {
+                    alert("Error.");
+                }
+            });
+        }
+
+    </script>

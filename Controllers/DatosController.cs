@@ -168,6 +168,7 @@ namespace ALFINapp.Controllers
             {
                 Console.WriteLine($"DNI recibido: {dni}");
                 var clienteExistente = _context.base_clientes.FirstOrDefault(c => c.Dni == dni);
+                var detalleBaseCliente = _context.detalle_base.FirstOrDefault(db => db.IdBase == clienteExistente.IdBase);
                 return Json(new { existe = clienteExistente != null });
             }
             catch (Exception ex)

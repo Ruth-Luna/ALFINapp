@@ -30,7 +30,7 @@ namespace ALFINapp.Controllers
                                  join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
                                  join u in _context.usuarios on ca.IdUsuarioV equals u.IdUsuario into usuarioJoin
                                  from u in usuarioJoin.DefaultIfEmpty()
-                                 where ca.IdUsuarioS == usuarioId 
+                                 where ca.IdUsuarioS == usuarioId
                                         && ca.ClienteDesembolso != true
                                         && ca.ClienteRetirado != true
                                  select new SupervisorDTO
@@ -259,9 +259,195 @@ namespace ALFINapp.Controllers
             TempData["Message"] = "Las Siguientes Asignaciones fueron Hechas:" + string.Join("\n", mensajes);
             return RedirectToAction("VistaMainSupervisor");
         }
+
+        [HttpGet]
         public IActionResult ModificarAsesoresView()
         {
-            return PartialView("_ModificarAsesores");
+            int? idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
+            if (idSupervisorActual == null)
+            {
+                TempData["MessageError"] = "Error en la autenticacion. Intente iniciar sesion nuevamente.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            var asesoresAsignadosaSupervisor = (from u in _context.usuarios
+                                                where u.Rol == "VENDEDOR" && u.IDUSUARIOSUP == idSupervisorActual
+                                                join ca in _context.clientes_asignados on u.IdUsuario equals ca.IdUsuarioV into caGroup
+                                                from ca in caGroup.DefaultIfEmpty()  // Realizamos un left join
+                                                group new { u, ca }
+                                                by new
+                                                {
+                                                    u.IdUsuario,
+                                                    u.NombresCompletos,
+                                                    u.Dni,
+                                                    u.ApellidoPaterno,
+                                                    u.ApellidoMaterno,
+                                                    u.Nombres,
+                                                    u.Telefono,
+                                                    u.Departamento,
+                                                    u.Provincia,
+                                                    u.Distrito,
+                                                    u.Estado,
+                                                    u.Rol
+                                                } into grouped
+                                                select new UsuarioAsesorDTO
+                                                {
+                                                    IdUsuario = grouped.Key.IdUsuario,
+                                                    Dni = grouped.Key.Dni,
+                                                    NombresCompletos = grouped.Key.NombresCompletos,
+                                                    ApellidoPaterno = grouped.Key.ApellidoPaterno,
+                                                    ApellidoMaterno = grouped.Key.ApellidoMaterno,
+                                                    Nombres = grouped.Key.Nombres,
+                                                    Telefono = grouped.Key.Telefono,
+                                                    Departamento = grouped.Key.Departamento,
+                                                    Provincia = grouped.Key.Provincia,
+                                                    Distrito = grouped.Key.Distrito,
+                                                    Estado = grouped.Key.Estado,
+                                                    Rol = grouped.Key.Rol,
+                                                    TotalClientesAsignados = grouped.Count(g => g.ca != null
+                                                                                        && g.ca.IdUsuarioV == grouped.Key.IdUsuario
+                                                                                        && g.ca.IdUsuarioS == idSupervisorActual), // Clientes asignados
+                                                    ClientesTrabajando = grouped.Count(g => g.ca != null
+                                                                                        && g.ca.TipificacionMayorPeso != null
+                                                                                        && g.ca.IdUsuarioV == grouped.Key.IdUsuario
+                                                                                        && g.ca.IdUsuarioS == idSupervisorActual), // Clientes trabajados
+                                                    ClientesSinTrabajar = grouped.Count(g => g.ca != null
+                                                                                        && g.ca.IdUsuarioV == grouped.Key.IdUsuario
+                                                                                        && g.ca.IdUsuarioS == idSupervisorActual)
+                                                                                         - grouped.Count(g => g.ca != null
+                                                                                        && g.ca.TipificacionMayorPeso != null
+                                                                                        && g.ca.IdUsuarioV == grouped.Key.IdUsuario
+                                                                                        && g.ca.IdUsuarioS == idSupervisorActual) // Diferencia entre asignados y trabajados
+                                                }).ToList();
+            return PartialView("_ModificarAsesores", asesoresAsignadosaSupervisor);
         }
+
+        public IActionResult ObtenerVistaModificarAsignaciones(string IdUsuario, string dni)
+        {
+
+            int? idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
+            if (idSupervisorActual == null)
+            {
+                TempData["MessageError"] = "Error en la autenticacion. Intente iniciar sesion nuevamente.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            try
+            {
+                if (!int.TryParse(IdUsuario, out int idUsuario))
+                {
+                    return Json(new { success = false, message = "IdUsuario inválido" });
+                }
+
+                var clientesAsignadosAsesorPrincipal = (from u in _context.usuarios
+                                                        where u.IdUsuario == idUsuario
+                                                        join ca in _context.clientes_asignados on u.IdUsuario equals ca.IdUsuarioV into caGroup
+                                                        from ca in caGroup.DefaultIfEmpty()  // Realizamos un left join
+                                                        group new { u, ca }
+                                                        by new
+                                                        {
+                                                            u.IdUsuario,
+                                                            u.NombresCompletos,
+                                                            u.Dni,
+                                                            u.ApellidoPaterno,
+                                                            u.ApellidoMaterno,
+                                                            u.Nombres,
+                                                            u.Telefono,
+                                                            u.Departamento,
+                                                            u.Provincia,
+                                                            u.Distrito,
+                                                            u.Estado,
+                                                            u.Rol
+                                                        } into grouped
+                                                        select new UsuarioAsesorDTO
+                                                        {
+                                                            IdUsuario = grouped.Key.IdUsuario,
+                                                            Dni = grouped.Key.Dni,
+                                                            NombresCompletos = grouped.Key.NombresCompletos,
+                                                            ApellidoPaterno = grouped.Key.ApellidoPaterno,
+                                                            ApellidoMaterno = grouped.Key.ApellidoMaterno,
+                                                            Nombres = grouped.Key.Nombres,
+                                                            Telefono = grouped.Key.Telefono,
+                                                            Departamento = grouped.Key.Departamento,
+                                                            Provincia = grouped.Key.Provincia,
+                                                            Distrito = grouped.Key.Distrito,
+                                                            Estado = grouped.Key.Estado,
+                                                            Rol = grouped.Key.Rol,
+                                                            TotalClientesAsignados = grouped.Count(g => g.ca != null
+                                                                                                && g.ca.IdUsuarioV == grouped.Key.IdUsuario
+                                                                                                && g.ca.IdUsuarioS == idSupervisorActual), // Clientes asignados
+                                                            ClientesTrabajando = grouped.Count(g => g.ca != null
+                                                                                                && g.ca.TipificacionMayorPeso != null
+                                                                                                && g.ca.IdUsuarioV == grouped.Key.IdUsuario
+                                                                                                && g.ca.IdUsuarioS == idSupervisorActual), // Clientes trabajados
+                                                            ClientesSinTrabajar = grouped.Count(g => g.ca != null
+                                                                                                && g.ca.IdUsuarioV == grouped.Key.IdUsuario
+                                                                                                && g.ca.IdUsuarioS == idSupervisorActual)
+                                                                                                 - grouped.Count(g => g.ca != null
+                                                                                                && g.ca.TipificacionMayorPeso != null
+                                                                                                && g.ca.IdUsuarioV == grouped.Key.IdUsuario
+                                                                                                && g.ca.IdUsuarioS == idSupervisorActual) // Diferencia entre asignados y trabajados
+                                                        }).FirstOrDefault();
+
+                var asesoresAsignadosaSupervisor = (from u in _context.usuarios
+                                                    where u.Rol == "VENDEDOR" && u.IDUSUARIOSUP == idSupervisorActual && u.IdUsuario != idUsuario
+                                                    join ca in _context.clientes_asignados on u.IdUsuario equals ca.IdUsuarioV into caGroup
+                                                    from ca in caGroup.DefaultIfEmpty()  // Realizamos un left join
+                                                    group new { u, ca }
+                                                    by new
+                                                    {
+                                                        u.IdUsuario,
+                                                        u.NombresCompletos,
+                                                        u.Dni,
+                                                        u.ApellidoPaterno,
+                                                        u.ApellidoMaterno,
+                                                        u.Nombres,
+                                                        u.Telefono,
+                                                        u.Departamento,
+                                                        u.Provincia,
+                                                        u.Distrito,
+                                                        u.Estado,
+                                                        u.Rol
+                                                    } into grouped
+                                                    select new UsuarioAsesorDTO
+                                                    {
+                                                        IdUsuario = grouped.Key.IdUsuario,
+                                                        Dni = grouped.Key.Dni,
+                                                        NombresCompletos = grouped.Key.NombresCompletos,
+                                                        ApellidoPaterno = grouped.Key.ApellidoPaterno,
+                                                        ApellidoMaterno = grouped.Key.ApellidoMaterno,
+                                                        Nombres = grouped.Key.Nombres,
+                                                        Telefono = grouped.Key.Telefono,
+                                                        Departamento = grouped.Key.Departamento,
+                                                        Provincia = grouped.Key.Provincia,
+                                                        Distrito = grouped.Key.Distrito,
+                                                        Estado = grouped.Key.Estado,
+                                                        Rol = grouped.Key.Rol,
+                                                        TotalClientesAsignados = grouped.Count(g => g.ca != null
+                                                                                            && g.ca.IdUsuarioV == grouped.Key.IdUsuario
+                                                                                            && g.ca.IdUsuarioS == idSupervisorActual), // Clientes asignados
+                                                        ClientesTrabajando = grouped.Count(g => g.ca != null
+                                                                                            && g.ca.TipificacionMayorPeso != null
+                                                                                            && g.ca.IdUsuarioV == grouped.Key.IdUsuario
+                                                                                            && g.ca.IdUsuarioS == idSupervisorActual), // Clientes trabajados
+                                                        ClientesSinTrabajar = grouped.Count(g => g.ca != null
+                                                                                            && g.ca.IdUsuarioV == grouped.Key.IdUsuario
+                                                                                            && g.ca.IdUsuarioS == idSupervisorActual)
+                                                                                             - grouped.Count(g => g.ca != null
+                                                                                            && g.ca.TipificacionMayorPeso != null
+                                                                                            && g.ca.IdUsuarioV == grouped.Key.IdUsuario
+                                                                                            && g.ca.IdUsuarioS == idSupervisorActual) // Diferencia entre asignados y trabajados
+                                                    }).ToList();
+                ViewData["AsesorAModificar"] = clientesAsignadosAsesorPrincipal;
+                // Retorna la vista parcial con los datos necesarios
+                return PartialView("_VistaModificarAsignaciones", asesoresAsignadosaSupervisor);
+            }
+            catch (System.Exception)
+            {
+
+                throw;
+            }
+        }
+
     }
 }
