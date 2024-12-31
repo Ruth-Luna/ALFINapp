@@ -71,9 +71,9 @@
                         Buscar por:
                     </label>
                     <select id="searchField" class="form-control me-md-2">
-                        <option value="apellidoPaterno">Apellido Paterno</option>
-                        <option value="apellidoMaterno">Apellido Materno</option>
-                        <option value="nombre">Nombre</option>
+                        <option value="apellidoPaterno">Apellidos y Nombres</option>
+                        <!--<option value="apellidoMaterno">Apellido Materno</option>
+                        <option value="nombre">Nombre</option>-->
                         <option value="campaña">Campaña</option>
                         <option value="ofertaMax">Oferta Max</option>
                         <option value="comentarioPrincipal">Comentario Principal</option>
@@ -104,13 +104,7 @@
                         <span>DNI</span>
                     </th>
                     <th>
-                        <span>Apellido Paterno</span>
-                    </th>
-                    <th>
-                        <span>Apellido Materno</span>
-                    </th>
-                    <th>
-                        <span>Nombre</span>
+                        <span>Nombres Completos</span>
                     </th>
                     <th>
                         <span>Oferta Max</span>
@@ -127,6 +121,9 @@
                     <th>
                         <span>Tipificacion mas Relevante</span>
                     </th>
+                    <th>
+                        <span>Fecha de la Tipificacion</span>
+                    </th>
                 </tr>
             </thead>
 
@@ -140,13 +137,11 @@
                             &#x25BC;
                         </button>
                     </td>
-                    </td>
                     <td>
-                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 3, 'string')"
+                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 3, 'number')"
                             data-sort-ignore>
                             &#x25BC;
                         </button>
-
                     </td>
                     <td>
                         <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 4, 'string')"
@@ -155,26 +150,20 @@
                         </button>
                     </td>
                     <td>
-                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 5, 'number')"
-                            data-sort-ignore>
-                            &#x25BC;
-                        </button>
-                    </td>
-                    <td>
-                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 6, 'string')"
-                            data-sort-ignore>
-                            &#x25BC;
-                        </button>
-                    </td>
-                    <td>
-                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 7, 'date')"
+                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 5, 'date')"
                             data-sort-ignore>
                             &#x25BC;
                         </button>
                     </td>
                     <td></td>
                     <td>
-                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 9, 'string')"
+                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 7, 'string')"
+                            data-sort-ignore>
+                            &#x25BC;
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 8, 'date')"
                             data-sort-ignore>
                             &#x25BC;
                         </button>
@@ -202,9 +191,7 @@
                         </td>
 
                         <td>@ClienteDTO.Dni</td>
-                        <td>@ClienteDTO.XAppaterno.ToUpper()</td>
-                        <td>@ClienteDTO.XApmaterno.ToUpper()</td>
-                        <td>@ClienteDTO.XNombre.ToUpper()</td>
+                        <td>@ClienteDTO.XAppaterno.ToUpper() @ClienteDTO.XApmaterno.ToUpper() @ClienteDTO.XNombre.ToUpper()
                         <td>@ClienteDTO.OfertaMax</td>
                         <td>@ClienteDTO.Campaña.ToUpper()</td>
                         <td>@ClienteDTO.FechaAsignacionVendedor</td>
@@ -216,6 +203,7 @@
                             </a>
                         </td>
                         <td>@ClienteDTO.TipificacionDeMayorPeso</td>
+                        <td>@ClienteDTO.FechaAsignacionVendedor</td>
                     </tr>
                 }
             </tbody>

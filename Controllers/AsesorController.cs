@@ -100,6 +100,47 @@ namespace ALFINapp.Controllers
             }
         }
 
-        
+        [HttpPost]
+        public IActionResult GuardarCambiosAsignaciones(List<AsignacionesDTO> AsignacionesEnviadas, int AsesorCambioID)
+        {
+            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+            {
+                TempData["Message"] = "Ha ocurrido un error en la autenticación";
+                return RedirectToAction("Index", "Home");
+            }
+            try
+            {
+                if (AsignacionesEnviadas == null)
+                {
+                    return Json(new { success = false, message = "Llene al menos un campo de la seccion Modificar Clientes Asignados" });
+                }
+
+                foreach (var asignacion in AsignacionesEnviadas)
+                {
+                    if (asignacion.Modificaciones == 0)
+                    {
+                        continue;
+                    }
+                    var clientesAModificar = _context.clientes_asignados
+                        .Where(ca => ca.IdUsuarioV == asignacion.IdUsuario && ca.TipificacionMayorPeso == null)
+                        .Take(asignacion.Modificaciones)
+                        .ToList();
+
+                    foreach (var cliente in clientesAModificar)
+                    {
+                        cliente.IdUsuarioV = AsesorCambioID;
+                    }
+
+                    _context.SaveChanges();
+                }
+                return Json(new { success = true, message = "Se han modificado los clientes asignados al asesor" });
+            }
+            catch (System.Exception)
+            {
+                return Json(new { success = false, message = "Llene al menos un campo de la seccion Modificar Clientes Asignados" });
+                throw;
+            }
+        }
     }
 }

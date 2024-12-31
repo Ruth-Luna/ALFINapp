@@ -131,29 +131,29 @@ document.getElementById('searchInput').addEventListener('input', function () {
             case 'apellidoPaterno':
                 cellValue = row.cells[2].textContent.toLowerCase(); // Apellido Paterno
                 break;
-            case 'apellidoMaterno':
+            /*case 'apellidoMaterno':
                 cellValue = row.cells[3].textContent.toLowerCase(); // Columna de Apellido Materno
                 break;
             case 'nombre':
                 cellValue = row.cells[4].textContent.toLowerCase(); // Columna de Nombre
-                break;
+                break;*/
             case 'ofertaMax':
-                cellValue = row.cells[5].textContent.toLowerCase(); // Columna de Oferta Max
+                cellValue = row.cells[3].textContent.toLowerCase(); // Columna de Oferta Max
                 break;
             case 'comentarioPrincipal':
-                cellValue = row.cells[8].textContent.toLowerCase(); // Columna de Comentario Principal
+                cellValue = row.cells[5].textContent.toLowerCase(); // Columna de Comentario Principal
                 break;
             case 'dni':
                 cellValue = row.cells[1].textContent.toLowerCase(); // DNI
                 break;
             case 'campaña':
-                cellValue = row.cells[6].textContent.toLowerCase(); // Campaña
+                cellValue = row.cells[4].textContent.toLowerCase(); // Campaña
                 break;
             case 'tipificacionRelevante':
-                cellValue = row.cells[9].textContent.toLowerCase(); // Tipificación más Relevante
+                cellValue = row.cells[7].textContent.toLowerCase(); // Tipificación más Relevante
                 break;
             case 'fechaAsignacion':
-                rowDate = row.cells[7].textContent.trim(); // Fecha de Asignación
+                rowDate = row.cells[5].textContent.trim(); // Fecha de Asignación
                 break;
             default:
                 cellValue = ''; // En caso de no coincidir con ninguna opción
