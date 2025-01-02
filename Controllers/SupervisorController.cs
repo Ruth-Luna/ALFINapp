@@ -18,7 +18,7 @@ namespace ALFINapp.Controllers
             _context = context;
         }
         [HttpGet]
-        public async Task<IActionResult> VistaMainSupervisor(int page = 1, int pageSize = 10)
+        public async Task<IActionResult> VistaMainSupervisor(int page = 1, int pageSize = 20)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
 
@@ -43,7 +43,6 @@ namespace ALFINapp.Controllers
                                      XNombre = bc.XNombre,
 
                                      NombresCompletos = u != null ? u.NombresCompletos : "Asesor no Asignado",
-                                     ApellidoPaterno = u != null ? u.ApellidoPaterno : "No disponible", // Manejo de null para ApellidoPaterno
                                      DniVendedor = u != null ? u.Dni : " ",
                                  };
             if (supervisorData == null)
@@ -258,9 +257,6 @@ namespace ALFINapp.Controllers
                                                     u.IdUsuario,
                                                     u.NombresCompletos,
                                                     u.Dni,
-                                                    u.ApellidoPaterno,
-                                                    u.ApellidoMaterno,
-                                                    u.Nombres,
                                                     u.Telefono,
                                                     u.Departamento,
                                                     u.Provincia,
@@ -273,9 +269,6 @@ namespace ALFINapp.Controllers
                                                     IdUsuario = grouped.Key.IdUsuario,
                                                     Dni = grouped.Key.Dni,
                                                     NombresCompletos = grouped.Key.NombresCompletos,
-                                                    ApellidoPaterno = grouped.Key.ApellidoPaterno,
-                                                    ApellidoMaterno = grouped.Key.ApellidoMaterno,
-                                                    Nombres = grouped.Key.Nombres,
                                                     Telefono = grouped.Key.Telefono,
                                                     Departamento = grouped.Key.Departamento,
                                                     Provincia = grouped.Key.Provincia,
@@ -327,9 +320,6 @@ namespace ALFINapp.Controllers
                                                             u.IdUsuario,
                                                             u.NombresCompletos,
                                                             u.Dni,
-                                                            u.ApellidoPaterno,
-                                                            u.ApellidoMaterno,
-                                                            u.Nombres,
                                                             u.Telefono,
                                                             u.Departamento,
                                                             u.Provincia,
@@ -342,9 +332,6 @@ namespace ALFINapp.Controllers
                                                             IdUsuario = grouped.Key.IdUsuario,
                                                             Dni = grouped.Key.Dni,
                                                             NombresCompletos = grouped.Key.NombresCompletos,
-                                                            ApellidoPaterno = grouped.Key.ApellidoPaterno,
-                                                            ApellidoMaterno = grouped.Key.ApellidoMaterno,
-                                                            Nombres = grouped.Key.Nombres,
                                                             Telefono = grouped.Key.Telefono,
                                                             Departamento = grouped.Key.Departamento,
                                                             Provincia = grouped.Key.Provincia,
@@ -377,9 +364,6 @@ namespace ALFINapp.Controllers
                                                         u.IdUsuario,
                                                         u.NombresCompletos,
                                                         u.Dni,
-                                                        u.ApellidoPaterno,
-                                                        u.ApellidoMaterno,
-                                                        u.Nombres,
                                                         u.Telefono,
                                                         u.Departamento,
                                                         u.Provincia,
@@ -392,9 +376,6 @@ namespace ALFINapp.Controllers
                                                         IdUsuario = grouped.Key.IdUsuario,
                                                         Dni = grouped.Key.Dni,
                                                         NombresCompletos = grouped.Key.NombresCompletos,
-                                                        ApellidoPaterno = grouped.Key.ApellidoPaterno,
-                                                        ApellidoMaterno = grouped.Key.ApellidoMaterno,
-                                                        Nombres = grouped.Key.Nombres,
                                                         Telefono = grouped.Key.Telefono,
                                                         Departamento = grouped.Key.Departamento,
                                                         Provincia = grouped.Key.Provincia,

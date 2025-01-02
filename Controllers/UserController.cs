@@ -37,7 +37,7 @@ namespace ALFINapp.Controllers
                     return View(model); // Devuelve el modelo con errores
                 }
 
-                model.Nombres = model.NombresCompletos;
+                model.NombresCompletos = model.NombresCompletos;
                 _context.usuarios.Add(model);
                 TempData["Message"] = "Usuario agregado con exito";
                 await _context.SaveChangesAsync();
@@ -54,31 +54,29 @@ namespace ALFINapp.Controllers
         public async Task<IActionResult> Ventas()
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId == null)
-            {
-                TempData["MessageError"] = "Ha ocurrido un error en la autenticacion";
-                return RedirectToAction("Index", "Home");
-            }
             // Obtener los clientes asignados al usuario
-            var clientesAsignados = await _context.clientes_asignados
+            /*var clientesAsignados = await _context.clientes_asignados
                                             .Where(ca => ca.IdUsuarioV == usuarioId)
                                             .Select(ca => ca.IdCliente)
-                                            .ToListAsync();
+                                            .ToListAsync();*/
 
             // Obtener las IdBase correspondientes a los clientes asignados
-            var clientesGralBase = await (from ce in _context.clientes_enriquecidos
+            /*var clientesGralBase = await (from ce in _context.clientes_enriquecidos
                                           where clientesAsignados.Contains(ce.IdCliente)
                                           select ce.IdBase
-                                            ).ToListAsync();
+                                            ).ToListAsync();*/
 
-            var clientes = await (from db in _context.detalle_base.AsNoTracking()
-                                  join cg in clientesGralBase on db.IdBase equals cg
-                                  join bc in _context.base_clientes.AsNoTracking() on db.IdBase equals bc.IdBase
+            var clientes = await (from bc in _context.base_clientes.AsNoTracking()
+                                  join db in _context.detalle_base.AsNoTracking() on bc.IdBase equals db.IdBase
                                   join ce in _context.clientes_enriquecidos on bc.IdBase equals ce.IdBase
                                   join ca in _context.clientes_asignados on ce.IdCliente equals ca.IdCliente
                                   where (ca.ClienteDesembolso != true) // Excluimos clientes con ClienteDesembolso == true
                                         && (ca.ClienteRetirado != true)
-                                        || (db.TipoBase == ca.FuenteBase) // Filtramos por FuenteBase
+                                        && (db.TipoBase == ca.FuenteBase) // Filtramos por FuenteBase
+                                        && (ca.IdUsuarioV == usuarioId) // Filtramos por IdUsuarioV
+                                        && ca.FechaAsignacionVendedor.HasValue
+                                        && ca.FechaAsignacionVendedor.Value.Year == 2025
+                                        && ca.FechaAsignacionVendedor.Value.Month == 1
                                   group new { db, bc, ca } by db.IdBase into grouped
                                   select new
                                   {
@@ -732,12 +730,7 @@ namespace ALFINapp.Controllers
         public IActionResult GuardarTipificacionesNumPersonales(List<TipificarClienteDTO> tipificaciones, int IdAsignacionCliente)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId == null)
-            {
-                TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
-                return RedirectToAction("Index", "Home");
-            }
-
+            
             if (tipificaciones == null || !tipificaciones.Any())
             {
                 TempData["MessageError"] = "No se estan enviando datos para guardar (Comunicarse con Servicio Tecnico).";
@@ -754,7 +747,7 @@ namespace ALFINapp.Controllers
             }
 
             int? tipificacionMayorPeso = null;
-            int? pesoMayor = null;
+            int? pesoMayor = 0;
             string descripcionTipificacionMayorPeso = null;
             var agregado = false;
 
@@ -799,7 +792,7 @@ namespace ALFINapp.Controllers
                 {
                     int pesoActual = tipificacionActual.Peso.Value;
 
-                    if (pesoMayor == null || pesoActual > pesoMayor)
+                    if (pesoMayor == 0 || pesoActual > pesoMayor)
                     {
                         pesoMayor = pesoActual;
                         tipificacionMayorPeso = tipificacion.TipificacionId;
@@ -825,9 +818,10 @@ namespace ALFINapp.Controllers
                 TempData["MessageError"] = "No se ha llenado ningun campo o se han llenado incorrectamente.";
                 return RedirectToAction("Ventas");
             }
+
             else
             {
-                if (tipificacionMayorPeso.HasValue && pesoMayor.HasValue)
+                if (tipificacionMayorPeso.HasValue && pesoMayor!=0)
                 {
                     if (pesoMayor > (ClienteAsignado.PesoTipificacionMayor ?? 0))
                     {

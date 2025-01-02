@@ -66,7 +66,7 @@ function filterByDate() {
     const endDateObj = new Date(endDate); // Asumimos 23:59:59 como hora por defecto
 
     Array.from(rows).forEach(row => {
-        const rowDateStr = row.cells[7].textContent.trim(); // Fecha de Asignación (columna 7)
+        const rowDateStr = row.cells[5].textContent.trim(); // Fecha de Asignación (columna 7)
         const rowDateObj = parseDate(rowDateStr); // Convertir la fecha de la fila a objeto Date
         console.log(rowDateObj, startDateObj, endDateObj);
 

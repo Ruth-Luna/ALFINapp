@@ -121,6 +121,7 @@ namespace ALFINapp.Controllers
                     return Json(new { success = false, message = "Debe ingresar el Id del asesor al que se asignarán los clientes" });
                 }
 
+                bool cambiosRealizados = false;
                 foreach (var asignacion in AsignacionesEnviadas)
                 {
                     if (asignacion.Modificaciones == 0)
@@ -131,14 +132,25 @@ namespace ALFINapp.Controllers
                         .Where(ca => ca.IdUsuarioV == asignacion.IdUsuario && ca.TipificacionMayorPeso == null)
                         .Take(asignacion.Modificaciones)
                         .ToList();
+                    if (clientesAModificar.Count < asignacion.Modificaciones)
+                    {
+                        return Json(new { success = false, message = $"No hay suficientes clientes disponibles para asignar. Solo hay {clientesAModificar.Count} clientes disponibles. Tal asignacion ha sido Obviada" });
+                    }
 
                     foreach (var cliente in clientesAModificar)
                     {
                         cliente.IdUsuarioV = AsesorCambioID;
+                        cliente.FechaAsignacionVendedor = DateTime.Now;
                     }
+                    cambiosRealizados = true;
 
                     _context.SaveChanges();
                 }
+                if (!cambiosRealizados)
+                {
+                    return Json(new { success = false, message = "No se realizaron modificaciones. No hay clientes para asignar." });
+                }
+
                 return Json(new { success = true, message = "Se han modificado los clientes asignados al asesor" });
             }
             catch (System.Exception)
