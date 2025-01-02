@@ -242,7 +242,7 @@ namespace ALFINapp.Controllers
                 _context.SaveChanges();
                 mensajes.Add($"{nClientes} clientes fueron asignados correctamente al Asesor {asignacion.IdVendedor}. \n");
             }
-            TempData["Message"] = "Las Siguientes Asignaciones fueron Hechas:" + string.Join("\n", mensajes);
+            TempData["Message"] = "Las Asignaciones se culminaron con exito";
             return RedirectToAction("VistaMainSupervisor");
         }
 
