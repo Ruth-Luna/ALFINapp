@@ -109,6 +109,11 @@ namespace ALFINapp.Controllers
                  */
 
                 // Obtén los datos necesarios (simplificado para mostrar la idea)
+                fechaFin = fechaFin.Date.AddHours(23).AddMinutes(59).AddSeconds(59);
+                fechaInicio = fechaInicio.Date.AddMinutes(-1); // Reducir un minuto
+                Console.WriteLine($"Fecha de inicio: {fechaInicio}");
+                Console.WriteLine($"Fecha de fin: {fechaFin}");
+
                 var supervisorData = (from ca in _context.clientes_asignados
                                       join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
                                       join bc in _context.base_clientes on ce.IdBase equals bc.IdBase

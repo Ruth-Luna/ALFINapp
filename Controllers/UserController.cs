@@ -75,8 +75,8 @@ namespace ALFINapp.Controllers
                                         && (db.TipoBase == ca.FuenteBase) // Filtramos por FuenteBase
                                         && (ca.IdUsuarioV == usuarioId) // Filtramos por IdUsuarioV
                                         && ca.FechaAsignacionVendedor.HasValue
-                                        && ca.FechaAsignacionVendedor.Value.Year == 2025
-                                        && ca.FechaAsignacionVendedor.Value.Month == 1
+                                        && ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
+                                        && ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month
                                   group new { db, bc, ca } by db.IdBase into grouped
                                   select new
                                   {

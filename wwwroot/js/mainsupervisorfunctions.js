@@ -42,6 +42,7 @@ function descargarDatos() {
     const fechaFin = document.getElementById('fechaFin').value;
 
     if (fechaInicio == "" || fechaFin == "") {
+
         Swal.fire({
             title: 'Error al descargar datos',
             text: 'Debe seleccionar un rango de fechas.',
@@ -51,6 +52,17 @@ function descargarDatos() {
         return;
     }
 
+    if (fechaInicio > fechaFin) {
+        Swal.fire({
+            title: 'Error al descargar datos',
+            text: 'La fecha de inicio no puede ser mayor que la fecha de fin.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+    
+    console.log("Fecha inicio:", fechaInicio, "Fecha fin:", fechaFin);
     window.location.href = '/Excel/DescargarClientesAsignados?fechaInicio=' + fechaInicio + '&fechaFin=' + fechaFin;
 }
 

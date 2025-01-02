@@ -129,7 +129,10 @@ namespace ALFINapp.Controllers
                         continue;
                     }
                     var clientesAModificar = _context.clientes_asignados
-                        .Where(ca => ca.IdUsuarioV == asignacion.IdUsuario && ca.TipificacionMayorPeso == null)
+                        .Where(ca => ca.IdUsuarioV == asignacion.IdUsuario
+                                && ca.TipificacionMayorPeso == null
+                                && ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
+                                && ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month)
                         .Take(asignacion.Modificaciones)
                         .ToList();
                     if (clientesAModificar.Count < asignacion.Modificaciones)

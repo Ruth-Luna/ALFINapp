@@ -31,8 +31,8 @@ namespace ALFINapp.Controllers
                                         && ca.ClienteDesembolso != true
                                         && ca.ClienteRetirado != true
                                         && ca.FechaAsignacionSup.HasValue
-                                        && ca.FechaAsignacionSup.Value.Year == 2025
-                                        && ca.FechaAsignacionSup.Value.Month == 1
+                                        && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
+                                        && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
                                  select new SupervisorDTO
                                  {
                                      IdAsignacion = ca.IdAsignacion,
@@ -95,7 +95,10 @@ namespace ALFINapp.Controllers
                                          {
                                              NombresCompletos = grouped.Key.NombresCompletos,
                                              IdUsuario = grouped.Key.IdUsuario,
-                                             NumeroClientes = grouped.Count(c => c != null) // Contamos solo los clientes asignados, ignorando los null
+                                             NumeroClientes = grouped.Count(c => c != null
+                                                    && c.FechaAsignacionVendedor.HasValue
+                                                    && c.FechaAsignacionSup.Value.Year == DateTime.Now.Year 
+                                                    && c.FechaAsignacionSup.Value.Month == DateTime.Now.Month) // Contamos solo los clientes asignados, ignorando los null
                                          }).ToList();
             if (vendedoresConClientes == null)
             {
@@ -219,7 +222,9 @@ namespace ALFINapp.Controllers
                 int Contador = 0;
                 int nClientes = asignacion.NumClientes;
                 var clientesDisponibles = _context.clientes_asignados
-                                        .Where(ca => ca.IdUsuarioS == idSupervisorActual && ca.IdUsuarioV == null)
+                                        .Where(ca => ca.IdUsuarioS == idSupervisorActual && ca.IdUsuarioV == null
+                                                && ca.FechaAsignacionSup.HasValue && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
+                                                && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month)
                                         .Take(nClientes)
                                         .ToList();
 
@@ -344,18 +349,26 @@ namespace ALFINapp.Controllers
                                                             Rol = grouped.Key.Rol,
                                                             TotalClientesAsignados = grouped.Count(g => g.ca != null
                                                                                                 && g.ca.IdUsuarioV == grouped.Key.IdUsuario
-                                                                                                && g.ca.IdUsuarioS == idSupervisorActual), // Clientes asignados
+                                                                                                && g.ca.IdUsuarioS == idSupervisorActual
+                                                                                                && g.ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
+                                                                                                && g.ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month), // Clientes asignados
                                                             ClientesTrabajando = grouped.Count(g => g.ca != null
                                                                                                 && g.ca.TipificacionMayorPeso != null
                                                                                                 && g.ca.IdUsuarioV == grouped.Key.IdUsuario
-                                                                                                && g.ca.IdUsuarioS == idSupervisorActual), // Clientes trabajados
+                                                                                                && g.ca.IdUsuarioS == idSupervisorActual
+                                                                                                && g.ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
+                                                                                                && g.ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month), // Clientes trabajados
                                                             ClientesSinTrabajar = grouped.Count(g => g.ca != null
                                                                                                 && g.ca.IdUsuarioV == grouped.Key.IdUsuario
-                                                                                                && g.ca.IdUsuarioS == idSupervisorActual)
+                                                                                                && g.ca.IdUsuarioS == idSupervisorActual
+                                                                                                && g.ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
+                                                                                                && g.ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month)
                                                                                                  - grouped.Count(g => g.ca != null
                                                                                                 && g.ca.TipificacionMayorPeso != null
                                                                                                 && g.ca.IdUsuarioV == grouped.Key.IdUsuario
-                                                                                                && g.ca.IdUsuarioS == idSupervisorActual) // Diferencia entre asignados y trabajados
+                                                                                                && g.ca.IdUsuarioS == idSupervisorActual
+                                                                                                && g.ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
+                                                                                                && g.ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month) // Diferencia entre asignados y trabajados
                                                         }).FirstOrDefault();
 
                 var asesoresAsignadosaSupervisor = (from u in _context.usuarios
@@ -388,18 +401,24 @@ namespace ALFINapp.Controllers
                                                         Rol = grouped.Key.Rol,
                                                         TotalClientesAsignados = grouped.Count(g => g.ca != null
                                                                                             && g.ca.IdUsuarioV == grouped.Key.IdUsuario
-                                                                                            && g.ca.IdUsuarioS == idSupervisorActual), // Clientes asignados
+                                                                                            && g.ca.IdUsuarioS == idSupervisorActual
+                                                                                            && g.ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
+                                                                                            && g.ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month), // Clientes asignados
                                                         ClientesTrabajando = grouped.Count(g => g.ca != null
                                                                                             && g.ca.TipificacionMayorPeso != null
                                                                                             && g.ca.IdUsuarioV == grouped.Key.IdUsuario
-                                                                                            && g.ca.IdUsuarioS == idSupervisorActual), // Clientes trabajados
+                                                                                            && g.ca.IdUsuarioS == idSupervisorActual
+                                                                                            && g.ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
+                                                                                            && g.ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month), // Clientes trabajados
                                                         ClientesSinTrabajar = grouped.Count(g => g.ca != null
                                                                                             && g.ca.IdUsuarioV == grouped.Key.IdUsuario
                                                                                             && g.ca.IdUsuarioS == idSupervisorActual)
                                                                                              - grouped.Count(g => g.ca != null
                                                                                             && g.ca.TipificacionMayorPeso != null
                                                                                             && g.ca.IdUsuarioV == grouped.Key.IdUsuario
-                                                                                            && g.ca.IdUsuarioS == idSupervisorActual) // Diferencia entre asignados y trabajados
+                                                                                            && g.ca.IdUsuarioS == idSupervisorActual
+                                                                                            && g.ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
+                                                                                            && g.ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month) // Diferencia entre asignados y trabajados
                                                     }).ToList();
                 ViewData["AsesorAModificar"] = clientesAsignadosAsesorPrincipal;
                 // Retorna la vista parcial con los datos necesarios
