@@ -116,6 +116,11 @@ namespace ALFINapp.Controllers
                     return Json(new { success = false, message = "Llene al menos un campo de la seccion Modificar Clientes Asignados" });
                 }
 
+                if (AsesorCambioID == 0)
+                {
+                    return Json(new { success = false, message = "Debe ingresar el Id del asesor al que se asignarán los clientes" });
+                }
+
                 foreach (var asignacion in AsignacionesEnviadas)
                 {
                     if (asignacion.Modificaciones == 0)

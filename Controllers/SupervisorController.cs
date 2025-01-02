@@ -1,6 +1,7 @@
 using System.Security;
 using System.Text.RegularExpressions;
 using ALFINapp.Models;
+using ALFINapp.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace ALFINapp.Controllers
 {
+    [RequireSession]
     public class SupervisorController : Controller
     {
         private readonly MDbContext _context;
@@ -19,11 +21,6 @@ namespace ALFINapp.Controllers
         public async Task<IActionResult> VistaMainSupervisor(int page = 1, int pageSize = 10)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId == null)
-            {
-                TempData["MessageError"] = "Ha ocurrido un error en la autenticacion";
-                return RedirectToAction("Index", "Home");
-            }
 
             var supervisorData = from ca in _context.clientes_asignados
                                  join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
@@ -80,11 +77,6 @@ namespace ALFINapp.Controllers
         [HttpGet]
         public IActionResult AsignarVendedorView()
         {
-            if (HttpContext.Session.GetInt32("UsuarioId") == null)
-            {
-                TempData["MessageError"] = "No ha iniciado sesion, por favor inicie sesion.";
-                return RedirectToAction("VistaMainSupervisor", "Supervisor");
-            }
             var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             Console.WriteLine("Hemos pasado la Comprobacion");
             var vendedoresConClientes = (from u in _context.usuarios
@@ -114,12 +106,6 @@ namespace ALFINapp.Controllers
         [HttpPost]
         public IActionResult AsignarVendedoresPorNumero(int nclientes, int id_vendedor)
         {
-            if (HttpContext.Session.GetInt32("UsuarioId") == null)
-            {
-                TempData["MessageError"] = "No ha iniciado sesion, por favor inicie sesion.";
-                return RedirectToAction("Index", "Home");
-            }
-
             if (!int.TryParse(nclientes.ToString(), out int n_clientes) || nclientes <= 0)
             {
                 TempData["MessageError"] = "La entrada debe de ser un numero valido y positivo.";
@@ -154,11 +140,6 @@ namespace ALFINapp.Controllers
         [HttpGet]
         public IActionResult ModificarAsignacionVendedorView(int id_asignacion)
         {
-            if (HttpContext.Session.GetInt32("UsuarioId") == null)
-            {
-                TempData["MessageError"] = "No ha iniciado sesion, por favor inicie sesion.";
-                return RedirectToAction("Index", "Home");
-            }
             var idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId").Value;
 
             var vendedoresAsignados = (from u in _context.usuarios
@@ -217,15 +198,12 @@ namespace ALFINapp.Controllers
         public IActionResult GuardarAsesoresAsignados(List<AsignarAsesorDTO> asignacionasesor)
         {
             int? idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
-            if (idSupervisorActual == null)
-            {
-                TempData["MessageError"] = "Error en la autenticacion. Intente iniciar sesion nuevamente.";
-                return RedirectToAction("Index", "Home");
-            }
-
-
             var mensajes = new List<string>();
-
+            if (asignacionasesor == null)
+            {
+                TempData["MessageError"] = "No se han enviado datos para asignar asesores.";
+                return RedirectToAction("VistaMainSupervisor");
+            }
             foreach (var asignacion in asignacionasesor)
             {
                 Console.WriteLine($"IdVendedor: {asignacion.IdVendedor}, NumClientes: {asignacion.NumClientes}");
@@ -444,7 +422,7 @@ namespace ALFINapp.Controllers
             }
             catch (System.Exception)
             {
-
+                return Json(new { success = false, message = "Ha ocurrido un Error al mandar los Datos"});
                 throw;
             }
         }

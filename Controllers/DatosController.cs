@@ -1,12 +1,14 @@
 using System.Security;
 using System.Text.RegularExpressions;
 using ALFINapp.Models;
+using ALFINapp.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace ALFINapp.Controllers
 {
+    [RequireSession]
     public class DatosController : Controller
     {
         private readonly MDbContext _context;

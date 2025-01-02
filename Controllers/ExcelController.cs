@@ -1,6 +1,7 @@
 using System.Security;
 using System.Text.RegularExpressions;
 using ALFINapp.Models;
+using ALFINapp.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -17,6 +18,7 @@ using System.Security.AccessControl; // Necesaria para List<>
 
 namespace ALFINapp.Controllers
 {
+    [RequireSession]
     public class ExcelController : Controller
     {
         private readonly MDbContext _context;

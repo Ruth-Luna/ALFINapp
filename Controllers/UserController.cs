@@ -1,5 +1,6 @@
 using System.Security;
 using System.Text.RegularExpressions;
+using ALFINapp.Filters;
 using ALFINapp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace ALFINapp.Controllers
 {
+    [RequireSession]
     public class UserController : Controller
     {
         private readonly MDbContext _context;
@@ -45,43 +47,6 @@ namespace ALFINapp.Controllers
             {
                 return View(model);
             }
-        }
-
-        // Acción para verificar si el DNI existe
-        [HttpPost]
-        public IActionResult VerificarUsuario(string dni)
-        {
-            if (!dni.All(char.IsDigit))
-            {
-                TempData["MessageError"] = "Ingrese Solo Numeros en el DNI";
-                return RedirectToAction("Index", "Home");
-            }
-            dni = dni.Trim();
-            var usuario = _context.usuarios.FirstOrDefault(u => u.Dni.Trim() == dni);
-
-
-            if (usuario == null)
-            {
-                TempData["MessageError"] = "El Usuario a Buscar no se encuentra Registrado comunicarse con su Supervisor.";
-                return RedirectToAction("Index", "Home");
-            }
-            if (string.IsNullOrEmpty(usuario.Rol))
-            {
-                TempData["MessageError"] = "El rol del usuario no está definido. Comuníquese con su Supervisor.";
-                return RedirectToAction("Index", "Home");
-            }
-            if (usuario.Rol == "VENDEDOR")
-            {
-                HttpContext.Session.SetInt32("UsuarioId", usuario.IdUsuario);
-                return RedirectToAction("Ventas");
-            }
-            if (usuario.Rol == "SUPERVISOR")
-            {
-                HttpContext.Session.SetInt32("UsuarioId", usuario.IdUsuario);
-                return RedirectToAction("VistaMainSupervisor", "Supervisor");
-            }
-            TempData["MessageError"] = "Algo salio Mal en la Autenticacion";
-            return RedirectToAction("Index", "Home");
         }
 
         // Acción para mostrar la página de ventas
@@ -136,7 +101,8 @@ namespace ALFINapp.Controllers
                 FechaAsignacionVendedor = cliente.LatestRecord?.ca.FechaAsignacionVendedor,
                 ComentarioGeneral = cliente.LatestRecord.ca.ComentarioGeneral,
                 TipificacionDeMayorPeso = cliente.LatestRecord.ca.TipificacionMayorPeso,
-                PesoTipificacionMayor = cliente.LatestRecord.ca.PesoTipificacionMayor
+                PesoTipificacionMayor = cliente.LatestRecord.ca.PesoTipificacionMayor,
+                FechaTipificacionDeMayorPeso = cliente.LatestRecord.ca.FechaTipificacionMayorPeso,
             }).ToList();
 
             // Total de clientes
@@ -164,6 +130,12 @@ namespace ALFINapp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AgregarCliente(BaseCliente model)
         {
+            if (HttpContext.Session.GetInt32("UsuarioId") == null)
+            {
+                TempData["MessageError"] = "No ha iniciado sesion, por favor inicie sesion.";
+                return RedirectToAction("Index", "Home");
+            }
+
             if (ModelState.IsValid)
             {
                 if (string.IsNullOrWhiteSpace(model.Dni) ||
@@ -280,6 +252,12 @@ namespace ALFINapp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> TipificarCliente(ClientesEnriquecido model)
         {
+            if (HttpContext.Session.GetInt32("UsuarioId") == null)
+            {
+                TempData["MessageError"] = "No ha iniciado sesion, por favor inicie sesion.";
+                return RedirectToAction("Index", "Home");
+            }
+
             var ClientesAsignado = _context.clientes_asignados.
                                         FirstOrDefault(ca => ca.IdCliente == model.IdCliente &&
                                                         ca.IdUsuarioV == HttpContext.Session.GetInt32("UsuarioId"));
@@ -649,6 +627,7 @@ namespace ALFINapp.Controllers
             {
                 ClienteAsignado.TipificacionMayorPeso = descripcionTipificacionMayorPeso; // Almacena la descripción
                 ClienteAsignado.PesoTipificacionMayor = pesoMayor; // Almacena el peso
+                ClienteAsignado.FechaTipificacionMayorPeso = fechaTipificacion; // Almacena la fecha
                 _context.clientes_asignados.Update(ClienteAsignado);
             }
 
@@ -854,6 +833,7 @@ namespace ALFINapp.Controllers
                     {
                         ClienteAsignado.TipificacionMayorPeso = descripcionTipificacionMayorPeso;
                         ClienteAsignado.PesoTipificacionMayor = pesoMayor;
+                        ClienteAsignado.FechaTipificacionMayorPeso = fechaTipificacion;
                         _context.clientes_asignados.Update(ClienteAsignado);
                     }
                 }

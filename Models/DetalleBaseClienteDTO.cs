@@ -50,4 +50,5 @@ public class DetalleBaseClienteDTO
     public string? ComentarioGeneral { get; set; }
     public string? TipificacionDeMayorPeso { get; set; }
     public int? PesoTipificacionMayor { get; set; }
+    public DateTime? FechaTipificacionDeMayorPeso { get; set; }
 }

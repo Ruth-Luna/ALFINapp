@@ -6,8 +6,6 @@
 }
 
 <div class="row">
-    <h2>Seccion Desactivar Asesores</h2>
-
     @foreach (var AsesorAsignados in Model)
     {
         <div class="row mt-10">
@@ -42,6 +40,24 @@
                 </div>
             </div>
         </div>
+        @if (AsesorAsignados.Estado == "ACTIVO")
+        {
+            <div class="button-container mb-10">
+                <a href="javascript:void(0);" class="btn btn-danger"
+                    onclick="desactivarAsesor('@AsesorAsignados.Dni', @AsesorAsignados.IdUsuario)">
+                    Desactivar
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="button-container mb-10">
+                <a href="javascript:void(0);" class="btn btn-success bm-10"
+                    onclick="activarAsesor('@AsesorAsignados.Dni', @AsesorAsignados.IdUsuario)">
+                    Activar
+                </a>
+            </div>
+        }
 
         <div class="spacing"> </div>
 
@@ -75,37 +91,22 @@
             </div>
         </div>
 
-        @if (AsesorAsignados.Estado == "ACTIVO")
-        {
-            <div class="button-container mb-10">
-                <a href="javascript:void(0)" class="btn btn-primary"
-                    onclick="modificarAsignacionesAsesor('@AsesorAsignados.IdUsuario', '@AsesorAsignados.Dni')">
-                    Modificar Clientes Asignados
-                </a>
-                <a href="javascript:void(0);" class="btn btn-danger btn-sm"
-                    onclick="desactivarAsesor('@AsesorAsignados.Dni', @AsesorAsignados.IdUsuario)">
-                    Desactivar
-                </a>
-            </div>
-        }
-        else
-        {
-            <div class="button-container mb-10">
-                <a href="javascript:void(0)" class="btn btn-primary"
-                    onclick="modificarAsignacionesAsesor('@AsesorAsignados.IdUsuario', '@AsesorAsignados.Dni')">
-                    Modificar Clientes Asignados
-                </a>
-                <a href="javascript:void(0);" class="btn btn-success bm-10"
-                    onclick="activarAsesor('@AsesorAsignados.Dni', @AsesorAsignados.IdUsuario)">
-                    Activar
-                </a>
-            </div>
-        }
+        <div class="button-container mb-10">
+            <a href="javascript:void(0)" class="btn btn-primary"
+                onclick="modificarAsignacionesAsesor('@AsesorAsignados.IdUsuario', '@AsesorAsignados.Dni')">
+                Modificar Clientes Asignados
+            </a>
+        </div>
+
         <div class="spacing"></div>
         <hr>
     }
-
-    
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <button type="button" class="btn btn-main" data-bs-dismiss="modal">Regresar</button>
+    </div>
+</div>
 
     <script>
         function desactivarAsesor(dni, idUsuario) {
@@ -118,13 +119,28 @@
                 },
                 success: function (response) {
                     if (response) {
-                        alert("Asesor desactivado correctamente.");
+                        Swal.fire({
+                            title: 'Desactivacion de Asesor',
+                            text: 'El Asesor fue desactivado correctamente.',
+                            icon: 'warning',
+                            confirmButtonText: 'Aceptar'
+                        });
                     } else {
-                        alert("Error al desactivar el Asesor.");
+                        Swal.fire({
+                            title: 'Desactivacion de Asesor',
+                            text: 'Ocurrio un error al tratar de Desactivar al Asesor comunicarse con el servicio tecnico.',
+                            icon: 'error',
+                            confirmButtonText: 'Aceptar'
+                        });
                     }
                 },
                 error: function (message) {
-                    alert("Error al activar el Asesor.");
+                    Swal.fire({
+                        title: 'Desactivacion de Asesor',
+                        text: 'Ocurrio un error al tratar de Desactivar al Asesor comunicarse con el servicio tecnico.',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
                 }
             });
         }
@@ -137,15 +153,30 @@
                     dni: dni,
                     idUsuario: idUsuario
                 },
-                success: function (message) {
+                success: function (response) {
                     if (response) {
-                        alert("Asesor activado correctamente.");
+                        Swal.fire({
+                            title: 'Activacion de Asesor',
+                            text: 'El Asesor fue activado correctamente.',
+                            icon: 'success',
+                            confirmButtonText: 'Aceptar'
+                        });
                     } else {
-                        alert("Error al activar el Asesor.");
+                        Swal.fire({
+                            title: 'Activacion de Asesor',
+                            text: 'Ocurrio un error al tratar de Activar al Asesor comunicarse con el servicio tecnico.',
+                            icon: 'error',
+                            confirmButtonText: 'Aceptar'
+                        });
                     }
                 },
-                error: function (message) {
-                    alert("Error al activar el Asesor.");
+                error: function (response) {
+                    Swal.fire({
+                        title: 'Activacion de Asesor',
+                        text: 'Ocurrio un error al tratar de Activar al Asesor comunicarse con el servicio tecnico.',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
                 }
             });
         }
