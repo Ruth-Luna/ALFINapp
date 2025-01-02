@@ -30,6 +30,9 @@ namespace ALFINapp.Controllers
                                  where ca.IdUsuarioS == usuarioId
                                         && ca.ClienteDesembolso != true
                                         && ca.ClienteRetirado != true
+                                        && ca.FechaAsignacionSup.HasValue
+                                        && ca.FechaAsignacionSup.Value.Year == 2025
+                                        && ca.FechaAsignacionSup.Value.Month == 1
                                  select new SupervisorDTO
                                  {
                                      IdAsignacion = ca.IdAsignacion,
@@ -113,7 +116,8 @@ namespace ALFINapp.Controllers
 
             var idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId").Value;
             var clientesDisponibles = _context.clientes_asignados
-                                            .Where(ca => ca.IdUsuarioS == idSupervisorActual && ca.IdUsuarioV == null)
+                                            .Where(ca => ca.IdUsuarioS == idSupervisorActual && ca.IdUsuarioV == null && ca.FechaAsignacionSup.HasValue && ca.FechaAsignacionSup.Value.Year == 2025
+                                            && ca.FechaAsignacionSup.Value.Month == 1)
                                             .Take(nclientes)
                                             .ToList();
             Console.WriteLine($"Solo hay {clientesDisponibles.Count} clientes disponibles para asignar.");
