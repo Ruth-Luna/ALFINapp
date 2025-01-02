@@ -162,5 +162,19 @@ namespace ALFINapp.Controllers
                 throw;
             }
         }
+
+        [HttpPost]
+        public IActionResult AgregarNuevoUsuarioAsesor (Usuario UsuarioAAgregar)
+        {
+            try
+            {
+                return Json(new { success = true, message = "Se han modificado los clientes asignados al asesor" });
+            }
+            catch (System.Exception)
+            {
+                return Json(new { success = false, message = "Llene Los campos para agregar un Usuario Nuevo" });
+                throw;
+            }
+        }
     }
 }

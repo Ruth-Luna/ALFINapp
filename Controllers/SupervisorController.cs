@@ -215,11 +215,9 @@ namespace ALFINapp.Controllers
                 Console.WriteLine($"IdVendedor: {asignacion.IdVendedor}, NumClientes: {asignacion.NumClientes}");
                 if (asignacion.NumClientes == 0)
                 {
-                    mensajes.Add($"No se asignaron clientes al Asesor {asignacion.IdVendedor} porque el numero de clientes es 0. \n");
                     continue;
                 }
 
-                int Contador = 0;
                 int nClientes = asignacion.NumClientes;
                 var clientesDisponibles = _context.clientes_asignados
                                         .Where(ca => ca.IdUsuarioS == idSupervisorActual && ca.IdUsuarioV == null
@@ -230,7 +228,6 @@ namespace ALFINapp.Controllers
 
                 if (clientesDisponibles.Count < nClientes)
                 {
-                    mensajes.Add($"Solo hay {clientesDisponibles.Count} clientes disponibles para asignar al Asesor {asignacion.IdVendedor}. La asignacion fue pausada. \n");
                     break;
                 }
 
@@ -240,7 +237,6 @@ namespace ALFINapp.Controllers
                     cliente.FechaAsignacionVendedor = DateTime.Now;
                 }
                 _context.SaveChanges();
-                mensajes.Add($"{nClientes} clientes fueron asignados correctamente al Asesor {asignacion.IdVendedor}. \n");
             }
             TempData["Message"] = "Las Asignaciones se culminaron con exito";
             return RedirectToAction("VistaMainSupervisor");

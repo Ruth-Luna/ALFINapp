@@ -115,6 +115,21 @@ namespace ALFINapp.Controllers
                 Console.WriteLine($"Fecha de fin: {fechaFin}");
 
                 var supervisorData = (from ca in _context.clientes_asignados
+                                      where ca.IdUsuarioS == idSupervisorActual 
+                                            && ca.FechaAsignacionSup >= fechaInicio
+                                            && ca.FechaAsignacionSup <= fechaFin
+                                      join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
+                                      join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
+                                      join db in _context.detalle_base on bc.IdBase equals db.IdBase
+                                      group new { db, bc, ca, ce } by db.IdBase into grouped
+                                      select new
+                                      {
+                                          Idbase = grouped.Key,
+                                          LatestRecord = grouped.OrderByDescending(x => x.db.FechaCarga)
+                                                                 .FirstOrDefault(),
+                                      })
+                                     .ToList();
+                /*var supervisorData = (from ca in _context.clientes_asignados
                                       join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
                                       join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
                                       join db in _context.detalle_base on bc.IdBase equals db.IdBase
@@ -130,7 +145,7 @@ namespace ALFINapp.Controllers
                                           LatestRecord = grouped.OrderByDescending(x => x.db.FechaCarga)
                                                                  .FirstOrDefault(),
                                       })
-                                     .ToList();
+                                     .ToList();*/
 
                 var detallesClientesSupervisor = supervisorData.Select(detallesClientes => new
                 {
