@@ -18,6 +18,7 @@ public partial class UsuarioAsesorDTO
     public string? Provincia { get; set; } = null!;
 
     public string? Distrito { get; set; } = null!;
+    public string? Region { get; set; } = null!;
 
     public string? Telefono { get; set; } = null!;
 

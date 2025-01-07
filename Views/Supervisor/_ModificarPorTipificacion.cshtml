@@ -1,0 +1,52 @@
+@model IEnumerable<VendedorConClientesDTO>
+
+@{
+    var TipificacionesGenerales = ViewData["tipificacionesGenerales"] as IEnumerable<Tipificaciones>;
+    var clientesAsignadosPorTIpificacionNumDB = ViewData["clientesAsignadosPorTIpificacionNumDB"] as IEnumerable<dynamic>;
+    var clientesAsignadosPorTIpificacionNumPers = ViewData["clientesAsignadosPorTIpificacionNumPers"] as
+    IEnumerable<dynamic>;
+}
+
+<h3 class="label-for-sup-sec">Seccion Modificar Asesores con Tipificaciones Especificas</h3>
+
+<div>
+    <label for="selectAsesor" class="form-label">Seleccione una Tipificacion</label>
+    <select class="form-select" id="selectTipificacion" name="selectTipificacion"
+        onchange="cargarInterfazAsesorPorTipificacion(this.value)">
+        <option value="">Seleccione una de las siguientes Tipificaciones</option>
+        @foreach (var TipificacionesAsignadas in TipificacionesGenerales)
+        {
+            <option value="@TipificacionesAsignadas.DescripcionTipificacion">@TipificacionesAsignadas.DescripcionTipificacion
+            </option>
+        }
+    </select>
+    <div class="spacing"></div>
+
+    <div id="resultadoAsesorXTipificacion" style="display: block;">
+
+    </div>
+</div>
+
+<script>
+    function cargarInterfazAsesorPorTipificacion (tipificacion) {
+        if (!tipificacion) {
+            alert("Por favor, seleccione una tipificación.");
+            return;
+        }
+
+        $.ajax({
+            url: `/Supervisor/ObtenerClientesPorTipificacion`, // URL del endpoint en el controlador
+            type: "GET", // Tipo de solicitud
+            data: { tipificacion: tipificacion }, // Parámetro enviado al servidor
+            success: function (response) {
+                // Procesar la respuesta y mostrar el resultado
+                $("#resultadoAsesorXTipificacion").html(response);
+            },
+            error: function (xhr, status, error) {
+                console.error("Error al obtener los datos:", error);
+                alert("Ocurrió un error al cargar los datos. Inténtalo nuevamente.");
+            }
+        });
+    }
+
+</script>

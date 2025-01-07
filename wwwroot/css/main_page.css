@@ -67,7 +67,14 @@ form input, form button {
     line-height: 1.2;
 }
 
-
+.label-for-sup-sec {
+    background-color: #085394;
+    color: white;
+    border-left: 10px solid #085394;
+    border-right: 10px solid #085394;
+    border-top: 10px solid #085394;
+    border-bottom: 10px solid #085394;
+}
 
 
 /*Responsive*/

@@ -1,0 +1,122 @@
+@model ResultadoTipificacionViewModelDTO
+@{
+    var clientesFiltrados = ViewData["clientesFiltrados"] as IEnumerable<dynamic>;
+    var AsesoresDelSupervisor = ViewData["AsesoresDelSupervisor"] as IEnumerable<UsuarioAsesorDTO>;
+}
+<div class="spacing"></div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="mb-3">
+            <label for="@Model.DetalleTipificacion" class="form-label">Clientes Asignados a la Tipificacion</label>
+            <input type="number" class="form-control" id="clientes_por_tipificaciones" name="clientes_por_tipificaciones" value="@Model.NumeroClientes" readonly>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="mb-3">
+            <label for="selectAsesorTipificacion" class="form-label">Asesor a Seleccionar</label>
+            <select class="form-select" id="selectAsesorTipificacion" name="selectAsesorTipificacion"
+                onchange="cargarNumDeClientesPorTipificacion('@Model.DetalleTipificacion', this.value);">
+                @foreach (var AsesoresAsignados in AsesoresDelSupervisor)
+                {
+                    <option value="@AsesoresAsignados.IdUsuario">@AsesoresAsignados.NombresCompletos</option>
+                }
+            </select>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="num_clientes_asignados_asesor" class="form-label">Numero de Clientes Con la Misma Tipificacion</label>
+                    <input type="number" class="form-control" id="NumClientesAsignadosAsesor" name="NumClientesAsignadosAsesor">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="asignacion_asesor" class="form-label">Modifique la asignacion a este asesor</label>
+                    <input type="number" class="form-control" id="AsignacionesPorTipificaciones" name="AsignacionesPorTipificaciones">
+                </div>
+            </div>
+            <div class="button-container mb-10">
+                <a href="javascript:void(0);" class="btn btn-success"
+                    onclick="enviarModificarAsignacionesPorTipificaciones('@Model.DetalleTipificacion', 'selectAsesorTipificacion')">
+                Modificar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function cargarNumDeClientesPorTipificacion(tipificacion, idAsesorBusqueda) {
+        var campodeClientes = document.getElementById('NumClientesAsignadosAsesor');
+        console.log(idAsesorBusqueda);
+        $.ajax ({
+            url: "/Asesor/ObtenerNumDeClientesPorTipificacion",
+            type: "GET",
+            data: {
+                tipificacionDetalle: tipificacion,
+                idAsesorBuscar: idAsesorBusqueda
+            },
+            success: function (response) {
+                if (response.success) {
+                    campodeClientes.value = response.numClientes;
+                }
+                else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: response.message,
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se pudo cargar la interfaz para modificar las asignaciones del asesor.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+        })
+    }
+
+    function enviarModificarAsignacionesPorTipificaciones(tipificacion, idAsesor) {
+        $.ajax ({
+            url: "/Asesor/ModificarAsignacionesPorTipificaciones",
+            type: "POST",
+            data: {
+                tipificacion: tipificacion,
+                idAsesor: idAsesor
+            },
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire({
+                        title: 'Informe sobre las Tipificaciones',
+                        text: response.message,
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+                else {
+                    Swal.fire({
+                        title: 'Error al asignar Nuevas Tipificaciones',
+                        text: response.message,
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se pudo cargar la interfaz para modificar las asignaciones del asesor.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+
+        });
+    }
+</script>

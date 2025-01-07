@@ -104,11 +104,6 @@ namespace ALFINapp.Controllers
         public IActionResult GuardarCambiosAsignaciones(List<AsignacionesDTO> AsignacionesEnviadas, int AsesorCambioID)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId == null)
-            {
-                TempData["Message"] = "Ha ocurrido un error en la autenticación";
-                return RedirectToAction("Index", "Home");
-            }
             try
             {
                 if (AsignacionesEnviadas == null)
@@ -164,15 +159,133 @@ namespace ALFINapp.Controllers
         }
 
         [HttpPost]
-        public IActionResult AgregarNuevoUsuarioAsesor (Usuario UsuarioAAgregar)
+        public IActionResult AgregarNuevoAsesor([FromBody] Usuario nuevoUsuario)
+        {
+            if (nuevoUsuario == null)
+            {
+                return Json(new { success = false, message = "El usuario no puede ser nulo." });
+            }
+            try
+            {
+                var usuarioExistente = _context.usuarios.FirstOrDefault(u => u.Dni == nuevoUsuario.Dni);
+                if (usuarioExistente != null)
+                {
+                    return Json(new { success = false, message = "El DNI ya está registrado en la base de datos." });
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return Json(new { success = false, message = "Los datos enviados no son válidos" });
+                }
+
+                if (string.IsNullOrEmpty(nuevoUsuario.Dni) || nuevoUsuario.Dni.Length < 8)
+                {
+                    return Json(new { success = false, message = "El DNI debe contener al menos 8 dígitos." });
+                }
+
+                int? idsupervisoractual = HttpContext.Session.GetInt32("UsuarioId");
+
+                if (idsupervisoractual == null)
+                {
+                    return Json(new { success = false, message = "El ID Supervisor a asignar automaticamente es invalido. Comunicarse con Soporte Tecnico." });
+                }
+                else
+                {
+                    var supervisorData = _context.usuarios.AsNoTracking().FirstOrDefault(u => u.IdUsuario == idsupervisoractual);
+                    if (supervisorData == null)
+                    {
+                        return Json(new { success = false, message = "No se encontró el supervisor actual." });
+                    }
+                    nuevoUsuario.IDUSUARIOSUP = idsupervisoractual ?? 0;
+                    nuevoUsuario.RESPONSABLESUP = supervisorData.NombresCompletos;
+                }
+
+                nuevoUsuario.NombresCompletos = nuevoUsuario.NombresCompletos?.ToUpper();
+                nuevoUsuario.Rol = nuevoUsuario.Rol?.ToUpper();
+                nuevoUsuario.Departamento = nuevoUsuario.Departamento?.ToUpper();
+                nuevoUsuario.Provincia = nuevoUsuario.Provincia?.ToUpper();
+                nuevoUsuario.Distrito = nuevoUsuario.Distrito?.ToUpper();
+                nuevoUsuario.REGION = nuevoUsuario.REGION?.ToUpper();
+
+                nuevoUsuario.FechaRegistro = DateTime.Now;
+                nuevoUsuario.Estado = "ACTIVO";
+                _context.usuarios.Add(nuevoUsuario);
+                _context.SaveChanges();
+                return Json(new { success = true, message = $"Se ha agregado al nuevo Usuario {nuevoUsuario.NombresCompletos} con el Rol {nuevoUsuario.Rol}" });
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
+                return Json(new { success = false, message = "Ha ocurrido un error inesperado" });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult ObtenerNumDeClientesPorTipificacion (string tipificacionDetalle, int idAsesorBuscar)
         {
             try
             {
-                return Json(new { success = true, message = "Se han modificado los clientes asignados al asesor" });
+                var clientesNumDB = (from ca in _context.clientes_asignados
+                                    join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
+                                    where ca.IdUsuarioV == idAsesorBuscar
+                                        && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
+                                        && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
+                                    select new
+                                    {
+                                        IdCliente = ce.IdCliente,
+                                        TipificacionesGenerales = new
+                                        {
+                                            UltimaTip1 = ce.UltimaTipificacionTelefono1,
+                                            UltimaTip2 = ce.UltimaTipificacionTelefono2,
+                                            UltimaTip3 = ce.UltimaTipificacionTelefono3,
+                                            UltimaTip4 = ce.UltimaTipificacionTelefono4,
+                                            UltimaTip5 = ce.UltimaTipificacionTelefono5
+                                        }
+                                    }).ToList();
+
+                // Consulta para las tipificaciones de números personales
+                var clientesNumPers = (from ca in _context.clientes_asignados
+                                        join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
+                                        join ta in _context.telefonos_agregados on ce.IdCliente equals ta.IdCliente
+                                        where ca.IdUsuarioV == idAsesorBuscar
+                                            && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
+                                            && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
+                                        select new
+                                        {
+                                            IdCliente = ce.IdCliente,
+                                            TipificacionesPersonales = ta.UltimaTipificacion 
+                                        }).ToList();
+
+                var NumClientesAsignados = (from cndb in clientesNumDB
+                                        join cnp in clientesNumPers on cndb.IdCliente equals cnp.IdCliente into cnpGroup
+                                        from cnp in cnpGroup.DefaultIfEmpty()  // Left join
+                                        where cndb.TipificacionesGenerales.UltimaTip1 == tipificacionDetalle
+                                            || cndb.TipificacionesGenerales.UltimaTip2 == tipificacionDetalle
+                                            || cndb.TipificacionesGenerales.UltimaTip3 == tipificacionDetalle
+                                            || cndb.TipificacionesGenerales.UltimaTip4 == tipificacionDetalle
+                                            || cndb.TipificacionesGenerales.UltimaTip5 == tipificacionDetalle
+                                            || (cnp != null && cnp.TipificacionesPersonales == tipificacionDetalle) // Condición para verificar null en cnp
+                                        select new { cndb, cnp })
+                                        .ToList();
+                return Json(new {success = true, numClientes = NumClientesAsignados.Count()});
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
+                return Json(new { success = false, message = "Ha ocurrido un error inesperado" });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult ModificarAsignacionesPorTipificaciones()
+        {
+            try
+            {
+                return Json(new { success = false, message = "Ha ocurrido un error inesperado" });
             }
             catch (System.Exception)
             {
-                return Json(new { success = false, message = "Llene Los campos para agregar un Usuario Nuevo" });
+                return Json(new { success = false, message = "Ha ocurrido un error inesperado" });
                 throw;
             }
         }

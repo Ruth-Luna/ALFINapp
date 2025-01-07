@@ -115,20 +115,63 @@ namespace ALFINapp.Controllers
                 Console.WriteLine($"Fecha de fin: {fechaFin}");
 
                 var supervisorData = (from ca in _context.clientes_asignados
-                                      where ca.IdUsuarioS == idSupervisorActual 
-                                            && ca.FechaAsignacionSup >= fechaInicio
-                                            && ca.FechaAsignacionSup <= fechaFin
-                                      join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
-                                      join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
-                                      join db in _context.detalle_base on bc.IdBase equals db.IdBase
-                                      group new { db, bc, ca, ce } by db.IdBase into grouped
-                                      select new
-                                      {
-                                          Idbase = grouped.Key,
-                                          LatestRecord = grouped.OrderByDescending(x => x.db.FechaCarga)
-                                                                 .FirstOrDefault(),
-                                      })
-                                     .ToList();
+                                        join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
+                                        join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
+                                        join db in _context.detalle_base on bc.IdBase equals db.IdBase
+                                        where ca.IdUsuarioS == idSupervisorActual 
+                                                && ca.ClienteDesembolso != true
+                                                && ca.ClienteRetirado != true
+                                                && ca.FechaAsignacionSup.HasValue
+                                                && ca.FechaAsignacionSup >= fechaInicio
+                                                && ca.FechaAsignacionSup <= fechaFin
+                                                && db.TipoBase == ca.FuenteBase
+                                        select new
+                                        {
+                                            // Todos los campos de cada tabla
+                                            IdBase = db.IdBase,
+                                            FechaCarga = db.FechaCarga,
+                                            Campaña = db.Campaña,
+                                            OfertaMax = db.OfertaMax,
+                                            TasaMinima = db.TasaMinima,
+                                            SucursalComercial = db.SucursalComercial,
+                                            AgenciaComercial = db.AgenciaComercial,
+                                            Plazo = db.Plazo,
+                                            Cuota = db.Cuota,
+                                            Oferta12m = db.Oferta12m,
+                                            Tasa12m = db.Tasa12m,
+                                            Cuota12m = db.Cuota12m,
+                                            Oferta18m = db.Oferta18m,
+                                            Tasa18m = db.Tasa18m,
+                                            Cuota18m = db.Cuota18m,
+                                            Oferta24m = db.Oferta24m,
+                                            Tasa24m = db.Tasa24m,
+                                            Cuota24m = db.Cuota24m,
+                                            Oferta36m = db.Oferta36m,
+                                            Tasa36m = db.Tasa36m,
+                                            Cuota36m = db.Cuota36m,
+                                            GrupoTasa = db.GrupoTasa,
+                                            GrupoMonto = db.GrupoMonto,
+                                            Propension = db.Propension,
+                                            TipoCliente = db.TipoCliente,
+                                            ClienteNuevo = db.ClienteNuevo,
+                                            Color = db.Color,
+                                            ColorFinal = db.ColorFinal,
+                                            Dni = bc.Dni,
+                                            XAppaterno = bc.XAppaterno,
+                                            XApmaterno = bc.XApmaterno,
+                                            XNombre = bc.XNombre,
+                                            Edad = bc.Edad,
+                                            Departamento = bc.Departamento,
+                                            Provincia = bc.Provincia,
+                                            Distrito = bc.Distrito,
+                                            Telefono1 = ce.Telefono1,
+                                            Telefono2 = ce.Telefono2,
+                                            Telefono3 = ce.Telefono3,
+                                            Telefono4 = ce.Telefono4,
+                                            Telefono5 = ce.Telefono5,
+                                            FechaAsignacionSup = ca.FechaAsignacionSup,
+                                            IdUsuarioS = ca.IdUsuarioS
+                                        }).ToList();
                 /*var supervisorData = (from ca in _context.clientes_asignados
                                       join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
                                       join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
@@ -149,48 +192,49 @@ namespace ALFINapp.Controllers
 
                 var detallesClientesSupervisor = supervisorData.Select(detallesClientes => new
                 {
-                    DNI = detallesClientes.LatestRecord.bc.Dni,
-                    X_APPATERNO = detallesClientes.LatestRecord.bc.XAppaterno,
-                    X_APMATERNO = detallesClientes.LatestRecord.bc.XApmaterno,
-                    X_NOMBRE = detallesClientes.LatestRecord.bc.XNombre,
-                    EDAD = detallesClientes.LatestRecord.bc.Edad,
-                    DEPARTAMENTO = detallesClientes.LatestRecord.bc.Departamento,
-                    PROVINCIA = detallesClientes.LatestRecord.bc.Provincia,
-                    DISTRITO = detallesClientes.LatestRecord.bc.Distrito,
-                    CAMPANA = detallesClientes.LatestRecord.db.Campaña,
-                    OFERTA_MAX = detallesClientes.LatestRecord.db.OfertaMax,
-                    TASA_MINIMA = detallesClientes.LatestRecord.db.TasaMinima,
-                    SUCURSAL_COMERCIAL = detallesClientes.LatestRecord.db.SucursalComercial,
-                    AGENCIA_COMERCIAL = detallesClientes.LatestRecord.db.AgenciaComercial,
-                    PLAZO = detallesClientes.LatestRecord.db.Plazo,
-                    CUOTA = detallesClientes.LatestRecord.db.Cuota,
+                    DNI = detallesClientes.Dni,
+                    X_APPATERNO = detallesClientes.XAppaterno,
+                    X_APMATERNO = detallesClientes.XApmaterno,
+                    X_NOMBRE = detallesClientes.XNombre,
+                    EDAD = detallesClientes.Edad,
+                    DEPARTAMENTO = detallesClientes.Departamento,
+                    PROVINCIA = detallesClientes.Provincia,
+                    DISTRITO = detallesClientes.Distrito,
+                    CAMPANA = detallesClientes.Campaña,
+                    OFERTA_MAX = detallesClientes.OfertaMax,
+                    TASA_MINIMA = detallesClientes.TasaMinima,
+                    SUCURSAL_COMERCIAL = detallesClientes.SucursalComercial,
+                    AGENCIA_COMERCIAL = detallesClientes.AgenciaComercial,
+                    PLAZO = detallesClientes.Plazo,
+                    CUOTA = detallesClientes.Cuota,
 
-                    OFERTA12M = detallesClientes.LatestRecord.db.Oferta12m,
-                    TASA12M = detallesClientes.LatestRecord.db.Tasa12m,
-                    CUOTA12M = detallesClientes.LatestRecord.db.Cuota12m,
-                    OFERTA18M = detallesClientes.LatestRecord.db.Oferta18m,
-                    TASA18M = detallesClientes.LatestRecord.db.Tasa18m,
-                    CUOTA18M = detallesClientes.LatestRecord.db.Cuota18m,
-                    OFERTA24M = detallesClientes.LatestRecord.db.Oferta24m,
-                    TASA24M = detallesClientes.LatestRecord.db.Tasa24m,
-                    CUOTA24M = detallesClientes.LatestRecord.db.Cuota24m,
-                    OFERTA36M = detallesClientes.LatestRecord.db.Oferta36m,
-                    TASA36M = detallesClientes.LatestRecord.db.Tasa36m,
-                    CUOTA36M = detallesClientes.LatestRecord.db.Cuota36m,
+                    OFERTA12M = detallesClientes.Oferta12m,
+                    TASA12M = detallesClientes.Tasa12m,
+                    CUOTA12M = detallesClientes.Cuota12m,
+                    OFERTA18M = detallesClientes.Oferta18m,
+                    TASA18M = detallesClientes.Tasa18m,
+                    CUOTA18M = detallesClientes.Cuota18m,
+                    OFERTA24M = detallesClientes.Oferta24m,
+                    TASA24M = detallesClientes.Tasa24m,
+                    CUOTA24M = detallesClientes.Cuota24m,
+                    OFERTA36M = detallesClientes.Oferta36m,
+                    TASA36M = detallesClientes.Tasa36m,
+                    CUOTA36M = detallesClientes.Cuota36m,
 
-                    GRUPO_TASA = detallesClientes.LatestRecord.db.GrupoTasa,
-                    GRUPO_MONTO = detallesClientes.LatestRecord.db.GrupoMonto,
-                    PROPENSION = detallesClientes.LatestRecord.db.Propension,
-                    TIPO_CLIENTE = detallesClientes.LatestRecord.db.TipoCliente,
-                    CLIENTE_NUEVO = detallesClientes.LatestRecord.db.ClienteNuevo,
-                    COLOR = detallesClientes.LatestRecord.db.Color,
-                    COLOR_FINAL = detallesClientes.LatestRecord.db.ColorFinal,
-                    TELEFONO1 = detallesClientes.LatestRecord.ce.Telefono1,
-                    TELEFONO2 = detallesClientes.LatestRecord.ce.Telefono2,
-                    TELEFONO3 = detallesClientes.LatestRecord.ce.Telefono3,
-                    TELEFONO4 = detallesClientes.LatestRecord.ce.Telefono4,
-                    TELEFONO5 = detallesClientes.LatestRecord.ce.Telefono5,
+                    GRUPO_TASA = detallesClientes.GrupoTasa,
+                    GRUPO_MONTO = detallesClientes.GrupoMonto,
+                    PROPENSION = detallesClientes.Propension,
+                    TIPO_CLIENTE = detallesClientes.TipoCliente,
+                    CLIENTE_NUEVO = detallesClientes.ClienteNuevo,
+                    COLOR = detallesClientes.Color,
+                    COLOR_FINAL = detallesClientes.ColorFinal,
+                    TELEFONO1 = detallesClientes.Telefono1,
+                    TELEFONO2 = detallesClientes.Telefono2,
+                    TELEFONO3 = detallesClientes.Telefono3,
+                    TELEFONO4 = detallesClientes.Telefono4,
+                    TELEFONO5 = detallesClientes.Telefono5,
                 }).ToList();
+
                 // Genera el csvFile Excel
                 using (var package = new ExcelPackage())
                 {
