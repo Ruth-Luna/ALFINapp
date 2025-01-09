@@ -82,7 +82,6 @@ namespace ALFINapp.Controllers
         public IActionResult AsignarVendedorView()
         {
             var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            Console.WriteLine("Hemos pasado la Comprobacion");
             var vendedoresConClientes = (from u in _context.usuarios
                                          where u.Rol == "VENDEDOR" && u.IDUSUARIOSUP == usuarioId
                                          join ca in _context.clientes_asignados
@@ -102,11 +101,21 @@ namespace ALFINapp.Controllers
                                                     && c.FechaAsignacionSup.Value.Year == DateTime.Now.Year
                                                     && c.FechaAsignacionSup.Value.Month == DateTime.Now.Month) // Contamos solo los clientes asignados, ignorando los null
                                          }).ToList();
+
+            var BasesAsignadas = (from ca in _context.clientes_asignados
+                                  where ca.IdUsuarioS == usuarioId
+                                          && ca.FechaAsignacionSup.HasValue
+                                          && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
+                                          && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
+                                  select new { ca.FuenteBase })
+                                    .Distinct()
+                                    .ToList();
             if (vendedoresConClientes == null)
             {
                 TempData["MessageError"] = "La consulta para dar asesores ha fallado";
                 return RedirectToAction("VistaMainSupervisor", "Supervisor");
             }
+            ViewData["BasesAsignadas"] = BasesAsignadas;
             return PartialView("_Asignarvendedores", vendedoresConClientes);
         }
 
@@ -145,6 +154,7 @@ namespace ALFINapp.Controllers
             TempData["Message"] = $"{nclientes} clientes han sido asignados correctamente al Asesor.";
             return RedirectToAction("VistaMainSupervisor");
         }
+
         [HttpGet]
         public IActionResult ModificarAsignacionVendedorView(int id_asignacion)
         {
@@ -203,13 +213,27 @@ namespace ALFINapp.Controllers
         }
 
         [HttpPost]
-        public IActionResult GuardarAsesoresAsignados(List<AsignarAsesorDTO> asignacionasesor)
+        public IActionResult GuardarAsesoresAsignados(List<AsignarAsesorDTO> asignacionasesor, string selectAsesorBase)
         {
             int? idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
-            var mensajes = new List<string>();
+
+            string mensajesError = " ";
             if (asignacionasesor == null)
             {
                 TempData["MessageError"] = "No se han enviado datos para asignar asesores.";
+                return RedirectToAction("VistaMainSupervisor");
+            }
+
+            if (string.IsNullOrEmpty(selectAsesorBase))
+            {
+                TempData["MessageError"] = "Debe seleccionar una Fuente Base.";
+                return RedirectToAction("VistaMainSupervisor");
+            }
+
+            // Comprobación adicional para verificar si todas las entradas tienen NumClientes igual a 0
+            if (asignacionasesor.All(a => a.NumClientes == 0))
+            {
+                TempData["MessageError"] = "No se ha llenado ninguna entrada. Los campos no pueden estar vacíos.";
                 return RedirectToAction("VistaMainSupervisor");
             }
             foreach (var asignacion in asignacionasesor)
@@ -224,13 +248,15 @@ namespace ALFINapp.Controllers
                 var clientesDisponibles = _context.clientes_asignados
                                         .Where(ca => ca.IdUsuarioS == idSupervisorActual && ca.IdUsuarioV == null
                                                 && ca.FechaAsignacionSup.HasValue && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                                                && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month)
+                                                && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
+                                                && ca.FuenteBase == selectAsesorBase)
                                         .Take(nClientes)
                                         .ToList();
 
                 if (clientesDisponibles.Count < nClientes)
                 {
-                    break;
+                    mensajesError = mensajesError + $"En la base '{selectAsesorBase}', solo hay {clientesDisponibles.Count} clientes disponibles para la asignación. La entrada ha sido obviada.";
+                    continue;
                 }
 
                 foreach (var cliente in clientesDisponibles)
@@ -240,9 +266,69 @@ namespace ALFINapp.Controllers
                 }
                 _context.SaveChanges();
             }
-            TempData["Message"] = "Las Asignaciones se culminaron con exito";
+            if (mensajesError != " ")
+            {
+                TempData["MessageError"] = mensajesError;
+            }
+            else
+            {
+                TempData["Message"] = "Las Asignaciones se culminaron con exito";
+            }
             return RedirectToAction("VistaMainSupervisor");
         }
+        [HttpGet]
+        public IActionResult AsignarAsesoresSecundariosView()
+        {
+            try
+            {
+                var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+                var vendedoresConClientes = (from u in _context.usuarios
+                                             where u.Rol == "VENDEDOR" && u.IDUSUARIOSUP == usuarioId
+                                             join ca in _context.clientes_asignados
+                                             on u.IdUsuario equals ca.IdUsuarioV into clientes
+                                             from ca in clientes.DefaultIfEmpty() // Esta parte asegura que incluso si no hay clientes, el vendedor se incluya
+                                             join asa in _context.asesores_secundarios_asignacion
+                                             on ca.IdAsignacion equals asa.id_asignacion into asesoresSecundarios
+                                             group new { ca, asesoresSecundarios } by new
+                                             {
+                                                 u.NombresCompletos,
+                                                 u.IdUsuario,
+                                             } into grouped
+                                             select new VendedorConClientesSecundariosDTO
+                                             {
+                                                 NombresCompletos = grouped.Key.NombresCompletos,
+                                                 IdUsuario = grouped.Key.IdUsuario,
+                                                 NumeroClientes = grouped.Count(g => g.ca != null
+                                                         && g.ca.FechaAsignacionVendedor.HasValue
+                                                         && g.ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
+                                                         && g.ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
+                                                         && g.asesoresSecundarios == null), // Excluye las entradas de los asesores secundarios
+                                                 NumeroClientesReasignados = grouped.Count(g => g.asesoresSecundarios != null)
+                                             }).ToList();
+
+                var BasesAsignadas = (from ca in _context.clientes_asignados
+                                      where ca.IdUsuarioS == usuarioId
+                                              && ca.FechaAsignacionSup.HasValue
+                                              && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
+                                              && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
+                                      select new { ca.FuenteBase })
+                                        .Distinct()
+                                        .ToList();
+
+                if (vendedoresConClientes == null)
+                {
+                    TempData["MessageError"] = "La consulta para dar asesores ha fallado";
+                    return RedirectToAction("VistaMainSupervisor", "Supervisor");
+                }
+                ViewData["BasesAsignadas"] = BasesAsignadas;
+                return PartialView("_AsignarAsesoresSecundarios", vendedoresConClientes);
+            }
+            catch (System.Exception ex)
+            {
+                return Json(new { error = true, message = ex.Message });
+            }
+        }
+
 
         [HttpGet]
         public IActionResult ModificarAsesoresView()
@@ -492,41 +578,14 @@ namespace ALFINapp.Controllers
                                     && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
                                  select new
                                  {
-                                    IdCliente = ce.IdCliente,
-                                    TipificacionesGenerales = new
-                                    {
-                                        UltimaTip1 = ce.UltimaTipificacionTelefono1,
-                                        UltimaTip2 = ce.UltimaTipificacionTelefono2,
-                                        UltimaTip3 = ce.UltimaTipificacionTelefono3,
-                                        UltimaTip4 = ce.UltimaTipificacionTelefono4,
-                                        UltimaTip5 = ce.UltimaTipificacionTelefono5
-                                    }
+                                     IdCliente = ce.IdCliente,
+                                     TipificacionMayorPeso = ca.TipificacionMayorPeso
                                  }).ToList();
 
-            // Consulta para las tipificaciones de números personales
-            var clientesNumPers = (from ca in _context.clientes_asignados
-                                    join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
-                                    join ta in _context.telefonos_agregados on ce.IdCliente equals ta.IdCliente
-                                    where ca.IdUsuarioS == idSupervisorActual
-                                        && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                                        && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
-                                    select new
-                                    {
-                                        IdCliente = ce.IdCliente,
-                                        TipificacionesPersonales = ta.UltimaTipificacion 
-                                    }).ToList();
-            // Combinar ambos conjuntos de datos y filtrar por la tipificación seleccionada
-            var clientesFiltrados = (from cndb in clientesNumDB
-                         join cnp in clientesNumPers on cndb.IdCliente equals cnp.IdCliente into cnpGroup
-                         from cnp in cnpGroup.DefaultIfEmpty()  // Left join
-                         where cndb.TipificacionesGenerales.UltimaTip1 == tipificacion
-                               || cndb.TipificacionesGenerales.UltimaTip2 == tipificacion
-                               || cndb.TipificacionesGenerales.UltimaTip3 == tipificacion
-                               || cndb.TipificacionesGenerales.UltimaTip4 == tipificacion
-                               || cndb.TipificacionesGenerales.UltimaTip5 == tipificacion
-                               || (cnp != null && cnp.TipificacionesPersonales == tipificacion) // Condición para verificar null en cnp
-                         select new { cndb, cnp })
-                        .ToList();
+            // Filtrar por la tipificación más relevante
+            var clientesFiltrados = clientesNumDB
+                                    .Where(cndb => cndb.TipificacionMayorPeso == tipificacion)
+                                    .ToList();
 
 
             var viewModel = new ResultadoTipificacionViewModelDTO
@@ -536,60 +595,69 @@ namespace ALFINapp.Controllers
             };
 
             var AsesoresDelSupervisor = (from u in _context.usuarios
-                                        where u.Rol == "VENDEDOR" && u.IDUSUARIOSUP == idSupervisorActual
-                                        join ca in _context.clientes_asignados on u.IdUsuario equals ca.IdUsuarioV into caGroup
-                                        from ca in caGroup.DefaultIfEmpty()  // Realizamos un left join
-                                        group new { u, ca }
-                                        by new
-                                        {
-                                            u.IdUsuario,
-                                            u.NombresCompletos,
-                                            u.Dni,
-                                            u.Telefono,
-                                            u.Departamento,
-                                            u.Provincia,
-                                            u.Distrito,
-                                            u.Estado,
-                                            u.Rol
-                                        } into grouped
-                                        select new UsuarioAsesorDTO
-                                        {
-                                            IdUsuario = grouped.Key.IdUsuario,
-                                            Dni = grouped.Key.Dni,
-                                            NombresCompletos = grouped.Key.NombresCompletos,
-                                            Telefono = grouped.Key.Telefono,
-                                            Departamento = grouped.Key.Departamento,
-                                            Provincia = grouped.Key.Provincia,
-                                            Distrito = grouped.Key.Distrito,
-                                            Estado = grouped.Key.Estado,
-                                            Rol = grouped.Key.Rol,
-                                            TotalClientesAsignados = grouped.Count(g => g.ca != null
-                                                                                && g.ca.IdUsuarioV == grouped.Key.IdUsuario
-                                                                                && g.ca.IdUsuarioS == idSupervisorActual
-                                                                                && g.ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
-                                                                                && g.ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month), // Clientes asignados
-                                            ClientesTrabajando = grouped.Count(g => g.ca != null
-                                                                                && g.ca.TipificacionMayorPeso != null
-                                                                                && g.ca.IdUsuarioV == grouped.Key.IdUsuario
-                                                                                && g.ca.IdUsuarioS == idSupervisorActual
-                                                                                && g.ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
-                                                                                && g.ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month), // Clientes trabajados
-                                            ClientesSinTrabajar = grouped.Count(g => g.ca != null
-                                                                                && g.ca.IdUsuarioV == grouped.Key.IdUsuario
-                                                                                && g.ca.IdUsuarioS == idSupervisorActual)
-                                                                                 - grouped.Count(g => g.ca != null
-                                                                                && g.ca.TipificacionMayorPeso != null
-                                                                                && g.ca.IdUsuarioV == grouped.Key.IdUsuario
-                                                                                && g.ca.IdUsuarioS == idSupervisorActual
-                                                                                && g.ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
-                                                                                && g.ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month) // Diferencia entre asignados y trabajados
-                                        }).ToList();
+                                         where u.Rol == "VENDEDOR" && u.IDUSUARIOSUP == idSupervisorActual
+                                         join ca in _context.clientes_asignados on u.IdUsuario equals ca.IdUsuarioV into caGroup
+                                         from ca in caGroup.DefaultIfEmpty()  // Realizamos un left join
+                                         group new { u, ca }
+                                         by new
+                                         {
+                                             u.IdUsuario,
+                                             u.NombresCompletos,
+                                             u.Dni,
+                                             u.Telefono,
+                                             u.Departamento,
+                                             u.Provincia,
+                                             u.Distrito,
+                                             u.Estado,
+                                             u.Rol
+                                         } into grouped
+                                         select new UsuarioAsesorDTO
+                                         {
+                                             IdUsuario = grouped.Key.IdUsuario,
+                                             Dni = grouped.Key.Dni,
+                                             NombresCompletos = grouped.Key.NombresCompletos,
+                                             Telefono = grouped.Key.Telefono,
+                                             Departamento = grouped.Key.Departamento,
+                                             Provincia = grouped.Key.Provincia,
+                                             Distrito = grouped.Key.Distrito,
+                                             Estado = grouped.Key.Estado,
+                                             Rol = grouped.Key.Rol,
+                                             TotalClientesAsignados = grouped.Count(g => g.ca != null
+                                                                                     && g.ca.IdUsuarioV == grouped.Key.IdUsuario
+                                                                                     && g.ca.IdUsuarioS == idSupervisorActual
+                                                                                     && g.ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
+                                                                                     && g.ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month), // Clientes asignados
+                                             ClientesTrabajando = grouped.Count(g => g.ca != null
+                                                                                     && g.ca.TipificacionMayorPeso != null
+                                                                                     && g.ca.IdUsuarioV == grouped.Key.IdUsuario
+                                                                                     && g.ca.IdUsuarioS == idSupervisorActual
+                                                                                     && g.ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
+                                                                                     && g.ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month), // Clientes trabajados
+                                             ClientesSinTrabajar = grouped.Count(g => g.ca != null
+                                                                                     && g.ca.IdUsuarioV == grouped.Key.IdUsuario
+                                                                                     && g.ca.IdUsuarioS == idSupervisorActual)
+                                                                                      - grouped.Count(g => g.ca != null
+                                                                                     && g.ca.TipificacionMayorPeso != null
+                                                                                     && g.ca.IdUsuarioV == grouped.Key.IdUsuario
+                                                                                     && g.ca.IdUsuarioS == idSupervisorActual)
+                                         }).ToList();
+
             ViewData["AsesoresDelSupervisor"] = AsesoresDelSupervisor;
-            ViewData["clientesFiltrados"] = clientesFiltrados;
-            ViewData["clientesNumDB"] = clientesNumDB;
-            ViewData["clientesNumPers"] = clientesNumPers;
             return PartialView("_ResultadoTipificacion", viewModel);
         }
-
+        [HttpGet]
+        public IActionResult InformesTipificacionesView()
+        {
+            try
+            {
+                
+                return PartialView("_InformesTipificacionesAsesores");
+            }
+            catch (System.Exception ex)
+            {
+                return Json(new {error = true, message = ex.Message});  // Devuelve el error
+                throw;
+            }
+        }
     }
 }

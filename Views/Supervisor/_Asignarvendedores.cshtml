@@ -1,9 +1,21 @@
 @model IEnumerable<VendedorConClientesDTO>
 
+@{
+    var BasesAsignadas = ViewData["BasesAsignadas"] as IEnumerable<dynamic>;
+}
 
 <div class="container-fluid">
     <div class="container-fluid">
         <form asp-action="GuardarAsesoresAsignados" asp-controller="Supervisor" method="post">
+            <div class="mb-3">
+                <label for="asignarAsesorBase" class="form-label">Seleccione una Base</label>
+                <select class="form-select" name="selectAsesorBase" id="selectAsesorBase">
+                    @foreach (var BasesCreadas in BasesAsignadas)
+                    {
+                        <option value="@BasesCreadas.FuenteBase">@BasesCreadas.FuenteBase</option>
+                    }
+                </select>
+            </div>
             <table class="table table-bordered">
                 <thead>
                     <tr>

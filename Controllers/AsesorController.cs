@@ -220,54 +220,29 @@ namespace ALFINapp.Controllers
             }
         }
 
+        /// <summary>
+        /// Obtiene el número de clientes asignados a un asesor específico que coinciden con una tipificación detallada.
+        /// </summary>
+        /// <param name="tipificacionDetalle">La tipificación detallada para filtrar los clientes.</param>
+        /// <param name="idAsesorBuscar">El ID del asesor para el cual se buscan los clientes asignados.</param>
+        /// <returns>
+        /// Un IActionResult que contiene un objeto JSON con:
+        /// - success: true si la operación fue exitosa, false en caso contrario.
+        /// - numClientes: El número de clientes que coinciden con la tipificación especificada.
+        /// - message: Un mensaje de error en caso de que ocurra una excepción.
+        /// </returns>
         [HttpGet]
-        public IActionResult ObtenerNumDeClientesPorTipificacion (string tipificacionDetalle, int idAsesorBuscar)
+        public IActionResult ObtenerNumDeClientesPorTipificacion(string tipificacionDetalle, int idAsesorBuscar)
         {
             try
             {
-                var clientesNumDB = (from ca in _context.clientes_asignados
-                                    join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
-                                    where ca.IdUsuarioV == idAsesorBuscar
-                                        && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                                        && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
-                                    select new
-                                    {
-                                        IdCliente = ce.IdCliente,
-                                        TipificacionesGenerales = new
-                                        {
-                                            UltimaTip1 = ce.UltimaTipificacionTelefono1,
-                                            UltimaTip2 = ce.UltimaTipificacionTelefono2,
-                                            UltimaTip3 = ce.UltimaTipificacionTelefono3,
-                                            UltimaTip4 = ce.UltimaTipificacionTelefono4,
-                                            UltimaTip5 = ce.UltimaTipificacionTelefono5
-                                        }
-                                    }).ToList();
-
-                // Consulta para las tipificaciones de números personales
-                var clientesNumPers = (from ca in _context.clientes_asignados
-                                        join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
-                                        join ta in _context.telefonos_agregados on ce.IdCliente equals ta.IdCliente
-                                        where ca.IdUsuarioV == idAsesorBuscar
-                                            && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                                            && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
-                                        select new
-                                        {
-                                            IdCliente = ce.IdCliente,
-                                            TipificacionesPersonales = ta.UltimaTipificacion 
-                                        }).ToList();
-
-                var NumClientesAsignados = (from cndb in clientesNumDB
-                                        join cnp in clientesNumPers on cndb.IdCliente equals cnp.IdCliente into cnpGroup
-                                        from cnp in cnpGroup.DefaultIfEmpty()  // Left join
-                                        where cndb.TipificacionesGenerales.UltimaTip1 == tipificacionDetalle
-                                            || cndb.TipificacionesGenerales.UltimaTip2 == tipificacionDetalle
-                                            || cndb.TipificacionesGenerales.UltimaTip3 == tipificacionDetalle
-                                            || cndb.TipificacionesGenerales.UltimaTip4 == tipificacionDetalle
-                                            || cndb.TipificacionesGenerales.UltimaTip5 == tipificacionDetalle
-                                            || (cnp != null && cnp.TipificacionesPersonales == tipificacionDetalle) // Condición para verificar null en cnp
-                                        select new { cndb, cnp })
-                                        .ToList();
-                return Json(new {success = true, numClientes = NumClientesAsignados.Count()});
+                var NumClientesAsignados = _context.clientes_asignados
+                    .Where(ca => ca.IdUsuarioV == idAsesorBuscar
+                        && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
+                        && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
+                        && ca.TipificacionMayorPeso == tipificacionDetalle)
+                    .Count();
+                return Json(new {success = true, numClientes = NumClientesAsignados});
             }
             catch (System.Exception ex)
             {
@@ -276,18 +251,75 @@ namespace ALFINapp.Controllers
             }
         }
 
+
+        /// <summary>
+        /// Modifica las asignaciones de clientes basándose en una tipificación específica y las reasigna a un asesor determinado.
+        /// </summary>
+        /// <param name="TipificacionModificar">La tipificación de los clientes que se desean reasignar.</param>
+        /// <param name="idAsesorAsignar">El ID del asesor al que se asignarán los clientes.</param>
+        /// <param name="numDeModificaciones">El número de asignaciones que se desean modificar.</param>
+        /// <returns>
+        /// Un IActionResult que contiene un objeto JSON con:
+        /// - success: true si la operación fue exitosa, false en caso contrario.
+        /// - message: Un mensaje describiendo el resultado de la operación.
+        /// </returns>
         [HttpPost]
-        public IActionResult ModificarAsignacionesPorTipificaciones()
+        public IActionResult ModificarAsignacionesPorTipificaciones(string TipificacionModificar, int idAsesorAsignar, int numDeModificaciones)
         {
             try
             {
-                return Json(new { success = false, message = "Ha ocurrido un error inesperado" });
+                // Verificar si los parámetros son nulos o inválidos
+                if (string.IsNullOrEmpty(TipificacionModificar))
+                {
+                    return Json(new { success = false, message = "La tipificación a modificar no puede estar vacía." });
+                }
+
+                if (numDeModificaciones <= 0)
+                {
+                    return Json(new { success = false, message = "El número de modificaciones debe ser mayor que cero." });
+                }
+
+                if (idAsesorAsignar <= 0)
+                {
+                    return Json(new { success = false, message = "El ID del asesor a asignar es inválido." });
+                }
+
+                // Obtener el ID del supervisor actual
+                int? idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
+                if (idSupervisorActual == null)
+                {
+                    return Json(new { success = false, message = "No se pudo obtener el ID del supervisor actual." });
+                }
+
+                // Buscar y actualizar las asignaciones
+                var asignacionesDisponibles = _context.clientes_asignados
+                        .Where(ca => ca.IdUsuarioS == idSupervisorActual &&
+                                    ca.TipificacionMayorPeso == TipificacionModificar &&
+                                    ca.IdUsuarioV != idAsesorAsignar)
+                        .ToList();
+
+                if (asignacionesDisponibles.Count < numDeModificaciones)
+                {
+                    return Json(new { success = false, message = $"No hay suficientes asignaciones para modificar. Se solicitaron {numDeModificaciones}, pero solo hay {asignacionesDisponibles.Count} disponibles." });
+                }
+
+                var asignacionesAModificar = asignacionesDisponibles.Take(numDeModificaciones).ToList();
+
+                foreach (var asignacion in asignacionesAModificar)
+                {
+                    asignacion.IdUsuarioV = idAsesorAsignar;
+                    asignacion.FechaAsignacionVendedor = DateTime.Now;
+                }
+
+                _context.SaveChanges();
+                return Json(new { success = true, message = $"Se han modificado {asignacionesAModificar.Count} asignaciones correctamente." });
             }
-            catch (System.Exception)
+            catch (Exception ex)
             {
-                return Json(new { success = false, message = "Ha ocurrido un error inesperado" });
-                throw;
+                Console.WriteLine($"Error: {ex.Message}");
+                return Json(new { success = false, message = "Ha ocurrido un error inesperado al modificar las asignaciones." });
             }
         }
+
     }
 }

@@ -19,4 +19,5 @@ public class MDbContext : DbContext
     public DbSet<TelefonosAgregados> telefonos_agregados { get; set; }
     public DbSet<SubirFeed> SUBIR_FEED { get; set; }
     public DbSet<CargaManualCsv> carga_manual_csv { get; set; }
+    public DbSet<AsesoresSecundariosAsignacion> asesores_secundarios_asignacion { get; set; }
 }

@@ -1,13 +1,26 @@
-@model IEnumerable<VendedorConClientesDTO>
-
 @{
     var TipificacionesGenerales = ViewData["tipificacionesGenerales"] as IEnumerable<Tipificaciones>;
-    var clientesAsignadosPorTIpificacionNumDB = ViewData["clientesAsignadosPorTIpificacionNumDB"] as IEnumerable<dynamic>;
-    var clientesAsignadosPorTIpificacionNumPers = ViewData["clientesAsignadosPorTIpificacionNumPers"] as
-    IEnumerable<dynamic>;
 }
 
-<h3 class="label-for-sup-sec">Seccion Modificar Asesores con Tipificaciones Especificas</h3>
+
+<div class="label-for-sup-sec">
+    <div class="row">
+        <div class="col">
+            <h3 class="d-inline-block"> Seccion Modificar Asesores con Tipificaciones Especificas </h3>
+        </div>
+
+        <div class="col-auto">
+            <button type="button" class="btn-close" aria-label="Close"
+                onclick="cerrarAsesoresTipificacionView()"
+                style="filter: invert(1) brightness(2); background-color: transparent; border: none; "
+                onmouseover="this.style.filter='invert(1) brightness(2.5)';" 
+                onmouseout="this.style.filter='invert(1) brightness(2)';">
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="spacing"></div>
 
 <div>
     <label for="selectAsesor" class="form-label">Seleccione una Tipificacion</label>
@@ -16,7 +29,8 @@
         <option value="">Seleccione una de las siguientes Tipificaciones</option>
         @foreach (var TipificacionesAsignadas in TipificacionesGenerales)
         {
-            <option value="@TipificacionesAsignadas.DescripcionTipificacion">@TipificacionesAsignadas.DescripcionTipificacion
+            <option value="@TipificacionesAsignadas.DescripcionTipificacion">
+                @TipificacionesAsignadas.DescripcionTipificacion
             </option>
         }
     </select>
@@ -28,7 +42,7 @@
 </div>
 
 <script>
-    function cargarInterfazAsesorPorTipificacion (tipificacion) {
+    function cargarInterfazAsesorPorTipificacion(tipificacion) {
         if (!tipificacion) {
             alert("Por favor, seleccione una tipificación.");
             return;

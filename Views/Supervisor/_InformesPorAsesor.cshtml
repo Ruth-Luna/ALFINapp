@@ -1,0 +1,32 @@
+@model IEnumerable<VendedorInformerDTO>
+
+<div class="mt-10">
+    <div class="mb-3">
+        <label for="asesorBase" class="form-label">Seleccione un Asesor</label>
+        <select class="form-select" name="asesorBase" id="asesorBase" onchange="cargarTablaAsesorActualPorInforme()">
+            @foreach (var vendedores in Model)
+            {
+                <option value="@vendedores.IdUsuario"></option>
+            }
+        </select>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Vendedor</th>
+                <th>Número de Asesores</th>
+                <th>Ultima Tipificacion</th>
+                <th>Fecha Ultima Tipificacion</th>
+                <th>Tipificacion mas Relevante</th>
+                <th>Fecha Tipificacion mas Relevante</th>
+            </tr>
+        </thead>
+        <tbody id="tablaAsesorActual">
+            <!-- Aquí se cargan los datos de los vendedores -->
+        </tbody>
+    </table>
+</div>
+

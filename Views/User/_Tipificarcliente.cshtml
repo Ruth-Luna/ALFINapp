@@ -7,7 +7,7 @@
     var id_base = Model.IdBase;
     var id_cliente = ViewData["ID_cliente"];
     var base_DB = ViewData["Fuente_BD"];
-    bool isEditable = base_DB?.ToString() == "BASE_CAMPO_ASESORES";
+    bool isEditable = base_DB?.ToString() == "BASE_ASESORES";
 }
 
 @section Styles {
@@ -328,9 +328,15 @@
 
                         <!-- Campo de Fecha Oculto por Defecto FECHA VISITA-->
                         <div class="form-group mt-3" id="fechaVisitaContainer_@contadorNumeros" style="display: none;">
-                            <label for="fechaVisita_@contadorNumeros" class="form-label">Fecha de Visita</label>
-                            <input class="form-control" type="date" name="tipificaciones[@contadorNumeros].FechaVisita"
-                                id="fechaVisita_@contadorNumeros" />
+                            <div class="row">
+                                <div class="col">
+                                    <label for="fechaVisita_@contadorNumeros" class="form-label">Fecha de Visita</label>
+                                </div>
+                                <div class="col">
+                                    <input class="form-control" type="date" name="tipificaciones[@contadorNumeros].FechaVisita"
+                                        id="fechaVisita_@contadorNumeros" />
+                                </div>
+                            </div>
                         </div>
 
                         <input class="form-control" id="GRUPO_MONTO" type="text"
@@ -694,8 +700,3 @@
         <button class="btn btn-danger" type="button" data-bs-dismiss="modal" aria-label="Close">Cancelar</button>
     </div>
 </form>
-
-
-<script>
-    
-</script>

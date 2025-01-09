@@ -1,0 +1,198 @@
+@model IEnumerable<VendedorConClientesSecundariosDTO>
+
+@{
+    var BasesAsignadas = ViewData["BasesAsignadas"] as IEnumerable<dynamic>;
+}
+
+
+<h2 class="">Seccion reasignar Asesores (Asesores Secundarios)</h2>
+
+<div class="row mt-10">
+    <div class="alert alert-info" role="alert">
+        En esta sección podra reasignar clientes a otros asesores a los asesores Reasignados de esta manera se les
+        llamara Asesores Secundarios (esta reasignacion No sobreescribira la asignacion previa). Tenga cuidado con esta
+        asignacion
+        debido a que aun No se ha creado un metodo para la eliminacion de la asignacion
+    </div>
+</div>
+
+<div class="mt-10">
+    <div class="mb-3">
+        <label for="asesorBase" class="form-label">Seleccione un Asesor</label>
+        <select class="form-select" name="asesorBase" id="asesorBase" onchange="cargarTablaAsesorActual()">
+            @foreach (var vendedores in Model)
+            {
+                <option value="@vendedores.IdUsuario">@vendedores.NombresCompletos</option>
+            }
+        </select>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col md-6">
+            <div class="btn-container">
+                <a href="">Reasignar Clientes por Numero</a>
+            </div>
+        </div>
+        <div class="col md-6">
+            <div class="row">
+                <div class="col md-6">
+                    Numero Total de Clientes Primarios
+                </div>
+                <div class="col md-6">
+                    Numero Total de Clientes Secundarios
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container-fluid">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Principal</th>
+                <th>Secundario</th>
+                <th>Número de Asesores Secundarios</th>
+            </tr>
+        </thead>
+        <tbody>
+            @* @foreach (var cliente in Model)
+            {
+                <tr>
+                    <td>@cliente.NombreCliente</td>
+                    <td>
+                        @if (cliente.Principal == true) {
+                            <input type="checkbox" checked>
+                        }
+                        else {
+                            <input type="checkbox">
+                        }
+                    </td>
+                    <td>
+                        @if (cliente.Secundario == true) {
+                            <input type="checkbox" checked>
+                        }
+                        else {
+                            <input type="checkbox">
+                        }
+                    </td>
+                    <td>
+                        <input class="form-control" type="number" value="@cliente.NumeroAsesoresSecundarios"
+                            readonly>
+                    </td>
+                </tr>
+            } *@
+        </tbody>
+    </table>
+</div>
+
+<div class="container-fluid">
+    <div class="container-fluid">
+
+        <div class="mb-3">
+            <label for="asignarAsesorBase" class="form-label">Seleccione una Base</label>
+            <select class="form-select" name="selectAsesorBase" id="selectAsesorBase">
+                @foreach (var BasesCreadas in BasesAsignadas)
+                {
+                    <option value="@BasesCreadas.FuenteBase">@BasesCreadas.FuenteBase</option>
+                }
+            </select>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Vendedor</th>
+                    <th>Numero de Clientes Asignados</th>
+                    <th>Numero de Clientes Reasignados</th>
+                    <th>Asignar número de clientes</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var vendedores in Model)
+                {
+                    <tr>
+                        <td>
+                            <textarea class="form-control" id="NombresCompletos_@vendedores.IdUsuario"
+                                readonly>@vendedores.NombresCompletos</textarea>
+                        </td>
+                        <td>
+                            <input class="form-control" type="number" value="@vendedores.NumeroClientes" readonly>
+                        </td>
+                        <td>
+                            <input class="form-control" type="number" value="@vendedores.NumeroClientesReasignados"
+                                readonly>
+                        </td>
+                        <td>
+                            <input class="form-control" type="number" id="ReasignarClientes_@vendedores.IdUsuario" required>
+                            <input name="asignacionasesor.IdVendedor" type="text" class="form-control"
+                                value="@vendedores.IdUsuario" hidden>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="btn-container">
+            <a href="javascript.void(0)" onclick="EnviarReasignacionesSecundarias()"></a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function EnviarReasignacionesSecundarias(asesorCambio) {
+        const reAsignaciones = [];
+
+        // Recopilar datos modificados
+        const reasignacionSecundaria = document.querySelectorAll("input[id^='ReasignarClientes_']");
+        reasignacionSecundaria.forEach(input => {
+            const IdUsuario = input.id.split('_')[1]; // Obtener el IdUsuario
+            const Modificaciones = parseInt(input.value) || 0;
+
+            if (Modificaciones > 0) { // Solo enviar cambios relevantes
+                reAsignaciones.push({ IdUsuario, Modificaciones });
+            }
+        });
+
+        console.log(reasignacionSecundaria);
+        console.log(reAsignaciones);
+
+        // Llamada AJAX para guardar los cambios
+        $.ajax({
+            url: '/Asesor/GuardarCambiosReAsignacionesSecundarias',
+            type: 'POST',
+            data: { ReAsignacionesEnviadas: reAsignaciones, AsesorCambioID: asesorCambio },
+            success: function (response) {
+                if (response.success === true) {
+                    Swal.fire({
+                        title: 'Modificacion Exitosa',
+                        text: 'Las Modificaciones a la asignacion de asesores se completaron con exito.',
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar'
+                    });
+                    location.reload(); // Opcional: recargar la página
+                } else {
+                    Swal.fire({
+                        title: 'Error en la asignacion',
+                        text: response.message,
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    title: 'Error en la Reasignacion',
+                    text: 'Error en la Reasignacion',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+        });
+    }
+
+    function cargarTablaAsesorActual() {
+        const asesorBaseID = document.getElementById('asesorBase').value;
+</script>

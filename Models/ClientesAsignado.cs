@@ -39,4 +39,6 @@ public partial class ClientesAsignado
     public bool? ClienteRetirado { get; set; }
     [Column("fecha_tipificacion_mayor_peso")]
     public DateTime? FechaTipificacionMayorPeso { get; set; }
+    [Column("identificador_base")]
+    public string? IdentificadorBase { get; set; }
 }

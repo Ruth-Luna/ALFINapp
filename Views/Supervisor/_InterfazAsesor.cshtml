@@ -56,7 +56,24 @@
     }
 </div>
 <div class="spacing"></div>
-<h2 class="label-for-sup-sec"> Seccion Mover Clientes Asignados a otros Asesores</h2>
+
+<div class="label-for-sup-sec">
+    <div class="row">
+        <div class="col">
+            <h2 class="d-inline-block"> Seccion Mover Clientes Asignados a otros Asesores</h2>
+        </div>
+        <div class="col-auto">
+            <button type="button" class="btn-close" aria-label="Close"
+                onclick="cerrarInterfazAsesor()"
+                style="filter: invert(1) brightness(2); background-color: transparent; border: none; "
+                onmouseover="this.style.filter='invert(1) brightness(2.5)';" 
+                onmouseout="this.style.filter='invert(1) brightness(2)';">
+            </button>
+        </div>    
+    </div>
+</div>
+
+
 <div class="spacing"></div>
 <div class="row">
 
@@ -87,6 +104,9 @@
         <a href="javascript:void(0);" class="btn btn-primary"
             onclick="modificarAsignacionesAsesor('@Model.IdUsuario', '@Model.Dni')">
             Modificar Asignaciones
+        </a>
+        <a href="javascript:void(0);" class="btn btn-secondary" onclick="cerrarInterfazAsesor()">
+            Cancelar Re-Asignacion
         </a>
     </div>
 </div>

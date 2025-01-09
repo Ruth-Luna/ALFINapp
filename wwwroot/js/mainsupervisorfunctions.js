@@ -130,3 +130,28 @@ function loadFuncionalidadAsesores() {
         }
     });
 }
+
+function loadReasignarClientesAsignados(){
+    $.ajax({
+        url: '/Supervisor/AsignarAsesoresSecundariosView',
+        type: 'GET',
+        success: function (response) {
+            Swal.fire({
+                title: 'Reasignación de clientes a asesores secundarios',
+                text: 'La vista ha sido cargada correctamente.',
+                icon: 'success',
+                confirmButtonText: 'Aceptar'
+            });
+            $('#modalContentReasignarAsesorSecundarioModal').html(response); // Insertar la vista parcial en el modal
+            $('#ReasignarAsesorSecundarioModal').modal('show'); // Mostrar el modal
+        },
+        error: function () {
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo cargar la vista de agregar usuario.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    });
+}

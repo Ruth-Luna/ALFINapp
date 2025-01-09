@@ -20,8 +20,8 @@
 
     <div class="spacing"></div>
 
-    <div id="interfazAsesorSelect" class="row mt-10">
-    <!-- Aqui se cargara la vista parcial del asesor seleccionado -->
+    <div id="interfazAsesorSelect" class="row mt-10" style="display: none;">
+        <!-- Aqui se cargara la vista parcial del asesor seleccionado -->
     </div>
 
     <hr>
@@ -31,7 +31,7 @@
 <h3 class="label-fortip-sup"> Modificar Asignacion de Asesores Por Tipificacion </h3>
 <div class="row">
     <div>
-        
+
         <div class="alert alert-info" role="alert">
             En esta Seccion podra Modificar las asignaciones de los asesores por las Tipificaciones de los Clientes
 
@@ -43,35 +43,37 @@
 
         <div class="spacing"></div>
 
-        <div id="interfazTipificacionXAsesorSelect" class="row mt-10">
+        <div id="interfazTipificacionXAsesorSelect" class="row mt-10" style="display: none;">
             <!-- Aqui se cargara la vista parcial del las Tipificaciones por asesores -->
         </div>
 
         <hr>
-        
+
     </div>
 </div>
 
-<h3 class="label-fortip-sup">Agregar Asesores</h3>
-<div class="row">
-    <div>
-        <div class="alert alert-info" role="alert">
-            En esta Seccion podra Agregar nuevos asesores
-        </div>
-        <div class="button-container mb-10">
-            <button type="button" class="btn btn-primary" onclick="agregarNuevoAsesorView()">Agregar un Nuevo
-                Asesor</button>
-        </div>
+<div id="seccionAgregarAsesores">
+    <h3>Agregar Asesores</h3>
+    <div class="row">
+        <div>
+            <div class="alert alert-info" role="alert">
+                En esta Seccion podra Agregar nuevos asesores
+            </div>
+            <div class="button-container mb-10">
+                <button type="button" class="btn btn-primary" onclick="agregarNuevoAsesorView()">Agregar un Nuevo
+                    Asesor</button>
+            </div>
 
-        <div class="spacing"></div>
-
-        <div id="interfazAgregarAsesor" class="row mt-10">
-            <!-- Aqui se cargara la vista parcial para Agregar un nuevo asesor -->
+            <div class="spacing"></div>
         </div>
     </div>
 </div>
 
-
+<div id="interfazAgregarAsesor" class="row mt-10" style="display: none;">
+    <div class="row">
+        <!-- Aqui se cargara la vista parcial para Agregar un nuevo asesor -->
+    </div>
+</div>
 
 <script>
     function agregarNuevoAsesorView() {
@@ -81,6 +83,8 @@
             type: "GET",
             success: function (response) {
                 $('#interfazAgregarAsesor').html(response);
+                $('#interfazAgregarAsesor').css('display', 'block'); // Asegurar que el contenedor sea visible
+                $('#seccionAgregarAsesores').css('display', 'none');
             },
             error: function () {
                 Swal.fire({
@@ -91,6 +95,11 @@
                 });
             }
         });
+    }
+
+    function cerraragregarNuevoAsesorView() {
+        $('#interfazAgregarAsesor').css('display', 'none');
+        $('#seccionAgregarAsesores').css('display', 'block');
     }
 
     function desactivarAsesor(dni, idUsuario) {
@@ -176,8 +185,8 @@
                 dni: dni
             },
             success: function (response) {
-                labelForAsesor.style.display = 'block';
                 $('#seccionModificarAsignaciones_' + IdUsuario).html(response);
+                $('#seccionModificarAsignaciones_' + IdUsuario).css('display', 'block'); // Asegurar que el contenedor sea visible
             },
             error: function () {
                 Swal.fire({
@@ -188,6 +197,10 @@
                 });
             }
         });
+    }
+
+    function cerrarmodificarAsignacionesAsesor(IdUsuario) {
+        $('#seccionModificarAsignaciones_' + idUsuario).css('display', 'none'); // Asegurar que el contenedor sea visible
     }
 
     function cargarInterfazAsesor(idAsesor) {
@@ -202,6 +215,7 @@
                     console.log('Interfaz del asesor seleccionado cargada correctamente');
                     // Cargar la interfaz en el div correspondiente
                     $('#interfazAsesorSelect').html(response);
+                    $('#interfazAsesorSelect').css('display', 'block'); // Asegurar que el contenedor sea visible
                 },
                 error: function () {
                     Swal.fire({
@@ -218,6 +232,9 @@
             $('#interfazAsesorSelect').html('');
         }
     }
+    function cerrarInterfazAsesor() {
+        $('#interfazAsesorSelect').css('display', 'none'); // Asegurar que el contenedor sea visible
+    }
 
     function cargarAsesoresTipificacionesView() {
         console.log('TesteandoFUNCION');
@@ -229,6 +246,7 @@
                 console.log('Interfaz del asesor seleccionado cargada correctamente');
                 // Cargar la interfaz en el div correspondiente
                 $('#interfazTipificacionXAsesorSelect').html(response);
+                $('#interfazTipificacionXAsesorSelect').css('display', 'block'); // Asegurar que el contenedor sea visible
             },
             error: function () {
                 Swal.fire({
@@ -239,5 +257,9 @@
                 });
             }
         });
+    }
+
+    function cerrarAsesoresTipificacionView() {
+        $('#interfazTipificacionXAsesorSelect').css('display', 'none'); // Asegurar que el contenedor sea visible
     }
 </script>

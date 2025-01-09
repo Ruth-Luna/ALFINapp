@@ -1,6 +1,5 @@
 @model ResultadoTipificacionViewModelDTO
 @{
-    var clientesFiltrados = ViewData["clientesFiltrados"] as IEnumerable<dynamic>;
     var AsesoresDelSupervisor = ViewData["AsesoresDelSupervisor"] as IEnumerable<UsuarioAsesorDTO>;
 }
 <div class="spacing"></div>
@@ -83,12 +82,14 @@
     }
 
     function enviarModificarAsignacionesPorTipificaciones(tipificacion, idAsesor) {
+        var camponumDeModificaciones = document.getElementById('AsignacionesPorTipificaciones').value;
         $.ajax ({
             url: "/Asesor/ModificarAsignacionesPorTipificaciones",
             type: "POST",
             data: {
                 tipificacion: tipificacion,
-                idAsesor: idAsesor
+                idAsesor: idAsesor,
+                numDeModificaciones: camponumDeModificaciones
             },
             success: function (response) {
                 if (response.success) {
