@@ -1,6 +1,7 @@
 @model ALFINapp.Models.DetalleTipificarClienteDTO
 
 @{
+    var agenciasDisponibles = ViewData["AgenciasDisponibles"] as IEnumerable<dynamic>;
     var numerosCreadosPorElUsuario = ViewData["numerosCreadosPorElUsuario"];
     var dni = ViewData["DNIcliente"];
     var id_asignacion = ViewData["ID_asignacion"];
@@ -331,10 +332,17 @@
                             <div class="row">
                                 <div class="col">
                                     <label for="fechaVisita_@contadorNumeros" class="form-label">Fecha de Visita</label>
-                                </div>
-                                <div class="col">
                                     <input class="form-control" type="date" name="tipificaciones[@contadorNumeros].FechaVisita"
                                         id="fechaVisita_@contadorNumeros" />
+                                </div>
+                                <div class="col">
+                                    <select class="form-select" name="tipificaciones[@contadorNumeros].AgenciaAsignada" id="tipificaciones[@contadorNumeros].AgenciaAsignada">
+                                        <option value="">Seleccione la Agencia</option>
+                                        @foreach (var agenciasAsignadas in agenciasDisponibles)
+                                        {
+                                            <option value="@agenciasAsignadas.numSucursal">@agenciasAsignadas.numSucursal - @agenciasAsignadas.agenciaComercial</option>
+                                        }
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -461,9 +469,23 @@
 
                     <!-- Campo de Fecha Oculto por Defecto FECHA VISITA-->
                     <div class="form-group mt-3" id="fechaVisitaContainer_db1" style="display: none;">
-                        <label for="fechaVisita_db1" class="form-label">Fecha de Visita</label>
-                        <input class="form-control" type="date" name="DerivacionDb1"
-                            id="fechaVisita_db1" />
+                        <div class="row">
+                            <div class="col">
+                                <label for="fechaVisita_db1" class="form-label">Fecha de Visita</label>
+                                <input class="form-control" type="date" name="DerivacionDb1"
+                                    id="fechaVisita_db1" />
+                            </div>
+                        
+                            <div class="col">
+                                <select class="form-select" name="AgenciaAsignadaDb1" id="AgenciaAsignadaDb1">
+                                    <option value="">Seleccione la Agencia</option>
+                                    @foreach (var agenciasAsignadas in agenciasDisponibles)
+                                    {
+                                        <option value="@agenciasAsignadas.numSucursal">@agenciasAsignadas.numSucursal - @agenciasAsignadas.agenciaComercial</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
                     <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion1" readonly>
@@ -516,9 +538,22 @@
                     
                     <!-- Campo de Fecha Oculto por Defecto FECHA VISITA-->
                     <div class="form-group mt-3" id="fechaVisitaContainer_db2" style="display: none;">
-                        <label for="fechaVisita_db2" class="form-label">Fecha de Visita</label>
-                        <input class="form-control" type="date" name="DerivacionDb2"
-                            id="fechaVisita_db2" />
+                        <div class="row">
+                            <div class="col">
+                                <label for="fechaVisita_db2" class="form-label">Fecha de Visita</label>
+                                <input class="form-control" type="date" name="DerivacionDb2"
+                                    id="fechaVisita_db2" />
+                            </div>
+                            <div class="col">
+                                <select class="form-select" name="AgenciaAsignadaDb2" id="AgenciaAsignadaDb2">
+                                    <option value="">Seleccione la Agencia</option>
+                                    @foreach (var agenciasAsignadas in agenciasDisponibles)
+                                    {
+                                        <option value="@agenciasAsignadas.numSucursal">@agenciasAsignadas.numSucursal - @agenciasAsignadas.agenciaComercial</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
                     <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion2" readonly>
@@ -572,9 +607,22 @@
 
                     <!-- Campo de Fecha Oculto por Defecto FECHA VISITA-->
                     <div class="form-group mt-3" id="fechaVisitaContainer_db3" style="display: none;">
-                        <label for="fechaVisita_db3" class="form-label">Fecha de Visita</label>
-                        <input class="form-control" type="date" name="DerivacionDb3"
-                            id="fechaVisita_db3" />
+                        <div class="row">
+                            <div class="col">
+                                <label for="fechaVisita_db3" class="form-label">Fecha de Visita</label>
+                                <input class="form-control" type="date" name="DerivacionDb3"
+                                    id="fechaVisita_db3" />
+                            </div>
+                            <div class="col">
+                                <select class="form-select" name="AgenciaAsignadaDb3" id="AgenciaAsignadaDb3">
+                                    <option value="">Seleccione la Agencia</option>
+                                    @foreach (var agenciasAsignadas in agenciasDisponibles)
+                                    {
+                                        <option value="@agenciasAsignadas.numSucursal">@agenciasAsignadas.numSucursal - @agenciasAsignadas.agenciaComercial</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
                     <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion3" readonly>
@@ -626,9 +674,22 @@
 
                     <!-- Campo de Fecha Oculto por Defecto FECHA VISITA-->
                     <div class="form-group mt-3" id="fechaVisitaContainer_db4" style="display: none;">
-                        <label for="fechaVisita_db4" class="form-label">Fecha de Visita</label>
-                        <input class="form-control" type="date" name="DerivacionDb4"
-                            id="fechaVisita_db4" />
+                        <div class="row">
+                            <div class="col">
+                                <label for="fechaVisita_db4" class="form-label">Fecha de Visita</label>
+                                <input class="form-control" type="date" name="DerivacionDb4"
+                                    id="fechaVisita_db4" />
+                            </div>
+                            <div class="col">
+                                <select class="form-select" name="AgenciaAsignadaDb4" id="AgenciaAsignadaDb4">
+                                    <option value="">Seleccione la Agencia</option>
+                                    @foreach (var agenciasAsignadas in agenciasDisponibles)
+                                    {
+                                        <option value="@agenciasAsignadas.numSucursal">@agenciasAsignadas.numSucursal - @agenciasAsignadas.agenciaComercial</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
                     <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion4" readonly>
@@ -679,9 +740,22 @@
 
                     <!-- Campo de Fecha Oculto por Defecto FECHA VISITA-->
                     <div class="form-group mt-3" id="fechaVisitaContainer_db5" style="display: none;">
-                        <label for="fechaVisita_db5" class="form-label">Fecha de Visita</label>
-                        <input class="form-control" type="date" name="DerivacionDb5"
-                            id="fechaVisita_db5" />
+                        <div class="row">
+                            <div class="col">
+                                <label for="fechaVisita_db5" class="form-label">Fecha de Visita</label>
+                                <input class="form-control" type="date" name="DerivacionDb5"
+                                    id="fechaVisita_db5" />
+                            </div>
+                            <div class="col">
+                                <select class="form-select" name="AgenciaAsignadaDb5" id="AgenciaAsignadaDb5">
+                                    <option value="">Seleccione la Agencia</option>
+                                    @foreach (var agenciasAsignadas in agenciasDisponibles)
+                                    {
+                                        <option value="@agenciasAsignadas.numSucursal">@agenciasAsignadas.numSucursal - @agenciasAsignadas.agenciaComercial</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
                     <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion5" readonly>

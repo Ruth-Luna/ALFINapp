@@ -12,10 +12,12 @@ namespace ALFINapp.Controllers
     public class UserController : Controller
     {
         private readonly MDbContext _context;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public UserController(MDbContext context)
+        public UserController(MDbContext context, IHttpClientFactory httpClientFactory)
         {
             _context = context;
+            _httpClientFactory = httpClientFactory;
         }
 
         [HttpPost]
@@ -409,6 +411,8 @@ namespace ALFINapp.Controllers
                                                          on ce.IdCliente equals ta.IdCliente into telefonosAgregados
                                                        from ta in telefonosAgregados.DefaultIfEmpty()
                                                        where ct.IdAsignacion == ClienteAsignado.IdAsignacion &&
+                                                             ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year &&
+                                                             ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month &&
                                                              ta.IdCliente == null &&
                                                              ct.FechaTipificacion == (
                                                                  from c in _context.clientes_tipificados
@@ -454,7 +458,14 @@ namespace ALFINapp.Controllers
                                                                  DescripcionTipificacion = t.DescripcionTipificacion,
                                                                  ComentarioTelefono = ta.Comentario
                                                              }).ToList();
+            var agenciasDisponibles = ( from db in _context.detalle_base
+                                        select new
+                                        { 
+                                            numSucursal = db.SucursalComercial,
+                                            agenciaComercial = db.AgenciaComercial
+                                        }).ToList().Distinct();
             var dni = _context.base_clientes.FirstOrDefault(bc => bc.IdBase == id_base);
+            ViewData["AgenciasDisponibles"] = agenciasDisponibles;
             ViewData["numerosCreadosPorElUsuario"] = resultados_telefonos_tipificados_vendedor;
             ViewData["DNIcliente"] = dni != null ? dni.Dni : "El usuario No tiene DNI Registrado";
             ViewData["ID_asignacion"] = ClienteAsignado.IdAsignacion;
@@ -485,7 +496,7 @@ namespace ALFINapp.Controllers
         }
 
         [HttpPost]
-        public IActionResult TipificarMotivo(int IdAsignacion, int? Tipificacion1, int? Tipificacion2,
+        public async Task<IActionResult> TipificarMotivo(int IdAsignacion, int? Tipificacion1, int? Tipificacion2,
                                                 int? Tipificacion3, int? Tipificacion4, int? Tipificacion5,
                                                 string? Telefono1, string? Telefono2, string? Telefono3,
                                                 string? Telefono4, string? Telefono5, DateTime? DerivacionDb1,
@@ -632,6 +643,19 @@ namespace ALFINapp.Controllers
             // Guardar cambios en la base de datos
             _context.clientes_enriquecidos.Update(ClientesEnriquecido);
             _context.SaveChanges();
+
+            var client = _httpClientFactory.CreateClient();
+            var response = await client.GetAsync($"/Formulario/EnviarFormulario?DNIAsesor=08743455&DNICliente=45667938&NombreCliente=Juan Pérez&CelularCliente=908574839&AgenciaComercial=AgenciaCentral");
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Message"] = "Formulario enviado correctamente.";
+            }
+            else
+            {
+                TempData["MessageError"] = "Error al enviar el formulario.";
+            }
+
             TempData["Message"] = "Las tipificaciones se han guardado correctamente (Se han Obviado los campos Vacios y los campos que fueron llenados con datos incorrectos)";
             return RedirectToAction("Ventas");
         }

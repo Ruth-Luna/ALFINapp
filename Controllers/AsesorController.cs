@@ -242,7 +242,7 @@ namespace ALFINapp.Controllers
                         && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
                         && ca.TipificacionMayorPeso == tipificacionDetalle)
                     .Count();
-                return Json(new {success = true, numClientes = NumClientesAsignados});
+                return Json(new { success = true, numClientes = NumClientesAsignados });
             }
             catch (System.Exception ex)
             {
@@ -318,6 +318,76 @@ namespace ALFINapp.Controllers
             {
                 Console.WriteLine($"Error: {ex.Message}");
                 return Json(new { success = false, message = "Ha ocurrido un error inesperado al modificar las asignaciones." });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult AsignarAsesoresPrincipales(List<AsignarAsesorDTO> asignacionasesor, string identificadorBase, string selectAsesorBase)
+        {
+            try
+            {
+                int? idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
+
+                string mensajesError = " ";
+                if (asignacionasesor == null)
+                {
+                    return Json(new { success = false, message = "No se han enviado datos para asignar asesores." });
+                }
+
+                if (string.IsNullOrEmpty(selectAsesorBase))
+                {
+                    return Json(new { success = false, message = "Debe seleccionar una Fuente Base." });
+                }
+
+                // Comprobación adicional para verificar si todas las entradas tienen NumClientes igual a 0
+                if (asignacionasesor.All(a => a.NumClientes == 0))
+                {
+                    return Json(new { success = false, message = "No se ha llenado ninguna entrada. Los campos no pueden estar vacíos." });
+                }
+                foreach (var asignacion in asignacionasesor)
+                {
+                    Console.WriteLine($"IdVendedor: {asignacion.IdVendedor}, NumClientes: {asignacion.NumClientes}");
+                    if (asignacion.NumClientes == 0)
+                    {
+                        continue;
+                    }
+
+                    int nClientes = asignacion.NumClientes;
+                    var clientesDisponibles = _context.clientes_asignados
+                                            .Where(ca => ca.IdUsuarioS == idSupervisorActual && ca.IdUsuarioV == null
+                                                    && ca.FechaAsignacionSup.HasValue && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
+                                                    && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
+                                                    && ca.FuenteBase == selectAsesorBase)
+                                            .Take(nClientes)
+                                            .ToList();
+
+                    if (clientesDisponibles.Count < nClientes)
+                    {
+                        mensajesError = mensajesError + $"En la base '{selectAsesorBase}', solo hay {clientesDisponibles.Count} clientes disponibles para la asignación. La entrada ha sido obviada.";
+                        continue;
+                    }
+
+                    foreach (var cliente in clientesDisponibles)
+                    {
+                        cliente.IdUsuarioV = asignacion.IdVendedor;
+                        cliente.FechaAsignacionVendedor = DateTime.Now;
+                        cliente.IdentificadorBase = identificadorBase;
+                    }
+                    _context.SaveChanges();
+                }
+                if (mensajesError != " ")
+                {
+                    return Json(new { success = true, message = $"{mensajesError}" });
+                }
+                else
+                {
+                    return Json(new { success = true, message = $"Se han modificado {asignacionasesor.Count} asignaciones correctamente." });
+                }
+            }
+
+            catch (System.Exception ex)
+            {
+                return Json(new { success = false, message = $"Ha ocurrido un error inesperado al modificar las asignaciones. {ex.Message}" });
             }
         }
 

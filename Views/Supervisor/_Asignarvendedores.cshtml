@@ -6,52 +6,158 @@
 
 <div class="container-fluid">
     <div class="container-fluid">
-        <form asp-action="GuardarAsesoresAsignados" asp-controller="Supervisor" method="post">
-            <div class="mb-3">
-                <label for="asignarAsesorBase" class="form-label">Seleccione una Base</label>
-                <select class="form-select" name="selectAsesorBase" id="selectAsesorBase">
-                    @foreach (var BasesCreadas in BasesAsignadas)
-                    {
-                        <option value="@BasesCreadas.FuenteBase">@BasesCreadas.FuenteBase</option>
-                    }
-                </select>
-            </div>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Vendedor</th>
-                        <th>Número de clientes asignados</th>
-                        <th>Asignar número de clientes</th>
+        <div class="mb-3">
+            <label for="asignarAsesorBase" class="form-label">Seleccione una Base</label>
+            <select class="form-select" name="selectAsesorBase" id="selectAsesorBase">
+                @foreach (var BasesCreadas in BasesAsignadas)
+                {
+                    <option value="@BasesCreadas.FuenteBase">@BasesCreadas.FuenteBase</option>
+                }
+            </select>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Vendedor</th>
+                    <th>Número de clientes asignados</th>
+                    <th>Asignar número de clientes</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int cont = 0;
+                }
+                @foreach (var vendedores in Model)
+                {
+                    <tr data-index="@cont">
+                        <td>
+                            <textarea class="form-control" readonly>@vendedores.NombresCompletos</textarea>
+                        </td>
+                        <td>
+                            <input class="form-control" value="@vendedores.NumeroClientes" readonly>
+                        </td>
+                        <td>
+                            <input name="asignacionasesor[@cont].NumClientes" type="number" class="form-control" value="0"
+                                required>
+                            <input name="asignacionasesor[@cont].IdVendedor" type="text" class="form-control"
+                                value="@vendedores.IdUsuario" hidden>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
+                    cont++;
+                }
+            </tbody>
+        </table>
 
-                    @{
-                        int cont = 0;
-                    }
-                    @foreach (var vendedores in Model)
-                    {
-                        <tr>
-                            <td>
-                                <textarea class="form-control" readonly>@vendedores.NombresCompletos</textarea>
-                            </td>
-                            <td>
-                                <input class="form-control" value="@vendedores.NumeroClientes" readonly>
-                            </td>
-                            <td>
-                                <input name="asignacionasesor[@cont].NumClientes" type="number" class="form-control" value="0"
-                                    required>
-                                <input name="asignacionasesor[@cont].IdVendedor" type="text" class="form-control" value="@vendedores.IdUsuario"
-                                    hidden>
-                            </td>
-                        </tr>
-                        cont++;
-                    }
-                </tbody>
-            </table>
-            <div class="form-group">
-                <button class="btn btn-success" type="submit">Guardar Asignaciones</button>
-            </div>
-        </form>
+
+        <div class="form-group" id="guardarAsignacionesContainer">
+            <button class="btn btn-success" type="button" onclick="MostrarIdentificadorBase()">Guardar
+                Asignaciones</button>
+        </div>
+
+        <div class="form-group align-items-center" id="identificadorBaseContainer" style="display: none;">
+            <label for="IDENTIFICADOR_BASE">Identificador Base</label>
+            <input type="text" id="identificadorBaseInput" class="form-control">
+            <button class="btn btn-primary mt-2" onclick="EnviarDatos()">Enviar Identificador</button>
+        </div>
+
     </div>
 </div>
+
+
+<script>
+    function MostrarIdentificadorBase() {
+        // Oculta el botón y muestra el campo identificador base
+        document.getElementById('guardarAsignacionesContainer').style.display = 'none';
+        document.getElementById('identificadorBaseContainer').style.display = 'block';
+    }
+
+    function EnviarDatos() {
+        const identificadorBaseInput = document.getElementById('identificadorBaseInput');
+        const identificadorBase = identificadorBaseInput.value.trim();
+
+        if (!identificadorBase) {
+            Swal.fire({
+                title: 'Error en la asignación',
+                text: 'El Identificador no puede estar Vacio',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+            identificadorBaseInput.focus();
+            return;
+        }
+
+        const asignaciones = [];
+
+        // Recopilar datos del formulario dinámico
+        document.querySelectorAll('tbody tr').forEach((row) => {
+            const index = row.getAttribute('data-index');
+            const numClientesInput = row.querySelector(`input[name="asignacionasesor[${index}].NumClientes"]`);
+            const idVendedorInput = row.querySelector(`input[name="asignacionasesor[${index}].IdVendedor"]`);
+
+            // Verificar que ambos inputs existen antes de usarlos
+            if (numClientesInput && idVendedorInput) {
+                const numClientes = numClientesInput.value;
+                const idVendedor = idVendedorInput.value;
+
+                if (numClientes > 0) { // Solo agregamos si el número de clientes es mayor a 0
+                    asignaciones.push({
+                        NumClientes: parseInt(numClientes, 10),
+                        IdVendedor: parseInt(idVendedor, 10)
+                    });
+                }
+            }
+        });
+        const selectAsesorBase = document.getElementById('selectAsesorBase').value;
+
+        // Imprimir la información completa a enviar antes de hacer el AJAX
+        console.log("Información completa a enviar:", {
+            asignacionasesor: asignaciones,
+            selectAsesorBase: selectAsesorBase,
+            identificadorBase: identificadorBase
+        });
+
+        // Enviar los datos mediante AJAX
+        $.ajax({
+            url: '/Asesor/AsignarAsesoresPrincipales',
+            type: 'POST',
+            data: {
+                asignacionasesor: asignaciones,
+                selectAsesorBase: selectAsesorBase,
+                identificadorBase: identificadorBase
+            } ,
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire({
+                        title: 'Modificación Exitosa',
+                        text: response.message,
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar'
+                    }).then(() => {
+                        // Reset UI
+                        document.getElementById('identificadorBaseInput').value = '';
+                        document.getElementById('identificadorBaseContainer').style.display = 'none';
+                        document.getElementById('guardarAsignacionesContainer').style.display = 'block';
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error en la asignación',
+                        text: response.message,
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    title: 'Error en la Reasignación',
+                    text: 'Error en la Reasignación',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+        });
+    }
+
+
+</script>

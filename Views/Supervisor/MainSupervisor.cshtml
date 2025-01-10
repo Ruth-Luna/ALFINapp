@@ -8,7 +8,7 @@
     var totalPages = (int)ViewData["TotalPages"];
     var pageSize = (int)ViewData["PageSize"];
     var clientesPendientesSupervisor = (int)ViewData["ClientesPendientesSupervisor"];
-    
+    var IdentificadorBase = ViewData["basesFiltradas"] as IEnumerable<dynamic>;
 }
 
 @section Styles {
@@ -59,10 +59,10 @@
                         <div class="me-2">
                             <label for="baseDescarga">Descargar por Identificador de Base</label>
                             <select class="form-select" name="selectIdentificadorBase" id="selectIdentificadorBase">
-                                @* @foreach (var Identificador in )
+                                @foreach (var Identificador in IdentificadorBase)
                                 {
-                                    <option value="@Identificador.Identificador">@Identificador.Identificador</option>
-                                } *@
+                                    <option value="@Identificador.IdentificadorBase">@Identificador.IdentificadorBase</option>
+                                }
                             </select>
                             <label for="fechaInicio">Fecha Inicio:</label>
                             <input type="date" id="fechaInicio" class="form-control" />
@@ -172,7 +172,7 @@
     <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title" id="modalLabel">Asignar Asesores</h3>
+                <h3 class="modal-title" id="modalLabel">Modificar Asesores y Asignaciones</h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
