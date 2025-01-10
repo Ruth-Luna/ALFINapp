@@ -20,4 +20,8 @@ public partial class TelefonosAgregados
     [Key]
     [Column("id_telefono")]
     public int IdTelefono { get; set; }
+    [Column("fecha_ultima_tipificacion")]
+    public DateTime? FechaUltimaTipificacion { get; set; }
+    [Column("id_clientetip")]
+    public int? IdClienteTip { get; set; }
 }

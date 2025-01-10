@@ -403,61 +403,40 @@ namespace ALFINapp.Controllers
             var tipificaciones = _context.tipificaciones.Select(t => new { t.IdTipificacion, t.DescripcionTipificacion }).ToList();
             ViewData["Tipificaciones"] = tipificaciones;
 
-            var resultados_telefonos_tipificados_bd = (from ct in _context.clientes_tipificados
-                                                       join t in _context.tipificaciones on ct.IdTipificacion equals t.IdTipificacion
-                                                       join ca in _context.clientes_asignados on ct.IdAsignacion equals ca.IdAsignacion
-                                                       join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
-                                                       join ta in _context.telefonos_agregados.Where(x => x.AgregadoPor != "VENDEDOR")
-                                                         on ce.IdCliente equals ta.IdCliente into telefonosAgregados
-                                                       from ta in telefonosAgregados.DefaultIfEmpty()
-                                                       where ct.IdAsignacion == ClienteAsignado.IdAsignacion &&
-                                                             ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year &&
-                                                             ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month &&
-                                                             ta.IdCliente == null &&
-                                                             ct.FechaTipificacion == (
-                                                                 from c in _context.clientes_tipificados
-                                                                 where c.TelefonoTipificado == ct.TelefonoTipificado
-                                                                 select c.FechaTipificacion
-                                                             ).Max()
-                                                       orderby ct.FechaTipificacion descending
-                                                       select new
-                                                       {
-                                                           ct.TelefonoTipificado,
-                                                           t.DescripcionTipificacion,
-                                                           ct.IdAsignacion
-                                                       }).Take(5).ToList();
-
-            var tipificaciones_asignadas = (from t in _context.tipificaciones
-                                            join ct in _context.clientes_tipificados on t.IdTipificacion equals ct.IdTipificacion
-                                            where ct.IdAsignacion == ClienteAsignado.IdAsignacion
-                                            select new
-                                            {
-                                                t.DescripcionTipificacion,
-                                                ct.IdAsignacion
-                                            }).ToList();
+            var resultados_telefonos_tipificados_bd = ( from ce in _context.clientes_enriquecidos
+                                                        join ca in _context.clientes_asignados
+                                                        on ce.IdCliente equals ca.IdCliente
+                                                        where ce.IdBase == id_base
+                                                        && ca.FechaAsignacionSup.HasValue
+                                                        && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
+                                                        && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
+                                                        select new ResultadoTelefonosTipificados
+                                                        {
+                                                            TelefonoTipificado1 = ce.Telefono1,
+                                                            DescripcionTipificacion1 = ce.UltimaTipificacionTelefono1,
+                                                            TelefonoTipificado2 = ce.Telefono2,
+                                                            DescripcionTipificacion2 = ce.UltimaTipificacionTelefono2,
+                                                            TelefonoTipificado3 = ce.Telefono3,
+                                                            DescripcionTipificacion3 = ce.UltimaTipificacionTelefono3,
+                                                            TelefonoTipificado4 = ce.Telefono4,
+                                                            DescripcionTipificacion4 = ce.UltimaTipificacionTelefono4,
+                                                            TelefonoTipificado5 = ce.Telefono5,
+                                                            DescripcionTipificacion5 = ce.UltimaTipificacionTelefono5,
+                                                            IdAsignacion = ca.IdAsignacion
+                                                        }).FirstOrDefault();
 
             var resultados_telefonos_tipificados_vendedor = (from ta in _context.telefonos_agregados
-                                                             join ce in _context.clientes_enriquecidos on ta.IdCliente equals ce.IdCliente
-                                                             where ce.IdBase == id_base
-                                                             join ct in (
-                                                                 from ct_sub in _context.clientes_tipificados
-                                                                 join ultimas in (
-                                                                     from sub_ct in _context.clientes_tipificados
-                                                                     group sub_ct by sub_ct.TelefonoTipificado into g
-                                                                     select new { TelefonoTipificado = g.Key, UltimaFecha = g.Max(x => x.FechaTipificacion) }
-                                                                 ) on ct_sub.TelefonoTipificado equals ultimas.TelefonoTipificado
-                                                                 where ct_sub.FechaTipificacion == ultimas.UltimaFecha
-                                                                 select new { ct_sub.TelefonoTipificado, ct_sub.IdTipificacion }
-                                                             ) on ta.Telefono equals ct.TelefonoTipificado into ctJoin
-                                                             from ct in ctJoin.DefaultIfEmpty()
-                                                             join t in _context.tipificaciones on ct.IdTipificacion equals t.IdTipificacion into tJoin
-                                                             from t in tJoin.DefaultIfEmpty()
-                                                             select new
-                                                             {
-                                                                 TelefonoTipificado = ta.Telefono,
-                                                                 DescripcionTipificacion = t.DescripcionTipificacion,
-                                                                 ComentarioTelefono = ta.Comentario
-                                                             }).ToList();
+                                                            join ce in _context.clientes_enriquecidos on ta.IdCliente equals ce.IdCliente
+                                                            join ca in _context.clientes_asignados on ce.IdCliente equals ca.IdAsignacion
+                                                            where ce.IdBase == id_base
+                                                            && ca.FechaAsignacionSup.HasValue
+                                                            && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
+                                                            && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
+                                                            select new
+                                                            {
+                                                                Telefono = ta.Telefono,
+                                                                DescripcionTipificacion = ta.UltimaTipificacion
+                                                            }).ToList();
             var agenciasDisponibles = ( from db in _context.detalle_base
                                         select new
                                         { 
@@ -609,21 +588,25 @@ namespace ALFINapp.Controllers
                 {
                     case 1:
                         ClientesEnriquecido.UltimaTipificacionTelefono1 = tipificacion_guardada.DescripcionTipificacion;
+                        ClientesEnriquecido.FechaUltimaTipificacionTelefono1 = DateTime.Now;
                         break;
                     case 2:
                         ClientesEnriquecido.UltimaTipificacionTelefono2 = tipificacion_guardada.DescripcionTipificacion;
+                        ClientesEnriquecido.FechaUltimaTipificacionTelefono2 = DateTime.Now;
                         break;
                     case 3:
                         ClientesEnriquecido.UltimaTipificacionTelefono3 = tipificacion_guardada.DescripcionTipificacion;
+                        ClientesEnriquecido.FechaUltimaTipificacionTelefono3 = DateTime.Now;
                         break;
                     case 4:
                         ClientesEnriquecido.UltimaTipificacionTelefono4 = tipificacion_guardada.DescripcionTipificacion;
+                        ClientesEnriquecido.FechaUltimaTipificacionTelefono4 = DateTime.Now;
                         break;
                     case 5:
                         ClientesEnriquecido.UltimaTipificacionTelefono5 = tipificacion_guardada.DescripcionTipificacion;
+                        ClientesEnriquecido.FechaUltimaTipificacionTelefono5 = DateTime.Now;
                         break;
                 }
-
             }
 
             if (agregado == false)
@@ -644,7 +627,7 @@ namespace ALFINapp.Controllers
             _context.clientes_enriquecidos.Update(ClientesEnriquecido);
             _context.SaveChanges();
 
-            var client = _httpClientFactory.CreateClient();
+            /*var client = _httpClientFactory.CreateClient();
             var response = await client.GetAsync($"/Formulario/EnviarFormulario?DNIAsesor=08743455&DNICliente=45667938&NombreCliente=Juan Pérez&CelularCliente=908574839&AgenciaComercial=AgenciaCentral");
 
             if (response.IsSuccessStatusCode)
@@ -654,7 +637,7 @@ namespace ALFINapp.Controllers
             else
             {
                 TempData["MessageError"] = "Error al enviar el formulario.";
-            }
+            }*/
 
             TempData["Message"] = "Las tipificaciones se han guardado correctamente (Se han Obviado los campos Vacios y los campos que fueron llenados con datos incorrectos)";
             return RedirectToAction("Ventas");
@@ -833,6 +816,8 @@ namespace ALFINapp.Controllers
                 {
                     var tipificacionUltima = _context.tipificaciones.FirstOrDefault(t => t.IdTipificacion == tipificacion.TipificacionId);
                     telefonoTipificado.UltimaTipificacion = tipificacionUltima.DescripcionTipificacion;
+                    telefonoTipificado.FechaUltimaTipificacion = DateTime.Now;
+                    telefonoTipificado.IdClienteTip = nuevaTipificacion.IdClientetip;
                     _context.telefonos_agregados.Update(telefonoTipificado);
                 }
             }

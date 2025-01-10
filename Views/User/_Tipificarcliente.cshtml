@@ -3,6 +3,7 @@
 @{
     var agenciasDisponibles = ViewData["AgenciasDisponibles"] as IEnumerable<dynamic>;
     var numerosCreadosPorElUsuario = ViewData["numerosCreadosPorElUsuario"];
+    var numerosTraidosPorlaDB = (ResultadoTelefonosTipificados)ViewData["numerosTraidosPorlaDB"];
     var dni = ViewData["DNIcliente"];
     var id_asignacion = ViewData["ID_asignacion"];
     var id_base = Model.IdBase;
@@ -404,28 +405,6 @@
 <form asp-action="TipificarMotivo" asp-controller="User" method="post">
     <div class="row">
         <h3 class="label-fortip">Contacto con Cliente - Y Tipificaciones Asignadas:</h3>
-        @{
-            int contador = 1;
-            string? tipificacion1 = null;
-            string? tipificacion2 = null;
-            string? tipificacion3 = null;
-            string? tipificacion4 = null;
-            string? tipificacion5 = null;
-        }
-
-        @if (ViewData["numerosTraidosPorlaDB"] is IEnumerable<dynamic> tipificaciones)
-        {
-            @foreach (var tipificacion in tipificaciones)
-            {
-                string? telefono = tipificacion.TelefonoTipificado;
-                if (telefono == @Model.Telefono1) { tipificacion1 = tipificacion.DescripcionTipificacion; }
-                if (telefono == @Model.Telefono2) { tipificacion2 = tipificacion.DescripcionTipificacion; }
-                if (telefono == @Model.Telefono3) { tipificacion3 = tipificacion.DescripcionTipificacion; }
-                if (telefono == @Model.Telefono4) { tipificacion4 = tipificacion.DescripcionTipificacion; }
-                if (telefono == @Model.Telefono5) { tipificacion5 = tipificacion.DescripcionTipificacion; }
-                contador++;
-            }
-        }
         <input type="hidden" name="IdAsignacion" value="@ViewData["ID_asignacion"]">
         <!-- Teléfono 1 -->
         <div class="form-group row align-items-center mb-3">
@@ -488,7 +467,7 @@
                         </div>
                     </div>
 
-                    <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion1" readonly>
+                    <input class="form-control" id="GRUPO_MONTO" type="text" value="@numerosTraidosPorlaDB.DescripcionTipificacion1" readonly>
                 </div>
             }
         </div>
@@ -556,7 +535,7 @@
                         </div>
                     </div>
 
-                    <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion2" readonly>
+                    <input class="form-control" id="GRUPO_MONTO" type="text" value="@numerosTraidosPorlaDB.DescripcionTipificacion2" readonly>
                 </div>
             }
         </div>
@@ -625,7 +604,7 @@
                         </div>
                     </div>
 
-                    <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion3" readonly>
+                    <input class="form-control" id="GRUPO_MONTO" type="text" value="@numerosTraidosPorlaDB.DescripcionTipificacion3" readonly>
                 </div>
             }
         </div>
@@ -692,7 +671,7 @@
                         </div>
                     </div>
 
-                    <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion4" readonly>
+                    <input class="form-control" id="GRUPO_MONTO" type="text" value="@numerosTraidosPorlaDB.DescripcionTipificacion4" readonly>
                 </div>
             }
         </div>
@@ -758,7 +737,7 @@
                         </div>
                     </div>
 
-                    <input class="form-control" id="GRUPO_MONTO" type="text" value="@tipificacion5" readonly>
+                    <input class="form-control" id="GRUPO_MONTO" type="text" value="@numerosTraidosPorlaDB.DescripcionTipificacion5" readonly>
                 </div>
             }
         </div>

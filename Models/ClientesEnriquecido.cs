@@ -57,4 +57,24 @@ public partial class ClientesEnriquecido
     public string? UltimaTipificacionTelefono4 { get; set; }
     [Column("ultima_tipificacion_telefono_5")]
     public string? UltimaTipificacionTelefono5 { get; set; }
+    [Column("fecha_ultima_tipificacion_telefono_1")]
+    public DateTime? FechaUltimaTipificacionTelefono1 { get; set; }
+    [Column("fecha_ultima_tipificacion_telefono_2")]
+    public DateTime? FechaUltimaTipificacionTelefono2 { get; set; }
+    [Column("fecha_ultima_tipificacion_telefono_3")]
+    public DateTime? FechaUltimaTipificacionTelefono3 { get; set; }
+    [Column("fecha_ultima_tipificacion_telefono_4")]
+    public DateTime? FechaUltimaTipificacionTelefono4 { get; set; }
+    [Column("fecha_ultima_tipificacion_telefono_5")]
+    public DateTime? FechaUltimaTipificacionTelefono5 { get; set; }
+    [Column("id_clientetip_telefono_1")]
+    public int? IdClientetipTelefono1 { get; set; }
+    [Column("id_clientetip_telefono_2")]
+    public int? IdClientetipTelefono2 { get; set; }
+    [Column("id_clientetip_telefono_3")]
+    public int? IdClientetipTelefono3 { get; set; }
+    [Column("id_clientetip_telefono_4")]
+    public int? IdClientetipTelefono4 { get; set; }
+    [Column("id_clientetip_telefono_5")]
+    public int? IdClientetipTelefono5 { get; set; }
 }

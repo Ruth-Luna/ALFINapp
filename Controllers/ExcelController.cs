@@ -38,7 +38,7 @@ namespace ALFINapp.Controllers
 
 
         [HttpGet]
-        public IActionResult DescargarClientesAsignados(DateTime fechaInicio, DateTime fechaFin)
+        public IActionResult DescargarClientesAsignados(DateTime fechaInicio, DateTime fechaFin, string filtroBase)
         {
             try
             {
@@ -125,6 +125,7 @@ namespace ALFINapp.Controllers
                                                 && ca.FechaAsignacionSup >= fechaInicio
                                                 && ca.FechaAsignacionSup <= fechaFin
                                                 && db.TipoBase == ca.FuenteBase
+                                                && ca.IdentificadorBase == filtroBase
                                         select new
                                         {
                                             // Todos los campos de cada tabla
