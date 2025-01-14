@@ -752,8 +752,10 @@ namespace ALFINapp.Controllers
                 else
                 {
 
-                    TempData["MessageError"] = response.errorMessage;  // Mensaje de error
-                    TempData["MessageError"] = response.errorMessage?.Replace("\n", "\\n")?.Replace("\r", "")?.Replace("\"", "\\\"");
+                    TempData["MessageError"] = response.errorMessage?.Replace("\n", "\\n")
+                                        ?.Replace("\r", "")
+                                        ?.Replace("\"", "\\\"")
+                                        ?.Replace("'", "\\'");
                     return RedirectToAction("Ventas");
                 }
             }
