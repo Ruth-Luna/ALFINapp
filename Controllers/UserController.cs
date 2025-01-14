@@ -518,6 +518,7 @@ namespace ALFINapp.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Error: {ex.Message}"); // Imprime el error en la consola del servidor
                 return (false, ex.Message); // Retorna el mensaje de error
             }
         }
@@ -750,11 +751,11 @@ namespace ALFINapp.Controllers
                 }
                 else
                 {
+
                     TempData["MessageError"] = response.errorMessage;  // Mensaje de error
+                    TempData["MessageError"] = response.errorMessage?.Replace("\n", "\\n")?.Replace("\r", "")?.Replace("\"", "\\\"");
                     return RedirectToAction("Ventas");
                 }
-
-
             }
 
             TempData["Message"] = "Las tipificaciones se han guardado correctamente (Se han Obviado los campos Vacios y los campos que fueron llenados con datos incorrectos)";
