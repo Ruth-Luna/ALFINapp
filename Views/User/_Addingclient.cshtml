@@ -17,9 +17,18 @@
     </div>
 </div>
 
-<div id="error-message" style="color: red; display: none;"></div>
+<div class="spacing"></div>
+
+<div id="datos-cliente-existente" style="display: none;">
+</div>
+
+<div id="error-message" class="alert alert-error" style="display: none;">
+</div>
+
+
 <form asp-action="AgregarCliente" asp-controller="User">
     <div id="formulario-cliente" style="display:none; margin-top: 20px;">
+        
         <div class="form-group">
             <label asp-for="Dni" for="DNIForm">DNI </label>
             <input asp-for="Dni" class="form-control" id="DNIForm" type="text" readonly>
@@ -66,12 +75,14 @@
         const dniInput = document.getElementById("dnicliente");
         const Message = document.getElementById("error-message");
         const formularioCliente = document.getElementById("formulario-cliente");
+        const datosClienteExistente = document.getElementById("datos-cliente-existente");
         const dniForm = document.getElementById("DNIForm");
 
         const dniValue = dniInput.value;
 
         Message.style.display = "none";
         formularioCliente.style.display = "none";
+        datosClienteExistente.style.display = "none";
 
         if (dniValue === "") {
             Message.style.display = "block";
@@ -85,13 +96,14 @@
                 type: 'GET',
                 data: { dni: dniValue },
                 success: function (data) {
-                    console.log('respuesta del servidor: ', data);
-                    if (data.existe) {
-                        Message.style.display = "block";
-                        Message.innerHTML = "El DNI ya existe en la base de datos.";
-                    } else {
-                        dniForm.value = dniValue;
+                    if (data.existe === false && data.error === false) {
                         formularioCliente.style.display = "block";
+                    } else if (data.existe === false && data.error === true) {
+                        Message.style.display = "block";
+                        Message.innerHTML = data.message;
+                    } else {
+                        datosClienteExistente.style.display = "block";
+                        datosClienteExistente.innerHTML = data; // Carga la vista parcial
                     }
                 },
                 error: function (xhr, status, error) {

@@ -80,7 +80,7 @@ public class HomeController : Controller
 
         if (passwordUsuario == null)
         {
-            TempData["MessageError"] = "La contraseña que ha ingresado es incorrecta, la contraseña por defecto es DNI + $clave123.";
+            TempData["MessageError"] = "La contraseña que ha ingresado es incorrecta. La contraseña por defecto es su DNI luego agreguele la cadena $clave123";
             return RedirectToAction("Index", "Home");
         }
 
@@ -95,19 +95,18 @@ public class HomeController : Controller
             TempData["MessageError"] = "El rol del usuario no está definido. Comuníquese con su Supervisor.";
             return RedirectToAction("Index", "Home");
         }
+        
+        HttpContext.Session.SetInt32("UsuarioId", usuario.IdUsuario);
         if (usuario.Rol == "VENDEDOR")
         {
-            HttpContext.Session.SetInt32("UsuarioId", usuario.IdUsuario);
             return RedirectToAction("Ventas", "User");
         }
         if (usuario.Rol == "SUPERVISOR")
         {
-            HttpContext.Session.SetInt32("UsuarioId", usuario.IdUsuario);
             return RedirectToAction("VistaMainSupervisor", "Supervisor");
         }
         if (usuario.Rol == "ADMINISTRADOR")
         {
-            HttpContext.Session.SetInt32("UsuarioId", usuario.IdUsuario);
             return RedirectToAction("VistaMainSupervisor", "Supervisor");
         }
 

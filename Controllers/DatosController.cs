@@ -164,14 +164,32 @@ namespace ALFINapp.Controllers
         }
 
         [HttpGet]
-        public JsonResult VerificarDNI(string dni)
+        public IActionResult VerificarDNI(string dni)
         {
             try
             {
                 Console.WriteLine($"DNI recibido: {dni}");
                 var clienteExistente = _context.base_clientes.FirstOrDefault(c => c.Dni == dni);
-                var detalleBaseCliente = _context.detalle_base.FirstOrDefault(db => db.IdBase == clienteExistente.IdBase);
-                return Json(new { existe = clienteExistente != null });
+                if (clienteExistente != null)
+                {
+                    var detalleBaseCliente = _context.detalle_base.FirstOrDefault(db => db.IdBase == clienteExistente.IdBase);
+                    if (detalleBaseCliente != null)
+                    {
+                        // El cliente ha sido encontrado
+                        Console.WriteLine($"Cliente encontrado: {clienteExistente.XNombre} {clienteExistente.XAppaterno}");
+                        return PartialView("_DatosConsulta", detalleBaseCliente);
+                    }
+                    else
+                    {
+                        // El cliente ha sido encontrado pero no tiene detalle de campaña
+                        Console.WriteLine($"Cliente encontrado pero sin detalle de campaña: {clienteExistente.XNombre} {clienteExistente.XAppaterno}");
+                        return Json(new { existe = false, error = false, message = "El cliente no tienes detalles de campaña." });
+                    }
+                }
+                else
+                {
+                    return Json(new { existe = false, error = false, message = "El DNI no está registrado cargando vista para agregar nuevo usuario." });
+                }
             }
             catch (Exception ex)
             {
@@ -236,7 +254,7 @@ namespace ALFINapp.Controllers
                 }
 
                 var clienteEnriquecido = _context.clientes_enriquecidos.FirstOrDefault(ce => ce.IdCliente == IdCliente);
-                
+
                 if (clienteEnriquecido == null)
                 {
                     return Json(new { success = false, message = "Cliente no encontrado." });
