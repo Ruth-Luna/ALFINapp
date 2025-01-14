@@ -448,7 +448,7 @@ namespace ALFINapp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public async Task<bool> EnviarFormularioRemoto(
+        public async Task<(bool success, string errorMessage)> EnviarFormularioRemoto(
                     string DNIAsesor,
                     string DNICliente,
                     string NombreCliente,
@@ -456,18 +456,19 @@ namespace ALFINapp.Controllers
                     string AgenciaComercial)
         {
             var agenciasMapeadas = new Dictionary<string, string>
-            {
-                { "738363 - CAJAMARCA", "1" },
-                { "737490 - CASTILLA", "2" },
-                { "734281 - CHICLAYO BALTA", "3" },
-                { "734272 - CHIMBOTE", "4" },
-                { "738360 - MOSHOQUEQUE", "5" },
-            };
+    {
+        { "738363 - CAJAMARCA", "1" },
+        { "737490 - CASTILLA", "2" },
+        { "734281 - CHICLAYO BALTA", "3" },
+        { "734272 - CHIMBOTE", "4" },
+        { "738360 - MOSHOQUEQUE", "5" },
+    };
 
             if (!agenciasMapeadas.TryGetValue(AgenciaComercial, out var agenciaMapeada))
             {
-                return false;
+                return (false, "La agencia comercial no es válida.");
             }
+
             try
             {
                 // Validar datos
@@ -490,7 +491,6 @@ namespace ALFINapp.Controllers
 
                 // Completar el formulario
                 await page.WaitForSelectorAsync("input[aria-labelledby='QuestionId_red7efe31020b490b8edb703f5d535d7e QuestionInfo_red7efe31020b490b8edb703f5d535d7e']");
-                // Llenar los campos de texto
                 await page.FillAsync("input[aria-labelledby='QuestionId_red7efe31020b490b8edb703f5d535d7e QuestionInfo_red7efe31020b490b8edb703f5d535d7e']", DNIAsesor);
                 await page.FillAsync("input[aria-labelledby='QuestionId_r972e879cbae54f07a4e712b4d2629d6e QuestionInfo_r972e879cbae54f07a4e712b4d2629d6e']", "A365");
                 await page.FillAsync("input[aria-labelledby='QuestionId_r99924cac2a1d41ff8545bb4b36a8b2b5 QuestionInfo_r99924cac2a1d41ff8545bb4b36a8b2b5']", DNICliente);
@@ -501,36 +501,27 @@ namespace ALFINapp.Controllers
                 await page.ClickAsync("div[aria-labelledby='QuestionId_re78f9559e1fd4c88bc8b73c80f551108 QuestionInfo_re78f9559e1fd4c88bc8b73c80f551108']");
                 await page.WaitForSelectorAsync("div[aria-expanded='true']");
 
-                // Construir el selector dinámico
                 var sucursalLocator = page.Locator($"div[aria-selected='false'][role='option'][aria-posinset='{agenciaMapeada}']");
 
-                // Verificar si el selector existe
                 if (await sucursalLocator.CountAsync() == 0)
                 {
                     throw new Exception($"No se encontró la opción de agencia con aria-posinset='{agenciaMapeada}'");
                 }
 
-                // Hacer clic en la opción de la lista desplegable
                 await sucursalLocator.ClickAsync();
-
-                // Marcar el campo derivacion
                 await page.ClickAsync("input[name='r5567eb2c5c214f07aff54dbdd756b157']");
-                // Enviar el formulario
                 await page.ClickAsync("button[data-automation-id='submitButton']");
-                // await page.WaitForNavigationAsync();
 
-                // Cerrar el navegador
                 await browser.CloseAsync();
 
-                TempData["Message"] = "Formulario enviado correctamente.";
-                return true;
+                return (true, "Formulario enviado correctamente.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
-                return false;
+                return (false, ex.Message); // Retorna el mensaje de error
             }
         }
+
 
         [HttpPost]
         public async Task<IActionResult> TipificarMotivo(int IdAsignacion, int? Tipificacion_1, int? Tipificacion_2,
@@ -744,7 +735,7 @@ namespace ALFINapp.Controllers
                     return RedirectToAction("Ventas");
                 }
 
-                var response = EnviarFormularioRemoto(
+                var response = await EnviarFormularioRemoto(
                     dniAsesor,
                     clienteDatos?.Dni,
                     $"{clienteDatos?.XNombre} {clienteDatos?.XAppaterno} {clienteDatos?.XApmaterno}",
@@ -752,16 +743,17 @@ namespace ALFINapp.Controllers
                     $"73{agenciaDerivacion}"
                 );
 
-                if (await response)
+                if (response.success)
                 {
-                    TempData["Message"] = "Formulario enviado correctamente.";
+                    TempData["Message"] = response.errorMessage;  // Mensaje exitoso
                     return RedirectToAction("Ventas");
                 }
                 else
                 {
-                    TempData["MessageError"] = "Ocurrió un error al enviar el formulario.";
+                    TempData["MessageError"] = response.errorMessage;  // Mensaje de error
                     return RedirectToAction("Ventas");
                 }
+
 
             }
 
