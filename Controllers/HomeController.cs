@@ -46,6 +46,11 @@ public class HomeController : Controller
     [HttpPost]
     public IActionResult VerificarUsuario(string dni, string password)
     {
+        if (string.IsNullOrWhiteSpace(dni) ||!long.TryParse(dni, out _))
+        {
+            TempData["MessageError"] = "El DNI no puede estar vacio.";
+            return RedirectToAction("Index", "Home");
+        }
         if (!dni.All(char.IsDigit))
         {
             TempData["MessageError"] = "Ingrese Solo Numeros en el DNI";
