@@ -1,10 +1,5 @@
 @model IEnumerable<VendedorConClientesSecundariosDTO>
 
-@{
-    var BasesAsignadas = ViewData["BasesAsignadas"] as IEnumerable<dynamic>;
-}
-
-
 <h2 class="">Seccion reasignar Asesores (Asesores Secundarios)</h2>
 
 <div class="row mt-10">
@@ -16,26 +11,26 @@
     </div>
 </div>
 
-<div class="mt-10">
-    <div class="mb-3">
-        <label for="asesorBase" class="form-label">Seleccione un Asesor</label>
-        <select class="form-select" name="asesorBase" id="asesorBase" onchange="cargarTablaAsesorActual()">
-            @foreach (var vendedores in Model)
-            {
-                <option value="@vendedores.IdUsuario">@vendedores.NombresCompletos</option>
-            }
-        </select>
-    </div>
-</div>
-
 <div class="container-fluid">
     <div class="row">
-        <div class="col md-6">
+        <div class="col mt-10">
+            <div class="mb-3">
+                <label for="asesorBase" class="form-label">Seleccione un Asesor</label>
+                <select class="form-select" name="asesorBase" id="asesorBase" onchange="cargarTablaAsesorActual()">
+                    @foreach (var vendedores in Model)
+                    {
+                        <option value="@vendedores.IdUsuarioVendedor">@vendedores.NombresCompletosVendedor</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="col mt-10">
             <div class="btn-container">
                 <a href="">Reasignar Clientes por Numero</a>
             </div>
         </div>
-        <div class="col md-6">
+        <div class="col mt-10">
             <div class="row">
                 <div class="col md-6">
                     Numero Total de Clientes Primarios
@@ -54,91 +49,32 @@
         <thead>
             <tr>
                 <th>Cliente</th>
-                <th>Principal</th>
-                <th>Secundario</th>
+                <th>Tiene Asesor Secundario</th>
                 <th>Número de Asesores Secundarios</th>
             </tr>
         </thead>
         <tbody>
-            @* @foreach (var cliente in Model)
+            @foreach (var vendedor in Model)
             {
-                <tr>
-                    <td>@cliente.NombreCliente</td>
-                    <td>
-                        @if (cliente.Principal == true) {
-                            <input type="checkbox" checked>
-                        }
-                        else {
-                            <input type="checkbox">
-                        }
-                    </td>
-                    <td>
-                        @if (cliente.Secundario == true) {
-                            <input type="checkbox" checked>
-                        }
-                        else {
-                            <input type="checkbox">
-                        }
-                    </td>
-                    <td>
-                        <input class="form-control" type="number" value="@cliente.NumeroAsesoresSecundarios"
-                            readonly>
-                    </td>
-                </tr>
-            } *@
-        </tbody>
-    </table>
-</div>
-
-<div class="container-fluid">
-    <div class="container-fluid">
-
-        <div class="mb-3">
-            <label for="asignarAsesorBase" class="form-label">Seleccione una Base</label>
-            <select class="form-select" name="selectAsesorBase" id="selectAsesorBase">
-                @foreach (var BasesCreadas in BasesAsignadas)
-                {
-                    <option value="@BasesCreadas.FuenteBase">@BasesCreadas.FuenteBase</option>
-                }
-            </select>
-        </div>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Vendedor</th>
-                    <th>Numero de Clientes Asignados</th>
-                    <th>Numero de Clientes Reasignados</th>
-                    <th>Asignar número de clientes</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var vendedores in Model)
+                for (int i = 0; i < vendedor.clientesAsignados.Count; i++)
                 {
                     <tr>
+                        <td>@vendedor.clientesAsignados[i].NombresCompletos</td>
                         <td>
-                            <textarea class="form-control" id="NombresCompletos_@vendedores.IdUsuario"
-                                readonly>@vendedores.NombresCompletos</textarea>
+                            <input type="checkbox" 
+                                @(vendedor.clientesAsignados[i].TieneAsesorSecundarioAsignado ? "checked" : "") disabled>
                         </td>
                         <td>
-                            <input class="form-control" type="number" value="@vendedores.NumeroClientes" readonly>
-                        </td>
-                        <td>
-                            <input class="form-control" type="number" value="@vendedores.NumeroClientesReasignados"
+                            <input class="form-control" 
+                                type="number" 
+                                value="@vendedor.clientesAsignados[i].NumAsesoresSecundarios" 
                                 readonly>
-                        </td>
-                        <td>
-                            <input class="form-control" type="number" id="ReasignarClientes_@vendedores.IdUsuario" required>
-                            <input name="asignacionasesor.IdVendedor" type="text" class="form-control"
-                                value="@vendedores.IdUsuario" hidden>
                         </td>
                     </tr>
                 }
-            </tbody>
-        </table>
-        <div class="btn-container">
-            <a href="javascript.void(0)" onclick="EnviarReasignacionesSecundarias()"></a>
-        </div>
-    </div>
+            }
+        </tbody>
+    </table>
 </div>
 
 <script>
@@ -195,4 +131,6 @@
 
     function cargarTablaAsesorActual() {
         const asesorBaseID = document.getElementById('asesorBase').value;
+
+    }
 </script>

@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using ALFINapp.Filters;
 using ALFINapp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Playwright;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
@@ -68,8 +69,8 @@ namespace ALFINapp.Controllers
                                           select ce.IdBase
                                             ).ToListAsync();*/
 
-            var clientes = await (from bc in _context.base_clientes.AsNoTracking()
-                                  join db in _context.detalle_base.AsNoTracking() on bc.IdBase equals db.IdBase
+            var clientes = await (from bc in _context.base_clientes
+                                  join db in _context.detalle_base on bc.IdBase equals db.IdBase
                                   join ce in _context.clientes_enriquecidos on bc.IdBase equals ce.IdBase
                                   join ca in _context.clientes_asignados on ce.IdCliente equals ca.IdCliente
                                   where (ca.ClienteDesembolso != true) // Excluimos clientes con ClienteDesembolso == true
@@ -99,10 +100,10 @@ namespace ALFINapp.Controllers
                 IdBase = cliente.IdBase,
                 IdAsignacion = cliente.LatestRecord?.ca.IdAsignacion,
                 FechaAsignacionVendedor = cliente.LatestRecord?.ca.FechaAsignacionVendedor,
-                ComentarioGeneral = cliente.LatestRecord.ca.ComentarioGeneral,
-                TipificacionDeMayorPeso = cliente.LatestRecord.ca.TipificacionMayorPeso,
-                PesoTipificacionMayor = cliente.LatestRecord.ca.PesoTipificacionMayor,
-                FechaTipificacionDeMayorPeso = cliente.LatestRecord.ca.FechaTipificacionMayorPeso,
+                ComentarioGeneral = cliente.LatestRecord?.ca.ComentarioGeneral,
+                TipificacionDeMayorPeso = cliente.LatestRecord?.ca.TipificacionMayorPeso,
+                PesoTipificacionMayor = cliente.LatestRecord?.ca.PesoTipificacionMayor,
+                FechaTipificacionDeMayorPeso = cliente.LatestRecord?.ca.FechaTipificacionMayorPeso,
             }).ToList();
 
             // Total de clientes
@@ -312,69 +313,82 @@ namespace ALFINapp.Controllers
 
                                     where bc.IdBase == id_base && db.TipoBase == ca.FuenteBase &&
                                           ca.IdUsuarioV == HttpContext.Session.GetInt32("UsuarioId")
-                                    group new { bc, db, ce } by db.IdBase into grouped
                                     select new
                                     {
-                                        // Propiedades de BaseCliente
-                                        IdBase = grouped.Key,
-                                        LatestRecord = grouped.FirstOrDefault(),
+                                        bc,
+                                        db,
+                                        ce,
+                                        ca
                                     }).FirstOrDefault();
 
-            var detalleTipificarCliente = detallesClientes?.LatestRecord != null
+            var detalleTipificarCliente = detallesClientes != null
                 ? new DetalleTipificarClienteDTO
                 {
                     // Propiedades de BaseCliente
-                    Dni = detallesClientes.LatestRecord.bc.Dni,
-                    XAppaterno = detallesClientes.LatestRecord.bc.XAppaterno,
-                    XApmaterno = detallesClientes.LatestRecord.bc.XApmaterno,
-                    XNombre = detallesClientes.LatestRecord.bc.XNombre,
-                    Edad = detallesClientes.LatestRecord.bc.Edad,
-                    Departamento = detallesClientes.LatestRecord.bc.Departamento,
-                    Provincia = detallesClientes.LatestRecord.bc.Provincia,
-                    Distrito = detallesClientes.LatestRecord.bc.Distrito,
-                    IdBase = detallesClientes.LatestRecord.bc.IdBase,
+                    Dni = detallesClientes.bc.Dni,
+                    XAppaterno = detallesClientes.bc.XAppaterno,
+                    XApmaterno = detallesClientes.bc.XApmaterno,
+                    XNombre = detallesClientes.bc.XNombre,
+                    Edad = detallesClientes.bc.Edad,
+                    Departamento = detallesClientes.bc.Departamento,
+                    Provincia = detallesClientes.bc.Provincia,
+                    Distrito = detallesClientes.bc.Distrito,
+                    IdBase = detallesClientes.bc.IdBase,
 
                     // Propiedades de DetalleBase
-                    Campaña = detallesClientes.LatestRecord.db.Campaña,
-                    OfertaMax = detallesClientes.LatestRecord.db.OfertaMax,
-                    TasaMinima = detallesClientes.LatestRecord.db.TasaMinima,
-                    Sucursal = detallesClientes.LatestRecord.db.Sucursal,
-                    AgenciaComercial = detallesClientes.LatestRecord.db.AgenciaComercial,
-                    Plazo = detallesClientes.LatestRecord.db.Plazo,
-                    Cuota = detallesClientes.LatestRecord.db.Cuota,
-                    GrupoTasa = detallesClientes.LatestRecord.db.GrupoTasa,
-                    GrupoMonto = detallesClientes.LatestRecord.db.GrupoMonto,
-                    Propension = detallesClientes.LatestRecord.db.Propension,
-                    TipoCliente = detallesClientes.LatestRecord.db.TipoCliente,
-                    ClienteNuevo = detallesClientes.LatestRecord.db.ClienteNuevo,
-                    Color = detallesClientes.LatestRecord.db.Color,
-                    ColorFinal = detallesClientes.LatestRecord.db.ColorFinal,
+                    Campaña = detallesClientes.db.Campaña,
+                    OfertaMax = detallesClientes.db.OfertaMax,
+                    TasaMinima = detallesClientes.db.TasaMinima,
+                    Sucursal = detallesClientes.db.Sucursal,
+                    AgenciaComercial = detallesClientes.db.AgenciaComercial,
+                    Plazo = detallesClientes.db.Plazo,
+                    Cuota = detallesClientes.db.Cuota,
+                    GrupoTasa = detallesClientes.db.GrupoTasa,
+                    GrupoMonto = detallesClientes.db.GrupoMonto,
+                    Propension = detallesClientes.db.Propension,
+                    TipoCliente = detallesClientes.db.TipoCliente,
+                    ClienteNuevo = detallesClientes.db.ClienteNuevo,
+                    Color = detallesClientes.db.Color,
+                    ColorFinal = detallesClientes.db.ColorFinal,
 
                     // Propiedades de ClientesEnriquecido
-                    Telefono1 = detallesClientes.LatestRecord.ce.Telefono1,
-                    Telefono2 = detallesClientes.LatestRecord.ce.Telefono2,
-                    Telefono3 = detallesClientes.LatestRecord.ce.Telefono3,
-                    Telefono4 = detallesClientes.LatestRecord.ce.Telefono4,
-                    Telefono5 = detallesClientes.LatestRecord.ce.Telefono5,
-                    ComentarioTelefono1 = detallesClientes.LatestRecord.ce.ComentarioTelefono1,
-                    ComentarioTelefono2 = detallesClientes.LatestRecord.ce.ComentarioTelefono2,
-                    ComentarioTelefono3 = detallesClientes.LatestRecord.ce.ComentarioTelefono3,
-                    ComentarioTelefono4 = detallesClientes.LatestRecord.ce.ComentarioTelefono4,
-                    ComentarioTelefono5 = detallesClientes.LatestRecord.ce.ComentarioTelefono5,
+                    Telefonos = new List<TelefonoDTO>
+                    {
+                        new TelefonoDTO { Numero = detallesClientes.ce.Telefono1,
+                                        Comentario = detallesClientes.ce.ComentarioTelefono1,
+                                        DescripcionTipificacion = detallesClientes.ce.UltimaTipificacionTelefono1,
+                                        FechaTipificacion = detallesClientes.ce.FechaUltimaTipificacionTelefono1 },
+                        new TelefonoDTO { Numero = detallesClientes.ce.Telefono2,
+                                        Comentario = detallesClientes.ce.ComentarioTelefono2,
+                                        DescripcionTipificacion = detallesClientes.ce.UltimaTipificacionTelefono2,
+                                        FechaTipificacion = detallesClientes.ce.FechaUltimaTipificacionTelefono2  },
+                        new TelefonoDTO { Numero = detallesClientes.ce.Telefono3,
+                                        Comentario = detallesClientes.ce.ComentarioTelefono3,
+                                        DescripcionTipificacion = detallesClientes.ce.UltimaTipificacionTelefono3,
+                                        FechaTipificacion = detallesClientes.ce.FechaUltimaTipificacionTelefono3 },
+                        new TelefonoDTO { Numero = detallesClientes.ce.Telefono4,
+                                        Comentario = detallesClientes.ce.ComentarioTelefono4,
+                                        DescripcionTipificacion = detallesClientes.ce.UltimaTipificacionTelefono4,
+                                        FechaTipificacion = detallesClientes.ce.FechaUltimaTipificacionTelefono4 },
+                        new TelefonoDTO { Numero = detallesClientes.ce.Telefono5,
+                                        Comentario = detallesClientes.ce.ComentarioTelefono5,
+                                        DescripcionTipificacion = detallesClientes.ce.UltimaTipificacionTelefono5,
+                                        FechaTipificacion = detallesClientes.ce.FechaUltimaTipificacionTelefono5 }
+                    },
 
                     //Propiedades Tasas y Detalles
-                    Oferta12m = detallesClientes.LatestRecord.db.Oferta12m,
-                    Tasa12m = detallesClientes.LatestRecord.db.Tasa12m,
-                    Cuota12m = detallesClientes.LatestRecord.db.Cuota12m,
-                    Oferta18m = detallesClientes.LatestRecord.db.Oferta18m,
-                    Tasa18m = detallesClientes.LatestRecord.db.Tasa18m,
-                    Cuota18m = detallesClientes.LatestRecord.db.Cuota18m,
-                    Oferta24m = detallesClientes.LatestRecord.db.Oferta24m,
-                    Tasa24m = detallesClientes.LatestRecord.db.Tasa24m,
-                    Cuota24m = detallesClientes.LatestRecord.db.Cuota24m,
-                    Oferta36m = detallesClientes.LatestRecord.db.Oferta36m,
-                    Tasa36m = detallesClientes.LatestRecord.db.Tasa36m,
-                    Cuota36m = detallesClientes.LatestRecord.db.Cuota36m,
+                    Oferta12m = detallesClientes.db.Oferta12m,
+                    Tasa12m = detallesClientes.db.Tasa12m,
+                    Cuota12m = detallesClientes.db.Cuota12m,
+                    Oferta18m = detallesClientes.db.Oferta18m,
+                    Tasa18m = detallesClientes.db.Tasa18m,
+                    Cuota18m = detallesClientes.db.Cuota18m,
+                    Oferta24m = detallesClientes.db.Oferta24m,
+                    Tasa24m = detallesClientes.db.Tasa24m,
+                    Cuota24m = detallesClientes.db.Cuota24m,
+                    Oferta36m = detallesClientes.db.Oferta36m,
+                    Tasa36m = detallesClientes.db.Tasa36m,
+                    Cuota36m = detallesClientes.db.Cuota36m,
                 }
                 : null;
 
@@ -385,72 +399,32 @@ namespace ALFINapp.Controllers
                 return RedirectToAction("Ventas");
             }
 
-            var clienteEnriquecidoConsult = _context.clientes_enriquecidos.FirstOrDefault(ce => ce.IdBase == id_base);
-            if (clienteEnriquecidoConsult == null)
-            {
-                TempData["MessageError"] = "No se encontró un cliente enriquecido con los criterios proporcionados.";
-                return RedirectToAction("Ventas");
-            }
-
-            var ClienteAsignado = _context.clientes_asignados.FirstOrDefault(ca => ca.IdCliente == clienteEnriquecidoConsult.IdCliente && ca.IdUsuarioV == HttpContext.Session.GetInt32("UsuarioId"));
-
-            if (ClienteAsignado == null)
-            {
-                TempData["MessageError"] = "No tiene permiso para tipificar este cliente (este incidente sera notificado).";
-                return RedirectToAction("Ventas");
-            }
-
             var tipificaciones = _context.tipificaciones.Select(t => new { t.IdTipificacion, t.DescripcionTipificacion }).ToList();
             ViewData["Tipificaciones"] = tipificaciones;
 
-            var resultados_telefonos_tipificados_bd = ( from ce in _context.clientes_enriquecidos
-                                                        join ca in _context.clientes_asignados
-                                                        on ce.IdCliente equals ca.IdCliente
-                                                        where ce.IdBase == id_base
-                                                        && ca.FechaAsignacionSup.HasValue
-                                                        && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                                                        && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
-                                                        select new ResultadoTelefonosTipificados
-                                                        {
-                                                            TelefonoTipificado1 = ce.Telefono1,
-                                                            DescripcionTipificacion1 = ce.UltimaTipificacionTelefono1,
-                                                            TelefonoTipificado2 = ce.Telefono2,
-                                                            DescripcionTipificacion2 = ce.UltimaTipificacionTelefono2,
-                                                            TelefonoTipificado3 = ce.Telefono3,
-                                                            DescripcionTipificacion3 = ce.UltimaTipificacionTelefono3,
-                                                            TelefonoTipificado4 = ce.Telefono4,
-                                                            DescripcionTipificacion4 = ce.UltimaTipificacionTelefono4,
-                                                            TelefonoTipificado5 = ce.Telefono5,
-                                                            DescripcionTipificacion5 = ce.UltimaTipificacionTelefono5,
-                                                            IdAsignacion = ca.IdAsignacion
-                                                        }).FirstOrDefault();
-
             var resultados_telefonos_tipificados_vendedor = (from ta in _context.telefonos_agregados
-                                                            join ce in _context.clientes_enriquecidos on ta.IdCliente equals ce.IdCliente
-                                                            join ca in _context.clientes_asignados on ce.IdCliente equals ca.IdAsignacion
-                                                            where ce.IdBase == id_base
-                                                            && ca.FechaAsignacionSup.HasValue
-                                                            && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                                                            && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
-                                                            select new
-                                                            {
-                                                                Telefono = ta.Telefono,
-                                                                DescripcionTipificacion = ta.UltimaTipificacion
-                                                            }).ToList();
-            var agenciasDisponibles = ( from db in _context.detalle_base
-                                        select new
-                                        { 
-                                            numSucursal = db.SucursalComercial,
-                                            agenciaComercial = db.AgenciaComercial
-                                        }).ToList().Distinct();
+                                                             join ce in _context.clientes_enriquecidos on ta.IdCliente equals ce.IdCliente
+                                                             join ca in _context.clientes_asignados on ce.IdCliente equals ca.IdAsignacion
+                                                             where ce.IdBase == id_base
+                                                             select new
+                                                             {
+                                                                 Telefono = ta.Telefono,
+                                                                 DescripcionTipificacion = ta.UltimaTipificacion,
+                                                                 FechaTipificacionSup = ta.FechaUltimaTipificacion
+                                                             }).ToList();
+            var agenciasDisponibles = (from db in _context.detalle_base
+                                       select new
+                                       {
+                                           numSucursal = db.SucursalComercial,
+                                           agenciaComercial = db.AgenciaComercial
+                                       }).ToList().Distinct();
             var dni = _context.base_clientes.FirstOrDefault(bc => bc.IdBase == id_base);
             ViewData["AgenciasDisponibles"] = agenciasDisponibles;
             ViewData["numerosCreadosPorElUsuario"] = resultados_telefonos_tipificados_vendedor;
             ViewData["DNIcliente"] = dni != null ? dni.Dni : "El usuario No tiene DNI Registrado";
-            ViewData["ID_asignacion"] = ClienteAsignado.IdAsignacion;
-            ViewData["Fuente_BD"] = ClienteAsignado.FuenteBase;
-            ViewData["ID_cliente"] = ClienteAsignado.IdCliente;
-            ViewData["numerosTraidosPorlaDB"] = resultados_telefonos_tipificados_bd;
+            ViewData["ID_asignacion"] = detallesClientes.ca.IdAsignacion;
+            ViewData["Fuente_BD"] = detallesClientes.ca.FuenteBase;
+            ViewData["ID_cliente"] = detallesClientes.ca.IdCliente;
 
             return PartialView("_Tipificarcliente", detalleTipificarCliente);
         }
@@ -474,13 +448,98 @@ namespace ALFINapp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        public async Task<bool> EnviarFormularioRemoto(
+                    string DNIAsesor,
+                    string DNICliente,
+                    string NombreCliente,
+                    string CelularCliente,
+                    string AgenciaComercial)
+        {
+            var agenciasMapeadas = new Dictionary<string, string>
+            {
+                { "738363 - CAJAMARCA", "1" },
+                { "737490 - CASTILLA", "2" },
+                { "734281 - CHICLAYO BALTA", "3" },
+                { "734272 - CHIMBOTE", "4" },
+                { "738360 - MOSHOQUEQUE", "5" },
+            };
+
+            if (!agenciasMapeadas.TryGetValue(AgenciaComercial, out var agenciaMapeada))
+            {
+                return false;
+            }
+            try
+            {
+                // Validar datos
+                if (string.IsNullOrEmpty(DNIAsesor) || string.IsNullOrEmpty(DNICliente) || string.IsNullOrEmpty(AgenciaComercial))
+                {
+                    throw new ArgumentException("Faltan datos obligatorios para enviar el formulario.");
+                }
+
+                // Inicializar Playwright
+                var playwright = await Playwright.CreateAsync();
+                var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+                {
+                    Headless = true,
+                    Devtools = false
+                });
+                var page = await browser.NewPageAsync();
+
+                // Navegar al formulario
+                await page.GotoAsync("https://forms.office.com/r/UyLj0fGD0R");
+
+                // Completar el formulario
+                await page.WaitForSelectorAsync("input[aria-labelledby='QuestionId_red7efe31020b490b8edb703f5d535d7e QuestionInfo_red7efe31020b490b8edb703f5d535d7e']");
+                // Llenar los campos de texto
+                await page.FillAsync("input[aria-labelledby='QuestionId_red7efe31020b490b8edb703f5d535d7e QuestionInfo_red7efe31020b490b8edb703f5d535d7e']", DNIAsesor);
+                await page.FillAsync("input[aria-labelledby='QuestionId_r972e879cbae54f07a4e712b4d2629d6e QuestionInfo_r972e879cbae54f07a4e712b4d2629d6e']", "A365");
+                await page.FillAsync("input[aria-labelledby='QuestionId_r99924cac2a1d41ff8545bb4b36a8b2b5 QuestionInfo_r99924cac2a1d41ff8545bb4b36a8b2b5']", DNICliente);
+                await page.FillAsync("input[aria-labelledby='QuestionId_r6c5c337ce40846d781b1c4325e32c959 QuestionInfo_r6c5c337ce40846d781b1c4325e32c959']", NombreCliente);
+                await page.FillAsync("input[aria-labelledby='QuestionId_rd258a5d0f47745368dcfb72d622e3a41 QuestionInfo_rd258a5d0f47745368dcfb72d622e3a41']", CelularCliente);
+
+                // Seleccionar la agencia
+                await page.ClickAsync("div[aria-labelledby='QuestionId_re78f9559e1fd4c88bc8b73c80f551108 QuestionInfo_re78f9559e1fd4c88bc8b73c80f551108']");
+                await page.WaitForSelectorAsync("div[aria-expanded='true']");
+
+                // Construir el selector dinámico
+                var sucursalLocator = page.Locator($"div[aria-selected='false'][role='option'][aria-posinset='{agenciaMapeada}']");
+
+                // Verificar si el selector existe
+                if (await sucursalLocator.CountAsync() == 0)
+                {
+                    throw new Exception($"No se encontró la opción de agencia con aria-posinset='{agenciaMapeada}'");
+                }
+
+                // Hacer clic en la opción de la lista desplegable
+                await sucursalLocator.ClickAsync();
+
+                // Marcar el campo derivacion
+                await page.ClickAsync("input[name='r5567eb2c5c214f07aff54dbdd756b157']");
+                // Enviar el formulario
+                await page.ClickAsync("button[data-automation-id='submitButton']");
+                // await page.WaitForNavigationAsync();
+
+                // Cerrar el navegador
+                await browser.CloseAsync();
+
+                TempData["Message"] = "Formulario enviado correctamente.";
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return false;
+            }
+        }
+
         [HttpPost]
-        public async Task<IActionResult> TipificarMotivo(int IdAsignacion, int? Tipificacion1, int? Tipificacion2,
-                                                int? Tipificacion3, int? Tipificacion4, int? Tipificacion5,
-                                                string? Telefono1, string? Telefono2, string? Telefono3,
-                                                string? Telefono4, string? Telefono5, DateTime? DerivacionDb1,
-                                                DateTime? DerivacionDb2, DateTime? DerivacionDb3, DateTime? DerivacionDb4,
-                                                DateTime? DerivacionDb5)
+        public async Task<IActionResult> TipificarMotivo(int IdAsignacion, int? Tipificacion_1, int? Tipificacion_2,
+                                                int? Tipificacion_3, int? Tipificacion_4, int? Tipificacion_5,
+                                                string? Telefono_1, string? Telefono_2, string? Telefono_3,
+                                                string? Telefono_4, string? Telefono_5, DateTime? DerivacionDb_1,
+                                                DateTime? DerivacionDb_2, DateTime? DerivacionDb_3, DateTime? DerivacionDb_4,
+                                                DateTime? DerivacionDb_5, string AgenciaComercialDb_1, string AgenciaComercialDb_2,
+                                                string AgenciaComercialDb_3, string AgenciaComercialDb_4, string AgenciaComercialDb_5)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)
@@ -497,9 +556,10 @@ namespace ALFINapp.Controllers
                 return RedirectToAction("Ventas");
             }
 
-            var telefonos = new List<string?> { Telefono1, Telefono2, Telefono3, Telefono4, Telefono5 };
-            var tipificaciones = new List<int?> { Tipificacion1, Tipificacion2, Tipificacion3, Tipificacion4, Tipificacion5 };
-            var derivaciones = new List<DateTime?> { DerivacionDb1, DerivacionDb2, DerivacionDb3, DerivacionDb4, DerivacionDb5 };
+            var telefonos = new List<string?> { Telefono_1, Telefono_2, Telefono_3, Telefono_4, Telefono_5 };
+            var tipificaciones = new List<int?> { Tipificacion_1, Tipificacion_2, Tipificacion_3, Tipificacion_4, Tipificacion_5 };
+            var derivaciones = new List<DateTime?> { DerivacionDb_1, DerivacionDb_2, DerivacionDb_3, DerivacionDb_4, DerivacionDb_5 };
+            var agenciasComerciales = new List<string> { AgenciaComercialDb_1, AgenciaComercialDb_2, AgenciaComercialDb_3, AgenciaComercialDb_4, AgenciaComercialDb_5 };
 
             // Fecha de tipificación
             var fechaTipificacion = DateTime.Now;
@@ -513,6 +573,7 @@ namespace ALFINapp.Controllers
                 return RedirectToAction("Ventas");
             }
             var agregado = false;
+            int countNonNull = 0;
 
             for (int i = 0; i < telefonos.Count; i++)
             {
@@ -538,8 +599,28 @@ namespace ALFINapp.Controllers
                     TempData["MessageError"] = "Debe ingresar una fecha de derivación para la tipificación CLIENTE ACEPTO OFERTA DERIVACION (Se obviaron las inserciones).";
                     return RedirectToAction("Ventas");
                 }
+
+                if (agenciasComerciales[i] == null && tipificacion == 2)  // Verificamos si el valor no es null
+                {
+                    TempData["MessageError"] = "Debe ingresar una agencia comercial para la tipificación CLIENTE ACEPTO OFERTA DERIVACION (Se obviaron las inserciones).";
+                    return RedirectToAction("Ventas");
+                }
+
+                if (tipificacion == 2 && derivacion != null && agenciasComerciales[i] != null)
+                {
+                    countNonNull++;
+                }
+
                 agregado = true;
             }
+
+            // Si solo hay un valor no nulo, entonces derivacionesExists será true
+            if (countNonNull > 1)
+            {
+                TempData["MessageError"] = "Ha asignado dos numeros a la tipificacion derivacion, esto no esta permitido (solo se puede enviar una derivacion a la vez)";
+                return RedirectToAction("Ventas");
+            }
+
 
             for (int i = 0; i < telefonos.Count; i++)
             {
@@ -627,17 +708,62 @@ namespace ALFINapp.Controllers
             _context.clientes_enriquecidos.Update(ClientesEnriquecido);
             _context.SaveChanges();
 
-            /*var client = _httpClientFactory.CreateClient();
-            var response = await client.GetAsync($"/Formulario/EnviarFormulario?DNIAsesor=08743455&DNICliente=45667938&NombreCliente=Juan Pérez&CelularCliente=908574839&AgenciaComercial=AgenciaCentral");
+            if (countNonNull == 1)
+            {
+                var client = _httpClientFactory.CreateClient();
+                var dniAsesor = (from u in _context.usuarios
+                                 where u.IdUsuario == usuarioId
+                                 select u.Dni // Cambiado para seleccionar directamente el string
+                                ).FirstOrDefault();
 
-            if (response.IsSuccessStatusCode)
-            {
-                TempData["Message"] = "Formulario enviado correctamente.";
+                var clienteDatos = (from bc in _context.base_clientes
+                                    join ce in _context.clientes_enriquecidos on bc.IdBase equals ce.IdBase
+                                    join ca in _context.clientes_asignados on ce.IdCliente equals ca.IdCliente
+                                    where ca.IdAsignacion == IdAsignacion
+                                    select new { bc.Dni, bc.XNombre, bc.XAppaterno, bc.XApmaterno }
+                                ).FirstOrDefault();
+
+                var telefonoDerivacion = string.Empty;
+                var agenciaDerivacion = string.Empty;
+
+                // Buscar la primera coincidencia de un teléfono con su respectiva tipificación y agencia
+                for (int i = 0; i < tipificaciones.Count; i++)
+                {
+                    if (tipificaciones[i] == 2) // Verifica si la tipificación es 2
+                    {
+                        telefonoDerivacion = telefonos[i]; // Asigna el teléfono correspondiente
+                        agenciaDerivacion = agenciasComerciales[i]; // Asigna la agencia correspondiente
+                        break; // Salir del bucle después de encontrar la primera coincidencia
+                    }
+                }
+
+                // Validar que se haya encontrado un teléfono y una agencia antes de proceder
+                if (string.IsNullOrEmpty(telefonoDerivacion) || string.IsNullOrEmpty(agenciaDerivacion))
+                {
+                    TempData["MessageError"] = "No se encontró un teléfono válido con la tipificación requerida.";
+                    return RedirectToAction("Ventas");
+                }
+
+                var response = EnviarFormularioRemoto(
+                    dniAsesor,
+                    clienteDatos?.Dni,
+                    $"{clienteDatos?.XNombre} {clienteDatos?.XAppaterno} {clienteDatos?.XApmaterno}",
+                    telefonoDerivacion,
+                    $"73{agenciaDerivacion}"
+                );
+
+                if (await response)
+                {
+                    TempData["Message"] = "Formulario enviado correctamente.";
+                    return RedirectToAction("Ventas");
+                }
+                else
+                {
+                    TempData["MessageError"] = "Ocurrió un error al enviar el formulario.";
+                    return RedirectToAction("Ventas");
+                }
+
             }
-            else
-            {
-                TempData["MessageError"] = "Error al enviar el formulario.";
-            }*/
 
             TempData["Message"] = "Las tipificaciones se han guardado correctamente (Se han Obviado los campos Vacios y los campos que fueron llenados con datos incorrectos)";
             return RedirectToAction("Ventas");
@@ -737,7 +863,7 @@ namespace ALFINapp.Controllers
         public IActionResult GuardarTipificacionesNumPersonales(List<TipificarClienteDTO> tipificaciones, int IdAsignacionCliente)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            
+
             if (tipificaciones == null || !tipificaciones.Any())
             {
                 TempData["MessageError"] = "No se estan enviando datos para guardar (Comunicarse con Servicio Tecnico).";
@@ -830,7 +956,7 @@ namespace ALFINapp.Controllers
 
             else
             {
-                if (tipificacionMayorPeso.HasValue && pesoMayor!=0)
+                if (tipificacionMayorPeso.HasValue && pesoMayor != 0)
                 {
                     if (pesoMayor > (ClienteAsignado.PesoTipificacionMayor ?? 0))
                     {

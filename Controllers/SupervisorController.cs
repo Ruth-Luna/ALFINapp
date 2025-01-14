@@ -288,59 +288,6 @@ namespace ALFINapp.Controllers
             }
             return RedirectToAction("VistaMainSupervisor");
         }*/
-        [HttpGet]
-        public IActionResult AsignarAsesoresSecundariosView()
-        {
-            try
-            {
-                var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-                var vendedoresConClientes = (from u in _context.usuarios
-                                             where u.Rol == "VENDEDOR" && u.IDUSUARIOSUP == usuarioId
-                                             join ca in _context.clientes_asignados
-                                             on u.IdUsuario equals ca.IdUsuarioV into clientes
-                                             from ca in clientes.DefaultIfEmpty() // Esta parte asegura que incluso si no hay clientes, el vendedor se incluya
-                                             join asa in _context.asesores_secundarios_asignacion
-                                             on ca.IdAsignacion equals asa.id_asignacion into asesoresSecundarios
-                                             group new { ca, asesoresSecundarios } by new
-                                             {
-                                                 u.NombresCompletos,
-                                                 u.IdUsuario,
-                                             } into grouped
-                                             select new VendedorConClientesSecundariosDTO
-                                             {
-                                                 NombresCompletos = grouped.Key.NombresCompletos,
-                                                 IdUsuario = grouped.Key.IdUsuario,
-                                                 NumeroClientes = grouped.Count(g => g.ca != null
-                                                         && g.ca.FechaAsignacionVendedor.HasValue
-                                                         && g.ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                                                         && g.ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
-                                                         && g.asesoresSecundarios == null), // Excluye las entradas de los asesores secundarios
-                                                 NumeroClientesReasignados = grouped.Count(g => g.asesoresSecundarios != null)
-                                             }).ToList();
-
-                var BasesAsignadas = (from ca in _context.clientes_asignados
-                                      where ca.IdUsuarioS == usuarioId
-                                              && ca.FechaAsignacionSup.HasValue
-                                              && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                                              && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
-                                      select new { ca.FuenteBase })
-                                        .Distinct()
-                                        .ToList();
-
-                if (vendedoresConClientes == null)
-                {
-                    TempData["MessageError"] = "La consulta para dar asesores ha fallado";
-                    return RedirectToAction("VistaMainSupervisor", "Supervisor");
-                }
-                ViewData["BasesAsignadas"] = BasesAsignadas;
-                return PartialView("_AsignarAsesoresSecundarios", vendedoresConClientes);
-            }
-            catch (System.Exception ex)
-            {
-                return Json(new { error = true, message = ex.Message });
-            }
-        }
-
 
         [HttpGet]
         public IActionResult ModificarAsesoresView()

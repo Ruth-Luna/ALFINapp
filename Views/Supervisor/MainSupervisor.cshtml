@@ -59,6 +59,7 @@
                         <div class="me-2">
                             <label for="baseDescarga">Descargar por Identificador de Base</label>
                             <select class="form-select" name="selectIdentificadorBase" id="selectIdentificadorBase">
+                                <option value="DEFECTO">Identificador Por Defecto</option>
                                 @foreach (var Identificador in IdentificadorBase)
                                 {
                                     <option value="@Identificador.IdentificadorBase">@Identificador.IdentificadorBase</option>

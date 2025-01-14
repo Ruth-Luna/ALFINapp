@@ -1,61 +1,82 @@
 /* index.css */
 header {
     background-color: #085394;
-    border-bottom: 2px solid #2980b9; /* Bordo inferior */
+    border-bottom: 2px solid #2980b9;
+    /* Bordo inferior */
 }
 
-form input, form button {
-}
+form input,
+form button {}
 
 .table thead tr {
-    background-color: #085394; /* Fondo azul */
-    color: white; /* Texto blanco */
+    background-color: #085394;
+    /* Fondo azul */
+    color: white;
+    /* Texto blanco */
 }
 
 .table thead th {
-    text-align: center; /* Centra el texto horizontalmente */
-    vertical-align: top; /* Alinea el contenido hacia arriba */
-    background-color: #085394; /* Fondo azul */
-    color: white; /* Texto blanco */
-    padding: 10px; /* Espaciado interno */
-    font-size: 14px; /* Tamaño de fuente */
-    border: 1px solid #2980b9; /* Bordes */
-    position: relative; /* Permite posicionamiento de los elementos internos */
+    text-align: center;
+    /* Centra el texto horizontalmente */
+    vertical-align: top;
+    /* Alinea el contenido hacia arriba */
+    background-color: #085394;
+    /* Fondo azul */
+    color: white;
+    /* Texto blanco */
+    padding: 10px;
+    /* Espaciado interno */
+    font-size: 14px;
+    /* Tamaño de fuente */
+    border: 1px solid #2980b9;
+    /* Bordes */
+    position: relative;
+    /* Permite posicionamiento de los elementos internos */
 }
 
 .table td .btn {
     width: 100%;
     height: 100%;
-    display: block; /* Hace que el botón se comporte como un bloque para llenar toda la celda */
+    display: block;
+    /* Hace que el botón se comporte como un bloque para llenar toda la celda */
 }
 
 
 @media (max-width: 767px) {
     .table thead th {
-        font-size: 12px; /* Tamaño de fuente reducido en pantallas pequeñas */
-        padding: 8px; /* Espaciado interno ajustado */
+        font-size: 12px;
+        /* Tamaño de fuente reducido en pantallas pequeñas */
+        padding: 8px;
+        /* Espaciado interno ajustado */
     }
 }
 
 .btn-forinformation {
-    background-color: #4caf50; /* Color de fondo */
-    border: 1px solid #4caf50; /* Borde */
-    color: white; /* Texto */
-    border-radius: 5px; /* Esquinas redondeadas */
-    padding: 10px 20px; /* Tamaño del botón */
-    text-decoration: none; /* Elimina el subrayado */
-    display: inline-block; /* Asegura que el botón mantenga su forma */
+    background-color: #4caf50;
+    /* Color de fondo */
+    border: 1px solid #4caf50;
+    /* Borde */
+    color: white;
+    /* Texto */
+    border-radius: 5px;
+    /* Esquinas redondeadas */
+    padding: 10px 20px;
+    /* Tamaño del botón */
+    text-decoration: none;
+    /* Elimina el subrayado */
+    display: inline-block;
+    /* Asegura que el botón mantenga su forma */
 }
 
-.modal-title{
+.modal-title {
     color: white;
 }
 
-.modal-header{
+.modal-header {
     background-color: #085394;
 }
 
-.label-fortip{
+.label-fortip {
     background-color: #085394;
     color: white;
     border-top: 15px solid #085394;
@@ -90,6 +111,7 @@ form input, form button {
         width: 100%;
         margin-bottom: 10px;
     }
+
     .table-responsive {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
@@ -109,21 +131,76 @@ form input, form button {
     border: 1px solid #000;
     border-radius: 4px;
 }
+
 .ml-2 {
-    margin-left: 8px; /* Espacio entre el color y el texto */
+    margin-left: 8px;
+    /* Espacio entre el color y el texto */
 }
 
 .table-success {
-    background-color: #d4edda; /* Verde claro */
-    color: #185827; /* Verde oscuro para el texto */
+    background-color: #d4edda;
+    /* Verde claro */
+    color: #185827;
+    /* Verde oscuro para el texto */
 }
 
 .table-danger {
-    background-color: #f0b3b3; /* Verde claro */
-    color: #940000; /* Verde oscuro para el texto */
+    background-color: #f0b3b3;
+    /* Verde claro */
+    color: #940000;
+    /* Verde oscuro para el texto */
 }
 
 .table-tipificada {
-    background-color: #beb3f0; /* Verde claro */
-    color: #261e46; /* Verde oscuro para el texto */
+    background-color: #beb3f0;
+    /* Verde claro */
+    color: #261e46;
+    /* Verde oscuro para el texto */
+}
+
+.tooltip-symbol {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip-symbol i {
+    background-color: #0055ff; /* Fondo circular */
+    color: white; /* Color del ícono */
+    border-radius: 50%; /* Forma circular */
+    padding: 6px; /* Tamaño del círculo */
+    font-size: 16px; /* Tamaño del ícono */
+    width: 32px; /* Ancho del círculo */
+    height: 32px; /* Alto del círculo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* Tooltip personalizado */
+.tooltip-symbol:hover::after {
+    content: attr(title); /* Texto del tooltip */
+    position: absolute;
+    bottom: 130%; /* Posición del tooltip */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333; /* Fondo del tooltip */
+    color: #fff; /* Color del texto */
+    padding: 8px 12px; /* Espaciado interno */
+    border-radius: 4px; /* Bordes redondeados */
+    white-space: nowrap; /* Evitar saltos de línea */
+    font-size: 14px; /* Tamaño del texto */
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.tooltip-symbol:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+.tooltip-symbol:hover i {
+    background-color: #0056b3; /* Cambiar el color del círculo al pasar el cursor */
 }

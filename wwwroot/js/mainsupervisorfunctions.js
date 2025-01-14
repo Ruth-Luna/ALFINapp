@@ -133,17 +133,22 @@ function loadFuncionalidadAsesores() {
 
 function loadReasignarClientesAsignados(){
     $.ajax({
-        url: '/Supervisor/AsignarAsesoresSecundariosView',
+        url: '/AsesoresSecundarios/AsignarAsesoresSecundariosView',
         type: 'GET',
         success: function (response) {
-            Swal.fire({
-                title: 'Reasignación de clientes a asesores secundarios',
-                text: 'La vista ha sido cargada correctamente.',
-                icon: 'success',
-                confirmButtonText: 'Aceptar'
-            });
-            $('#modalContentReasignarAsesorSecundarioModal').html(response); // Insertar la vista parcial en el modal
-            $('#ReasignarAsesorSecundarioModal').modal('show'); // Mostrar el modal
+            if (response.error === true) {
+                Swal.fire({
+                    title: 'Error',
+                    text: response.message,
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                    });
+                    
+            }
+            else {
+                $('#modalContentReasignarAsesorSecundarioModal').html(response); // Insertar la vista parcial en el modal
+                $('#ReasignarAsesorSecundarioModal').modal('show'); // Mostrar el modal
+            }
         },
         error: function () {
             Swal.fire({

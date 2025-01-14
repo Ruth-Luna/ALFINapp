@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace ALFINapp.Models;
@@ -45,4 +46,6 @@ public partial class Usuario
     public string? RESPONSABLESUP { get; set; }
     [Column("REGION")]
     public string? REGION { get; set; }
+    [Column("contraseña")]
+    public string? contraseña { get; set; }
 }

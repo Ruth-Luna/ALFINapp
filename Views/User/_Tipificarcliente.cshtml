@@ -3,7 +3,6 @@
 @{
     var agenciasDisponibles = ViewData["AgenciasDisponibles"] as IEnumerable<dynamic>;
     var numerosCreadosPorElUsuario = ViewData["numerosCreadosPorElUsuario"];
-    var numerosTraidosPorlaDB = (ResultadoTelefonosTipificados)ViewData["numerosTraidosPorlaDB"];
     var dni = ViewData["DNIcliente"];
     var id_asignacion = ViewData["ID_asignacion"];
     var id_base = Model.IdBase;
@@ -332,11 +331,12 @@
                         <div class="form-group mt-3" id="fechaVisitaContainer_@contadorNumeros" style="display: none;">
                             <div class="row">
                                 <div class="col">
-                                    <label for="fechaVisita_@contadorNumeros" class="form-label">Fecha de Visita</label>
+                                    <label for="fechaVisita_@contadorNumeros" class="form-label">Fecha de Visita: </label>
                                     <input class="form-control" type="date" name="tipificaciones[@contadorNumeros].FechaVisita"
                                         id="fechaVisita_@contadorNumeros" />
                                 </div>
                                 <div class="col">
+                                    <label for="agenciasasignadas_@contadorNumeros" class="form-label">Seleccione una Agencia: </label>
                                     <select class="form-select" name="tipificaciones[@contadorNumeros].AgenciaAsignada" id="tipificaciones[@contadorNumeros].AgenciaAsignada">
                                         <option value="">Seleccione la Agencia</option>
                                         @foreach (var agenciasAsignadas in agenciasDisponibles)
@@ -385,6 +385,7 @@
                 <a href="javascript:void(0);" class="btn btn-primary" id="agregarTelefonoBtn"
                     onclick="cargarEdicionDeTelefonos(@id_cliente)">Agregue un Nuevo Telefono</a>
             </div>
+            <div class="spacing"></div>
             <div id="cancelaragregarTelefonoBtnCliente" style="display: none;">
                 <a href="javascript:void(0);" class="btn btn-secondary" id="cancelaragregarTelefonoBtn"
                     onclick="descargarEdicionDeTelefonos()">Cancelar</a>
@@ -406,342 +407,123 @@
     <div class="row">
         <h3 class="label-fortip">Contacto con Cliente - Y Tipificaciones Asignadas:</h3>
         <input type="hidden" name="IdAsignacion" value="@ViewData["ID_asignacion"]">
-        <!-- Teléfono 1 -->
-        <div class="form-group row align-items-center mb-3">
-            <div class="col-12 col-md-4">
-                <label for="Telefono1" class="form-label">Teléfono 1</label>
-                <input class="form-control" name="Telefono1" id="Telefono1" type="text" value="@Model.Telefono1"
-                    readonly>
-                <div class="spacing"></div>
-                @if (@Model.Telefono1 != "0" && !string.IsNullOrEmpty(Model.Telefono1))
-                {
-                    <textarea class="form-control" id="comentarioAsesor_teldb1" data-telefono="@Model.Telefono1"
-                        data-id-cliente="@id_cliente">@Model.ComentarioTelefono1</textarea>
+
+        @for (int i = 0; i < Model.Telefonos.Count; i++)
+        {
+            int j = i + 1;
+            <!-- Teléfono @i -->
+            <div class="form-group row align-items-center mb-3">
+                <div class="col-12 col-md-4">
+                    <label for="Telefono_@j" class="form-label">Telefono @j</label>
+                    <input class="form-control" name="Telefono_@j" id="Telefono_@j" type="text" value="@Model.Telefonos[@i].Numero" readonly>
                     <div class="spacing"></div>
-                    <a href="javascript:void(0);" class="btn btn-primary"
-                        onclick="enviarComentarioTelefonoDB('@id_cliente', '@Model.Telefono1', 'comentarioAsesor_teldb1', 1)">
-                        <i class="fa fa-pencil"></i>
-                    </a>
-                }
-            </div>
-            @if (@Model.Telefono1 != "0" && !string.IsNullOrEmpty(Model.Telefono1))
-            {
-                <div class="col-12 col-md-8 mt-2 mt-md-0">
+                    @if (Model.Telefonos[@i].Numero != null && !string.IsNullOrEmpty(Model.Telefonos[@i].Numero))
+                    {
+                        <textarea class="form-control" id="comentarioAsesor_teldb_@j" data-telefono="@Model.Telefonos[@i].Numero"
+                        data-id-cliente="@id_cliente">@Model.Telefonos[@i].Comentario</textarea>
+                        <div class="spacing"></div>
+                        <a href="javascript:void(0);" class="btn btn-primary"
+                            onclick="enviarComentarioTelefonoDB('@id_cliente', '@Model.Telefonos[@i].Numero', 'comentarioAsesor_teldb_@j', @j)">
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                    }
+                </div>
+                @if (Model.Telefonos[@i].Numero != "0" && !string.IsNullOrEmpty(Model.Telefonos[@i].Numero))
+                {
+                    <div class="col-12 col-md-8 mt-2 mt-md-0">
+                        <input type="hidden" name="Tipificacion_@j" id="tipificacionId_db_@j" />
 
-                    <input type="hidden" name="Tipificacion1" id="tipificacionId_db1" />
-
-                    <label for="tipificacionSelect_db1" class="form-label mt-2">Tipificación Asignada 1: </label>
-
-                    <input class="form-control" list="tipificacionesList_db1"
-                        name="tipificacionesdb1.TipificacionDescripcion" id="tipificacionSelect_db1"
-                        placeholder="Presione 2 veces para ver las tipificaciones"
-                        oninput="actualizarIdTipificacion('db1'); verificarTipificacion('db1')" />
-
-                    <datalist id="tipificacionesList_db1">
-                        <option value="">Seleccione la descripción de Tipificación</option>
-                        @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
-                        {
-                            <option value="@tipificacion.DescripcionTipificacion" data-id="@tipificacion.IdTipificacion">
-                                @tipificacion.DescripcionTipificacion</option>
-                        }
-                    </datalist>
-
-                    <!-- Campo de Fecha Oculto por Defecto FECHA VISITA-->
-                    <div class="form-group mt-3" id="fechaVisitaContainer_db1" style="display: none;">
-                        <div class="row">
-                            <div class="col">
-                                <label for="fechaVisita_db1" class="form-label">Fecha de Visita</label>
-                                <input class="form-control" type="date" name="DerivacionDb1"
-                                    id="fechaVisita_db1" />
-                            </div>
-                        
-                            <div class="col">
-                                <select class="form-select" name="AgenciaAsignadaDb1" id="AgenciaAsignadaDb1">
-                                    <option value="">Seleccione la Agencia</option>
-                                    @foreach (var agenciasAsignadas in agenciasDisponibles)
-                                    {
-                                        <option value="@agenciasAsignadas.numSucursal">@agenciasAsignadas.numSucursal - @agenciasAsignadas.agenciaComercial</option>
-                                    }
-                                </select>
+                        <label for="tipificacionSelect_db_@j" class="form-label mt-2">Tipificacion Asignada @j:</label>
+                        <input class="form-control" list="tipificacionesList_db_@j"
+                            name="tipificacionesdbTipificacionDescripcion_@j" id="tipificacionSelect_db_@j"
+                            placeholder="Presione 2 veces para ver las tipificaciones"
+                            oninput="actualizarIdTipificacion('db_@j'); verificarTipificacion('db_@j')"
+                            type="text">
+                        <datalist id="tipificacionesList_db_@j">
+                            <option value="">Seleccione la descripción de Tipificacion</option>
+                            @foreach(var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
+                            {
+                                <option value="@tipificacion.DescripcionTipificacion" data-id="@tipificacion.IdTipificacion">
+                                    @tipificacion.DescripcionTipificacion</option>
+                            }
+                        </datalist>
+                        <div class="form-group mt-3" id="fechaVisitaContainer_db_@j" style="display: none;">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="fechaVisita_db_@j" class="form-label">Fecha de Visita:</label>
+                                    <input class="form-control" type="date" name="DerivacionDb_@j"
+                                        id="fechaVisita_db_@j" />
+                                </div>
+                                <div class="col">
+                                    <label for="AgenciaComercialDb_@j" class="form-label">Agencia Comercial:</label>
+                                    <select class="form-select" name="AgenciaComercialDb_@j" id="AgenciaComercialDb_@j">
+                                        <option value="">Seleccione la Agencia</option>
+                                        @foreach (var agenciasAsignadas in agenciasDisponibles)
+                                        {
+                                            <option value="@agenciasAsignadas.numSucursal - @agenciasAsignadas.agenciaComercial">@agenciasAsignadas.numSucursal - @agenciasAsignadas.agenciaComercial</option>
+                                        }
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <input class="form-control" id="GRUPO_MONTO" type="text" value="@numerosTraidosPorlaDB.DescripcionTipificacion1" readonly>
-                </div>
-            }
-        </div>
-
-        <hr>
-
-        <!-- Teléfono 2 -->
-        <div class="form-group row align-items-center mb-3">
-            <div class="col-12 col-md-4">
-                <label for="Telefono2" class="form-label">Teléfono 2</label>
-                <input class="form-control" name="Telefono2" id="Telefono2" type="text" value="@Model.Telefono2"
-                    readonly>
-
-                <div class="spacing"></div>
-                @if (@Model.Telefono2 != "0" && !string.IsNullOrEmpty(Model.Telefono2))
-                {
-                    <textarea class="form-control" id="comentarioAsesor_teldb2" data-telefono="@Model.Telefono2"
-                        data-id-cliente="@id_cliente">@Model.ComentarioTelefono2</textarea>
-                    <div class="spacing"></div>
-                    <a href="javascript:void(0);" class="btn btn-primary"
-                        onclick="enviarComentarioTelefonoDB('@id_cliente', '@Model.Telefono2', 'comentarioAsesor_teldb2', 2)">
-                        <i class="fa fa-pencil"></i>
-                    </a>
-                }
-
-            </div>
-            @if (@Model.Telefono2 != "0" && !string.IsNullOrEmpty(Model.Telefono2))
-            {
-                <div class="col-12 col-md-8 mt-2 mt-md-0">
-                    <input type="hidden" name="Tipificacion2" id="tipificacionId_db2" />
-
-                    <label for="tipificacionSelect_db2" class="form-label mt-2">Tipificación Asignada 2: </label>
-
-                    <input class="form-control" list="tipificacionesList_db2"
-                        name="tipificacionesdb2.TipificacionDescripcion" id="tipificacionSelect_db2"
-                        placeholder="Presione 2 veces para ver las tipificaciones"
-                        oninput="actualizarIdTipificacion('db2'); verificarTipificacion('db2')" />
-
-                    <datalist id="tipificacionesList_db2">
-                        <option value="">Seleccione la descripción de Tipificación</option>
-                        @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
+                        @if(Model.Telefonos[@i].FechaTipificacion.HasValue
+                            && Model.Telefonos[@i].FechaTipificacion.Value.Year == DateTime.Now.Year
+                            && Model.Telefonos[@i].FechaTipificacion.Value.Month == DateTime.Now.Month
+                            && Model.Telefonos[@i].DescripcionTipificacion != null)
                         {
-                            <option value="@tipificacion.DescripcionTipificacion" data-id="@tipificacion.IdTipificacion">
-                                @tipificacion.DescripcionTipificacion</option>
+                            <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Telefonos[@i].DescripcionTipificacion" readonly>
                         }
-                    </datalist>
-                    
-                    <!-- Campo de Fecha Oculto por Defecto FECHA VISITA-->
-                    <div class="form-group mt-3" id="fechaVisitaContainer_db2" style="display: none;">
-                        <div class="row">
-                            <div class="col">
-                                <label for="fechaVisita_db2" class="form-label">Fecha de Visita</label>
-                                <input class="form-control" type="date" name="DerivacionDb2"
-                                    id="fechaVisita_db2" />
+                        else if (Model.Telefonos[@i].DescripcionTipificacion != null)
+                        {
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <input 
+                                        class="form-control" 
+                                        id="GRUPO_MONTO" 
+                                        type="text" 
+                                        value="@Model.Telefonos[@i].DescripcionTipificacion" 
+                                        readonly>
+                                </div>
+                                <div class="col-auto">
+                                    <span class="tooltip-symbol" title="Esta tipificación fue extraída del anterior mes">
+                                        <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                    </span>
+                                </div>
                             </div>
-                            <div class="col">
-                                <select class="form-select" name="AgenciaAsignadaDb2" id="AgenciaAsignadaDb2">
-                                    <option value="">Seleccione la Agencia</option>
-                                    @foreach (var agenciasAsignadas in agenciasDisponibles)
-                                    {
-                                        <option value="@agenciasAsignadas.numSucursal">@agenciasAsignadas.numSucursal - @agenciasAsignadas.agenciaComercial</option>
-                                    }
-                                </select>
+                        }
+                        else if (Model.Telefonos[@i].DescripcionTipificacion == null)
+                        {
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <input 
+                                        class="form-control" 
+                                        id="GRUPO_MONTO" 
+                                        type="text" 
+                                        value="" 
+                                        readonly>
+                                </div>
+                                <div class="col-auto">
+                                    <span class="tooltip-symbol" title="Este cliente no tiene una tipificacion Asignada a este numero">
+                                        <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                    </span>
+                                </div>
                             </div>
+                        }
+
+                    </div>
+                }
+                else if (Model.Telefonos[@i].Numero == "0" || string.IsNullOrEmpty(Model.Telefonos[@i].Numero))
+                {
+                    <div class="col">
+                        <div class="alert alert-info">
+                            Este numero es inexistente y no se le pueden asignar Tipificaciones
                         </div>
                     </div>
-
-                    <input class="form-control" id="GRUPO_MONTO" type="text" value="@numerosTraidosPorlaDB.DescripcionTipificacion2" readonly>
-                </div>
-            }
-        </div>
-
-        <hr>
-
-        <!-- Teléfono 3 -->
-        <div class="form-group row align-items-center mb-3">
-            <div class="col-12 col-md-4">
-                <label for="Telefono3" class="form-label">Teléfono 3</label>
-                <input class="form-control" name="Telefono3" id="Telefono3" type="text" value="@Model.Telefono3"
-                    readonly>
-
-                <div class="spacing"></div>
-
-                @if (@Model.Telefono3 != "0" && !string.IsNullOrEmpty(Model.Telefono3))
-                {
-                    <textarea class="form-control" id="comentarioAsesor_teldb3" data-telefono="@Model.Telefono3"
-                        data-id-cliente="@id_cliente">@Model.ComentarioTelefono3</textarea>
-                    <div class="spacing"></div>
-                    <a href="javascript:void(0);" class="btn btn-primary"
-                        onclick="enviarComentarioTelefonoDB('@id_cliente', '@Model.Telefono3', 'comentarioAsesor_teldb3', 3)">
-                        <i class="fa fa-pencil"></i>
-                    </a>
                 }
             </div>
-
-            @if (@Model.Telefono3 != "0" && !string.IsNullOrEmpty(Model.Telefono3))
-            {
-                <div class="col-12 col-md-8 mt-2 mt-md-0">
-                    <input type="hidden" name="Tipificacion3" id="tipificacionId_db3" />
-
-                    <label for="tipificacionSelect_db3" class="form-label mt-2">Tipificación Asignada 3: </label>
-
-                    <input class="form-control" list="tipificacionesList_db3"
-                        name="tipificacionesdb3.TipificacionDescripcion" id="tipificacionSelect_db3"
-                        placeholder="Presione 2 veces para ver las tipificaciones"
-                        oninput="actualizarIdTipificacion('db3'); verificarTipificacion('db3')" />
-
-                    <datalist id="tipificacionesList_db3">
-                        <option value="">Seleccione la descripción de Tipificación</option>
-                        @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
-                        {
-                            <option value="@tipificacion.DescripcionTipificacion" data-id="@tipificacion.IdTipificacion">
-                                @tipificacion.DescripcionTipificacion</option>
-                        }
-                    </datalist>
-
-                    <!-- Campo de Fecha Oculto por Defecto FECHA VISITA-->
-                    <div class="form-group mt-3" id="fechaVisitaContainer_db3" style="display: none;">
-                        <div class="row">
-                            <div class="col">
-                                <label for="fechaVisita_db3" class="form-label">Fecha de Visita</label>
-                                <input class="form-control" type="date" name="DerivacionDb3"
-                                    id="fechaVisita_db3" />
-                            </div>
-                            <div class="col">
-                                <select class="form-select" name="AgenciaAsignadaDb3" id="AgenciaAsignadaDb3">
-                                    <option value="">Seleccione la Agencia</option>
-                                    @foreach (var agenciasAsignadas in agenciasDisponibles)
-                                    {
-                                        <option value="@agenciasAsignadas.numSucursal">@agenciasAsignadas.numSucursal - @agenciasAsignadas.agenciaComercial</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <input class="form-control" id="GRUPO_MONTO" type="text" value="@numerosTraidosPorlaDB.DescripcionTipificacion3" readonly>
-                </div>
-            }
-        </div>
-
-        <hr>
-
-        <div class="form-group row align-items-center mb-3">
-            <div class="col-12 col-md-4">
-                <label for="Telefono4" class="form-label">Teléfono 4</label>
-                <input class="form-control" name="Telefono4" id="Telefono4" type="text" value="@Model.Telefono4"
-                    readonly>
-
-                <div class="spacing"></div>
-                @if (@Model.Telefono4 != "0" && !string.IsNullOrEmpty(Model.Telefono4))
-                {
-                    <textarea class="form-control" id="comentarioAsesor_teldb4" data-telefono="@Model.Telefono4"
-                        data-id-cliente="@id_cliente">@Model.ComentarioTelefono4</textarea>
-                    <div class="spacing"></div>
-                    <a href="javascript:void(0);" class="btn btn-primary"
-                        onclick="enviarComentarioTelefonoDB('@id_cliente', '@Model.Telefono4', 'comentarioAsesor_teldb4', 4)">
-                        <i class="fa fa-pencil"></i>
-                    </a>
-                }
-            </div>
-
-            @if (@Model.Telefono4 != "0" && !string.IsNullOrEmpty(Model.Telefono4))
-            {
-                <div class="col-12 col-md-8 mt-2 mt-md-0">
-                    <input type="hidden" name="Tipificacion4" id="tipificacionId_db4" />
-
-                    <label for="tipificacionSelect_db4" class="form-label mt-2">Tipificación Asignada 4: </label>
-
-                    <input class="form-control" list="tipificacionesList_db4"
-                        name="tipificacionesdb4.TipificacionDescripcion" id="tipificacionSelect_db4"
-                        placeholder="Presione 2 veces para ver las tipificaciones"
-                        oninput="actualizarIdTipificacion('db4'); verificarTipificacion('db4')" />
-
-                    <datalist id="tipificacionesList_db4">
-                        <option value="">Seleccione la descripción de Tipificación</option>
-                        @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
-                        {
-                            <option value="@tipificacion.DescripcionTipificacion" data-id="@tipificacion.IdTipificacion">
-                                @tipificacion.DescripcionTipificacion</option>
-                        }
-                    </datalist>
-
-                    <!-- Campo de Fecha Oculto por Defecto FECHA VISITA-->
-                    <div class="form-group mt-3" id="fechaVisitaContainer_db4" style="display: none;">
-                        <div class="row">
-                            <div class="col">
-                                <label for="fechaVisita_db4" class="form-label">Fecha de Visita</label>
-                                <input class="form-control" type="date" name="DerivacionDb4"
-                                    id="fechaVisita_db4" />
-                            </div>
-                            <div class="col">
-                                <select class="form-select" name="AgenciaAsignadaDb4" id="AgenciaAsignadaDb4">
-                                    <option value="">Seleccione la Agencia</option>
-                                    @foreach (var agenciasAsignadas in agenciasDisponibles)
-                                    {
-                                        <option value="@agenciasAsignadas.numSucursal">@agenciasAsignadas.numSucursal - @agenciasAsignadas.agenciaComercial</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <input class="form-control" id="GRUPO_MONTO" type="text" value="@numerosTraidosPorlaDB.DescripcionTipificacion4" readonly>
-                </div>
-            }
-        </div>
-
-        <hr>
-
-        <div class="form-group row align-items-center mb-3">
-            <div class="col-12 col-md-4">
-                <label for="Telefono5" class="form-label">Teléfono 5</label>
-                <input class="form-control" name="Telefono5" id="Telefono5" type="text" value="@Model.Telefono5"
-                    readonly>
-
-                <div class="spacing"></div>
-                @if (@Model.Telefono5 != "0" && !string.IsNullOrEmpty(Model.Telefono5))
-                {
-                    <textarea class="form-control" id="comentarioAsesor_teldb5" data-telefono="@Model.Telefono5"
-                        data-id-cliente="@id_cliente">@Model.ComentarioTelefono5</textarea>
-                    <div class="spacing"></div>
-                    <a href="javascript:void(0);" class="btn btn-primary"
-                        onclick="enviarComentarioTelefonoDB('@id_cliente', '@Model.Telefono5', 'comentarioAsesor_teldb5', 5)">
-                        <i class="fa fa-pencil"></i>
-                    </a>
-                }
-            </div>
-            @if (@Model.Telefono5 != "0" && !string.IsNullOrEmpty(Model.Telefono5))
-            {
-                <div class="col-12 col-md-8 mt-2 mt-md-0">
-                    <input type="hidden" name="Tipificacion5" id="tipificacionId_db5" />
-
-                    <label for="tipificacionSelect_db5" class="form-label mt-2">Tipificación Asignada 5: </label>
-
-                    <input class="form-control" list="tipificacionesList_db5"
-                        name="tipificacionesdb5.TipificacionDescripcion" id="tipificacionSelect_db5"
-                        placeholder="Presione 2 veces para ver las tipificaciones"
-                        oninput="actualizarIdTipificacion('db5'); verificarTipificacion('db5')" />
-
-                    <datalist id="tipificacionesList_db5">
-                        <option value="">Seleccione la descripción de Tipificación</option>
-                        @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
-                        {
-                            <option value="@tipificacion.DescripcionTipificacion" data-id="@tipificacion.IdTipificacion">
-                                @tipificacion.DescripcionTipificacion</option>
-                        }
-                    </datalist>
-
-                    <!-- Campo de Fecha Oculto por Defecto FECHA VISITA-->
-                    <div class="form-group mt-3" id="fechaVisitaContainer_db5" style="display: none;">
-                        <div class="row">
-                            <div class="col">
-                                <label for="fechaVisita_db5" class="form-label">Fecha de Visita</label>
-                                <input class="form-control" type="date" name="DerivacionDb5"
-                                    id="fechaVisita_db5" />
-                            </div>
-                            <div class="col">
-                                <select class="form-select" name="AgenciaAsignadaDb5" id="AgenciaAsignadaDb5">
-                                    <option value="">Seleccione la Agencia</option>
-                                    @foreach (var agenciasAsignadas in agenciasDisponibles)
-                                    {
-                                        <option value="@agenciasAsignadas.numSucursal">@agenciasAsignadas.numSucursal - @agenciasAsignadas.agenciaComercial</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <input class="form-control" id="GRUPO_MONTO" type="text" value="@numerosTraidosPorlaDB.DescripcionTipificacion5" readonly>
-                </div>
-            }
-        </div>
-    </div>
+            <hr>
+        }
 
     <div class="spacing"></div>
 

@@ -29,17 +29,8 @@ public class DetalleTipificarClienteDTO
     public string? ColorFinal { get; set; }
 
     //Propiedades de la Tabla ClientsEnriquecido
-    public string? Telefono1 { get; set; }
-    public string? Telefono2 { get; set; }
-    public string? Telefono3 { get; set; }
-    public string? Telefono4 { get; set; }
-    public string? Telefono5 { get; set; }
-    public string? ComentarioTelefono1 { get; set; }
-    public string? ComentarioTelefono2 { get; set; }
-    public string? ComentarioTelefono3 { get; set; }
-    public string? ComentarioTelefono4 { get; set; }
-    public string? ComentarioTelefono5 { get; set; }
-
+    public List<TelefonoDTO> Telefonos { get; set; }
+    
     //Propiedas de Tasa
     public decimal? OfertaMax { get; set; }
     public decimal? TasaMinima { get; set; }
@@ -56,4 +47,16 @@ public class DetalleTipificarClienteDTO
     public decimal? Tasa36m { get; set; }
     public decimal? Cuota36m { get; set; }
 
+    public DetalleTipificarClienteDTO()
+    {
+        Telefonos = new List<TelefonoDTO>(); // Inicializa la lista
+    }
+}
+
+public class TelefonoDTO
+{
+    public string? Numero { get; set; }
+    public string? Comentario { get; set; }
+    public string? DescripcionTipificacion { get; set; }
+    public DateTime? FechaTipificacion { get; set; }
 }

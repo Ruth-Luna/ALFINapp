@@ -44,19 +44,32 @@ public class HomeController : Controller
 
     // Acción para verificar si el DNI existe
     [HttpPost]
-    public IActionResult VerificarUsuario(string dni)
+    public IActionResult VerificarUsuario(string dni, string password)
     {
         if (!dni.All(char.IsDigit))
         {
             TempData["MessageError"] = "Ingrese Solo Numeros en el DNI";
             return RedirectToAction("Index", "Home");
         }
+
+        if (password == null)
+        {
+            TempData["MessageError"] = "El campo de contrase;a no puede estar vacio.";
+            return RedirectToAction("Index", "Home");
+        }
         dni = dni.Trim();
         var usuario = _context.usuarios.FirstOrDefault(u => u.Dni.Trim() == dni);
-
         if (usuario == null)
         {
             TempData["MessageError"] = "El Usuario a Buscar no se encuentra Registrado comunicarse con su Supervisor.";
+            return RedirectToAction("Index", "Home");
+        }
+
+        var passwordUsuario = _context.usuarios.FirstOrDefault(u => u.contraseña == password && u.contraseña == password);
+
+        if (passwordUsuario == null)
+        {
+            TempData["MessageError"] = "La contraseña que ha ingresado es incorrecta, la contraseña por defecto es DNI + $clave123.";
             return RedirectToAction("Index", "Home");
         }
 
