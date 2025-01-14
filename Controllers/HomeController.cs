@@ -65,6 +65,12 @@ public class HomeController : Controller
             return RedirectToAction("Index", "Home");
         }
 
+        if (usuario.contraseña == null)
+        {
+            TempData["MessageError"] = "El usuario tuvo una eliminacion manual de su contrase;a, comunicarse con servicio tecnico";
+            return RedirectToAction("Index", "Home");
+        }
+
         var passwordUsuario = _context.usuarios.FirstOrDefault(u => u.contraseña == password && u.contraseña == password);
 
         if (passwordUsuario == null)
