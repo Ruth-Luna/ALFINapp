@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="utf-8" />
@@ -16,20 +16,33 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.css">
 </head>
 
-<body>
-    @RenderBody()
-    <div class="container">
-        <main role="main" class="pb-3">
-            
-        </main>
-    </div>
+<body class="d-flex flex-column min-vh-100">
+    <main role="main" class="flex-grow-1 d-flex">
+        @RenderBody()
+    </main>
+    <footer class="@(ViewBag.isFooterAbsoluteAtBottom == true ? "tfoot-position-login" : "") text-center p-2">
+        &copy; 2024 - AppBancoAlFIN - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    </footer>
 
-    <footer class="footer">
+
+    
+
+
+
+
+
+           @*  @RenderBody() *@
+    
+    @* <div class="container">
+        <main role="main" class="pb-3">
+        </main>
+    </div> *@
+
+    @* <footer class="footer">
         <div class="container">
             &copy; 2024 - AppBancoAlFIN - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
-
-    </footer>
+    </footer> *@
     <!-- Agregar el script de SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.js"></script>
     
