@@ -486,8 +486,11 @@ namespace ALFINapp.Controllers
                                       Estado = u.Estado,
                                       Rol = u.Rol,
                                       TotalClientesAsignados = _context.clientes_asignados.Count(ca => ca.IdUsuarioV == idUsuario),
-                                      ClientesTrabajando = _context.clientes_asignados.Count(ca => ca.IdUsuarioV == idUsuario && ca.TipificacionMayorPeso != null),
-                                      ClientesSinTrabajar = _context.clientes_asignados.Count(ca => ca.IdUsuarioV == idUsuario) - _context.clientes_asignados.Count(ca => ca.IdUsuarioV == idUsuario && ca.TipificacionMayorPeso != null)
+                                      ClientesTrabajando = _context.clientes_asignados.Count(ca => ca.IdUsuarioV == idUsuario 
+                                                                                            && ca.TipificacionMayorPeso != null),
+                                      ClientesSinTrabajar = _context.clientes_asignados.Count(ca => ca.IdUsuarioV == idUsuario) - 
+                                                            _context.clientes_asignados.Count(ca => ca.IdUsuarioV == idUsuario && 
+                                                                                            ca.TipificacionMayorPeso != null)
                                   }).FirstOrDefault();
             Console.WriteLine($"El Asesor {asesorBusqueda.NombresCompletos} ha sido encontrado");
             if (asesorBusqueda == null)
