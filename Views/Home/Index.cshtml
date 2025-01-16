@@ -1,79 +1,73 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+    ViewBag.isFooterAbsoluteAtBottom = true; // Esto aplicará las clases de posición
 }
 
 @section Styles {
     <link rel="stylesheet" href="~/css/index_page.css">
 }
 
-<section class="vh-100 background-class">
-    <div class="container py-5 h-100">
-        <div class="row d-flex align-items-center justify-content-center h-100">
-            <!-- Columna de la Imagen -->
-            <div class="col d-flex justify-content-center align-items-center">
+<div class="gradient-warm-cool flex-grow-1 d-flex justify-content-center align-items-center">
+    
+    <div class="container">
+        <div class="row align-items-center">
+
+            <!-- Imagen -->
+            <div class="col-md-6 col-12">
                 <img src="~/images/a3652.png" class="img-fluid" alt="Phone image">
             </div>
 
-            <!-- Columna del Formulario -->
-            <div class="col-md-6 form-principal">
-                <h1 class="text-center mb-4">Bienvenido</h1>
-                <form action="@Url.Action("VerificarUsuario","Home")" method="post" class="form-to-enter">
-                    <!-- Email input -->
-                    <div data-mdb-input-init class="form-outline mb-4">
-                        <label class="form-label" for="dni" style="font-size: larger;">Usuario</label>
-                        <input type="dni" id="dni" name="dni" class="form-control form-control-lg rounded-input"
-                            placeholder="Ingrese su Usuario" />
+            <!-- Formulario -->
+            <div class="col-md-6 col-12">
+                <div class="card text-white bg-deepblue" style="border-radius: 1rem;">
+                    <div class="card-body p-4">
+                        <h1 class="text-center">Bienvenido</h1>
+                        <form action="@Url.Action("VerificarUsuario","Home")" method="post">
+                            <div class="mb-3">
+                                <label for="dni" class="form-label fs-5">Usuario</label>
+                                <input type="text" name="dni" id="dni" class="form-control form-control-lg" placeholder="Ingrese su usuario">
+                            </div>
+                            <div class="mb-4">
+                                <label for="password" class="form-label fs-5">Contraseña</label>
+                                <input type="password" name="password" id="password" class="form-control form-control-lg" placeholder="Ingrese su contraseña">
+                                <span class="position-absolute end-0 pe-3 eye-icon d-flex align-items-center"
+                                    style="cursor: pointer; height: 100%;" onclick="togglePasswordVisibility()">
+                                    <i id="password-icon" class="fas fa-eye" style="font-size: 1.5rem;"></i>
+                                </span>
+                            </div>
+                            <div class="mb-4">
+                                <div class="row">
+                                    <div class="col-5">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <input class="form-check-input" type="checkbox" id="checkRecordar">
+                                            <label class="form-check-label fs-5" for="checkRecordar">
+                                                Recordar
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-7">
+                                        <div class="text-end">
+                                            <button type="button" class="btn btn-link m-0 p-0 text-white fs-5" onclick="showInitialPasswordInfo()">¿Olvidó su contraseña?</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-4 d-none" id="initialPasswordInfo">
+                                <div class="alert alert-info" role="alert">
+                                    Su contraseña inicial es su número de DNI. Para acceder, por favor agregue la cadena '<strong>$clave123</strong>'.
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn btn-light btn-lg w-200px">Iniciar Sesión</button>
+                            </div>
+                        </form>
                     </div>
-
-                    <!-- Password input -->
-                    <div data-mdb-input-init class="form-outline mb-4 position-relative">
-                        <label class="form-label" for="password" style="font-size: larger;">Contraseña</label>
-                        <div class="d-flex align-items-center position-relative">
-                            <input type="password" id="password" name="password"
-                                class="form-control form-control-lg rounded-input"
-                                placeholder="Ingrese su contraseña" />
-                            <!-- Ícono del ojito -->
-                            <span class="position-absolute end-0 pe-3 eye-icon d-flex align-items-center"
-                                style="cursor: pointer; height: 100%;" onclick="togglePasswordVisibility()">
-                                <i id="password-icon" class="fas fa-eye" style="font-size: 1.5rem;"></i>
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <!-- Checkbox -->
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="form1Example3" checked />
-                            <label class="form-check-label" for="form1Example3"> Recuerdame </label>
-                        </div>
-                        <a href="#!" onclick="showPasswordInfo()" data-bs-toggle="tooltip" data-bs-placement="top"
-                            title="La contraseña por defecto es su DNI luego agreguele la cadena $clave123"
-                            style="color: aliceblue;">
-                            Olvido la Contraseña?
-                        </a>
-
-                        <!-- Contenedor para el mensaje -->
-                        <div id="password-info" class="mt-3" style="display: none;">
-                            <p class="alert alert-info">La contraseña por defecto es su DNI luego agreguele la cadena
-                                '$clave123'</p>
-                        </div>
-
-                    </div>
-
-                    <!-- Submit button -->
-                    <div class="d-flex justify-content-center mb-4">
-                        <button type="submit" data-mdb-button-init data-mdb-ripple-init
-                            class="btn btn-lg btn-block w-50"
-                            style="background-color: rgb(255, 255, 255); color: black;">
-                            Iniciar Sesión
-                        </button>
-
-                    </div>
-                </form>
+                </div>
             </div>
+
         </div>
     </div>
-</section>
+</div>
 
 @section Scripts {
     @if (TempData["Message"] != null)
@@ -123,4 +117,24 @@
             passwordIcon.classList.add('fa-eye');
         }
     }
+    document.addEventListener('DOMContentLoaded', function () {
+        var dniInput = document.getElementById('dni');
+        var passwordInput = document.getElementById('password');
+
+        dniInput.setAttribute('maxlength', '35');
+        passwordInput.setAttribute('maxlength', '35');
+    });
+
+    function showInitialPasswordInfo() {
+        var passwordInfoElement = document.getElementById('initialPasswordInfo');
+
+        if (passwordInfoElement.classList.contains('d-none')) {
+            passwordInfoElement.classList.remove('d-none');
+            passwordInfoElement.classList.add('d-block');
+        } else if (passwordInfoElement.classList.contains('d-block')) {
+            passwordInfoElement.classList.remove('d-block');
+            passwordInfoElement.classList.add('d-none');
+        }
+    }
+
 </script>

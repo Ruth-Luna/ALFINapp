@@ -42,3 +42,15 @@ body {
   margin-bottom: 20px;
 }
 
+
+.tfoot-position-login {
+    position: relative;
+}
+@media (min-width: 768px) {
+    .tfoot-position-login {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
