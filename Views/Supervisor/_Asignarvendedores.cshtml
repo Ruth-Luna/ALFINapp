@@ -50,39 +50,15 @@
 
 
         <div class="form-group" id="guardarAsignacionesContainer">
-            <button class="btn btn-success" type="button" onclick="MostrarIdentificadorBase()">Guardar
+            <button class="btn btn-success" type="button" onclick="EnviarDatos()">Guardar
                 Asignaciones</button>
         </div>
 
-        <div class="form-group align-items-center" id="identificadorBaseContainer" style="display: none;">
-            <label for="IDENTIFICADOR_BASE">Identificador Base</label>
-            <input type="text" id="identificadorBaseInput" class="form-control">
-            <button class="btn btn-primary mt-2" onclick="EnviarDatos()">Enviar Identificador</button>
-        </div>
     </div>
 </div>
 
 <script>
-    function MostrarIdentificadorBase() {
-        // Oculta el botón y muestra el campo identificador base
-        document.getElementById('guardarAsignacionesContainer').style.display = 'none';
-        document.getElementById('identificadorBaseContainer').style.display = 'block';
-    }
-
     function EnviarDatos() {
-        const identificadorBaseInput = document.getElementById('identificadorBaseInput');
-        const identificadorBase = identificadorBaseInput.value.trim();
-
-        if (!identificadorBase) {
-            Swal.fire({
-                title: 'Error en la asignación',
-                text: 'El Identificador no puede estar Vacio',
-                icon: 'error',
-                confirmButtonText: 'Aceptar'
-            });
-            identificadorBaseInput.focus();
-            return;
-        }
 
         const asignaciones = [];
 
@@ -111,7 +87,6 @@
         console.log("Información completa a enviar:", {
             asignacionasesor: asignaciones,
             selectAsesorBase: selectAsesorBase,
-            identificadorBase: identificadorBase
         });
 
         // Enviar los datos mediante AJAX
@@ -121,7 +96,6 @@
             data: {
                 asignacionasesor: asignaciones,
                 selectAsesorBase: selectAsesorBase,
-                identificadorBase: identificadorBase
             } ,
             success: function (response) {
                 if (response.success) {
@@ -132,8 +106,6 @@
                         confirmButtonText: 'Aceptar'
                     }).then(() => {
                         // Reset UI
-                        document.getElementById('identificadorBaseInput').value = '';
-                        document.getElementById('identificadorBaseContainer').style.display = 'none';
                         document.getElementById('guardarAsignacionesContainer').style.display = 'block';
                         location.reload();
                     });

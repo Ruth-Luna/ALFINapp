@@ -50,16 +50,6 @@ namespace ALFINapp.Controllers
                                      NombresCompletos = u != null ? u.NombresCompletos : "Asesor no Asignado",
                                      DniVendedor = u != null ? u.Dni : " ",
                                  };
-            var basesFiltradas = (from ca in _context.clientes_asignados 
-                                    where ca.IdentificadorBase != null where ca.IdUsuarioS == usuarioId 
-                                        && ca.FechaAsignacionSup.HasValue
-                                        && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                                        && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
-                                    select new 
-                                    {
-                                        IdentificadorBase = ca.IdentificadorBase
-                                    }).ToList().Distinct();
-
             if (supervisorData == null)
             {
                 return NotFound("El presente Usuario Supervisor no tiene clientes Asignados");
@@ -78,7 +68,6 @@ namespace ALFINapp.Controllers
 
             var usuario = await _context.usuarios.FirstOrDefaultAsync(u => u.IdUsuario == usuarioId);
             // Filtrado de las bases
-            ViewData["basesFiltradas"] = basesFiltradas;
             ViewData["UsuarioNombre"] = usuario != null ? usuario.NombresCompletos : "Usuario No Encontrado";
             ViewData["ClientesPendientesSupervisor"] = clientesPendientesSupervisor;
             ViewData["clientesAsignadosSupervisor"] = clientesAsignadosSupervisor;

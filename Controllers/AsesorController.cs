@@ -322,7 +322,7 @@ namespace ALFINapp.Controllers
         }
 
         [HttpPost]
-        public IActionResult AsignarAsesoresPrincipales(List<AsignarAsesorDTO> asignacionasesor, string identificadorBase, string selectAsesorBase)
+        public IActionResult AsignarAsesoresPrincipales(List<AsignarAsesorDTO> asignacionasesor, string selectAsesorBase)
         {
             try
             {
@@ -371,7 +371,6 @@ namespace ALFINapp.Controllers
                     {
                         cliente.IdUsuarioV = asignacion.IdVendedor;
                         cliente.FechaAsignacionVendedor = DateTime.Now;
-                        cliente.IdentificadorBase = identificadorBase;
                     }
                     _context.SaveChanges();
                 }
