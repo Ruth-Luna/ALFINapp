@@ -18,7 +18,7 @@
 <header>
     <div class="container-fluid">
         <div class="top-container">
-            <p><strong>Fecha y hora actual:</strong> @DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")</p>
+            <p><strong>Fecha y hora actual:</strong> <span id="fechaHora"></span></p>
             <div class="buttons-container">
                 <a href="javascript.void(0)" class="btn btn-success" onclick="cargarInformes()">Informes</a>
                 <a href="@Url.Action("CerrarSesion", "User")" class="btn btn-danger">Cerrar Sesion</a>
@@ -253,4 +253,21 @@
     function cargarInformes(){
         
     }
+
+    // Función para actualizar la hora dinámicamente
+    function actualizarHora() {
+        const ahora = new Date(); // Obtiene la hora actual del cliente
+        const opciones = {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit'
+        };
+        const fechaHora = ahora.toLocaleString('es-ES', opciones); // Formato dd/MM/yyyy HH:mm:ss
+        document.getElementById('fechaHora').innerText = fechaHora;
+    }
+
+    // Actualiza la hora cada segundo
+    setInterval(actualizarHora, 1000);
+
+    // Inicializa la hora al cargar la página
+    actualizarHora();
 </script>
