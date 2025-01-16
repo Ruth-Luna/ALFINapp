@@ -22,66 +22,20 @@
 <div id="datos-cliente-existente" style="display: none;">
 </div>
 
-<div id="error-message" class="alert alert-error" style="display: none;">
+<div id="error-message" class="alert alert-danger" style="display: none;">
 </div>
 
-
-<form asp-action="AgregarCliente" asp-controller="User">
-    <div id="formulario-cliente" style="display:none; margin-top: 20px;">
-        
-        <div class="form-group">
-            <label asp-for="Dni" for="DNIForm">DNI </label>
-            <input asp-for="Dni" class="form-control" id="DNIForm" type="text" readonly>
-            <span asp-validation-for="Dni" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="XAppaterno" for="ApellidoPaterno">Apellido Paterno </label>
-            <input asp-for="XAppaterno" class="form-control" id="ApellidoPaterno" type="text"
-                placeholder="Apellido Paterno">
-            <span asp-validation-for="XAppaterno" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="XApmaterno" for="ApellidoPaterno">Apellido Materno </label>
-            <input asp-for="XApmaterno" class="form-control" id="ApellidoMaterno" type="text"
-                placeholder="Apellido Materno">
-            <span asp-validation-for="XApmaterno" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="XNombre" for="Nombres">Nombres </label>
-            <input asp-for="XNombre" class="form-control" id="Nombres" type="text" placeholder="Nombres">
-            <span asp-validation-for="XNombre" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="Edad" for="Nombres">Edad </label>
-            <input asp-for="Edad" class="form-control" id="Edad" type="text" placeholder="Edad">
-            <span asp-validation-for="Edad" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Departamento" for="Departamento">Departamento </label>
-            <input asp-for="Departamento" class="form-control" id="Departamento" type="text" placeholder="Departamento">
-            <span asp-validation-for="Departamento" class="text-danger"></span>
-        </div>
-
-        <br>
-        <button class="btn btn-success" type="submit">Agregar</button>
-    </div>
-</form>
 
 <script>
     function validarDNI() {
         const dniInput = document.getElementById("dnicliente");
         const Message = document.getElementById("error-message");
-        const formularioCliente = document.getElementById("formulario-cliente");
         const datosClienteExistente = document.getElementById("datos-cliente-existente");
         const dniForm = document.getElementById("DNIForm");
 
         const dniValue = dniInput.value;
 
         Message.style.display = "none";
-        formularioCliente.style.display = "none";
         datosClienteExistente.style.display = "none";
 
         if (dniValue === "") {
@@ -92,12 +46,13 @@
             Message.innerHTML = "El DNI debe contener exactamente 8 dígitos y solo números.";
         } else {
             $.ajax({
-                url: `/Datos/VerificarDNI`,
+                url: `/Reagregaciones/VerificarDNI`,
                 type: 'GET',
                 data: { dni: dniValue },
                 success: function (data) {
                     if (data.existe === false && data.error === false) {
-                        formularioCliente.style.display = "block";
+                        Message.style.display = "block";
+                        Message.innerHTML = data.message;
                     } else if (data.existe === false && data.error === true) {
                         Message.style.display = "block";
                         Message.innerHTML = data.message;
@@ -114,4 +69,24 @@
             });
         }
     }
+
+    // Función para cargar los datos correspondientes según la fuente base seleccionada
+    function cargarDatos(fuenteBase) {
+        // Seleccionar todas las secciones con ID que comiencen con 'detalle-campana_'
+        const todasLasSecciones = document.querySelectorAll("[id^='detalle-campana_']");
+
+        // Ocultar todas las secciones
+        todasLasSecciones.forEach(seccion => {
+            seccion.style.display = "none";
+        });
+
+        // Mostrar solo la sección correspondiente a 'fuenteBase'
+        const fuenteSeccion = document.getElementById('detalle-campana_' + fuenteBase);
+        if (fuenteSeccion) {
+            fuenteSeccion.style.display = "block";
+        } else {
+            console.warn(`No se encontró la sección con ID: detalle-campana_${fuenteBase}`);
+        }
+    }
+
 </script>

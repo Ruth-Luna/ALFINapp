@@ -33,5 +33,12 @@ public partial class AsesoresSecundariosAsignacion
     public DateTime fecha_ultima_tipificacion_secundaria { get; set; }
     [Column("id_cliente")]
     public int? id_cliente { get; set; }
-    
+    [Column("id_tipificacion_ultima")]
+    public int? id_tipificacion_ultima { get; set; }
+
+    [Column("id_tipificacion_mayor_peso")]
+    public int? id_tipificacion_mayor_peso { get; set; }
+
+    [Column("fuente_base_asignacion_secundaria")]
+    public string? fuente_base_asignacion_secundaria { get; set; }
 }

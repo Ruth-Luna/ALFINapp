@@ -169,34 +169,75 @@ namespace ALFINapp.Controllers
             try
             {
                 Console.WriteLine($"DNI recibido: {dni}");
+
+                // Buscar el cliente por DNI
                 var clienteExistente = _context.base_clientes.FirstOrDefault(c => c.Dni == dni);
-                if (clienteExistente != null)
+                if (clienteExistente == null)
                 {
-                    var detalleBaseCliente = _context.detalle_base.FirstOrDefault(db => db.IdBase == clienteExistente.IdBase);
-                    if (detalleBaseCliente != null)
-                    {
-                        // El cliente ha sido encontrado
-                        Console.WriteLine($"Cliente encontrado: {clienteExistente.XNombre} {clienteExistente.XAppaterno}");
-                        return PartialView("_DatosConsulta", detalleBaseCliente);
-                    }
-                    else
-                    {
-                        // El cliente ha sido encontrado pero no tiene detalle de campaña
-                        Console.WriteLine($"Cliente encontrado pero sin detalle de campaña: {clienteExistente.XNombre} {clienteExistente.XAppaterno}");
-                        return Json(new { existe = false, error = false, message = "El cliente no tienes detalles de campaña." });
-                    }
+                    return Json(new { existe = false, error = false, message = "El DNI no está registrado en la Base de Datos. No puede ser asignado a Usted." });
                 }
-                else
+
+                // Obtener detalles de la base asociados al cliente
+                var detalleBaseClientes = _context.detalle_base
+                                                  .Where(db => db.IdBase == clienteExistente.IdBase)
+                                                  .ToList();
+
+                if (!detalleBaseClientes.Any())
                 {
-                    return Json(new { existe = false, error = false, message = "El DNI no está registrado cargando vista para agregar nuevo usuario." });
+                    // Cliente encontrado, pero sin detalles de campaña
+                    Console.WriteLine($"Cliente encontrado pero sin detalle de campaña: {clienteExistente.XNombre} {clienteExistente.XAppaterno}");
+                    return Json(new { existe = false, error = false, message = "El cliente no tiene detalles de campaña registrados en la Base de Datos. No puede ser asignado a Usted." });
                 }
+
+                // Buscar al asesor primario
+                var AsesorPrimario = (from ca in _context.clientes_asignados
+                                      join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
+                                      join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
+                                      join u in _context.usuarios on ca.IdUsuarioV equals u.IdUsuario
+                                      where clienteExistente.IdBase == bc.IdBase
+                                      select new
+                                      {
+                                          NombreAsesorPrimario = u.NombresCompletos,
+                                          IDAsesorPrimario = ca.IdUsuarioV,
+                                          IDAsignacion = ca.IdAsignacion,
+                                          IDCliente = ce.IdCliente
+                                      }).FirstOrDefault();
+
+                if (AsesorPrimario != null)
+                {
+                    // Buscar asesores secundarios
+                    var AsesoresSecundarios = (from asa in _context.asesores_secundarios_asignacion
+                                               join u in _context.usuarios on asa.id_usuarioV equals u.IdUsuario
+                                               where asa.id_asignacion == AsesorPrimario.IDAsignacion
+                                               select new
+                                               {
+                                                   NombreAsesorSecundario = u.NombresCompletos,
+                                                   IDAsesorSecundario = asa.id_usuarioV,
+                                                   IDAsignacionSecundaria = asa.id_secundario_asignacion,
+                                               }).ToList();
+
+                    // Si no hay asesores secundarios, asignar null explícitamente (opcional)
+                    if (!AsesoresSecundarios.Any())
+                    {
+                        AsesoresSecundarios = null;
+                    }
+
+                    // Pasar información a la vista
+                    ViewData["AsesorPrimario"] = AsesorPrimario;
+                    ViewData["DetallesAsesoresSecundarios"] = AsesoresSecundarios;
+                }
+
+                Console.WriteLine($"Cliente encontrado: {clienteExistente.XNombre} {clienteExistente.XAppaterno}");
+                ViewData["DetalleGeneralCliente"] = clienteExistente;
+                return PartialView("_DatosConsulta", detalleBaseClientes);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error al verificar el DNI: {ex.Message}");
-                return Json(new { existe = false, error = true, message = ex.Message });
+                return Json(new { existe = false, error = true, message = "Ocurrió un error interno. Por favor, intente nuevamente." });
             }
         }
+
 
         [HttpPost]
         public IActionResult EnviarComentario(string Telefono, int IdCliente, string Comentario)

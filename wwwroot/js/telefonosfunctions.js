@@ -55,7 +55,9 @@ function guardarTelefonoVendedor(idcliente) {
                     confirmButtonText: 'Aceptar'
                 });
             }
-            location.reload();
+            setTimeout(function() {
+                location.reload();
+            }, 5000);
         },
         error: function (xhr, status, error) {
             Swal.fire({

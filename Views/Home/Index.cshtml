@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="~/css/index_page.css">
 }
 
-<section class="vh-100 background-class" >
+<section class="vh-100 background-class">
     <div class="container py-5 h-100">
         <div class="row d-flex align-items-center justify-content-center h-100">
             <!-- Columna de la Imagen -->
@@ -26,10 +26,18 @@
                     </div>
 
                     <!-- Password input -->
-                    <div data-mdb-input-init class="form-outline mb-4">
+                    <div data-mdb-input-init class="form-outline mb-4 position-relative">
                         <label class="form-label" for="password" style="font-size: larger;">Contraseña</label>
-                        <input type="password" id="password" name="password"
-                            class="form-control form-control-lg rounded-input" placeholder="Ingrese su contraseña" />
+                        <div class="d-flex align-items-center position-relative">
+                            <input type="password" id="password" name="password"
+                                class="form-control form-control-lg rounded-input"
+                                placeholder="Ingrese su contraseña" />
+                            <!-- Ícono del ojito -->
+                            <span class="position-absolute end-0 pe-3 eye-icon d-flex align-items-center"
+                                style="cursor: pointer; height: 100%;" onclick="togglePasswordVisibility()">
+                                <i id="password-icon" class="fas fa-eye" style="font-size: 1.5rem;"></i>
+                            </span>
+                        </div>
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -39,7 +47,8 @@
                             <label class="form-check-label" for="form1Example3"> Recuerdame </label>
                         </div>
                         <a href="#!" onclick="showPasswordInfo()" data-bs-toggle="tooltip" data-bs-placement="top"
-                            title="La contraseña por defecto es su DNI luego agreguele la cadena $clave123" style="color: aliceblue;">
+                            title="La contraseña por defecto es su DNI luego agreguele la cadena $clave123"
+                            style="color: aliceblue;">
                             Olvido la Contraseña?
                         </a>
 
@@ -93,8 +102,25 @@
 }
 
 <script>
+
     function showPasswordInfo() {
         const passwordInfo = document.getElementById('password-info');
         passwordInfo.style.display = 'block'; // Mostrar el mensaje
+    }
+
+    // Función para mostrar y ocultar la contraseña al hacer click en el ícono del ojito
+    function togglePasswordVisibility() {
+        const passwordInput = document.getElementById('password');
+        const passwordIcon = document.getElementById('password-icon');
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            passwordIcon.classList.remove('fa-eye');
+            passwordIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            passwordIcon.classList.remove('fa-eye-slash');
+            passwordIcon.classList.add('fa-eye');
+        }
     }
 </script>

@@ -1,14 +1,14 @@
 .divider:after,
 .divider:before {
-content: "";
-flex: 1;
-height: 1px;
-background: #eee;
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #eee;
 }
 
 .form-principal {
     background-color: #2d5792;
-    box-shadow: 0px 4px 8px 0px rgba(0,0,0,0.2);
+    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.2);
     transition: 0.3s;
     padding: 20px;
     color: white;
@@ -17,4 +17,24 @@ background: #eee;
 
 .background-class {
     background: linear-gradient(to bottom right, rgb(255, 243, 172), rgb(187, 214, 255));
+}
+
+/* Cambiar el color base del ojito */
+.eye-icon i {
+    color: #2d5792;
+    /* Color inicial */
+    transition: color 0.3s ease;
+    /* Animación de transición suave */
+}
+
+/* Cambiar el color al pasar el mouse */
+.eye-icon i:hover {
+    color: #1e395f;
+    /* Azul más oscuro al hover */
+}
+
+/* Cambiar el color al hacer clic (opcional) */
+.eye-icon i:active {
+    color: #68a7ff;
+    /* Azul más claro al clic */
 }

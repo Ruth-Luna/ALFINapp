@@ -38,7 +38,7 @@ namespace ALFINapp.Controllers
 
 
         [HttpGet]
-        public IActionResult DescargarClientesAsignados(DateTime fechaInicio, DateTime fechaFin, string filtroBase)
+        public IActionResult DescargarClientesAsignados(DateTime fechaInicio, DateTime fechaFin)
         {
             try
             {
@@ -111,6 +111,11 @@ namespace ALFINapp.Controllers
                 // Obtén los datos necesarios (simplificado para mostrar la idea)
                 fechaFin = fechaFin.Date.AddHours(23).AddMinutes(59).AddSeconds(59);
                 fechaInicio = fechaInicio.Date.AddMinutes(-1); // Reducir un minuto
+                /*if (filtroBase == "Identificador Por Defecto")
+                {
+                    filtroBase = string.Empty;
+                }*/
+                /*El filtro base aun no sera usado*/
                 Console.WriteLine($"Fecha de inicio: {fechaInicio}");
                 Console.WriteLine($"Fecha de fin: {fechaFin}");
 
@@ -125,7 +130,7 @@ namespace ALFINapp.Controllers
                                                 && ca.FechaAsignacionSup >= fechaInicio
                                                 && ca.FechaAsignacionSup <= fechaFin
                                                 && db.TipoBase == ca.FuenteBase
-                                                && ca.IdentificadorBase == filtroBase
+                                                /*&& ca.IdentificadorBase == filtroBase*/
                                         select new
                                         {
                                             // Todos los campos de cada tabla

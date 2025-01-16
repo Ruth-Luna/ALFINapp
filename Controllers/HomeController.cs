@@ -76,7 +76,7 @@ public class HomeController : Controller
             return RedirectToAction("Index", "Home");
         }
 
-        var passwordUsuario = _context.usuarios.FirstOrDefault(u => u.contraseña == password && u.contraseña == password);
+        var passwordUsuario = _context.usuarios.FirstOrDefault(u => u.contraseña == password && u.Dni == dni);
 
         if (passwordUsuario == null)
         {

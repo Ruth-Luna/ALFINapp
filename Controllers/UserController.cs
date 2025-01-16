@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Playwright;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using ALFINapp.Services;
 
 namespace ALFINapp.Controllers
 {
@@ -13,12 +14,14 @@ namespace ALFINapp.Controllers
     public class UserController : Controller
     {
         private readonly MDbContext _context;
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly DBServicesGeneral _dbServicesGeneral;
+        private readonly DBServicesConsultasAsesores _dbServicesAsesores;
 
-        public UserController(MDbContext context, IHttpClientFactory httpClientFactory)
+        public UserController(MDbContext context, DBServicesConsultasAsesores dbServicesAsesores, DBServicesGeneral dbServicesGeneral)
         {
             _context = context;
-            _httpClientFactory = httpClientFactory;
+            _dbServicesAsesores = dbServicesAsesores;
+            _dbServicesGeneral = dbServicesGeneral;
         }
 
         [HttpPost]
@@ -57,54 +60,15 @@ namespace ALFINapp.Controllers
         public async Task<IActionResult> Ventas()
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            // Obtener los clientes asignados al usuario
-            /*var clientesAsignados = await _context.clientes_asignados
-                                            .Where(ca => ca.IdUsuarioV == usuarioId)
-                                            .Select(ca => ca.IdCliente)
-                                            .ToListAsync();*/
 
-            // Obtener las IdBase correspondientes a los clientes asignados
-            /*var clientesGralBase = await (from ce in _context.clientes_enriquecidos
-                                          where clientesAsignados.Contains(ce.IdCliente)
-                                          select ce.IdBase
-                                            ).ToListAsync();*/
-
-            var clientes = await (from bc in _context.base_clientes
-                                  join db in _context.detalle_base on bc.IdBase equals db.IdBase
-                                  join ce in _context.clientes_enriquecidos on bc.IdBase equals ce.IdBase
-                                  join ca in _context.clientes_asignados on ce.IdCliente equals ca.IdCliente
-                                  where (ca.ClienteDesembolso != true) // Excluimos clientes con ClienteDesembolso == true
-                                        && (ca.ClienteRetirado != true)
-                                        && (db.TipoBase == ca.FuenteBase) // Filtramos por FuenteBase
-                                        && (ca.IdUsuarioV == usuarioId) // Filtramos por IdUsuarioV
-                                        && ca.FechaAsignacionVendedor.HasValue
-                                        && ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
-                                        && ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month
-                                  group new { db, bc, ca } by db.IdBase into grouped
-                                  select new
-                                  {
-                                      IdBase = grouped.Key, // Este es el valor agrupado (db.IdBase)
-                                      LatestRecord = grouped.OrderByDescending(x => x.db.FechaCarga) // Ordenamos por FechaCarga
-                                                            .FirstOrDefault() // Obtenemos el primer (más reciente) registro
-                                  }).ToListAsync();
-
-            // Mapear los resultados a DTO
-            var detallesClientes = clientes.Select(cliente => new DetalleBaseClienteDTO
+            if (usuarioId == null)
             {
-                Dni = cliente.LatestRecord?.bc.Dni ?? "",  // Default value in case of null
-                XAppaterno = cliente.LatestRecord?.bc.XAppaterno ?? "",
-                XApmaterno = cliente.LatestRecord?.bc.XApmaterno ?? "",
-                XNombre = cliente.LatestRecord?.bc.XNombre ?? "",
-                OfertaMax = cliente.LatestRecord?.db.OfertaMax ?? 0, // Default value in case of null
-                Campaña = cliente.LatestRecord?.db.Campaña ?? "",  // Default value in case of null
-                IdBase = cliente.IdBase,
-                IdAsignacion = cliente.LatestRecord?.ca.IdAsignacion,
-                FechaAsignacionVendedor = cliente.LatestRecord?.ca.FechaAsignacionVendedor,
-                ComentarioGeneral = cliente.LatestRecord?.ca.ComentarioGeneral,
-                TipificacionDeMayorPeso = cliente.LatestRecord?.ca.TipificacionMayorPeso,
-                PesoTipificacionMayor = cliente.LatestRecord?.ca.PesoTipificacionMayor,
-                FechaTipificacionDeMayorPeso = cliente.LatestRecord?.ca.FechaTipificacionMayorPeso,
-            }).ToList();
+                TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
+                return RedirectToAction("Index", "Home");
+            }
+            
+            // Coger los resultados para mostrar la página de ventas
+            var detallesClientes = await _dbServicesAsesores.DetallesClientesParaVentas(usuarioId.Value);
 
             // Total de clientes
             int totalClientes = detallesClientes.Count;
@@ -320,6 +284,12 @@ namespace ALFINapp.Controllers
                                         ce,
                                         ca
                                     }).FirstOrDefault();
+            if (detallesClientes == null)
+            {
+                TempData["MessageError"] = "Al cliente no se le permite tipificarlo.";
+                Console.WriteLine("El cliente fue Eliminado manualmente de la Tabla base_clientes");
+                return RedirectToAction("Ventas");
+            }
 
             var detalleTipificarCliente = detallesClientes != null
                 ? new DetalleTipificarClienteDTO
@@ -403,12 +373,11 @@ namespace ALFINapp.Controllers
             ViewData["Tipificaciones"] = tipificaciones;
 
             var resultados_telefonos_tipificados_vendedor = (from ta in _context.telefonos_agregados
-                                                             join ce in _context.clientes_enriquecidos on ta.IdCliente equals ce.IdCliente
-                                                             join ca in _context.clientes_asignados on ce.IdCliente equals ca.IdAsignacion
-                                                             where ce.IdBase == id_base
+                                                             where ta.IdCliente == detallesClientes.ca.IdCliente
                                                              select new
                                                              {
-                                                                 Telefono = ta.Telefono,
+                                                                 TelefonoTipificado = ta.Telefono,
+                                                                 ComentarioTelefono = ta.Comentario,
                                                                  DescripcionTipificacion = ta.UltimaTipificacion,
                                                                  FechaTipificacionSup = ta.FechaUltimaTipificacion
                                                              }).ToList();
@@ -456,13 +425,13 @@ namespace ALFINapp.Controllers
                     string AgenciaComercial)
         {
             var agenciasMapeadas = new Dictionary<string, string>
-    {
-        { "738363 - CAJAMARCA", "1" },
-        { "737490 - CASTILLA", "2" },
-        { "734281 - CHICLAYO BALTA", "3" },
-        { "734272 - CHIMBOTE", "4" },
-        { "738360 - MOSHOQUEQUE", "5" },
-    };
+            {
+                { "738363 - CAJAMARCA", "1" },
+                { "737490 - CASTILLA", "2" },
+                { "734281 - CHICLAYO BALTA", "3" },
+                { "734272 - CHIMBOTE", "4" },
+                { "738360 - MOSHOQUEQUE", "5" },
+            };
 
             if (!agenciasMapeadas.TryGetValue(AgenciaComercial, out var agenciaMapeada))
             {
@@ -696,11 +665,63 @@ namespace ALFINapp.Controllers
                 _context.clientes_asignados.Update(ClienteAsignado);
             }
 
+            if (countNonNull == 1)
+            {
+                var clienteDatos = await _dbServicesAsesores.ObtenerDetallesClientes(IdAsignacion) as dynamic;
+                var DNIAsesor = _dbServicesGeneral.ConseguirDNIUsuarios(usuarioId);
+
+                var telefonoDerivacion = string.Empty;
+                var agenciaDerivacion = string.Empty;
+
+                // Buscar la primera coincidencia de un teléfono con su respectiva tipificación y agencia
+                for (int i = 0; i < tipificaciones.Count; i++)
+                {
+                    if (tipificaciones[i] == 2) // Verifica si la tipificación es 2
+                    {
+                        telefonoDerivacion = telefonos[i]; // Asigna el teléfono correspondiente
+                        agenciaDerivacion = agenciasComerciales[i]; // Asigna la agencia correspondiente
+                        break; // Salir del bucle después de encontrar la primera coincidencia
+                    }
+                }
+
+                // Validar que se haya encontrado un teléfono y una agencia antes de proceder
+                if (string.IsNullOrEmpty(telefonoDerivacion) || string.IsNullOrEmpty(agenciaDerivacion))
+                {
+                    TempData["MessageError"] = "No se encontró un teléfono válido con la tipificación requerida.";
+                    return RedirectToAction("Ventas");
+                }
+
+                var derivacionesAsesores = new DerivacionesAsesores
+                {
+                    FechaDerivacion = DateTime.Now,
+                    DniAsesor = DNIAsesor,
+                    DniCliente = clienteDatos.Dni,
+                    IdCliente = clienteDatos.IdCliente,
+                    NombreCliente = clienteDatos.XNombre + " " + clienteDatos.XAppaterno + " " + clienteDatos.XApmaterno,
+                    TelefonoCliente = telefonoDerivacion,
+                    NombreAgencia = "73"+agenciaDerivacion,
+                    FueProcesado = false,
+                };
+
+                var SeAgrego = await _dbServicesAsesores.AgregarDerivacionParaFormularios(derivacionesAsesores);
+                if (SeAgrego)
+                {
+                    TempData["Message"] = "Se ha agregado la derivación correctamente. Esta sera enviada automaticamente";
+                }
+                else
+                {
+                    TempData["MessageError"] = "Ha ocurrido un error al enviar la derivación";
+                }
+            }
+
             // Guardar cambios en la base de datos
             _context.clientes_enriquecidos.Update(ClientesEnriquecido);
             _context.SaveChanges();
 
-            if (countNonNull == 1)
+            TempData["Message"] = "Las tipificaciones se han guardado correctamente (Se han Obviado los campos Vacios y los campos que fueron llenados con datos incorrectos)";
+            return RedirectToAction("Ventas");
+
+            /*if (countNonNull == 1)
             {
                 var client = _httpClientFactory.CreateClient();
                 var dniAsesor = (from u in _context.usuarios
@@ -751,17 +772,15 @@ namespace ALFINapp.Controllers
                 }
                 else
                 {
-
                     TempData["MessageError"] = response.errorMessage?.Replace("\n", "\\n")
                                         ?.Replace("\r", "")
                                         ?.Replace("\"", "\\\"")
                                         ?.Replace("'", "\\'");
                     return RedirectToAction("Ventas");
                 }
-            }
+            }*/
 
-            TempData["Message"] = "Las tipificaciones se han guardado correctamente (Se han Obviado los campos Vacios y los campos que fueron llenados con datos incorrectos)";
-            return RedirectToAction("Ventas");
+            
         }
 
         /*[HttpPost]
