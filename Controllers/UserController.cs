@@ -359,6 +359,8 @@ namespace ALFINapp.Controllers
                     Oferta36m = detallesClientes.db.Oferta36m,
                     Tasa36m = detallesClientes.db.Tasa36m,
                     Cuota36m = detallesClientes.db.Cuota36m,
+                    Usuario = detallesClientes.db.Usuario,
+                    SegmentoUser = detallesClientes.db.SegmentoUser,
                 }
                 : null;
 

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using ALFINapp.Services;
 
 namespace ALFINapp.Controllers
 {
@@ -13,9 +14,11 @@ namespace ALFINapp.Controllers
     public class SupervisorController : Controller
     {
         private readonly MDbContext _context;
-        public SupervisorController(MDbContext context)
+        private readonly DBServicesConsultasSupervisores _dbServicesConsultasSupervisores;
+        public SupervisorController(MDbContext context, DBServicesConsultasSupervisores dbServicesConsultasSupervisores)
         {
             _context = context;
+            _dbServicesConsultasSupervisores = dbServicesConsultasSupervisores;
         }
         [HttpGet]
         public async Task<IActionResult> VistaMainSupervisor(int page = 1, int pageSize = 20)
@@ -80,42 +83,52 @@ namespace ALFINapp.Controllers
         }
 
         [HttpGet]
-        public IActionResult AsignarVendedorView()
+        public async Task<IActionResult> AsignarVendedorView()
         {
             var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            var vendedoresConClientes = (from u in _context.usuarios
-                                         where u.Rol == "VENDEDOR" && u.IDUSUARIOSUP == usuarioId
-                                         join ca in _context.clientes_asignados
-                                         on u.IdUsuario equals ca.IdUsuarioV into clientes
-                                         from ca in clientes.DefaultIfEmpty() // Esta parte asegura que incluso si no hay clientes, el vendedor se incluya
-                                         group ca by new
-                                         {
-                                             u.NombresCompletos,
-                                             u.IdUsuario,
-                                         } into grouped
-                                         select new VendedorConClientesDTO
-                                         {
-                                             NombresCompletos = grouped.Key.NombresCompletos,
-                                             IdUsuario = grouped.Key.IdUsuario,
-                                             NumeroClientes = grouped.Count(c => c != null
-                                                    && c.FechaAsignacionVendedor.HasValue
-                                                    && c.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                                                    && c.FechaAsignacionSup.Value.Month == DateTime.Now.Month) // Contamos solo los clientes asignados, ignorando los null
-                                         }).ToList();
+            if (usuarioId == null)
+            {
+                TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
+                return RedirectToAction("Index", "Home");
+            }
+            var GetVendedoresAsignados = await _dbServicesConsultasSupervisores.GetAsesorsFromSupervisor(usuarioId);
+            if (GetVendedoresAsignados.IsSuccess == false)
+            {
+                return Json(new { success = false, message = $"{GetVendedoresAsignados.Message}" });
+            }
+            var vendedoresAsignados = GetVendedoresAsignados.Data;
 
-            var BasesAsignadas = (from ca in _context.clientes_asignados
-                                  where ca.IdUsuarioS == usuarioId
-                                          && ca.FechaAsignacionSup.HasValue
-                                          && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                                          && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
-                                  select new { ca.FuenteBase })
-                                    .Distinct()
-                                    .ToList();
+            // Inicializar la lista de VendedorConClientesDTO
+            var vendedoresConClientes = new List<VendedorConClientesDTO>();
+
+            foreach (var vendedorIndividual in vendedoresAsignados)
+            {
+                // Llamada al servicio para obtener el número de clientes y el mapeo de datos
+                var vendedorIndividualMapeado = await _dbServicesConsultasSupervisores.GetNumberTipificaciones(vendedorIndividual, usuarioId.Value);
+
+                if (vendedorIndividualMapeado.IsSuccess == false || vendedorIndividualMapeado.Data == null)
+                {
+                    return Json(new { success = false, message = $"{vendedorIndividualMapeado.Message}" });
+                }
+
+                // Agregar el VendedorConClientesDTO mapeado a la lista
+                vendedoresConClientes.Add(vendedorIndividualMapeado.Data);
+            }
+
             if (vendedoresConClientes == null)
             {
-                TempData["MessageError"] = "La consulta para dar asesores ha fallado";
-                return RedirectToAction("VistaMainSupervisor", "Supervisor");
+                return Json(new { success = false, message = $"La consulta para dar asesores ha fallado" });
             }
+
+            var GetBasesAsignadas = await _dbServicesConsultasSupervisores.GetBasesClientes(usuarioId.Value);
+
+            if (GetBasesAsignadas.IsSuccess == false)
+            {
+                return Json(new { success = false, message = $"{GetBasesAsignadas.Message}" });
+            }
+
+            var BasesAsignadas = GetBasesAsignadas.Data;
+            
             ViewData["BasesAsignadas"] = BasesAsignadas;
             return PartialView("_Asignarvendedores", vendedoresConClientes);
         }
@@ -475,10 +488,10 @@ namespace ALFINapp.Controllers
                                       Estado = u.Estado,
                                       Rol = u.Rol,
                                       TotalClientesAsignados = _context.clientes_asignados.Count(ca => ca.IdUsuarioV == idUsuario),
-                                      ClientesTrabajando = _context.clientes_asignados.Count(ca => ca.IdUsuarioV == idUsuario 
+                                      ClientesTrabajando = _context.clientes_asignados.Count(ca => ca.IdUsuarioV == idUsuario
                                                                                             && ca.TipificacionMayorPeso != null),
-                                      ClientesSinTrabajar = _context.clientes_asignados.Count(ca => ca.IdUsuarioV == idUsuario) - 
-                                                            _context.clientes_asignados.Count(ca => ca.IdUsuarioV == idUsuario && 
+                                      ClientesSinTrabajar = _context.clientes_asignados.Count(ca => ca.IdUsuarioV == idUsuario) -
+                                                            _context.clientes_asignados.Count(ca => ca.IdUsuarioV == idUsuario &&
                                                                                             ca.TipificacionMayorPeso != null)
                                   }).FirstOrDefault();
             Console.WriteLine($"El Asesor {asesorBusqueda.NombresCompletos} ha sido encontrado");
@@ -601,12 +614,12 @@ namespace ALFINapp.Controllers
         {
             try
             {
-                
+
                 return PartialView("_InformesTipificacionesAsesores");
             }
             catch (System.Exception ex)
             {
-                return Json(new {error = true, message = ex.Message});  // Devuelve el error
+                return Json(new { error = true, message = ex.Message });  // Devuelve el error
                 throw;
             }
         }

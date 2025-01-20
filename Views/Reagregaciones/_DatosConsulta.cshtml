@@ -33,8 +33,9 @@
 }
 
 <div class="container">
-    <div class="row mb-2">
-        <h2>Consulta de Campañas</h2>
+    <div class="row">
+        <h3 class="label-fortip">Consulta de Campañas</h3>
+        <div class="spacing"></div>
         <ul class="nav nav-pills" id="fuenteBaseTabs" role="tablist">
             @foreach (var datos in Model)
             {
@@ -66,7 +67,7 @@
                 </div>
                 <div class="form-group align-items-center mb-2">
                     <input type="text" id="asesor_primario" class="form-control"
-                        value="@AsesorPrimario.NombreAsesorPrimario.ToUpper()">
+                        value="@AsesorPrimario.NombreAsesorPrimario.ToUpper()" readonly>
                 </div>
             }
             @if (AsesorSecundario != null)
@@ -78,7 +79,7 @@
                 {
                     <div class="form-group align-items-center mb-2">
                         <input type="text" id="asesores-secundarios" class="form-control"
-                            value="@asesorSec.NombreAsesorSecundario.ToUpper()">
+                            value="@asesorSec.NombreAsesorSecundario.ToUpper()" readonly>
                     </div>
                 }
             }
@@ -264,6 +265,24 @@
                                 readonly>
                         </div>
                     </div>
+                    <div class="form-group row align-items-center mb-2">
+                        <div class="col-md-6">
+                            <label for="usuario_tipo">Usuario Tipo:</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" id="usuario_tipo" class="form-control" value="@datos.Usuario" required
+                                readonly>
+                        </div>
+                    </div>
+                    <div class="form-group row align-items-center mb-2">
+                        <div class="col-md-6">
+                            <label for="usuario_segmento">Usuario Segmento:</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" id="usuario_segmento" class="form-control" value="@datos.SegmentoUser" required
+                                readonly>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -271,8 +290,7 @@
 
     <div class="form-group row align-items-center">
         <div class="col-md-12">
-            <a class="btn btn-primary" href="" onclick="TomarEsteCliente(@DetalleGeneralCliente.Dni)">Tipifique Este Cliente</a>
+            <a class="btn btn-primary" href="javascript:void(0);" onclick="TomarEsteCliente(@DetalleGeneralCliente.Dni)">Tipifique Este Cliente</a>
         </div>
     </div>
-
 </div>

@@ -1,7 +1,7 @@
-@model IEnumerable<VendedorConClientesDTO>
+@model List<VendedorConClientesDTO>
 
 @{
-    var BasesAsignadas = ViewData["BasesAsignadas"] as IEnumerable<dynamic>;
+    var BasesAsignadas = ViewData["BasesAsignadas"] as IEnumerable<string>;
 }
 
 <div class="container-fluid">
@@ -11,7 +11,7 @@
             <select class="form-select" name="selectAsesorBase" id="selectAsesorBase">
                 @foreach (var BasesCreadas in BasesAsignadas)
                 {
-                    <option value="@BasesCreadas.FuenteBase">@BasesCreadas.FuenteBase</option>
+                    <option value="@BasesCreadas">@BasesCreadas</option>
                 }
             </select>
         </div>

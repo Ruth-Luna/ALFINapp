@@ -27,6 +27,8 @@ public class DetalleTipificarClienteDTO
     public string? ClienteNuevo { get; set; }
     public string? Color { get; set; }
     public string? ColorFinal { get; set; }
+    public string? Usuario { get; set; }
+    public string? SegmentoUser { get; set; }
 
     //Propiedades de la Tabla ClientsEnriquecido
     public List<TelefonoDTO> Telefonos { get; set; }

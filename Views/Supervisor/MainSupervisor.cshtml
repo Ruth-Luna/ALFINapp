@@ -4,10 +4,10 @@
     ViewData["Title"] = "Ventas del Usuario";
     var usuarioNombre = ViewData["UsuarioNombre"];
 
-    var currentPage = (int)ViewData["CurrentPage"];
-    var totalPages = (int)ViewData["TotalPages"];
-    var pageSize = (int)ViewData["PageSize"];
-    var clientesPendientesSupervisor = (int)ViewData["ClientesPendientesSupervisor"];
+    var currentPage = (int)(ViewData["CurrentPage"] ?? 10);
+    var totalPages = (int)(ViewData["TotalPages"] ?? 10);
+    var pageSize = (int)(ViewData["PageSize"] ?? 10);
+    var clientesPendientesSupervisor = (int)(ViewData["ClientesPendientesSupervisor"] ?? 0);
 }
 
 @section Styles {
@@ -17,6 +17,9 @@
 <header>
     <div class="container-fluid">
         <div class="top-container">
+            <div class="buttons-container">
+                <a href="javascript.void(0)" onclick="cargarCuentaModificacion()"><i class="fa  fa-user-circle"></i></a>
+            </div>
             <p><strong>Fecha y hora actual:</strong> <span id="fechaHora"></span></p>
             <div class="buttons-container">
                 <a href="javascript.void(0)" class="btn btn-success" onclick="cargarInformes()">Informes</a>
@@ -241,10 +244,6 @@
 
 
 <script>
-    function cargarInformes(){
-        
-    }
-
     // Función para actualizar la hora dinámicamente
     function actualizarHora() {
         const ahora = new Date(); // Obtiene la hora actual del cliente

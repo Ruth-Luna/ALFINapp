@@ -3,8 +3,18 @@ function loadAsignarClienteAVendedor() {
         url: '/Supervisor/AsignarVendedorView',
         type: 'GET',
         success: function (result) {
-            $('#modalContentAsignarVend').html(result);
-            $('#asignarVendModal').modal('show');
+            if (result.success != false) {
+                $('#modalContentAsignarVend').html(result);
+                $('#asignarVendModal').modal('show');
+            } else {
+                Swal.fire({
+                    title: 'Error al cargar los datos',
+                    text: `${result.message}`,
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+                return;
+            }
         },
         error: function () {
             Swal.fire({
