@@ -2,8 +2,7 @@
 
 @{
     var DetalleGeneralCliente = ViewData["DetalleGeneralCliente"] as ALFINapp.Models.BaseCliente;
-    var AsesorPrimario = ViewData["AsesorPrimario"] as dynamic;
-    var AsesorSecundario = ViewData["AsesorSecundario"] as IEnumerable<dynamic>;
+    var AsesoresGenerales = ViewData["AsesoresGeneral"] as IEnumerable<dynamic>;
 }
 
 @functions {
@@ -60,32 +59,16 @@
                     value="@(DetalleGeneralCliente.XAppaterno + " " + DetalleGeneralCliente.XApmaterno + ", " + DetalleGeneralCliente.Dni)"
                     readonly>
             </div>
-            @if (AsesorPrimario != null)
+            @foreach (var AsesorPrimario in AsesoresGenerales)
             {
                 <div class="alert alert-warning mt-4" role="alert">
-                    El cliente tiene un asesor primario:
+                    El cliente tiene los siguientes asesores asignados:
                 </div>
                 <div class="form-group align-items-center mb-2">
                     <input type="text" id="asesor_primario" class="form-control"
                         value="@AsesorPrimario.NombreAsesorPrimario.ToUpper()" readonly>
                 </div>
             }
-            @if (AsesorSecundario != null)
-            {
-                <div class="alert alert-warning" role="alert">
-                    El cliente tiene los siguientes asesores Secundarios.
-                </div>
-                foreach (var asesorSec in AsesorSecundario)
-                {
-                    <div class="form-group align-items-center mb-2">
-                        <input type="text" id="asesores-secundarios" class="form-control"
-                            value="@asesorSec.NombreAsesorSecundario.ToUpper()" readonly>
-                    </div>
-                }
-            }
-        </div>
-        <div class="alert alert-info mt-2" role="alert">
-            El cliente a buscar tiene las siguientes ofertas asignadas
         </div>
     </div>
 
@@ -94,6 +77,9 @@
     @foreach (var datos in Model)
     {
         <div id="detalle-campana_@datos.TipoBase" style="display: none;">
+            <div class="alert alert-info mt-2" role="alert">
+                El cliente a buscar tiene las siguientes ofertas asignadas
+            </div>
             <div class="row mb-2">
                 <div class="col">
                     <legend>
@@ -290,7 +276,7 @@
 
     <div class="form-group row align-items-center">
         <div class="col-md-12">
-            <a class="btn btn-primary" href="javascript:void(0);" onclick="TomarEsteCliente(@DetalleGeneralCliente.Dni)">Tipifique Este Cliente</a>
+            <a class="btn btn-primary" href="javascript:void(0);" onclick="TakeThisClient(@DetalleGeneralCliente.Dni)">Tipifique Este Cliente</a>
         </div>
     </div>
 </div>

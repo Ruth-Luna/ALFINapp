@@ -10,8 +10,6 @@ public partial class AsesoresSecundariosAsignacion
     [Key]
     [Column("id_secundario_asignacion")]
     public int id_secundario_asignacion { get; set; }
-    [Column("id_asignacion")]
-    public int? id_asignacion { get; set; }
     [Column("id_usuarioV")]
     public int? id_usuarioV { get; set; }
     [Column("fecha_asignacion_secundarioV")]

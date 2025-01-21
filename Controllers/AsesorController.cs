@@ -344,6 +344,7 @@ namespace ALFINapp.Controllers
                 {
                     return Json(new { success = false, message = "No se ha llenado ninguna entrada. Los campos no pueden estar vacíos." });
                 }
+                int contadorClientesAsignados = 0;
                 foreach (var asignacion in asignacionasesor)
                 {
                     Console.WriteLine($"IdVendedor: {asignacion.IdVendedor}, NumClientes: {asignacion.NumClientes}");
@@ -353,6 +354,7 @@ namespace ALFINapp.Controllers
                     }
 
                     int nClientes = asignacion.NumClientes;
+                    contadorClientesAsignados = contadorClientesAsignados + nClientes;
                     var clientesDisponibles = _context.clientes_asignados
                                             .Where(ca => ca.IdUsuarioS == idSupervisorActual && ca.IdUsuarioV == null
                                                     && ca.FechaAsignacionSup.HasValue && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
@@ -380,7 +382,8 @@ namespace ALFINapp.Controllers
                 }
                 else
                 {
-                    return Json(new { success = true, message = $"Se han modificado {asignacionasesor.Count} asignaciones correctamente." });
+
+                    return Json(new { success = true, message = $"Se han modificado {contadorClientesAsignados} asignaciones correctamente." });
                 }
             }
 

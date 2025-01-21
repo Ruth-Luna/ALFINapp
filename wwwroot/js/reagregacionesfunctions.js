@@ -1,4 +1,4 @@
-function TomarEsteCliente(DNIdatos) {
+function TakeThisClient(DNIdatos) {
     console.log("Función llamada", DNIdatos); // Verifica si se llama la función
     // Identificar la TipoBase activa
     const activeTab = document.querySelector('.nav-link.active');

@@ -11,7 +11,7 @@ namespace ALFINapp.Services
     public class DBServicesConsultasSupervisores
     {
         private readonly MDbContext _context;
-        public DBServicesConsultasSupervisores (MDbContext context)
+        public DBServicesConsultasSupervisores(MDbContext context)
         {
             _context = context;
         }
@@ -34,14 +34,24 @@ namespace ALFINapp.Services
             }
         }
 
+        /// <summary>
+        /// This method retrieves the number of clients assigned to a specific asesor and supervisor.
+        /// It uses a stored procedure to get the data and maps it to a DTO object.
+        /// </summary>
+        /// <param name="AsesorBusqueda">The asesor for which the number of clients will be retrieved.</param>
+        /// <param name="IdSupervisor">The supervisor's id to filter the asesor.</param>
+        /// <returns>
+        /// A tuple containing a boolean indicating success or failure, a message describing the outcome,
+        /// and a nullable VendedorConClientesDTO object containing the data.
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, VendedorConClientesDTO? Data)> GetNumberTipificaciones(Usuario AsesorBusqueda, int IdSupervisor)
         {
             try
             {
                 var numeroClientes = _context.numeros_enteros_dto
-                                                .FromSqlRaw("EXEC SP_CONSEGUIR_NUM_CLIENTES_POR_ASESOR @AsesorId = {0}, @SupervisorId = {1}", 
+                                                .FromSqlRaw("EXEC SP_CONSEGUIR_NUM_CLIENTES_POR_ASESOR @AsesorId = {0}, @SupervisorId = {1}", /// This stored Procedure is used to get the number of clients assigned to an asesor.
                                                 AsesorBusqueda.IdUsuario, IdSupervisor)
-                                                .AsEnumerable() // Trae los resultados a memoria.
+                                                .AsEnumerable()
                                                 .FirstOrDefault();
 
                 if (numeroClientes == null)
@@ -53,7 +63,7 @@ namespace ALFINapp.Services
                 {
                     NombresCompletos = AsesorBusqueda.NombresCompletos,
                     IdUsuario = AsesorBusqueda.IdUsuario,
-                    NumeroClientes = numeroClientes.NumeroEntero // Asumiendo que el campo en el DTO es 'NumeroClientes'
+                    NumeroClientes = numeroClientes.NumeroEntero
                 };
                 return (true, $"La Consulta se produjo con exito", vendedorClientesDTO);
             }
@@ -68,11 +78,11 @@ namespace ALFINapp.Services
             try
             {
                 var BasesAsignadas = await (from ca in _context.clientes_asignados
-                                                where ca.IdUsuarioS == SupervisorId
-                                                    && ca.FechaAsignacionSup.HasValue
-                                                    && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                                                    && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
-                                                select new { ca.FuenteBase })
+                                            where ca.IdUsuarioS == SupervisorId
+                                                && ca.FechaAsignacionSup.HasValue
+                                                && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
+                                                && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
+                                            select new { ca.FuenteBase })
                                                 .Distinct()
                                                 .ToListAsync();
 
@@ -93,5 +103,96 @@ namespace ALFINapp.Services
                 return (false, $"Ocurrió un error al obtener los asesores: {ex.Message}", null);
             }
         }
+        public async Task<(bool IsSuccess, string Message, List<Usuario>? Data)> GetGeneralSupervisores()
+        {
+            try
+            {
+                var supervisores = await _context.usuarios
+                                    .Where(u => u.Rol == "SUPERVISOR")
+                                    .ToListAsync();
+                if (supervisores.Count == 0)
+                {
+                    return (false, "No hay supervisores registrados", null);
+                }
+                return (true, "Los supervisores han sido correctamente enviados", supervisores);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, $"Ocurrió un error al obtener los supervisores: {ex.Message}", null);
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message, SupervisorConAsesoresDTO? Data)> GetAssessorsFromSupervisor(Usuario SupervisorBusqueda)
+        {
+            try
+            {
+                var IdVendedoresAsignados = await (from ca in _context.clientes_asignados
+                                                   where ca.IdUsuarioS == SupervisorBusqueda.IdUsuario
+                                                           && ca.FechaAsignacionSup.HasValue
+                                                           && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
+                                                           && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
+                                                   select ca.IdUsuarioV).Distinct().ToListAsync();
+
+                if (IdVendedoresAsignados.Count() == 0)
+                {
+                    // El supervisor no tiene asesores asignados
+                    return (true, "El supervisor no tiene asesores asignados", null);
+                }
+
+                var AsesoresDelSupervisor = await _context.usuarios
+                    .Where(u => IdVendedoresAsignados.Contains(u.IdUsuario))
+                    .ToListAsync();
+
+                var DataToBeReturned = new SupervisorConAsesoresDTO
+                {
+                    TotalAsesores = IdVendedoresAsignados.Count(),
+                    AsesoresDelSupervisor = AsesoresDelSupervisor
+                };
+                return (true, $"La Consulta se produjo con exito", DataToBeReturned);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, $"Ocurrió un error al obtener los supervisores: {ex.Message}", null);
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message, List<Usuario>? Data)> GetAllSupervisor()
+        {
+            try
+            {
+                var GetAllSupervisor = await _context.usuarios
+                                    .Where(u => u.Rol == "SUPERVISOR")
+                                    .ToListAsync();
+                if (GetAllSupervisor.Count == 0)
+                {
+                    return (false, "No hay supervisores registrados", null);
+                }
+                return (true, "La consulta se desarrollo con exito", GetAllSupervisor);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, "Ocurrio un error con una consulta: " + ex.Message, null);
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message, List<Usuario>? Data)> GetAllAssessors()
+        {
+            try
+            {
+                var GetAllAssessors = await _context.usuarios
+                                   .Where(u => u.Rol == "VENDEDOR")
+                                   .ToListAsync();
+                if (GetAllAssessors.Count == 0)
+                {
+                    return (false, "No hay asesores registrados para este supervisor", null);
+                }
+                return (true, "La consulta se desarrollo con exito", GetAllAssessors);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, "Ocurrio un error con una consulta: " + ex.Message, null);
+            }
+        }
+        //... other methods...
     }
 }

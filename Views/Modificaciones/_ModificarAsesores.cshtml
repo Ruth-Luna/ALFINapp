@@ -1,0 +1,78 @@
+@model List<ALFINapp.Models.UsuarioAsesorDTO>
+
+@{
+    var asesoresConClientes = ViewData["asesoresConClientes"] as List<dynamic>;
+    int contador = 0;
+}
+
+<h3>Seccion Modificar asignaciones del Asesor</h3>
+<div class="row">
+    <div>
+        <label for="selectAsesor" class="form-label">Seleccione un Asesor</label>
+        <select class="form-select" id="selectAsesor" name="selectAsesor" onchange="cargarInterfazAsesor(this.value)">
+            <option value="">Seleccione un Asesor</option>
+            @foreach (var AsesorAsignados in Model)
+            {
+                <option value="@AsesorAsignados.IdUsuario">@AsesorAsignados.NombresCompletos</option>
+            }
+        </select>
+    </div>
+
+    <div class="spacing"></div>
+
+    <div id="interfazAsesorSelect" class="row mt-10" style="display: none;">
+        <!-- Aqui se cargara la vista parcial del asesor seleccionado -->
+    </div>
+
+    <hr>
+
+</div>
+
+<div id="modificarXTipificacionSeccion">
+    <h3 class="label-fortip-sup"> Modificar Asignacion de Asesores Por Tipificacion
+    </h3>
+    <div class="row">
+        <div>
+            <div class="alert alert-info" role="alert">
+                En esta Seccion podra Modificar las asignaciones de los asesores por las Tipificaciones de los Clientes
+            </div>
+
+            <div class="button-container mb-10">
+                <a href="javascript:void(0);" class="btn btn-success"
+                    onclick="cargarAsesoresTipificacionesView()">Mostrar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="interfazTipificacionXAsesorSelect" class="row mt-10" style="display: none;">
+    <!-- Aqui se cargara la vista parcial del las Tipificaciones por asesores -->
+</div>
+
+<div class="row">
+    <div class="spacing"></div>
+    <hr>
+</div>
+
+<div id="seccionAgregarAsesores">
+    <h3>Agregar Asesores</h3>
+    <div class="row">
+        <div>
+            <div class="alert alert-info" role="alert">
+                En esta Seccion podra Agregar nuevos asesores
+            </div>
+            <div class="button-container mb-10">
+                <button type="button" class="btn btn-primary" onclick="agregarNuevoAsesorView()">Agregar un Nuevo
+                    Asesor</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="interfazAgregarAsesor" class="row mt-10" style="display: none;">
+
+</div>
+
+<script>
+    
+</script>

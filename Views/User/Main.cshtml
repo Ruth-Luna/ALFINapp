@@ -27,9 +27,8 @@
 <header>
     <div class="container-fluid">
         <div class="top-container">
-            <div class="buttons-container">
-                <a href="javascript.void(0)" onclick="cargarCuentaModificacion()"><i class="fa  fa-user-circle"></i></a>
-            </div>
+            <a href="javascript:void(0)" class="btn" onclick="showMyModal('Accounts','GetInformationForAccounts','GET','Datos Personales')"
+                style="color: white;"><i class="fa fa-user-circle fa-3x"></i></a>
             <p><strong>Fecha y hora actual:</strong> @DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")</p>
             <div class="buttons-container">
                 <a href="javascript:void(0);" class="btn btn-success" onclick="openAddClientModal()">Agregar Cliente</a>
@@ -248,6 +247,23 @@
     </div>
 </div>
 
+<div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="GeneralTemplateTitleModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalContentGeneralTemplate">
+                    <!-- Aquí se cargará el formulario de agregar cliente -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @section Scripts {
     @if (TempData["Message"] != null)
     {
@@ -278,11 +294,12 @@
             });
         </script>
     }
-
     <script src="~/js/mainfunctions.js"></script>
     <script src="~/js/commentfunctions.js"></script>
     <script src="~/js/telefonosfunctions.js"></script>
     <script src="~/js/tipificacionesfunctions.js"></script>
     <script src="~/js/tablefunctions.js"></script>
     <script src="~/js/reagregacionesfunctions.js"></script>
+    <script src="~/js/accountfunctions.js"></script>
+    <script src="~/js/generalfunctions.js"></script>
 }

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using ALFINapp.Models;
 
 namespace ALFINapp.Services
 {
@@ -37,5 +39,48 @@ namespace ALFINapp.Services
                 throw;
             }
         }
+        public async Task<(bool IsSuccess, string Message, Usuario? Data)> GetUserInformation(int IdUsuario)
+        {
+            try
+            {
+                var FoundUser = await _context.usuarios
+                                    .Where(u => u.IdUsuario == IdUsuario)
+                                    .FirstOrDefaultAsync();
+                
+                if (FoundUser == null)
+                {
+                    return (false, "El usuario a buscar no se encuentra registrado", null);
+                }
+
+                return (true, "Usuario encontrado correctamente", FoundUser);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message, null);
+            }
+        }
+        public async Task <(bool IsSuccess, string Message)> UpdatePasswordGeneralFunction (int IdUsuario, string password)
+        {
+            try
+            {
+                var user = await _context.usuarios.Where(u => u.IdUsuario == IdUsuario)
+                                    .FirstOrDefaultAsync();
+                
+                if (user == null)
+                {
+                    return (false, "El usuario a modificar no se encuentra registrado");
+                }
+                
+                user.contraseña = password;  // Asegúrate de cifrarla si es necesario
+                // Guarda los cambios en la base de datos
+                await _context.SaveChangesAsync();
+                return (true, "La Modificación se realizo con exito");
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+        // Other DB services can be added here
     }
 }

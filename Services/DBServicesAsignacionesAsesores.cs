@@ -22,44 +22,76 @@ namespace ALFINapp.Services
         {
             try
             {
-                var getBaseCliente = (from bc in _context.base_clientes
-                                            join ce in _context.clientes_enriquecidos on bc.IdBase equals ce.IdBase
-                                            join ca in _context.clientes_asignados on ce.IdCliente equals ca.IdCliente
-                                            where bc.Dni == DNIBusqueda
-                                            select new { bc, ce, ca }).FirstOrDefault();
+                var getCliente = await (from bc in _context.base_clientes
+                                        where bc.Dni == DNIBusqueda
+                                        select new { bc }).FirstOrDefaultAsync();
 
-                var getAsesoresSecundarios = (from asa in _context.asesores_secundarios_asignacion
-                                                        where asa.id_usuarioV == IdUsuarioVAsignar
-                                                        select new { asa }).FirstOrDefault();
-
-                if (getBaseCliente == null )
+                if (getCliente == null || getCliente.bc == null)
                 {
                     return new Tuple<bool, string>(false, $"El cliente con DNI {DNIBusqueda} no ha podido ser encontrado, problamente fue eliminado");
                 }
 
-                if (getBaseCliente.ca.IdUsuarioV == IdUsuarioVAsignar)
+                var getEnriquecidoCliente = await (from ce in _context.clientes_enriquecidos
+                                                   where ce.IdBase == getCliente.bc.IdBase
+                                                   select new { ce }).FirstOrDefaultAsync();
+
+                if (getEnriquecidoCliente == null || getEnriquecidoCliente.ce == null)
                 {
-                    return new Tuple<bool, string>(false, $"El cliente con DNI {DNIBusqueda} ya lo tiene como asesor principal asignado a usted");
+                    Console.WriteLine($"El cliente con DNI {DNIBusqueda} no tiene datos enriquecidos");
+                    var datosEnriquecidos = new ClientesEnriquecido
+                    {
+                        IdBase = getCliente.bc.IdBase,
+                        FechaEnriquecimiento = DateTime.Now,
+                    };
+
+                    _context.clientes_enriquecidos.Add(datosEnriquecidos);
+                    var result1 = await _context.SaveChangesAsync();
+
+                    if (result1 <= 0)
+                    {
+                        return new Tuple<bool, string>(false, "Error al guardar la reasignación del cliente.");
+                    }
+
                 }
 
-                if (getAsesoresSecundarios != null)
+                var getBaseCliente = await (from bc in _context.base_clientes
+                                            where bc.Dni == DNIBusqueda
+                                            join ce in _context.clientes_enriquecidos on bc.IdBase equals ce.IdBase
+                                            join ca in _context.clientes_asignados on ce.IdCliente equals ca.IdCliente into clientesAsignadosGroup
+                                            from ca in clientesAsignadosGroup.DefaultIfEmpty() // Left join con clientes_asignados
+                                            select new { bc, ce, ca }).ToListAsync();
+
+                var IdUsuarioSupervisor = await (from u in _context.usuarios
+                                                 where
+                                                        u.IdUsuario == IdUsuarioVAsignar
+                                                 select u.IDUSUARIOSUP
+                                                        ).FirstOrDefaultAsync();
+                var clienteId = 0;
+                foreach (var clientesBase in getBaseCliente)
                 {
-                    return new Tuple<bool, string>(false, $"El cliente con DNI {DNIBusqueda} ya lo tiene como asesor secundario asignado a usted");
+                    clienteId = clientesBase.ce.IdCliente;
+                    if (clientesBase.ca.IdUsuarioV == IdUsuarioVAsignar)
+                    {
+                        return new Tuple<bool, string>(false, $"El cliente con DNI {DNIBusqueda} esta asignado a usted");
+                    }
                 }
 
-                var reasignarCliente = new AsesoresSecundariosAsignacion
+                var reasignarCliente = new ClientesAsignado
                 {
-                    id_asignacion = getBaseCliente.ca.IdAsignacion,
-                    id_usuarioV = IdUsuarioVAsignar,
-                    fecha_asignacion_secundarioV = DateTime.Now,
-                    tipo_asesor_secundario = "nuevo",
-                    id_cliente = getBaseCliente.ca.IdCliente,
-                    fuente_base_asignacion_secundaria = BaseTipo
+                    IdUsuarioV = IdUsuarioVAsignar,
+                    FechaAsignacionVendedor = DateTime.Now,
+                    IdCliente = clienteId,
+                    FuenteBase = BaseTipo,
+                    FinalizarTipificacion = false,
+                    IdUsuarioS = IdUsuarioSupervisor,
+                    FechaAsignacionSup = DateTime.Now,
+                    ClienteDesembolso = false,
+                    ClienteRetirado = false,
                 };
 
-                _context.asesores_secundarios_asignacion.Add(reasignarCliente);
-                var result = await _context.SaveChangesAsync();
-                if (result <= 0)
+                _context.clientes_asignados.Add(reasignarCliente);
+                var result2 = await _context.SaveChangesAsync();
+                if (result2 <= 0)
                 {
                     return new Tuple<bool, string>(false, "Error al guardar la reasignación del cliente.");
                 }
@@ -71,7 +103,8 @@ namespace ALFINapp.Services
                 return new Tuple<bool, string>(false, ex.Message);
                 throw;
             }
-
+            
         }
+        
     }
 }

@@ -110,22 +110,29 @@
                 </tr>
             </thead>
             <tbody id="data-table">
-                @{
+                @if (Model != null && Model.Any()) // Verificamos si Model no es null y tiene elementos
+                {
                     int contr = 1;
+                    foreach (var SupervisorDTO in Model)
+                    {
+                        <tr>
+                            <td>@contr</td>
+                            @{
+                                contr++;
+                            }
+                            <td>@SupervisorDTO.Dni</td>
+                            <td>@SupervisorDTO.XNombre.ToUpper() @SupervisorDTO.XAppaterno.ToUpper()
+                                @SupervisorDTO.XApmaterno.ToUpper()</td>
+                            <td>@SupervisorDTO.NombresCompletos.ToUpper()</td>
+                            <td>@SupervisorDTO.DniVendedor</td>
+                            <td>@SupervisorDTO.FechaAsignacionV</td>
+                        </tr>
+                    }
                 }
-                @foreach (var SupervisorDTO in Model)
+                else
                 {
                     <tr>
-                        <td>@contr</td>
-                        @{
-                            contr++;
-                        }
-                        <td>@SupervisorDTO.Dni</td>
-                        <td>@SupervisorDTO.XNombre.ToUpper() @SupervisorDTO.XAppaterno.ToUpper()
-                            @SupervisorDTO.XApmaterno.ToUpper()</td>
-                        <td>@SupervisorDTO.NombresCompletos.ToUpper()</td>
-                        <td>@SupervisorDTO.DniVendedor</td>
-                        <td>@SupervisorDTO.FechaAsignacionV</td>
+                        <td colspan="6" class="text-center">No hay datos disponibles</td>
                     </tr>
                 }
             </tbody>

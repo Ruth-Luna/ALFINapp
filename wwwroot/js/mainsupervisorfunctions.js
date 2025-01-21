@@ -124,7 +124,7 @@ function showFileName() {
 
 function loadFuncionalidadAsesores() {
     $.ajax({
-        url: '/Supervisor/ModificarAsesoresView',
+        url: '/Modificaciones/ModificarAsesoresView',
         type: 'GET',
         success: function (response) {
             $('#modalContentModificarAsesorModal').html(response); // Insertar la vista parcial en el modal

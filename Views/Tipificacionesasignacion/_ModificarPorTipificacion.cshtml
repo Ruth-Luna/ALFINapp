@@ -49,7 +49,7 @@
         }
 
         $.ajax({
-            url: `/Supervisor/ObtenerClientesPorTipificacion`, // URL del endpoint en el controlador
+            url: `/Modificaciones/ObtenerClientesPorTipificacion`, // URL del endpoint en el controlador
             type: "GET", // Tipo de solicitud
             data: { tipificacion: tipificacion }, // Parámetro enviado al servidor
             success: function (response) {

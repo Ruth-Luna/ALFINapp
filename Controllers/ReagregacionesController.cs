@@ -20,7 +20,7 @@ namespace ALFINapp.Controllers
             _context = context;
             _dbServicesAsignacionesAsores = dbServicesAsignacionesAsores;
         }
-        
+
         [HttpGet]
         public IActionResult VerificarDNI(string dni)
         {
@@ -47,44 +47,21 @@ namespace ALFINapp.Controllers
                     return Json(new { existe = false, error = false, message = "El cliente no tiene detalles de campaña registrados en la Base de Datos. No puede ser asignado a Usted." });
                 }
 
-                // Buscar al asesor primario
-                var AsesorPrimario = (from ca in _context.clientes_asignados
-                                      join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
-                                      join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
-                                      join u in _context.usuarios on ca.IdUsuarioV equals u.IdUsuario
-                                      where clienteExistente.IdBase == bc.IdBase
-                                      select new
-                                      {
-                                          NombreAsesorPrimario = u.NombresCompletos,
-                                          IDAsesorPrimario = ca.IdUsuarioV,
-                                          IDAsignacion = ca.IdAsignacion,
-                                          IDCliente = ce.IdCliente
-                                      }).FirstOrDefault();
-
-                if (AsesorPrimario != null)
-                {
-                    // Buscar asesores secundarios
-                    var AsesoresSecundarios = (from asa in _context.asesores_secundarios_asignacion
-                                               join u in _context.usuarios on asa.id_usuarioV equals u.IdUsuario
-                                               where asa.id_asignacion == AsesorPrimario.IDAsignacion
-                                               select new
-                                               {
-                                                   NombreAsesorSecundario = u.NombresCompletos,
-                                                   IDAsesorSecundario = asa.id_usuarioV,
-                                                   IDAsignacionSecundaria = asa.id_secundario_asignacion,
-                                               }).ToList();
-
-                    // Si no hay asesores secundarios, asignar null explícitamente (opcional)
-                    if (!AsesoresSecundarios.Any())
-                    {
-                        AsesoresSecundarios = null;
-                    }
-
-                    // Pasar información a la vista
-                    ViewData["AsesorPrimario"] = AsesorPrimario;
-                    ViewData["DetallesAsesoresSecundarios"] = AsesoresSecundarios;
-                }
-
+                // Buscar a sus asesores asignados
+                var AsesoresGeneral = (from ca in _context.clientes_asignados
+                                                join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
+                                                join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
+                                                join u in _context.usuarios on ca.IdUsuarioV equals u.IdUsuario
+                                                where clienteExistente.IdBase == bc.IdBase
+                                                select new
+                                                {
+                                                    NombreAsesorPrimario = u.NombresCompletos,
+                                                    IDAsesorPrimario = ca.IdUsuarioV,
+                                                    IDAsignacion = ca.IdAsignacion,
+                                                    IDCliente = ce.IdCliente
+                                                }).ToList();
+                // Pasar información a la vista
+                ViewData["AsesoresGeneral"] = AsesoresGeneral;
                 Console.WriteLine($"Cliente encontrado: {clienteExistente.XNombre} {clienteExistente.XAppaterno}");
                 ViewData["DetalleGeneralCliente"] = clienteExistente;
                 return PartialView("_DatosConsulta", detalleBaseClientes);
@@ -95,8 +72,8 @@ namespace ALFINapp.Controllers
                 return Json(new { existe = false, error = true, message = "Ocurrió un error interno. Por favor, intente nuevamente." });
             }
         }
+
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult ReAsignarClienteAUsuario(string DniAReasignar, string BaseTipo)
         {
             try
@@ -120,5 +97,5 @@ namespace ALFINapp.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
-    }        
+    }
 }

@@ -59,7 +59,7 @@ public class HomeController : Controller
 
         if (password == null)
         {
-            TempData["MessageError"] = "El campo de contrase;a no puede estar vacio.";
+            TempData["MessageError"] = "El campo de contraseña no puede estar vacio.";
             return RedirectToAction("Index", "Home");
         }
         dni = dni.Trim();
@@ -107,7 +107,7 @@ public class HomeController : Controller
         }
         if (usuario.Rol == "ADMINISTRADOR")
         {
-            return RedirectToAction("VistaMainSupervisor", "Supervisor");
+            return RedirectToAction("VistaMainAdministrador", "Administrador");
         }
 
         TempData["MessageError"] = "Algo salio Mal en la Autenticacion";
