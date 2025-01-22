@@ -204,3 +204,11 @@ form button {}
 .tooltip-symbol:hover i {
     background-color: #0056b3; /* Cambiar el color del círculo al pasar el cursor */
 }
+
+.sidebar-links > li > a {
+    transition: background-color .3s ease-in-out;
+}
+
+    .sidebar-links > li > a:hover {
+        background-color: rgba(0,0,0,.7);
+    }
