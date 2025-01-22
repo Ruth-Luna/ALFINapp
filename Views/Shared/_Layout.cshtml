@@ -21,6 +21,8 @@
 
 <body>
 
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <div class="d-flex flex-column vh-100 bg-white">
         <!-- navbar -->
         <nav class="navbar navbar-dark bg-dark" style="background-color: #0f2537 !important">
@@ -49,7 +51,7 @@
 
         <div class="flex-grow-1 d-flex overflow-hidden">
             <!-- sidebar -->
-            <div class="border-end" style="width: 250px; min-width: 250px; background-color: #20374c !important">
+            <div class="sidebar" id="sidebar" style="width: 250px; min-width: 250px; background-color: #20374c !important">
                 <ul class="nav flex-column pt-4 sidebar-links">
                     <li class="nav-item px-3 py-2">
                         <a class="nav-link text-white rounded-3" href="/perfil">
@@ -118,5 +120,72 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            let isDesktop = window.innerWidth >= 992;
+
+            // Establecer visibilidad inicial
+            if (isDesktop) {
+                sidebar.style.display = 'block';
+            }
+
+            // Función mejorada para mostrar/ocultar el overlay
+            function toggleOverlay(show) {
+                sidebarOverlay.style.display = show ? 'block' : '';
+                setTimeout(() => {
+                    sidebarOverlay.classList.toggle('show', show);
+                }, 10);
+            }
+
+            // Toggle del sidebar mejorado
+            sidebarToggle.addEventListener('click', function () {
+                this.classList.toggle('active');
+
+                if (isDesktop) {
+                    sidebar.classList.toggle('hide');
+                } else {
+                    sidebar.classList.toggle('show');
+                    sidebar.style.display = sidebar.classList.contains('show') ? 'block' : 'none';
+                    toggleOverlay(sidebar.classList.contains('show'));
+                }
+            });
+
+            // Cerrar sidebar al hacer click en el overlay
+            sidebarOverlay.addEventListener('click', function () {
+                sidebar.classList.remove('show');
+                sidebar.style.display = 'none';
+                sidebarToggle.classList.remove('active');
+                toggleOverlay(false);
+            });
+
+            // Ajuste de ventana mejorado
+            let resizeTimeout;
+            window.addEventListener('resize', function () {
+                clearTimeout(resizeTimeout);
+
+                resizeTimeout = setTimeout(() => {
+                    const newIsDesktop = window.innerWidth >= 992;
+
+                    if (newIsDesktop !== isDesktop) {
+                        isDesktop = newIsDesktop;
+                        sidebar.classList.remove('show', 'hide');
+                        sidebarToggle.classList.remove('active');
+                        toggleOverlay(false);
+
+                        // Actualizar visibilidad
+                        if (newIsDesktop) {
+                            sidebar.style.display = 'block';
+                        } else {
+                            sidebar.style.display = 'none';
+                        }
+                    }
+                }, 250);
+            });
+        });
+    </script>
 </body>
 </html>

@@ -212,3 +212,165 @@ form button {}
     .sidebar-links > li > a:hover {
         background-color: rgba(0,0,0,.7);
     }
+
+
+/* Overlay mejorado con animación */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0);
+    z-index: 1040;
+    transition: background-color 0.3s ease;
+}
+
+    .sidebar-overlay.show {
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+/* Animación del botón toggle */
+.navbar-toggler {
+    transition: transform 0.3s ease;
+}
+
+    .navbar-toggler.active {
+        transform: rotate(180deg);
+    }
+
+/* Estilos base del sidebar */
+.sidebar {
+    background-color: #20374c;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    display: none; /* Oculto por defecto */
+}
+
+    /* Links del sidebar con hover effect */
+    .sidebar .nav-link {
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .sidebar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .sidebar .nav-link:active {
+            transform: translateX(5px) scale(0.98);
+        }
+
+/* Efecto ripple para los enlaces */
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(0);
+    animation: ripple-animation 0.6s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple-animation {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* Estilos para móvil con animaciones mejoradas */
+@media (max-width: 991.98px) {
+    .sidebar {
+        position: fixed;
+        left: -250px;
+        top: 56px;
+        bottom: 0;
+        z-index: 1045;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: translateX(0);
+        opacity: 0;
+    }
+
+        .sidebar.show {
+            display: block; /* Mostrar cuando tiene la clase show */
+            left: 0;
+            opacity: 1;
+            transform: translateX(0);
+        }
+}
+
+/* Estilos para desktop con animaciones mejoradas */
+@media (min-width: 992px) {
+    .sidebar {
+        display: block; /* Visible en desktop */
+        position: relative;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: translateX(0);
+    }
+
+        .sidebar.hide {
+            margin-left: -250px;
+            transform: translateX(-20px);
+            opacity: 0;
+        }
+}
+
+/* Animación del contenido principal */
+.flex-grow-1 {
+    transition: padding-left 0.3s ease;
+}
+
+@media (min-width: 992px) {
+    .sidebar.hide + .flex-grow-1 {
+        padding-left: 0;
+    }
+}
+
+/* Estilos adicionales para mejorar la apariencia */
+.sidebar .nav-item {
+    margin-bottom: 2px;
+}
+
+.sidebar .nav-link {
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+}
+
+    .sidebar .nav-link:hover {
+        color: #ffffff;
+    }
+
+    .sidebar .nav-link i {
+        width: 20px;
+        text-align: center;
+        margin-right: 8px;
+        opacity: 0.8;
+    }
+
+    .sidebar .nav-link:hover i {
+        opacity: 1;
+    }
+
+    /* Animación para iconos */
+    .sidebar .nav-link i {
+        transition: transform 0.2s ease;
+    }
+
+    .sidebar .nav-link:hover i {
+        transform: scale(1.1);
+    }
+
+/* Efecto de sombra al hacer hover en el sidebar */
+.sidebar {
+    transition: box-shadow 0.3s ease;
+}
+
+@media (max-width: 991.98px) {
+    .sidebar.show {
+        box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+    }
+}
