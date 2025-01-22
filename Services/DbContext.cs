@@ -22,4 +22,10 @@ public class MDbContext : DbContext
     public DbSet<AsesoresSecundariosAsignacion> asesores_secundarios_asignacion { get; set; }
     public DbSet<DerivacionesAsesores> derivaciones_asesores { get; set; }
     public DbSet<NumerosEnterosDTO> numeros_enteros_dto { get; set; }
+    public DbSet<BaseClientesBanco> base_clientes_banco { get; set; }
+    public DbSet<CampanaGrupo> base_clientes_banco_campana_grupos { get; set; }
+    public DbSet<Color> base_clientes_banco_color { get; set; }
+    public DbSet<Plazo> base_clientes_banco_plazo { get; set; }
+    public DbSet<RangoDeuda> base_clientes_banco_rango_deuda { get; set; }
+    public DbSet<UsuarioBanco> base_clientes_banco_usuario { get; set; }
 }

@@ -1,0 +1,30 @@
+using System;
+
+namespace ALFINapp.Models
+{
+    public class DetallesClienteDTO
+    {
+        public string? Dni { get; set; }
+        public string? ColorFinal { get; set; }
+        public string? Color { get; set; }
+        public string? Campaña { get; set; }
+        public decimal? OfertaMax { get; set; }
+        public int? Plazo { get; set; }
+        public decimal? CapacidadMax { get; set; }
+        public decimal? SaldoDiferencialReeng { get; set; }
+        public string? ClienteNuevo { get; set; }
+        public string? Deuda1 { get; set; }
+        public string? Entidad1 { get; set; }
+        public decimal? Tasa1 { get; set; } // Tasa1
+        public decimal? Tasa2 { get; set; } // Tasa2
+        public decimal? Tasa3 { get; set; }
+        public decimal? Tasa4 { get; set; }
+        public decimal? Tasa5 { get; set; }
+        public decimal? Tasa6 { get; set; }
+        public decimal? Tasa7 { get; set; } // Tasa7
+        public string? GrupoTasa { get; set; }
+        public string? Usuario { get; set; }
+        public string? SegmentoUser { get; set; }
+        public string? TraidoDe { get; set; }
+    }
+}
