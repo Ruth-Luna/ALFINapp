@@ -1,5 +1,6 @@
 function TakeThisClient(DNIdatos) {
     console.log("Función llamada", DNIdatos); // Verifica si se llama la función
+    DNIdatos = String(DNIdatos).padStart(8, '0');
     // Identificar la TipoBase activa
     const activeTab = document.querySelector('.nav-link.active');
     const tipoBase = activeTab ? activeTab.id.replace('fuenteBaseTab-', '') : null;

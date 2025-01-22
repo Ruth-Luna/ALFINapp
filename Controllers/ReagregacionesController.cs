@@ -34,6 +34,7 @@ namespace ALFINapp.Controllers
                 {
                     return Json(new { existe = false, error = false, message = "El DNI no está registrado en la Base de Datos. No puede ser asignado a Usted." });
                 }
+                
 
                 // Obtener detalles de la base asociados al cliente
                 var detalleBaseClientes = _context.detalle_base
@@ -60,9 +61,9 @@ namespace ALFINapp.Controllers
                                                     IDAsignacion = ca.IdAsignacion,
                                                     IDCliente = ce.IdCliente
                                                 }).ToList();
+
                 // Pasar información a la vista
                 ViewData["AsesoresGeneral"] = AsesoresGeneral;
-                Console.WriteLine($"Cliente encontrado: {clienteExistente.XNombre} {clienteExistente.XAppaterno}");
                 ViewData["DetalleGeneralCliente"] = clienteExistente;
                 return PartialView("_DatosConsulta", detalleBaseClientes);
             }
