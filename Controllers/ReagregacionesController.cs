@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using ALFINapp.Services;
+using System.Threading.Tasks;
 
 namespace ALFINapp.Controllers
 {
@@ -14,58 +15,51 @@ namespace ALFINapp.Controllers
     {
         private readonly MDbContext _context;
         private readonly DBServicesAsignacionesAsesores _dbServicesAsignacionesAsores;
+        private readonly DBServicesConsultasClientes _dbServicesConsultasClientes;
 
-        public ReagregacionesController(MDbContext context, DBServicesAsignacionesAsesores dbServicesAsignacionesAsores)
+        public ReagregacionesController(MDbContext context, DBServicesAsignacionesAsesores dbServicesAsignacionesAsores, DBServicesConsultasClientes dbServicesConsultasClientes)
         {
             _context = context;
             _dbServicesAsignacionesAsores = dbServicesAsignacionesAsores;
+            _dbServicesConsultasClientes = dbServicesConsultasClientes;
         }
 
         [HttpGet]
-        public IActionResult VerificarDNI(string dni)
+        public async Task<IActionResult> VerificarDNI(string dni)
         {
             try
             {
                 Console.WriteLine($"DNI recibido: {dni}");
 
                 // Buscar el cliente por DNI
-                var clienteExistente = _context.base_clientes.FirstOrDefault(c => c.Dni == dni);
-                if (clienteExistente == null)
-                {
-                    return Json(new { existe = false, error = false, message = "El DNI no está registrado en la Base de Datos. No puede ser asignado a Usted." });
-                }
-                
+                var GetClienteExistente = await _dbServicesConsultasClientes.GetClientsFromDBandBank(dni);
 
-                // Obtener detalles de la base asociados al cliente
-                var detalleBaseClientes = _context.detalle_base
-                                                  .Where(db => db.IdBase == clienteExistente.IdBase)
-                                                  .ToList();
-
-                if (!detalleBaseClientes.Any())
+                if (GetClienteExistente.IsSuccess == false && GetClienteExistente.Data == null)
                 {
-                    // Cliente encontrado, pero sin detalles de campaña
-                    Console.WriteLine($"Cliente encontrado pero sin detalle de campaña: {clienteExistente.XNombre} {clienteExistente.XAppaterno}");
-                    return Json(new { existe = false, error = false, message = "El cliente no tiene detalles de campaña registrados en la Base de Datos. No puede ser asignado a Usted." });
+                    return Json(new { existe = false, error = true, message = GetClienteExistente.message });
                 }
 
                 // Buscar a sus asesores asignados
-                var AsesoresGeneral = (from ca in _context.clientes_asignados
+                var AsesoresGeneral = await (from ca in _context.clientes_asignados
                                                 join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
                                                 join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
                                                 join u in _context.usuarios on ca.IdUsuarioV equals u.IdUsuario
-                                                where clienteExistente.IdBase == bc.IdBase
+                                                where GetClienteExistente.Data.IdBase == bc.IdBase
                                                 select new
                                                 {
                                                     NombreAsesorPrimario = u.NombresCompletos,
                                                     IDAsesorPrimario = ca.IdUsuarioV,
                                                     IDAsignacion = ca.IdAsignacion,
                                                     IDCliente = ce.IdCliente
-                                                }).ToList();
+                                                }).ToListAsync();
 
+                var detalleclienteExistenteBD = GetClienteExistente.Data != null 
+                    ? await _context.base_clientes.FirstOrDefaultAsync(c => c.IdBase == GetClienteExistente.Data.IdBase) 
+                    : null;
                 // Pasar información a la vista
                 ViewData["AsesoresGeneral"] = AsesoresGeneral;
-                ViewData["DetalleGeneralCliente"] = clienteExistente;
-                return PartialView("_DatosConsulta", detalleBaseClientes);
+                ViewData["DetalleGeneralCliente"] = detalleclienteExistenteBD;
+                return PartialView("_DatosConsulta", GetClienteExistente.Data);
             }
             catch (Exception ex)
             {

@@ -1,6 +1,7 @@
 @model IEnumerable<ALFINapp.Models.DetalleBaseClienteDTO>
 
 @{
+    Layout = "~/Views/Shared/_LayoutVendedor.cshtml";
     ViewData["Title"] = "Ventas del Usuario";
     var usuarioNombre = ViewData["UsuarioNombre"];
     var clientesPendientes = ViewData["ClientesPendientes"];
@@ -22,21 +23,6 @@
         }
     }
 }
-
-
-<header>
-    <div class="container-fluid">
-        <div class="top-container">
-            <a href="javascript:void(0)" class="btn" onclick="showMyModal('Accounts','GetInformationForAccounts','GET','Datos Personales')"
-                style="color: white;"><i class="fa fa-user-circle fa-3x"></i></a>
-            <p><strong>Fecha y hora actual:</strong> @DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")</p>
-            <div class="buttons-container">
-                <a href="javascript:void(0);" class="btn btn-success" onclick="openAddClientModal()">Agregar Cliente</a>
-                <a href="@Url.Action("CerrarSesion", "User")" class="btn btn-danger">Cerrar Sesion</a>
-            </div>
-        </div>
-    </div>
-</header>
 
 <div class="container mt-4">
 
@@ -213,40 +199,6 @@
     </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="tipificarClienteModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modalLabel">Tipificación del Cliente</h3>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="modalContentTipificar">
-                    <!-- Aquí se cargará la vista parcial -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal para Agregar Cliente -->
-<div class="modal fade" id="addClientModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalLabel">Agregar Cliente</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="modalContentAgregar">
-                    <!-- Aquí se cargará el formulario de agregar cliente -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
         <div class="modal-content">
@@ -262,44 +214,3 @@
         </div>
     </div>
 </div>
-
-
-@section Scripts {
-    @if (TempData["Message"] != null)
-    {
-        <script>
-            // Usamos el mensaje limpio
-            var message = '@Html.Raw(TempData["Message"] as string)';
-            console.log('Mensaje:', message);  // Imprime el mensaje exitoso en la consola
-            Swal.fire({
-                title: 'Mensaje',
-                text: message,  // Usamos el mensaje limpio
-                icon: 'info',
-                confirmButtonText: 'Aceptar'
-            });
-        </script>
-    }
-
-    @if (TempData["MessageError"] != null)
-    {
-        <script>
-            // Usamos el mensaje limpio de error
-            var messageError = '@Html.Raw(TempData["MessageError"] as string)';
-            console.log('Error:', messageError);  // Imprime el mensaje de error en la consola
-            Swal.fire({
-                title: 'Error',
-                text: messageError,  // Usamos el mensaje limpio
-                icon: 'error',
-                confirmButtonText: 'Aceptar'
-            });
-        </script>
-    }
-    <script src="~/js/mainfunctions.js"></script>
-    <script src="~/js/commentfunctions.js"></script>
-    <script src="~/js/telefonosfunctions.js"></script>
-    <script src="~/js/tipificacionesfunctions.js"></script>
-    <script src="~/js/tablefunctions.js"></script>
-    <script src="~/js/reagregacionesfunctions.js"></script>
-    <script src="~/js/accountfunctions.js"></script>
-    <script src="~/js/generalfunctions.js"></script>
-}

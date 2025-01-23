@@ -72,9 +72,18 @@ namespace ALFINapp.Controllers
                 .ToList();
 
             var usuario = await _context.usuarios.FirstOrDefaultAsync(u => u.IdUsuario == usuarioId);
+
+            var DestinoBases = await _context.clientes_asignados
+                                                            .Where(ca => ca.IdUsuarioS == usuarioId) // Filtrar por usuarioId
+                                                            .Select(ca => ca.Destino)                // Seleccionar solo la columna destino
+                                                            .Distinct()                              // Obtener solo valores distintos
+                                                            .ToListAsync();                          // Convertir a lista
+
             // Filtrado de las bases
             ViewData["UsuarioNombre"] = usuario != null ? usuario.NombresCompletos : "Usuario No Encontrado";
             ViewData["ClientesPendientesSupervisor"] = clientesPendientesSupervisor;
+            //ColumnasDestino
+            ViewData["DestinoBases"] = DestinoBases;
             ViewData["clientesAsignadosSupervisor"] = clientesAsignadosSupervisor;
             ViewData["totalClientes"] = totalClientes;
             ViewData["CurrentPage"] = page;
@@ -96,7 +105,8 @@ namespace ALFINapp.Controllers
             var GetVendedoresAsignados = await _dbServicesConsultasSupervisores.GetAsesorsFromSupervisor(usuarioId);
             if (GetVendedoresAsignados.IsSuccess == false)
             {
-                return Json(new { success = false, message = $"{GetVendedoresAsignados.Message}" });
+                TempData["MessageError"] = GetVendedoresAsignados.Message;
+                return RedirectToAction("Index", "Home");
             }
             var vendedoresAsignados = GetVendedoresAsignados.Data;
 
@@ -110,7 +120,8 @@ namespace ALFINapp.Controllers
 
                 if (vendedorIndividualMapeado.IsSuccess == false || vendedorIndividualMapeado.Data == null)
                 {
-                    return Json(new { success = false, message = $"{vendedorIndividualMapeado.Message}" });
+                    TempData["MessageError"] = GetVendedoresAsignados.Message;
+                    return RedirectToAction("Index", "Home");
                 }
 
                 // Agregar el VendedorConClientesDTO mapeado a la lista
@@ -119,20 +130,22 @@ namespace ALFINapp.Controllers
 
             if (vendedoresConClientes == null)
             {
-                return Json(new { success = false, message = $"La consulta para dar asesores ha fallado" });
+                TempData["MessageError"] = GetVendedoresAsignados.Message;
+                return RedirectToAction("Index", "Home");
             }
 
             var GetBasesAsignadas = await _dbServicesConsultasSupervisores.GetBasesClientes(usuarioId.Value);
 
             if (GetBasesAsignadas.IsSuccess == false)
             {
-                return Json(new { success = false, message = $"{GetBasesAsignadas.Message}" });
+                TempData["MessageError"] = GetVendedoresAsignados.Message;
+                return RedirectToAction("Index", "Home");
             }
 
             var BasesAsignadas = GetBasesAsignadas.Data;
 
             ViewData["BasesAsignadas"] = BasesAsignadas;
-            return PartialView("_Asignarvendedores", vendedoresConClientes);
+            return View("Asignarvendedores", vendedoresConClientes);
         }
 
         [HttpPost]

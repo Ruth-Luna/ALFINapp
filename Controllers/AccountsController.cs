@@ -35,7 +35,7 @@ namespace ALFINapp.Controllers
                 {
                     return Json(new { success = false, message = "No se pudo obtener la informacion de su cuenta"});
                 }
-                return PartialView("AccountInformation", userInformation.Data);
+                return View("AccountInformation", userInformation.Data);
             }
             catch (System.Exception ex)
             {

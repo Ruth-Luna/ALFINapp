@@ -1,6 +1,7 @@
 @model IEnumerable<ALFINapp.Models.SupervisorDTO>
 
 @{
+    Layout = "~/Views/Shared/_LayoutVendedor.cshtml";
     ViewData["Title"] = "Ventas del Usuario";
     var usuarioNombre = ViewData["UsuarioNombre"];
 
@@ -8,25 +9,12 @@
     var totalPages = (int)(ViewData["TotalPages"] ?? 10);
     var pageSize = (int)(ViewData["PageSize"] ?? 10);
     var clientesPendientesSupervisor = (int)(ViewData["ClientesPendientesSupervisor"] ?? 0);
+    var destinoBases = ViewData["DestinoBases"] as List<string>;
 }
 
 @section Styles {
     <link rel="stylesheet" href="~/css/main_page.css">
 }
-
-<header>
-    <div class="container-fluid">
-        <div class="top-container">
-            <a href="javascript:void(0)" style="color:white"
-                onclick="showMyModal('Accounts','GetInformationForAccounts','GET','Datos Personales del Supervisor')"><i
-                    class="fa  fa-user-circle fa-3x"></i></a>
-            <p><strong>Fecha y hora actual:</strong> <span id="fechaHora"></span></p>
-            <div class="buttons-container">
-                <a href="@Url.Action("CerrarSesion", "User")" class="btn btn-danger">Cerrar Sesion</a>
-            </div>
-        </div>
-    </div>
-</header>
 
 <div class="container mt-4">
     <div class="container mb-3">
@@ -61,6 +49,14 @@
                             <input type="date" id="fechaInicio" class="form-control" />
                             <label for="fechaFin">Fecha Fin:</label>
                             <input type="date" id="fechaFin" class="form-control" />
+                            <label for="BaseDestino" >Destino</label>
+                            <select class="form-control" name="BaseDestino" id="BaseDestino">
+                                <option value="">Seleccione una Base de Destino</option>
+                                @foreach (var destinoBase in destinoBases)
+                                {
+                                    <option value="@destinoBase">@destinoBase</option>
+                                }
+                            </select>
                         </div>
                     </div>
                     <div class="d-flex justify-content-between w-100">
@@ -146,73 +142,6 @@
     <div class="spacing"></div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="asignarVendModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modalLabel">Asignar Asesores</h3>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="modalContentAsignarVend">
-                    <!-- Aquí se cargará la vista parcial -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="modificarVendModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modalLabel">Modificar Asesores y Asignaciones</h3>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="modalContentModificarVendAsignar">
-                    <!-- Aquí se cargará la vista parcial -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal USUARIOS-->
-<div class="modal fade" id="modificarAsesorModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modalLabel">Agregar Modificar o Desactivar Asesores</h3>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="modalContentModificarAsesorModal">
-                    <!-- Aquí se cargará la vista parcial -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="ReasignarAsesorSecundarioModal" tabindex="-1" aria-labelledby="modalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modalLabel">Agregar Asesores Secundarios</h3>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="modalContentReasignarAsesorSecundarioModal">
-                    <!-- Aquí se cargará la vista parcial -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
         <div class="modal-content">
@@ -228,54 +157,3 @@
         </div>
     </div>
 </div>
-
-@section Scripts {
-    @if (TempData["Message"] != null)
-    {
-        <script>
-            Swal.fire({
-                title: 'Mensaje', // Título del mensaje
-                text: '@Html.Raw(TempData["Message"] as string)', // Usamos Html.Raw para evitar que se escape el texto
-                icon: 'info', // Tipo de ícono (info, success, error, warning)
-                confirmButtonText: 'Aceptar' // Texto del botón de confirmación
-            });
-        </script>
-    }
-
-    @if (TempData["MessageError"] != null)
-    {
-        <script>
-            Swal.fire({
-                title: 'Error', // Título del mensaje
-                text: '@Html.Raw(TempData["MessageError"] as string)', // Usamos Html.Raw para evitar que se escape el texto
-                icon: 'error', // Tipo de ícono (info, success, error, warning)
-                confirmButtonText: 'Aceptar' // Texto del botón de confirmación
-            });
-        </script>
-    }
-
-    <script src="~/js/mainsupervisorfunctions.js"></script>
-    <script src="~/js/accountfunctions.js"></script>
-    <script src="~/js/generalfunctions.js"></script>
-    <script src="~/js/modificacionesfunctions.js"></script>
-}
-
-
-<script>
-    // Función para actualizar la hora dinámicamente
-    function actualizarHora() {
-        const ahora = new Date(); // Obtiene la hora actual del cliente
-        const opciones = {
-            day: '2-digit', month: '2-digit', year: 'numeric',
-            hour: '2-digit', minute: '2-digit', second: '2-digit'
-        };
-        const fechaHora = ahora.toLocaleString('es-ES', opciones); // Formato dd/MM/yyyy HH:mm:ss
-        document.getElementById('fechaHora').innerText = fechaHora;
-    }
-
-    // Actualiza la hora cada segundo
-    setInterval(actualizarHora, 1000);
-
-    // Inicializa la hora al cargar la página
-    actualizarHora();
-</script>

@@ -109,7 +109,7 @@ namespace ALFINapp.Controllers
                                                                                             && g.ca.IdUsuarioV == grouped.Key.IdUsuario
                                                                                             && g.ca.IdUsuarioS == idSupervisorActual) // Diferencia entre asignados y trabajados
                                                     }).ToList();
-                return PartialView("_ModificarAsesores", asesoresAsignadosaSupervisor);
+                return View("_ModificarAsesores", asesoresAsignadosaSupervisor);
             }
             
         }

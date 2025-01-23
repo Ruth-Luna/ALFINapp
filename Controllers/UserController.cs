@@ -409,7 +409,7 @@ namespace ALFINapp.Controllers
                 return RedirectToAction("Index", "Home");
             }
             Console.WriteLine("Cargando VISTA");
-            return PartialView("_AddingClient");
+            return View("_AddingClient");
         }
 
         [HttpGet]

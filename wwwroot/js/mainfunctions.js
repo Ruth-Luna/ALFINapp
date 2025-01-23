@@ -77,23 +77,3 @@ function loadTipificarCliente(idBase) {
         }
     });
 }
-
-function openAddClientModal() {
-    $.ajax({
-        url: '/User/AddingClient', // Acción para cargar la vista parcial
-        type: 'GET',
-        success: function (result) {
-            $('#modalContentAgregar').html(result); // Carga la vista parcial dentro del modal
-            $('#addClientModal').modal('show'); // Muestra el modal
-        },
-        error: function (xhr, status, error) {
-            console.log("Error:", status, error); // Muestra el error en consola
-            Swal.fire({
-                title: 'Error al cargar el formulario',
-                text: 'Hubo un error al cargar el formulario de agregar cliente.',
-                icon: 'error',
-                confirmButtonText: 'Aceptar'
-            });
-        }
-    });
-}

@@ -96,7 +96,7 @@ function validarDNI() {
 }
 
 // Función para cargar los datos correspondientes según la fuente base seleccionada
-function cargarDatos(fuenteBase) {
+/*function cargarDatos(fuenteBase) {
     // Seleccionar todas las secciones con ID que comiencen con 'detalle-campana_'
     const todasLasSecciones = document.querySelectorAll("[id^='detalle-campana_']");
 
@@ -112,4 +112,4 @@ function cargarDatos(fuenteBase) {
     } else {
         console.warn(`No se encontró la sección con ID: detalle-campana_${fuenteBase}`);
     }
-}
+}*/

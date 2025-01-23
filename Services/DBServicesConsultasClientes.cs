@@ -1,5 +1,6 @@
 using ALFINapp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ALFINapp.Services
 {
@@ -16,10 +17,10 @@ namespace ALFINapp.Services
         {
             try
             {
-                var clienteExistenteBD = _context.base_clientes.FirstOrDefault(c => c.Dni == DNIBusqueda);
+                var clienteExistenteBD = await _context.base_clientes.FirstOrDefaultAsync(c => c.Dni == DNIBusqueda);
                 if (clienteExistenteBD != null)
                 {
-                    var detalleclienteExistenteBD = _context.detalle_base.FirstOrDefault(c => c.IdBase == clienteExistenteBD.IdBase);
+                    var detalleclienteExistenteBD = await _context.detalle_base.FirstOrDefaultAsync(c => c.IdBase == clienteExistenteBD.IdBase);
                     if (detalleclienteExistenteBD == null)
                     {
                         return (false, "El cliente no tiene Detalle Base en la Base de Datos de A365, este dato fue eliminado manualmente, este error debe de ser reportado", null);
@@ -49,13 +50,14 @@ namespace ALFINapp.Services
                         GrupoTasa = detalleclienteExistenteBD.GrupoTasa,
                         Usuario = detalleclienteExistenteBD.Usuario,
                         SegmentoUser = detalleclienteExistenteBD.SegmentoUser,
-                        TraidoDe = "BDA365"
+                        TraidoDe = "BDA365",
+                        IdBase = detalleclienteExistenteBD.IdBase
                     };
                     return (true, "El DNI se encuentra registrado en la Base de Datos de A365. Se devolvera la entrada correspondiente", clienteA365Encontrado); // Se devuelve la entrada correspondiente
                 }
 
                 // Consulta a la base de datos del banco de clientes
-                var clienteExistenteBank = (
+                var clienteExistenteBank = await(
                                                     from bcb in _context.base_clientes_banco
                                                     join pb in _context.base_clientes_banco_plazo on bcb.IdPlazoBanco equals pb.IdPlazo
                                                     join cg in _context.base_clientes_banco_campana_grupos on bcb.IdCampanaGrupoBanco equals cg.IdCampanaGrupo
@@ -85,8 +87,9 @@ namespace ALFINapp.Services
                                                         GrupoTasa = null, //
                                                         Usuario = u.NombreUsuario,
                                                         SegmentoUser = null,
-                                                        TraidoDe = "BDALFIN"
-                                                    }).FirstOrDefault();
+                                                        TraidoDe = "BDALFIN",
+                                                        IdBase = bcb.IdBaseBanco
+                                                    }).FirstOrDefaultAsync();
 
                 if (clienteExistenteBank == null)
                 {

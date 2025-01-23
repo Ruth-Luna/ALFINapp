@@ -1,32 +1,3 @@
-function loadAsignarClienteAVendedor() {
-    $.ajax({
-        url: '/Supervisor/AsignarVendedorView',
-        type: 'GET',
-        success: function (result) {
-            if (result.success != false) {
-                $('#modalContentAsignarVend').html(result);
-                $('#asignarVendModal').modal('show');
-            } else {
-                Swal.fire({
-                    title: 'Error al cargar los datos',
-                    text: `${result.message}`,
-                    icon: 'error',
-                    confirmButtonText: 'Aceptar'
-                });
-                return;
-            }
-        },
-        error: function () {
-            Swal.fire({
-                title: 'Error al cargar los datos',
-                text: 'Hubo un error al intentar cargar los datos. Por favor, inténtalo nuevamente.',
-                icon: 'error',
-                confirmButtonText: 'Aceptar'
-            });
-        }
-    });
-}
-
 function loadModificarVendedorAsignado(idAsignacion) {
     $.ajax({
         url: '/Supervisor/ModificarAsignacionVendedorView',
@@ -50,6 +21,7 @@ function loadModificarVendedorAsignado(idAsignacion) {
 function descargarDatos() {
     const fechaInicio = document.getElementById('fechaInicio').value;
     const fechaFin = document.getElementById('fechaFin').value;
+    const destinoBase = document.getElementById('BaseDestino').value;
 
     if (fechaInicio == "" || fechaFin == "") {
 
@@ -73,7 +45,7 @@ function descargarDatos() {
     }
     
     console.log("Fecha inicio:", fechaInicio, "Fecha fin:", fechaFin);
-    window.location.href = '/Excel/DescargarClientesAsignados?fechaInicio=' + fechaInicio + '&fechaFin=' + fechaFin;
+    window.location.href = '/Excel/DescargarClientesAsignados?fechaInicio=' + fechaInicio + '&fechaFin=' + fechaFin + '&destinoBase=' + destinoBase;
 }
 
 function sortTable(columnIndex, type) {
@@ -120,25 +92,6 @@ function showFileName() {
     } else {
         fileNameDisplay.textContent = ''; // Si no hay archivo, limpia el texto
     }
-}
-
-function loadFuncionalidadAsesores() {
-    $.ajax({
-        url: '/Modificaciones/ModificarAsesoresView',
-        type: 'GET',
-        success: function (response) {
-            $('#modalContentModificarAsesorModal').html(response); // Insertar la vista parcial en el modal
-            $('#modificarAsesorModal').modal('show'); // Mostrar el modal
-        },
-        error: function () {
-            Swal.fire({
-                title: 'Error',
-                text: 'No se pudo cargar la vista de agregar usuario.',
-                icon: 'error',
-                confirmButtonText: 'Aceptar'
-            });
-        }
-    });
 }
 
 function loadReasignarClientesAsignados(){

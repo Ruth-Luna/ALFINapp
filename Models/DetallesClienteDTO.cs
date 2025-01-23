@@ -4,6 +4,7 @@ namespace ALFINapp.Models
 {
     public class DetallesClienteDTO
     {
+        public int? IdBase { get; set; }
         public string? Dni { get; set; }
         public string? ColorFinal { get; set; }
         public string? Color { get; set; }

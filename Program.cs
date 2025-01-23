@@ -27,6 +27,9 @@ builder.Services.AddSession(options =>
 // Registrar servicio HTTP
 builder.Services.AddHttpClient();
 
+// Registrar IHttpContextAccessor para acceso global al HttpContext
+builder.Services.AddHttpContextAccessor();
+
 // Registrar automáticamente los servicios que siguen el patrón "DBServices"
 var servicesAssembly = typeof(Program).Assembly;
 

@@ -32,11 +32,6 @@ public class HomeController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
-    public IActionResult Addingclient()
-    {
-        return View("Addingclient");
-    }
-
     public IActionResult Error404()
     {
         return View();
@@ -97,6 +92,8 @@ public class HomeController : Controller
         }
         
         HttpContext.Session.SetInt32("UsuarioId", usuario.IdUsuario);
+        HttpContext.Session.SetString("RolUser", usuario.Rol);
+        ViewBag.RolUsuario = HttpContext.Session.GetString("RolUser");
         if (usuario.Rol == "VENDEDOR")
         {
             return RedirectToAction("Ventas", "User");

@@ -41,4 +41,6 @@ public partial class ClientesAsignado
     public DateTime? FechaTipificacionMayorPeso { get; set; }
     [Column("identificador_base")]
     public string? IdentificadorBase { get; set; }
+    [Column("destino")]
+    public string? Destino { get; set; }
 }
