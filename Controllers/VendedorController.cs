@@ -574,17 +574,8 @@ namespace ALFINapp.Controllers
                 {
                     countNonNull++;
                 }
-
                 agregado = true;
             }
-
-            // Si solo hay un valor no nulo, entonces derivacionesExists será true
-            if (countNonNull > 1)
-            {
-                TempData["MessageError"] = "Ha asignado dos numeros a la tipificacion derivacion, esto no esta permitido (solo se puede enviar una derivacion a la vez)";
-                return RedirectToAction("Ventas");
-            }
-
 
             for (int i = 0; i < telefonos.Count; i++)
             {
@@ -667,61 +658,17 @@ namespace ALFINapp.Controllers
                 ClienteAsignado.FechaTipificacionMayorPeso = fechaTipificacion; // Almacena la fecha
                 _context.clientes_asignados.Update(ClienteAsignado);
             }
-
-            if (countNonNull == 1)
+            string message = "No se han encontrado tipificaciones de Derivacion";
+            if (countNonNull >= 1)
             {
-                var clienteDatos = await _dbServicesAsesores.ObtenerDetallesClientes(IdAsignacion) as dynamic;
-                var DNIAsesor = _dbServicesGeneral.ConseguirDNIUsuarios(usuarioId);
-
-                var telefonoDerivacion = string.Empty;
-                var agenciaDerivacion = string.Empty;
-
-                // Buscar la primera coincidencia de un teléfono con su respectiva tipificación y agencia
-                for (int i = 0; i < tipificaciones.Count; i++)
-                {
-                    if (tipificaciones[i] == 2) // Verifica si la tipificación es 2
-                    {
-                        telefonoDerivacion = telefonos[i]; // Asigna el teléfono correspondiente
-                        agenciaDerivacion = agenciasComerciales[i]; // Asigna la agencia correspondiente
-                        break; // Salir del bucle después de encontrar la primera coincidencia
-                    }
-                }
-
-                // Validar que se haya encontrado un teléfono y una agencia antes de proceder
-                if (string.IsNullOrEmpty(telefonoDerivacion) || string.IsNullOrEmpty(agenciaDerivacion))
-                {
-                    TempData["MessageError"] = "No se encontró un teléfono válido con la tipificación requerida.";
-                    return RedirectToAction("Ventas");
-                }
-
-                var derivacionesAsesores = new DerivacionesAsesores
-                {
-                    FechaDerivacion = DateTime.Now,
-                    DniAsesor = DNIAsesor,
-                    DniCliente = clienteDatos.Dni,
-                    IdCliente = clienteDatos.IdCliente,
-                    NombreCliente = clienteDatos.XNombre + " " + clienteDatos.XAppaterno + " " + clienteDatos.XApmaterno,
-                    TelefonoCliente = telefonoDerivacion,
-                    NombreAgencia = "73"+agenciaDerivacion,
-                    FueProcesado = false,
-                };
-
-                var SeAgrego = await _dbServicesAsesores.AgregarDerivacionParaFormularios(derivacionesAsesores);
-                if (SeAgrego)
-                {
-                    TempData["Message"] = "Se ha agregado la derivación correctamente. Esta sera enviada automaticamente";
-                }
-                else
-                {
-                    TempData["MessageError"] = "Ha ocurrido un error al enviar la derivación";
-                }
+                message = "Hay una Tipificacion de Derivacion enviada, el formulario fue enviado correctamente.";
             }
 
             // Guardar cambios en la base de datos
             _context.clientes_enriquecidos.Update(ClientesEnriquecido);
             _context.SaveChanges();
 
-            TempData["Message"] = "Las tipificaciones se han guardado correctamente (Se han Obviado los campos Vacios y los campos que fueron llenados con datos incorrectos)";
+            TempData["Message"] = "Las tipificaciones se han guardado correctamente (Se han Obviado los campos Vacios y los campos que fueron llenados con datos incorrectos)" + message;
             return RedirectToAction("Ventas");
 
             /*if (countNonNull == 1)

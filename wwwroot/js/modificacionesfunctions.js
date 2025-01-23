@@ -134,10 +134,20 @@ function cargarInterfazAsesor(idAsesor) {
             type: "GET",
             data: { idUsuario: idAsesor },
             success: function (response) {
-                console.log('Interfaz del asesor seleccionado cargada correctamente');
-                // Cargar la interfaz en el div correspondiente
-                $('#interfazAsesorSelect').html(response);
-                $('#interfazAsesorSelect').css('display', 'block'); // Asegurar que el contenedor sea visible
+                if (response.success === false) {
+                    Swal.fire({
+                        title: 'Error al cargar la vista',
+                        text: response.message,
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+                else {
+                    console.log('Interfaz del asesor seleccionado cargada correctamente');
+                    // Cargar la interfaz en el div correspondiente
+                    $('#interfazAsesorSelect').html(response);
+                    $('#interfazAsesorSelect').css('display', 'block'); // Asegurar que el contenedor sea visible
+                }
             },
             error: function () {
                 Swal.fire({
@@ -165,11 +175,21 @@ function cargarAsesoresTipificacionesView() {
         type: "GET",
         data: {},
         success: function (response) {
-            console.log('Interfaz del asesor seleccionado cargada correctamente');
-            // Cargar la interfaz en el div correspondiente
-            $('#interfazTipificacionXAsesorSelect').html(response);
-            $('#interfazTipificacionXAsesorSelect').css('display', 'block'); // Asegurar que el contenedor sea visible
-            $('#modificarXTipificacionSeccion').css('display', 'none'); // Asegurar que el contenedor sea visible
+            if (response.success === false) {
+                Swal.fire({
+                    title: 'Error al cargar la vista',
+                    text: response.message,
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+            else {
+                console.log('Interfaz de modificación de asignación por tipificación cargada correctamente');
+                // Cargar la interfaz en el div correspondiente
+                $('#interfazTipificacionXAsesorSelect').html(response);
+                $('#interfazTipificacionXAsesorSelect').css('display', 'block'); // Asegurar que el contenedor sea visible
+                $('#modificarXTipificacionSeccion').css('display', 'none'); // Asegurar que el contenedor sea visible
+            }
         },
         error: function () {
             Swal.fire({
@@ -185,4 +205,36 @@ function cargarAsesoresTipificacionesView() {
 function cerrarAsesoresTipificacionView() {
     $('#interfazTipificacionXAsesorSelect').css('display', 'none'); // Asegurar que el contenedor sea visible
     $('#modificarXTipificacionSeccion').css('display', 'block'); // Asegurar que el contenedor sea visible
+}
+
+function cargarActualizacionDeAsignacionXAsesor(idUsuarioBusqueda) {
+    $.ajax({
+        url: "/Asignaciones/CargarActualizarAsignacion",
+        data: { idUsuario: idUsuarioBusqueda },
+        type: "GET",
+        success: function (response) {
+            if (response.success === false) {
+                Swal.fire({
+                    title: 'Error al cargar la vista',
+                    text: response.message,
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+            else {
+                console.log('Interfaz de actualización de asesor cargada correctamente');
+                // Cargar la interfaz en el div correspondiente
+                $('#cargarActualizacionDeAsignacionXAsesor').html(response);
+                $('#cargarActualizacionDeAsignacionXAsesor').css('display', 'block'); // Asegurar que el contenedor sea visible
+            }
+        },
+        error: function () {
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo cargar la interfaz para actualizar un asesor.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    });
 }

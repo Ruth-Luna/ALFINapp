@@ -236,11 +236,19 @@ namespace ALFINapp.Controllers
         {
             try
             {
+                int? idsupervisoractual = HttpContext.Session.GetInt32("UsuarioId");
+                if (idsupervisoractual == null)
+                {
+                    return Json(new { success = false, message = "El ID Supervisor a asignar automaticamente es invalido. Comunicarse con Soporte Tecnico." });
+                }
+
                 var NumClientesAsignados = _context.clientes_asignados
                     .Where(ca => ca.IdUsuarioV == idAsesorBuscar
                         && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
                         && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
-                        && ca.TipificacionMayorPeso == tipificacionDetalle)
+                        && ca.TipificacionMayorPeso == tipificacionDetalle
+                        && ca.IdUsuarioS == idsupervisoractual
+                        )
                     .Count();
                 return Json(new { success = true, numClientes = NumClientesAsignados });
             }
@@ -268,6 +276,11 @@ namespace ALFINapp.Controllers
         {
             try
             {
+                int? idsupervisoractual = HttpContext.Session.GetInt32("UsuarioId");
+                if (idsupervisoractual == null)
+                {
+                    return Json(new { success = false, message = "El ID Supervisor es invalido. Comunicarse con Soporte Tecnico." });
+                }
                 // Verificar si los parámetros son nulos o inválidos
                 if (string.IsNullOrEmpty(TipificacionModificar))
                 {
@@ -295,7 +308,10 @@ namespace ALFINapp.Controllers
                 var asignacionesDisponibles = _context.clientes_asignados
                         .Where(ca => ca.IdUsuarioS == idSupervisorActual &&
                                     ca.TipificacionMayorPeso == TipificacionModificar &&
-                                    ca.IdUsuarioV != idAsesorAsignar)
+                                    ca.IdUsuarioV != idAsesorAsignar
+                                     && ca.IdUsuarioS == idsupervisoractual
+                                     && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
+                                     && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month)
                         .ToList();
 
                 if (asignacionesDisponibles.Count < numDeModificaciones)

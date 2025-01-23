@@ -90,7 +90,7 @@ namespace ALFINapp.Controllers
             ViewData["PageSize"] = pageSize;
             ViewData["TotalPages"] = (int)Math.Ceiling(totalClientes / (double)pageSize);
 
-            return View("MainSupervisor", paginatedData);
+            return View("MainSupervisor", supervisorData);
         }
 
         [HttpGet]
@@ -458,10 +458,10 @@ namespace ALFINapp.Controllers
             if (asesorBusqueda == null)
             {
                 Console.WriteLine("El Asesor no ha sido encontrado");
-                return NotFound("El Asesor no ha sido encontrado");
+                return Json(new { success = false, message = "La entrada no ha sido ocurrido ha ocurrido un error" });
             }
             Console.WriteLine("Retornando la vista parcial");
-            return PartialView("_InterfazAsesor", asesorBusqueda); // Retorna una vista parcial
+            return PartialView("_InterfazActivarAsesor", asesorBusqueda); // Retorna una vista parcial
         }
         
         [HttpGet]

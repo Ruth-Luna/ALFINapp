@@ -101,48 +101,47 @@
             });
         </script>
     }
+    <script>
+
+        function showPasswordInfo() {
+            const passwordInfo = document.getElementById('password-info');
+            passwordInfo.style.display = 'block'; // Mostrar el mensaje
+        }
+
+        // Función para mostrar y ocultar la contraseña al hacer click en el ícono del ojito
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const passwordIcon = document.getElementById('password-icon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.classList.remove('fa-eye');
+                passwordIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.classList.remove('fa-eye-slash');
+                passwordIcon.classList.add('fa-eye');
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+            var dniInput = document.getElementById('dni');
+            var passwordInput = document.getElementById('password');
+
+            dniInput.setAttribute('maxlength', '35');
+            passwordInput.setAttribute('maxlength', '35');
+        });
+
+        function showInitialPasswordInfo() {
+            var passwordInfoElement = document.getElementById('initialPasswordInfo');
+
+            if (passwordInfoElement.classList.contains('d-none')) {
+                passwordInfoElement.classList.remove('d-none');
+                passwordInfoElement.classList.add('d-block');
+            } else if (passwordInfoElement.classList.contains('d-block')) {
+                passwordInfoElement.classList.remove('d-block');
+                passwordInfoElement.classList.add('d-none');
+            }
+        }
+
+    </script>
 }
-
-<script>
-
-    function showPasswordInfo() {
-        const passwordInfo = document.getElementById('password-info');
-        passwordInfo.style.display = 'block'; // Mostrar el mensaje
-    }
-
-    // Función para mostrar y ocultar la contraseña al hacer click en el ícono del ojito
-    function togglePasswordVisibility() {
-        const passwordInput = document.getElementById('password');
-        const passwordIcon = document.getElementById('password-icon');
-
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            passwordIcon.classList.remove('fa-eye');
-            passwordIcon.classList.add('fa-eye-slash');
-        } else {
-            passwordInput.type = 'password';
-            passwordIcon.classList.remove('fa-eye-slash');
-            passwordIcon.classList.add('fa-eye');
-        }
-    }
-    document.addEventListener('DOMContentLoaded', function () {
-        var dniInput = document.getElementById('dni');
-        var passwordInput = document.getElementById('password');
-
-        dniInput.setAttribute('maxlength', '35');
-        passwordInput.setAttribute('maxlength', '35');
-    });
-
-    function showInitialPasswordInfo() {
-        var passwordInfoElement = document.getElementById('initialPasswordInfo');
-
-        if (passwordInfoElement.classList.contains('d-none')) {
-            passwordInfoElement.classList.remove('d-none');
-            passwordInfoElement.classList.add('d-block');
-        } else if (passwordInfoElement.classList.contains('d-block')) {
-            passwordInfoElement.classList.remove('d-block');
-            passwordInfoElement.classList.add('d-none');
-        }
-    }
-
-</script>

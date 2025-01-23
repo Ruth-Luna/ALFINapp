@@ -25,7 +25,7 @@ namespace ALFINapp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> VerificarDNI(string dni)
+        public async Task<IActionResult> VerificarDNIenBDoBanco(string dni)
         {
             try
             {

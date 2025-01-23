@@ -20,5 +20,7 @@ public class SupervisorDTO
 
     public string? NombresCompletos { get; set; }
     public string? ApellidoPaterno { get; set; }
-
+    
+    public string? UltimaTipificacion { get; set; }
+    public string? TipificacionMasRelevante { get; set; }
 }

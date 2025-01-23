@@ -18,93 +18,86 @@ namespace ALFINapp.Services
         }
 
         //ACA ESTAN LAS INSERCIONES A LA DB
-        public async Task<Tuple<bool, string>> GuardarReAsignacionCliente(string DNIBusqueda, string BaseTipo, int IdUsuarioVAsignar)
+        public async Task<(bool IsSuccess, string message)> GuardarReAsignacionCliente(string DNIBusqueda, string BaseTipo, int IdUsuarioVAsignar)
         {
             try
             {
-                var getCliente = await (from bc in _context.base_clientes
-                                        where bc.Dni == DNIBusqueda
-                                        select new { bc }).FirstOrDefaultAsync();
-
-                if (getCliente == null || getCliente.bc == null)
+                if (BaseTipo == "A365")
                 {
-                    return new Tuple<bool, string>(false, $"El cliente con DNI {DNIBusqueda} no ha podido ser encontrado, problamente fue eliminado");
-                }
-
-                var getEnriquecidoCliente = await (from ce in _context.clientes_enriquecidos
-                                                   where ce.IdBase == getCliente.bc.IdBase
-                                                   select new { ce }).FirstOrDefaultAsync();
-
-                if (getEnriquecidoCliente == null || getEnriquecidoCliente.ce == null)
-                {
-                    Console.WriteLine($"El cliente con DNI {DNIBusqueda} no tiene datos enriquecidos");
-                    var datosEnriquecidos = new ClientesEnriquecido
+                    var ClienteDBA365 = await (
+                                                    from c in _context.base_clientes
+                                                    join d in _context.detalle_base on c.IdBase equals d.IdBase
+                                                    where c.Dni == DNIBusqueda
+                                                    select new
+                                                    {
+                                                        Cliente = c,
+                                                        Detalle = d
+                                                    }
+                                                ).FirstOrDefaultAsync();
+                    if (ClienteDBA365 == null)
                     {
-                        IdBase = getCliente.bc.IdBase,
-                        FechaEnriquecimiento = DateTime.Now,
-                    };
-
-                    _context.clientes_enriquecidos.Add(datosEnriquecidos);
-                    var result1 = await _context.SaveChangesAsync();
-
-                    if (result1 <= 0)
-                    {
-                        return new Tuple<bool, string>(false, "Error al guardar la reasignación del cliente.");
+                        return (false, "El cliente no tiene Detalle Base en la Base de Datos de A365, si el cliente tiene Datos en la base de Datos del banco Alfin puede hacer la consulta con los datos correspondientes");
                     }
-
-                }
-
-                var getBaseCliente = await (from bc in _context.base_clientes
-                                            where bc.Dni == DNIBusqueda
-                                            join ce in _context.clientes_enriquecidos on bc.IdBase equals ce.IdBase
-                                            join ca in _context.clientes_asignados on ce.IdCliente equals ca.IdCliente into clientesAsignadosGroup
-                                            from ca in clientesAsignadosGroup.DefaultIfEmpty() // Left join con clientes_asignados
-                                            select new { bc, ce, ca }).ToListAsync();
-
-                var IdUsuarioSupervisor = await (from u in _context.usuarios
-                                                 where
-                                                        u.IdUsuario == IdUsuarioVAsignar
-                                                 select u.IDUSUARIOSUP
-                                                        ).FirstOrDefaultAsync();
-                var clienteId = 0;
-                foreach (var clientesBase in getBaseCliente)
-                {
-                    clienteId = clientesBase.ce.IdCliente;
-                    if (clientesBase.ca.IdUsuarioV == IdUsuarioVAsignar)
+                    if (ClienteDBA365 != null)
                     {
-                        return new Tuple<bool, string>(false, $"El cliente con DNI {DNIBusqueda} esta asignado a usted");
+                        //FUNCIONALIDAD: El cliente FUE encontrado en A365 
+                        var EnriquecidoClienteA365 = await _context.clientes_enriquecidos.FirstOrDefaultAsync(ce => ce.IdBase == ClienteDBA365.Cliente.IdBase);
+                        if (EnriquecidoClienteA365 != null)
+                        {
+                            //FUNCIONALIDAD: El cliente FUE encontrado en A365 Y TIENE UNA ENTRADA EN LA TABLA DE CLIENTES ENRIQUECIDOS
+                            var clientePreviamenteAsignadoAUsted = await _context.clientes_asignados.FirstOrDefaultAsync(ca => ca.IdUsuarioV == IdUsuarioVAsignar);
+                            if (clientePreviamenteAsignadoAUsted != null)
+                            {
+                                //FUNCIONALIDAD: El cliente a buscar ya se encuentra asignado a AL USUARIO VENDEDOR
+                                return (false, "El cliente a buscar ya se encuentra asignado a usted");
+                            }
+
+                            var nuevoClienteAsignado = new ClientesAsignado
+                            {
+                                IdUsuarioV = IdUsuarioVAsignar,
+                                FechaAsignacionVendedor = DateTime.Now,
+                                IdCliente = EnriquecidoClienteA365.IdCliente,
+                                FuenteBase = ClienteDBA365.Detalle.TipoBase,
+                                FinalizarTipificacion = false,
+                                IdUsuarioS = 0,
+                                FechaAsignacionSup = DateTime.Now,
+                                ClienteDesembolso = false,
+                                ClienteRetirado = false,
+                            };
+                            _context.clientes_asignados.Add(nuevoClienteAsignado);
+                            await _context.SaveChangesAsync();
+                            return (true, "El cliente fue asignado correctamente a la Base A365");
+                        }
+                        else
+                        {
+                            //FUNCIONALIDAD: El cliente NO tiene una entrada en la tabla de clientes enriquecidos: Se debe crear Manualmente
+                            /*var nuevoClienteEnriquecidos = new ClientesEnriquecido
+                            {
+                                IdBase = ClienteDBA365.IdBase,
+                                FechaEnriquecimiento = DateTime.Now,
+                                IdCliente = ClienteDBA365.IdBase,
+                            };
+                            _context.clientes_enriquecidos.Add(nuevoClienteEnriquecidos);
+                            //FUNCIONALIDAD: El cliente SERA ASIGNADO MANUALMENTE A LA TABLA CLIENTES ASIGNADOS*/
+                            return (false, "El cliente NO tiene una entrada en la tabla de clientes enriquecidos: Se debe crear Manualmente");
+                        }
                     }
                 }
 
-                var reasignarCliente = new ClientesAsignado
+                if (BaseTipo == "ALFIN")
                 {
-                    IdUsuarioV = IdUsuarioVAsignar,
-                    FechaAsignacionVendedor = DateTime.Now,
-                    IdCliente = clienteId,
-                    FuenteBase = BaseTipo,
-                    FinalizarTipificacion = false,
-                    IdUsuarioS = IdUsuarioSupervisor,
-                    FechaAsignacionSup = DateTime.Now,
-                    ClienteDesembolso = false,
-                    ClienteRetirado = false,
-                };
-
-                _context.clientes_asignados.Add(reasignarCliente);
-                var result2 = await _context.SaveChangesAsync();
-                if (result2 <= 0)
-                {
-                    return new Tuple<bool, string>(false, "Error al guardar la reasignación del cliente.");
+                    var ClienteDBAlfinBanco = await _context.base_clientes_banco.FirstOrDefaultAsync(c => c.Dni == DNIBusqueda);
                 }
-
-                return new Tuple<bool, string>(true, "La reasignacion del cliente se produjo con exito");
+                return (false, "Se mando un BaseTipo distinto de los esperados el sistema ha sido comprometido");
+                // Buscar al cliente en las bases de datos Alfin y A365
             }
             catch (System.Exception ex)
             {
-                return new Tuple<bool, string>(false, ex.Message);
+                return (false, ex.Message);
                 throw;
             }
-            
+
         }
-        
+
     }
 }

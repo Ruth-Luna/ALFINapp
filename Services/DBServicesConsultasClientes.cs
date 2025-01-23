@@ -53,10 +53,12 @@ namespace ALFINapp.Services
                         TraidoDe = "BDA365",
                         IdBase = detalleclienteExistenteBD.IdBase
                     };
+                    // El DNI se encuentra registrado en la Base de Datos de A365
                     return (true, "El DNI se encuentra registrado en la Base de Datos de A365. Se devolvera la entrada correspondiente", clienteA365Encontrado); // Se devuelve la entrada correspondiente
                 }
 
                 // Consulta a la base de datos del banco de clientes
+                var testingDBBank = await _context.base_clientes_banco.FirstOrDefaultAsync(c => c.Dni == DNIBusqueda);
                 var clienteExistenteBank = await(
                                                     from bcb in _context.base_clientes_banco
                                                     join pb in _context.base_clientes_banco_plazo on bcb.IdPlazoBanco equals pb.IdPlazo

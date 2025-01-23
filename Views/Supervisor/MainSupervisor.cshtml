@@ -72,8 +72,6 @@
         <table class="table table-bordered" id="clientesTable">
             <thead>
                 <tr>
-                    <th>Num. Cliente</th>
-
                     <th>DNI Cliente</th>
                     <th>
                         Nombres del Cliente
@@ -87,11 +85,11 @@
                             onclick="sortTable('clientesTable', 3, 'string')">Ordenar</button>-->
                     </th>
 
-                    <th>DNI Asesor</th>
                     <th>
-                        Fecha Asignacion Asesor
-                        <!--<button class="btn btn-link p-0"
-                            onclick="sortTable('clientesTable', 5, 'date')">Ordenar</button>-->
+                        Ultima Tipificacion
+                    </th>
+                    <th>
+                        Tipificacion mas Relevante
                     </th>
 
                     <!--<th>Asigne o Modifique la Asignacion</th>
@@ -107,7 +105,6 @@
                 @foreach (var SupervisorDTO in Model)
                 {
                     <tr>
-                        <td>@contr</td>
                         @{
                             contr++;
                         }
@@ -115,8 +112,8 @@
                         <td>@SupervisorDTO.XNombre.ToUpper() @SupervisorDTO.XAppaterno.ToUpper()
                             @SupervisorDTO.XApmaterno.ToUpper()</td>
                         <td>@SupervisorDTO.NombresCompletos.ToUpper()</td>
-                        <td>@SupervisorDTO.DniVendedor</td>
-                        <td>@SupervisorDTO.FechaAsignacionV</td>
+                        <td>@SupervisorDTO.UltimaTipificacion</td>
+                        <td>@SupervisorDTO.TipificacionMasRelevante</td>
                     </tr>
                 }
             </tbody>
@@ -133,7 +130,6 @@
             <a href="?page=@(currentPage + 1)&pageSize=@pageSize"> <i class="fa-solid fa-arrow-right"></i></a>
         }
     </div>
-    <div class="spacing"></div>
     <div class="spacing"></div>
 </div>
 

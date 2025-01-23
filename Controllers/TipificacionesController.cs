@@ -33,7 +33,7 @@ namespace ALFINapp.Controllers
             var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)
             {
-                return Json(new { success = false, message = "No se ocnsiguio el id de la sesion, inicie sesion nuevamente." });
+                return Json(new { success = false, message = "No se consiguio el id de la sesion, inicie sesion nuevamente." });
             }
             var getAsesor = await _dbServicesGeneral.GetUserInformation(usuarioId.Value);
             if (getAsesor.IsSuccess == false || getAsesor.Data == null)
@@ -60,7 +60,7 @@ namespace ALFINapp.Controllers
                 FueProcesado = false
             };
             var enviarFomularioAsignacion = await _dbServicesTipificaciones.EnviarFomularioDerivacion(enviarDerivacion);
-            return View();
+            return Json(new { success = true, message = "La Derivacion se ha enviado correctamente, pero para guardar los cambios debe darle al boton Guardar Tipificaciones" });;
         }
     }
 }

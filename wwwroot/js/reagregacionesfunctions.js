@@ -71,7 +71,7 @@ function validarDNI() {
         Message.innerHTML = "El DNI debe contener exactamente 8 dígitos y solo números.";
     } else {
         $.ajax({
-            url: `/Reagregaciones/VerificarDNI`,
+            url: `/Reagregaciones/VerificarDNIenBDoBanco`,
             type: 'GET',
             data: { dni: dniValue },
             success: function (data) {

@@ -30,9 +30,9 @@ namespace ALFINapp.Controllers
                 ViewData["tipificacionesGenerales"] = tipificacionesGenerales;
                 return PartialView("_ModificarPorTipificacion");
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
-                return Json(new { error = true, message = "Ha ocurrido un Error al mandar los Datos" });
+                return Json(new { success = false, message = ex.Message });
                 throw;
             }
         }

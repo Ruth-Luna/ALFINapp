@@ -11,7 +11,7 @@
 
 <div class="container-fluid mt-4">
     <div class="container-fluid mb-3">
-        <h3>Seccion Modificar asignaciones del Asesor</h3>
+        <h3>Seccion Asignaciones del Asesor de Ventas</h3>
         <div class="mb-3">
             <label for="asignarAsesorBase" class="form-label">Seleccione su Destino</label>
             <select class="form-select" name="selectAsesorBase" id="selectAsesorBase">
@@ -71,23 +71,26 @@
     </div>
 
     <div class="container-fluid mb-3">
-        <h3>Seccion Modificar asignaciones del Asesor</h3>
+        <h3>Seccion Modificar Asignaciones del Asesor</h3>
         <div class="row">
             <div>
                 <label for="selectAsesor" class="form-label">Seleccione un Asesor</label>
                 <select class="form-select" id="selectAsesor" name="selectAsesor"
-                    onchange="cargarInterfazAsesor(this.value)">
+                    onchange="cargarActualizacionDeAsignacionXAsesor(this.value)">
                     <option value="">Seleccione un Asesor</option>
                     @foreach (var AsesorAsignados in Model)
                     {
-                        <option value="@AsesorAsignados.IdUsuario">@AsesorAsignados.NombresCompletos</option>
+                        if (AsesorAsignados.estaActivado == true)
+                        {
+                            <option value="@AsesorAsignados.IdUsuario">@AsesorAsignados.NombresCompletos</option>
+                        }
                     }
                 </select>
             </div>
 
             <div class="spacing"></div>
 
-            <div id="interfazAsesorSelect" class="row mt-10" style="display: none;">
+            <div id="cargarActualizacionDeAsignacionXAsesor" class="row mt-10" style="display: none;">
                 <!-- Aqui se cargara la vista parcial del asesor seleccionado -->
             </div>
         </div>

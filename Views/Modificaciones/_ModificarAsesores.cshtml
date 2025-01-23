@@ -10,24 +10,62 @@
     <link rel="stylesheet" href="~/css/main_page.css">
 }
 
-
-<div id="seccionAgregarAsesores">
-    <h3>Agregar Asesores</h3>
-    <div class="row">
-        <div>
-            <div class="alert alert-info" role="alert">
-                En esta Seccion podra Agregar nuevos asesores
+<div class="container mt-4 mb-4">
+    <div id="seccionAgregarAsesores" class="container-fluid mb-4 mt-4">
+        <div class="label-for-sup-sec">
+            <h3>Agregar Asesores de Creditos</h3>
+        </div>
+        <div class="row">
+            <div>
+                <div class="alert alert-info mt-4" role="alert">
+                    En esta Seccion podra Agregar nuevos asesores
+                </div>
+                <div class="button-container mb-4">
+                    <button type="button" class="btn btn-primary" onclick="agregarNuevoAsesorView()">Agregar un Nuevo
+                        Asesor</button>
+                </div>
             </div>
-            <div class="button-container mb-10">
-                <button type="button" class="btn btn-primary" onclick="agregarNuevoAsesorView()">Agregar un Nuevo
-                    Asesor</button>
+        </div>
+    </div>
+
+    <div id="interfazAgregarAsesor" class="row  mb-4" style="display: none;">
+
+    </div>
+
+    <div class="container-fluid mb-3">
+        <div class="label-for-sup-sec">
+            <h3>Seccion Modificar Estado del Asesor</h3>
+        </div>
+
+        <div class="row mt-4">
+            <div>
+                <label for="selectAsesor" class="form-label">Seleccione un Asesor</label>
+                <select class="form-select" id="selectAsesor" name="selectAsesor"
+                    onchange="cargarInterfazAsesor(this.value)">
+                    <option value="">Seleccione un Asesor</option>
+                    @foreach (var AsesorAsignados in Model)
+                    {
+                        if (AsesorAsignados.Estado == "ACTIVO")
+                        {
+                            <option value="@AsesorAsignados.IdUsuario">@AsesorAsignados.NombresCompletos</option>
+                        }
+                        else
+                        {
+                            <option style="background-color: rgb(255, 93, 93);" value="@AsesorAsignados.IdUsuario">@AsesorAsignados.NombresCompletos <i class="fa fa-circle-exclamation"></i> <span> -- Asesor DESACTIVADO</span></option>
+                        }
+                    }
+                </select>
+            </div>
+            
+            <div class="spacing"></div>
+
+            <div id="interfazAsesorSelect" class="row mt-10" style="display: none;">
+                <!-- Aqui se cargara la vista parcial del asesor seleccionado -->
             </div>
         </div>
     </div>
 </div>
 
-<div id="interfazAgregarAsesor" class="row mt-10" style="display: none;">
 
-</div>
-
-@section Scripts {}
+@section Scripts {
+}
