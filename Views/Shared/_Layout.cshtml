@@ -38,7 +38,7 @@
                     </a>
                 </div>
                 <div class="buttons-container">
-                    <a href="@Url.Action("CerrarSesion", "User")" class="btn btn-danger text-white">
+                    <a href="@Url.Action("CerrarSesion", "Vendedor")" class="btn btn-danger text-white">
                         <i class="bi bi-box-arrow-right me-2"></i>
                         Cerrar Sesion
                     </a>
@@ -52,7 +52,8 @@
 
         <div class="flex-grow-1 d-flex overflow-hidden">
             <!-- sidebar -->
-            <div class="sidebar" id="sidebar" style="width: 250px; min-width: 250px; background-color: #20374c !important">
+            <div class="sidebar" id="sidebar"
+                style="width: 250px; min-width: 250px; background-color: #20374c !important">
                 <ul class="nav flex-column pt-4 sidebar-links">
                     <li class="nav-item px-3 py-2">
                         <a class="nav-link text-white rounded-3"
@@ -76,13 +77,13 @@
                         </a>
                     </li>
                     <li class="nav-item px-3 py-2">
-                        <a class="nav-link text-white rounded-3" href="#gestion-leads">
+                        <a class="nav-link text-white rounded-3" href="@Url.Action("Ventas", "Vendedor")">
                             <i class="bi bi-sliders2 me-2"></i>
                             Gestion Leads
                         </a>
                     </li>
                     <li class="nav-item px-3 py-2">
-                        <a class="nav-link text-white rounded-3" href="@Url.Action("AddingClient", "User")">
+                        <a class="nav-link text-white rounded-3" href="@Url.Action("AddingClient", "Vendedor")">
                             <i class="bi bi-person-bounding-box me-2"></i>
                             Consulta DNI
                         </a>
@@ -98,7 +99,6 @@
                         @RenderBody()
                     </div>
                 </div>
-
                 <!-- footer -->
                 <div class="shadow-sm py-3 border-top">
                     <div class="container-fluid text-center">
@@ -124,8 +124,6 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const sidebar = document.getElementById('sidebar');
@@ -192,26 +190,10 @@
             });
         });
     </script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 
 </html>
-
-<script>
-    Swal.fire({
-        title: 'Mensaje', // Título del mensaje
-        text: '@Html.Raw(TempData["Message"] as string)', // Usamos Html.Raw para evitar que se escape el texto
-        icon: 'info', // Tipo de ícono (info, success, error, warning)
-        confirmButtonText: 'Aceptar' // Texto del botón de confirmación
-    });
-</script>
-<script>
-    Swal.fire({
-        title: 'Error', // Título del mensaje
-        text: '@Html.Raw(TempData["MessageError"] as string)', // Usamos Html.Raw para evitar que se escape el texto
-        icon: 'error', // Tipo de ícono (info, success, error, warning)
-        confirmButtonText: 'Aceptar' // Texto del botón de confirmación
-    });
-</script>
 <script src="~/js/mainsupervisorfunctions.js"></script>
 <script src="~/js/accountfunctions.js"></script>
 <script src="~/js/generalfunctions.js"></script>

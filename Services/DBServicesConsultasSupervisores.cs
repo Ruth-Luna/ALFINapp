@@ -44,7 +44,7 @@ namespace ALFINapp.Services
         /// A tuple containing a boolean indicating success or failure, a message describing the outcome,
         /// and a nullable VendedorConClientesDTO object containing the data.
         /// </returns>
-        public async Task<(bool IsSuccess, string Message, VendedorConClientesDTO? Data)> GetNumberTipificaciones(Usuario AsesorBusqueda, int IdSupervisor)
+        public async Task<(bool IsSuccess, string Message, VendedorConClientesDTO? Data)> GetNumberTipificacionesPlotedOnDTO(Usuario AsesorBusqueda, int IdSupervisor)
         {
             try
             {
@@ -53,17 +53,16 @@ namespace ALFINapp.Services
                                                 AsesorBusqueda.IdUsuario, IdSupervisor)
                                                 .AsEnumerable()
                                                 .FirstOrDefault();
-
                 if (numeroClientes == null)
                 {
                     return (false, "El id del asesor es incorrecto.", null);
                 }
-
                 VendedorConClientesDTO vendedorClientesDTO = new VendedorConClientesDTO
                 {
                     NombresCompletos = AsesorBusqueda.NombresCompletos,
                     IdUsuario = AsesorBusqueda.IdUsuario,
-                    NumeroClientes = numeroClientes.NumeroEntero
+                    NumeroClientes = numeroClientes.NumeroEntero,
+                    estaActivado = AsesorBusqueda.Estado == "ACTIVO" ? true : false
                 };
                 return (true, $"La Consulta se produjo con exito", vendedorClientesDTO);
             }

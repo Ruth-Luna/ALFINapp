@@ -1,4 +1,19 @@
 @model ALFINapp.Models.Usuario
+@{
+    int? RolUser = ViewData["RolUser"] as int?;
+    if (RolUser == 1)
+    {
+        Layout = "~/Views/Shared/_LayoutVendedor.cshtml";
+    }
+    else if (RolUser == 2)
+    {
+        Layout = "~/Views/Shared/_LayoutSupervisor.cshtml";
+    }
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/main_page.css">
+}
 
 <div class="row mb-2">
     <h3>Bienvenido @Model.NombresCompletos</h3>
@@ -49,3 +64,6 @@
     </div>
 
 </div>
+
+@section Scripts {
+}

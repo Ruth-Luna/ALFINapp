@@ -103,6 +103,7 @@ namespace ALFINapp.Controllers
                 return RedirectToAction("Index", "Home");
             }
             var GetVendedoresAsignados = await _dbServicesConsultasSupervisores.GetAsesorsFromSupervisor(usuarioId);
+
             if (GetVendedoresAsignados.IsSuccess == false)
             {
                 TempData["MessageError"] = GetVendedoresAsignados.Message;
@@ -113,10 +114,10 @@ namespace ALFINapp.Controllers
             // Inicializar la lista de VendedorConClientesDTO
             var vendedoresConClientes = new List<VendedorConClientesDTO>();
 
-            foreach (var vendedorIndividual in vendedoresAsignados)
+            foreach (var vendedorIndividual in GetVendedoresAsignados.Data)
             {
                 // Llamada al servicio para obtener el número de clientes y el mapeo de datos
-                var vendedorIndividualMapeado = await _dbServicesConsultasSupervisores.GetNumberTipificaciones(vendedorIndividual, usuarioId.Value);
+                var vendedorIndividualMapeado = await _dbServicesConsultasSupervisores.GetNumberTipificacionesPlotedOnDTO(vendedorIndividual, usuarioId.Value);
 
                 if (vendedorIndividualMapeado.IsSuccess == false || vendedorIndividualMapeado.Data == null)
                 {

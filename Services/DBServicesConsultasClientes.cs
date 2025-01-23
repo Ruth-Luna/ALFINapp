@@ -60,7 +60,7 @@ namespace ALFINapp.Services
                 var clienteExistenteBank = await(
                                                     from bcb in _context.base_clientes_banco
                                                     join pb in _context.base_clientes_banco_plazo on bcb.IdPlazoBanco equals pb.IdPlazo
-                                                    join cg in _context.base_clientes_banco_campana_grupos on bcb.IdCampanaGrupoBanco equals cg.IdCampanaGrupo
+                                                    join cg in _context.base_clientes_banco_campana_grupo on bcb.IdCampanaGrupoBanco equals cg.IdCampanaGrupo
                                                     join c in _context.base_clientes_banco_color on bcb.IdColorBanco equals c.IdColor
                                                     join u in _context.base_clientes_banco_usuario on bcb.IdUsuarioBanco equals u.IdUsuario
                                                     join rd in _context.base_clientes_banco_rango_deuda on bcb.IdRangoDeuda equals rd.IdRangoDeuda

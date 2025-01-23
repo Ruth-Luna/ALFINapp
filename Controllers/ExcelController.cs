@@ -344,7 +344,7 @@ namespace ALFINapp.Controllers
 
                     // Devuelve el csvFile
                     var excelBytes = package.GetAsByteArray();
-                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ClientesAsignados.xlsx");
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{destinoBase} - ({detallesClientesSupervisor.Count()}).xlsx");
                 }
             }
             catch (Exception ex)

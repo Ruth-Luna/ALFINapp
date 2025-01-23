@@ -93,7 +93,7 @@ function cargarEdicionDeTelefonos(idcliente) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: '/User/AgregarTelefonoView',
+                url: '/Vendedor/AgregarTelefonoView',
                 type: 'GET',
                 data: { "idCliente": idcliente },
                 success: function (response) {

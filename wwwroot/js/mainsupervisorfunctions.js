@@ -93,33 +93,3 @@ function showFileName() {
         fileNameDisplay.textContent = ''; // Si no hay archivo, limpia el texto
     }
 }
-
-function loadReasignarClientesAsignados(){
-    $.ajax({
-        url: '/AsesoresSecundarios/AsignarAsesoresSecundariosView',
-        type: 'GET',
-        success: function (response) {
-            if (response.error === true) {
-                Swal.fire({
-                    title: 'Error',
-                    text: response.message,
-                    icon: 'error',
-                    confirmButtonText: 'Aceptar'
-                    });
-                    
-            }
-            else {
-                $('#modalContentReasignarAsesorSecundarioModal').html(response); // Insertar la vista parcial en el modal
-                $('#ReasignarAsesorSecundarioModal').modal('show'); // Mostrar el modal
-            }
-        },
-        error: function () {
-            Swal.fire({
-                title: 'Error',
-                text: 'No se pudo cargar la vista de agregar usuario.',
-                icon: 'error',
-                confirmButtonText: 'Aceptar'
-            });
-        }
-    });
-}

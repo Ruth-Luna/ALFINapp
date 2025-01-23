@@ -81,6 +81,45 @@ namespace ALFINapp.Services
                 return (false, ex.Message);
             }
         }
+
+        public async Task<(bool IsSuccess, string Message, BaseCliente? data)> GetBaseClienteFunction(int IdBaseB)
+        {
+            try
+            {
+                var cliente = await _context.base_clientes.Where(u => u.IdBase == IdBaseB)
+                                    .FirstOrDefaultAsync();
+                
+                if (cliente == null)
+                {
+                    return (false, "El usuario no se encuentra registrado", null);
+                }
+                
+                return (true, "El Usuario se ha encontrado", cliente);
+            }
+            catch (System.Exception ex)
+            {
+                return (true, ex.Message, null);
+            }
+        }
+        public async Task<(bool IsSuccess, string Message, ClientesEnriquecido? data)> GetClienteEnriquecidoFunction(int IdBaseB = 0)
+        {
+            try
+            {
+                var cliente = await _context.clientes_enriquecidos.Where(u => u.IdBase == IdBaseB)
+                                    .FirstOrDefaultAsync();
+                
+                if (cliente == null)
+                {
+                    return (false, "El usuario no se encuentra registrado, en la tabla enriquecida", null);
+                }
+                
+                return (true, "El Usuario se ha encontrado en la tabla enriquecida", cliente);
+            }
+            catch (System.Exception ex)
+            {
+                return (true, ex.Message, null);
+            }
+        }
         // Other DB services can be added here
     }
 }

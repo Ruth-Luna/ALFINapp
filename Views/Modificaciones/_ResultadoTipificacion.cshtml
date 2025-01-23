@@ -18,7 +18,10 @@
                 onchange="cargarNumDeClientesPorTipificacion('@Model.DetalleTipificacion', this.value);">
                 @foreach (var AsesoresAsignados in AsesoresDelSupervisor)
                 {
-                    <option value="@AsesoresAsignados.IdUsuario">@AsesoresAsignados.NombresCompletos</option>
+                    if (AsesoresAsignados.Estado == "ACTIVO")
+                    {
+                        <option value="@AsesoresAsignados.IdUsuario">@AsesoresAsignados.NombresCompletos</option>
+                    }
                 }
             </select>
         </div>

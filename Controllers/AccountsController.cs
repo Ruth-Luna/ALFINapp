@@ -19,31 +19,57 @@ namespace ALFINapp.Controllers
         {
             _dbservicesgeneral = dbservicesgeneral;
         }
-        
+
         [HttpGet]
         public async Task<IActionResult> GetInformationForAccounts()
         {
+            int? RolUser = HttpContext.Session.GetInt32("RolUser");
             try
             {
                 int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
                 if (usuarioId == null)
                 {
-                    return Json(new { success = false, message = "Usted no ha iniciado sesion"}); 
+                    TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
+                    return RedirectToAction("Index", "Home");
                 }
                 var userInformation = await _dbservicesgeneral.GetUserInformation(usuarioId.Value);
                 if (userInformation.IsSuccess == false)
                 {
-                    return Json(new { success = false, message = "No se pudo obtener la informacion de su cuenta"});
+                    TempData["MessageError"] = userInformation.Message;
+                    if (RolUser == 1)
+                    {
+                        return RedirectToAction("Ventas", "Vendedor");
+                    }
+                    else if (RolUser == 2)
+                    {
+                        return RedirectToAction("VistaMainSupervisor", "Supervisor");
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
                 }
+                ViewData["RolUser"] = RolUser;
                 return View("AccountInformation", userInformation.Data);
             }
             catch (System.Exception ex)
             {
-                return Json(new { success = false, message = ex.Message}); 
-                throw;
+                TempData["MessageError"] = ex.Message;
+                if (RolUser == 1)
+                {
+                    return RedirectToAction("Ventas", "Vendedor");
+                }
+                else if (RolUser == 2)
+                {
+                    return RedirectToAction("VistaMainSupervisor", "Supervisor");
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Home");
+                }
             }
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> SubmitNewPassword(string newPassword)
         {
@@ -52,14 +78,14 @@ namespace ALFINapp.Controllers
                 int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
                 if (usuarioId == null)
                 {
-                    return Json(new { success = false, message = "Usted no ha iniciado sesion"});
+                    return Json(new { success = false, message = "Usted no ha iniciado sesion" });
                 }
                 var changePasswordResult = await _dbservicesgeneral.UpdatePasswordGeneralFunction(usuarioId.Value, newPassword);
-                return Json(new { success = true, message = "Contraseña cambiada con exito"});
+                return Json(new { success = true, message = "Contraseña cambiada con exito" });
             }
             catch (System.Exception ex)
             {
-                return Json(new { success = false, message = ex.Message}); 
+                return Json(new { success = false, message = ex.Message });
             }
         }
     }

@@ -11,13 +11,13 @@ using ALFINapp.Services;
 namespace ALFINapp.Controllers
 {
     [RequireSession]
-    public class UserController : Controller
+    public class VendedorController : Controller
     {
         private readonly MDbContext _context;
         private readonly DBServicesGeneral _dbServicesGeneral;
         private readonly DBServicesConsultasAsesores _dbServicesAsesores;
 
-        public UserController(MDbContext context, DBServicesConsultasAsesores dbServicesAsesores, DBServicesGeneral dbServicesGeneral)
+        public VendedorController(MDbContext context, DBServicesConsultasAsesores dbServicesAsesores, DBServicesGeneral dbServicesGeneral)
         {
             _context = context;
             _dbServicesAsesores = dbServicesAsesores;
@@ -408,7 +408,8 @@ namespace ALFINapp.Controllers
                 TempData["Message"] = "No ha iniciado sesion, por favor inicie sesion.";
                 return RedirectToAction("Index", "Home");
             }
-            Console.WriteLine("Cargando VISTA");
+            ViewData["RolUser"] = HttpContext.Session.GetInt32("RolUser");
+            Console.WriteLine("Rol del usuario: " + HttpContext.Session.GetInt32("RolUser"));
             return View("_AddingClient");
         }
 
@@ -870,7 +871,7 @@ namespace ALFINapp.Controllers
             }
             catch (System.Exception)
             {
-                return Json(new { error = false });
+                return Json(new { error = true });
                 throw;
             }
         }

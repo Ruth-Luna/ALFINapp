@@ -107,31 +107,3 @@ function enviarComentarioTelefonoDB(idCliente, telefono, textareaId, numTelefono
         }
     });
 }
-
-/*
-function loadCulminacionCliente(id_asignacion) {
-    if (!id_asignacion) {
-        alert('El ID de asignación no es válido.');
-        return;
-    }
-
-    const userConfirmed = confirm('Advertencia: Si culmina con el cliente, esta acción no se puede revertir. ¿Está seguro de continuar?');
-
-    if (userConfirmed) {
-        $.ajax({
-            url: '/User/culminarCliente',
-            type: 'POST',
-            data: { "IdAsignacion": id_asignacion },
-            success: function (result) {
-                alert('Se ha culminado con el cliente correctamente.');
-            },
-            error: function (xhr, status, error) {
-                console.error('Error al culminar con el cliente:', error);
-                alert('Hubo un error al intentar culminar con el cliente. Por favor, inténtalo nuevamente.');
-            }
-        });
-    } else {
-        // Si el usuario cancela, muestra un mensaje opcional
-        alert('La acción ha sido cancelada.');
-    }
-}*/

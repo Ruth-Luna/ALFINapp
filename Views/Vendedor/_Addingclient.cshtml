@@ -1,16 +1,26 @@
 @model ALFINapp.Models.BaseCliente
 
 @{
-    ViewBag.Title = "Agregar Cliente";
+    int? RolUser = ViewData["RolUser"] as int?;
+    if (RolUser == 1)
+    {
+        Layout = "~/Views/Shared/_LayoutVendedor.cshtml";
+    }
+    else if (RolUser == 2)
+    {
+        Layout = "~/Views/Shared/_LayoutSupervisor.cshtml";
+    }
 }
 
 @section Styles {
     <link rel="stylesheet" href="~/css/agregarcliente.css">
+    <link rel="stylesheet" href="~/css/main_page.css">
 }
 
 <div id="dni-section">
+    <h3>Busqueda de Clientes</h3>
     <div class="form-group">
-        <label for="DNI">Ingresa DNI</label>
+        <label for="DNI"> Ingresa DNI </label>
         <input type="text" id="dnicliente" class="form-control" placeholder="Ingrese DNI">
         <br>
         <button id="consultar-dni" class="btn btn-primary" onclick="validarDNI()">Consultar</button>
@@ -24,3 +34,5 @@
 
 <div id="error-message" class="alert alert-danger" style="display: none;">
 </div>
+
+@section Scripts {}

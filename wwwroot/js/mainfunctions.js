@@ -60,12 +60,13 @@ function guardarComentarioGeneral(idAsignacion) {
 
 function loadTipificarCliente(idBase) {
     $.ajax({
-        url: '/User/TipificarClienteView', // Controlador y acción
+        url: '/Vendedor/TipificarClienteView', // Controlador y acción
         type: 'GET',
         data: { id_base: idBase },
         success: function (result) {
-            $('#modalContentTipificar').html(result); // Inserta el contenido de la vista en el modal
-            $('#tipificarClienteModal').modal('show'); // Muestra el modal
+            $('#modalContentGeneralTemplate').html(result); // Inserta el contenido de la vista en el modal
+            $('#GeneralTemplateModal').modal('show'); // Muestra el modal
+            $('#GeneralTemplateTitleModalLabel').text("Tipificaciones al Usuario"); // Inserta el contenido de la vista en el modal
         },
         error: function () {
             Swal.fire({

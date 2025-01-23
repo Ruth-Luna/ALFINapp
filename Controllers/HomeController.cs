@@ -92,18 +92,19 @@ public class HomeController : Controller
         }
         
         HttpContext.Session.SetInt32("UsuarioId", usuario.IdUsuario);
-        HttpContext.Session.SetString("RolUser", usuario.Rol);
-        ViewBag.RolUsuario = HttpContext.Session.GetString("RolUser");
         if (usuario.Rol == "VENDEDOR")
         {
-            return RedirectToAction("Ventas", "User");
+            HttpContext.Session.SetInt32("RolUser", 1);
+            return RedirectToAction("Ventas", "Vendedor");
         }
         if (usuario.Rol == "SUPERVISOR")
         {
+            HttpContext.Session.SetInt32("RolUser", 2);
             return RedirectToAction("VistaMainSupervisor", "Supervisor");
         }
         if (usuario.Rol == "ADMINISTRADOR")
         {
+            HttpContext.Session.SetInt32("RolUser", 3);
             return RedirectToAction("VistaMainAdministrador", "Administrador");
         }
 
