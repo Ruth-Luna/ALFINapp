@@ -61,11 +61,16 @@ namespace ALFINapp.Services
                 var testingDBBank = await _context.base_clientes_banco.FirstOrDefaultAsync(c => c.Dni == DNIBusqueda);
                 var clienteExistenteBank = await(
                                                     from bcb in _context.base_clientes_banco
-                                                    join pb in _context.base_clientes_banco_plazo on bcb.IdPlazoBanco equals pb.IdPlazo
-                                                    join cg in _context.base_clientes_banco_campana_grupo on bcb.IdCampanaGrupoBanco equals cg.IdCampanaGrupo
-                                                    join c in _context.base_clientes_banco_color on bcb.IdColorBanco equals c.IdColor
-                                                    join u in _context.base_clientes_banco_usuario on bcb.IdUsuarioBanco equals u.IdUsuario
-                                                    join rd in _context.base_clientes_banco_rango_deuda on bcb.IdRangoDeuda equals rd.IdRangoDeuda
+                                                    join pb in _context.base_clientes_banco_plazo on bcb.IdPlazoBanco equals pb.IdPlazo into PlazoGrupo
+                                                    from pb in PlazoGrupo.DefaultIfEmpty() // Left Join con base_clientes_banco_plazo
+                                                    join cg in _context.base_clientes_banco_campana_grupo on bcb.IdCampanaGrupoBanco equals cg.IdCampanaGrupo into CampanaGrupo
+                                                    from cg in CampanaGrupo.DefaultIfEmpty() // Left Join con base_clientes_banco_campana_grupo
+                                                    join c in _context.base_clientes_banco_color on bcb.IdColorBanco equals c.IdColor into ColorGrupo
+                                                    from c in ColorGrupo.DefaultIfEmpty() // Left Join con base_clientes_banco_color
+                                                    join u in _context.base_clientes_banco_usuario on bcb.IdUsuarioBanco equals u.IdUsuario into UsuarioGrupo
+                                                    from u in UsuarioGrupo.DefaultIfEmpty() // Left Join con base_clientes_banco_usuario
+                                                    join rd in _context.base_clientes_banco_rango_deuda on bcb.IdRangoDeuda equals rd.IdRangoDeuda into RangoDeudaGrupo
+                                                    from rd in RangoDeudaGrupo.DefaultIfEmpty() 
                                                     where bcb.Dni == DNIBusqueda
                                                     select new DetallesClienteDTO
                                                     {
