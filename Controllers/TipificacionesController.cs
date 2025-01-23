@@ -10,7 +10,6 @@ using ALFINapp.Models; // Replace with the correct namespace where DBServicesGen
 
 namespace ALFINapp.Controllers
 {
-    [Route("[controller]")]
     public class TipificacionesController : Controller
     {
         
@@ -56,7 +55,7 @@ namespace ALFINapp.Controllers
                 IdCliente = getClienteEnriquecido.data.IdCliente,
                 NombreCliente = getClienteBase.data.XNombre + " " + getClienteBase.data.XAppaterno + " " + getClienteBase.data.XApmaterno,
                 TelefonoCliente = Telefono,
-                NombreAgencia = agenciaComercial,
+                NombreAgencia = "73"+agenciaComercial,
                 FueProcesado = false
             };
             var enviarFomularioAsignacion = await _dbServicesTipificaciones.EnviarFomularioDerivacion(enviarDerivacion);
