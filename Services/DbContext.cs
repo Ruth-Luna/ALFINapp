@@ -28,4 +28,6 @@ public class MDbContext : DbContext
     public DbSet<Plazo> base_clientes_banco_plazo { get; set; }
     public DbSet<RangoDeuda> base_clientes_banco_rango_deuda { get; set; }
     public DbSet<UsuarioBanco> base_clientes_banco_usuario { get; set; }
+
+    public DbSet<ClientesReferidos> clientes_referidos { get; set; }
 }

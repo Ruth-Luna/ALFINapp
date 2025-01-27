@@ -120,6 +120,8 @@ namespace ALFINapp.Services
                 return (true, ex.Message, null);
             }
         }
+
+        
         // Other DB services can be added here
     }
 }

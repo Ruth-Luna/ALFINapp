@@ -1,0 +1,43 @@
+@model ALFINapp.Models.DniReferidoData
+
+@{
+}
+
+<div class="alert alert-warning" role="alert">
+    @if (Model.TraidoDe == "DBA365")
+    {
+        <span>El cliente tiene datos en la base de datos de <strong>A365</strong></span>
+        <div class="form-group">
+            <label for="NombresCompletosCliente"> Nombres Completos: </label>
+            <input type="text" id="NombresCompletosCliente" class="form-control" placeholder="Nombres Completos"
+                value="@Model.NombresCompletos" disabled readonly>
+        </div>
+    }
+    else if (Model.TraidoDe == "DBALFIN")
+    {
+        <span>El cliente tiene datos en la base de datos de <strong>ALFIN</strong></span>
+    }
+</div>
+
+<h3>Ingrese sus <strong>Datos Personales</strong> al mandar la referencia</h3>
+
+<div class="form-group mb-3">
+    <label for="NombresCompletosUsuario"> Ingrese sus Nombres Completos </label>
+    <input type="text" id="NombresCompletosUsuario" class="form-control" placeholder="Nombres Completos">
+</div>
+
+<div class="form-group mb-3">
+    <label for="ApellidosCompletosUsuario"> Ingrese sus Apellidos Completos </label>
+    <input type="text" id="ApellidosCompletosUsuario" class="form-control" placeholder="Apellidos Completos">
+</div>
+
+<div class="form-group mb-3">
+    <label for="DNIUsuario"> Ingrese su DNI </label>
+    <input type="text" id="DNIUsuario" class="form-control" placeholder="Ingrese su DNI">
+</div>
+
+
+<div class="btn btn-container mt-4">
+    <a href="javascript:void(0)" id="referirDniButton" class="btn btn-success"
+        onclick="ReferirDNI('@Model.DNI', '@Model.TraidoDe')">Referir a este Cliente</a>
+</div>

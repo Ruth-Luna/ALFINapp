@@ -1,41 +1,40 @@
-@page
 @model ALFINapp.Views.Referido.Referido
 @{
     ViewData["Title"] = "Clientes Referidos";
     Layout = "~/Views/Shared/_LayoutLogin.cshtml";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="container mt-4 d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="p-4 rounded" style="background-color: #2d5792; color: white;">
+        <h3>Referir Cliente</h3>
+        <div class="alert alert-info mt-4" role="alert">
+            <strong>Referidos:</strong> En la presente vista podra referir un cliente a la entidad financiera. Realizar
+            esta accion, le avisara al supervisor de la entidad financiera.
+        </div>
+        <div id="dni-section">
+            <div class="form-group">
+                <label class="mb-1" for="DNI"> Ingrese el DNI </label>
+                <input type="text" id="dniReferidoBusqueda" class="form-control" placeholder="Ingrese DNI">
+                <button id="consultar-dni" class="btn btn-primary mt-4" onclick="BuscarDNIAReferir('dniReferidoBusqueda')">Consultar</button>
+            </div>
+        </div>
 
-<div class="container">
-    <div class="alert alert-info" role="alert">
-        <strong>Referidos:</strong> En la presente vista podra referir un cliente a la entidad financiera. Realizar
-        esta accion, le avisara al supervisor de la entidad financiera.
+        <div class="spacing"></div>
+
+        <div id="datosClienteExistente" style="display: none;">
+        </div>
+
+        <div id="error-message" class="alert alert-danger" style="display: none;">
+        </div>
+
+        <div class="form-control" id="ReferirClienteVista" style="display: none;">
+            <label for="NombresCompletosUsuario" class="form-label">Nombres Completos del Usuario</label>
+            <input type="text" class="form-control" id="NombresCompletosUsuario">
+        </div>
     </div>
 </div>
 
-<div id="dni-section">
-    <h3>Busqueda de Clientes</h3>
-    <div class="form-group">
-        <label for="DNI"> Ingresa DNI </label>
-        <input type="text" id="dnicliente" class="form-control" placeholder="Ingrese DNI">
-        <br>
-        <button id="consultar-dni" class="btn btn-primary" onclick="validarDNI()">Consultar</button>
-    </div>
-</div>
 
-<div class="spacing"></div>
-
-<div id="datos-cliente-existente" style="display: none;">
-</div>
-
-<div id="error-message" class="alert alert-danger" style="display: none;">
-</div>
-
-<div class="form-control" id="ReferirClienteVista" style="display: none;">
-    <label for="NombresCompletosUsuario" class="form-label">Nombres Completos del Usuario</label>
-    <input type="text" class="form-control" id="NombresCompletosUsuario" >
-
-</div>
-
-@section Scripts {}
+@section Scripts {
+    <script src="~/js/referirfunctions.js"></script>
+}
