@@ -95,12 +95,12 @@ public class HomeController : Controller
         if (usuario.Rol == "VENDEDOR")
         {
             HttpContext.Session.SetInt32("RolUser", 1);
-            return RedirectToAction("Ventas", "Vendedor");
+            return RedirectToAction("Inicio", "Vendedor");
         }
         if (usuario.Rol == "SUPERVISOR")
         {
             HttpContext.Session.SetInt32("RolUser", 2);
-            return RedirectToAction("VistaMainSupervisor", "Supervisor");
+            return RedirectToAction("Inicio", "Supervisor");
         }
         if (usuario.Rol == "ADMINISTRADOR")
         {

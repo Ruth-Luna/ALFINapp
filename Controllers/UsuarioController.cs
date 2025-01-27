@@ -12,13 +12,13 @@ using Microsoft.Extensions.Logging;
 namespace ALFINapp.Controllers
 {
     [RequireSession]
-    public class ModificacionesController : Controller
+    public class UsuarioController : Controller
     {
         private readonly MDbContext _context;
         private readonly DBServicesAsignacionesAsesores _dbServicesAsignacionesAsesores;
         private readonly DBServicesConsultasSupervisores _dbServicesConsultasSupervisores;
         private readonly DBServicesGeneral _dbServicesGeneral;
-        public ModificacionesController(DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores, 
+        public UsuarioController(DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores, 
                                                 DBServicesGeneral dbServicesGeneral,
                                                 DBServicesConsultasSupervisores dbServicesConsultasSupervisores, 
                                                 MDbContext context)
@@ -29,7 +29,7 @@ namespace ALFINapp.Controllers
             _context = context;
         }
         [HttpGet]
-        public async Task<IActionResult> ModificarAsesoresView()
+        public async Task<IActionResult> Usuarios()
         {
             int? idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
             if (idSupervisorActual == null)

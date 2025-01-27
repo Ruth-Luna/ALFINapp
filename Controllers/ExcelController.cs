@@ -423,7 +423,7 @@ namespace ALFINapp.Controllers
                         if (registroExistente)
                         {
                             TempData["Message"] = $"El registro con DNI {registro.DNI} ya existe. La subida de archivos se canceló.";
-                            return RedirectToAction("VistaMainSupervisor", "Supervisor");
+                            return RedirectToAction("Inicio", "Supervisor");
                         }
 
                         // Si todas las validaciones pasan, agregar el registro a la lista
@@ -468,13 +468,13 @@ namespace ALFINapp.Controllers
                     TempData["Message"] = "csvFile procesado correctamente.";
                 }
 
-                return RedirectToAction("VistaMainSupervisor", "Supervisor");
+                return RedirectToAction("Inicio", "Supervisor");
             }
             catch (System.Exception ex)
             {
                 Console.WriteLine($"Error al procesar el csvFile: {ex.Message}");
                 TempData["Message"] = "Ocurrió un error al procesar el csvFile. Verifique su formato y vuelva a intentarlo.";
-                return RedirectToAction("VistaMainSupervisor", "Supervisor");
+                return RedirectToAction("Inicio", "Supervisor");
             }
         }
     }

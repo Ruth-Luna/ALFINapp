@@ -23,7 +23,7 @@ namespace ALFINapp.Controllers
             _dbServicesGeneral = dbServicesGeneral;
         }
         [HttpGet]
-        public async Task<IActionResult> VistaMainSupervisor(int page = 1, int pageSize = 20)
+        public async Task<IActionResult> Inicio (int page = 1, int pageSize = 20)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
 
@@ -93,71 +93,13 @@ namespace ALFINapp.Controllers
             return View("MainSupervisor", supervisorData);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> AsignarVendedorView()
-        {
-            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId == null)
-            {
-                TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
-                return RedirectToAction("Index", "Home");
-            }
-            var GetVendedoresAsignados = await _dbServicesConsultasSupervisores.GetAsesorsFromSupervisor(usuarioId);
-
-            if (GetVendedoresAsignados.IsSuccess == false)
-            {
-                TempData["MessageError"] = GetVendedoresAsignados.Message;
-                return RedirectToAction("Index", "Home");
-            }
-            var vendedoresAsignados = GetVendedoresAsignados.Data;
-
-            // Inicializar la lista de VendedorConClientesDTO
-            var vendedoresConClientes = new List<VendedorConClientesDTO>();
-
-            foreach (var vendedorIndividual in GetVendedoresAsignados.Data)
-            {
-                // Llamada al servicio para obtener el número de clientes y el mapeo de datos
-                var vendedorIndividualMapeado = await _dbServicesConsultasSupervisores.GetNumberTipificacionesPlotedOnDTO(vendedorIndividual, usuarioId.Value);
-
-                if (vendedorIndividualMapeado.IsSuccess == false || vendedorIndividualMapeado.Data == null)
-                {
-                    TempData["MessageError"] = GetVendedoresAsignados.Message;
-                    return RedirectToAction("Index", "Home");
-                }
-
-                // Agregar el VendedorConClientesDTO mapeado a la lista
-                vendedoresConClientes.Add(vendedorIndividualMapeado.Data);
-            }
-
-            if (vendedoresConClientes == null)
-            {
-                TempData["MessageError"] = GetVendedoresAsignados.Message;
-                return RedirectToAction("Index", "Home");
-            }
-
-            var DestinoBases = await _context.clientes_asignados
-                                                            .Where(ca => ca.IdUsuarioS == usuarioId && ca.Destino != null) // Filtrar por usuarioId
-                                                            .Select(ca => ca.Destino)                        // Seleccionar solo la columna destino
-                                                            .Distinct()                              // Obtener solo valores distintos
-                                                            .ToListAsync();                          // Convertir a lista
-
-            if (DestinoBases == null)
-            {
-                TempData["MessageError"] = "No hay bases de destino disponibles para asignar.";
-                return RedirectToAction("Index", "Home");
-            }
-
-            ViewData["DestinoBases"] = DestinoBases;
-            return View("Asignarvendedores", vendedoresConClientes);
-        }
-
         [HttpPost]
         public IActionResult AsignarVendedoresPorNumero(int nclientes, int id_vendedor)
         {
             if (!int.TryParse(nclientes.ToString(), out int n_clientes) || nclientes <= 0)
             {
                 TempData["MessageError"] = "La entrada debe de ser un numero valido y positivo.";
-                return RedirectToAction("VistaMainSupervisor");
+                return RedirectToAction("Inicio");
             }
 
             var idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId").Value;
@@ -171,7 +113,7 @@ namespace ALFINapp.Controllers
             if (clientesDisponibles.Count < nclientes)
             {
                 TempData["MessageError"] = $"Solo hay {clientesDisponibles.Count} clientes disponibles para asignar.";
-                return RedirectToAction("VistaMainSupervisor");
+                return RedirectToAction("Inicio");
             }
 
             foreach (var cliente in clientesDisponibles)
@@ -184,7 +126,7 @@ namespace ALFINapp.Controllers
             // Guardar los cambios en la base de datos
             _context.SaveChanges();
             TempData["Message"] = $"{nclientes} clientes han sido asignados correctamente al Asesor.";
-            return RedirectToAction("VistaMainSupervisor");
+            return RedirectToAction("Inicio");
         }
 
         [HttpGet]
@@ -211,7 +153,7 @@ namespace ALFINapp.Controllers
             if (vendedoresAsignados == null)
             {
                 TempData["MessageError"] = "La consulta para dar asesores ha fallado";
-                return RedirectToAction("VistaMainSupervisor", "Supervisor");
+                return RedirectToAction("Inicio", "Supervisor");
             }
 
             TempData["idAsignacion"] = id_asignacion;
@@ -225,7 +167,7 @@ namespace ALFINapp.Controllers
             if (asignacion.IdUsuarioV == idVendedor)
             {
                 TempData["MessageError"] = "Debe seleccionar un Asesor diferente, ya que el Asesor actual es el mismo.";
-                return RedirectToAction("VistaMainSupervisor");
+                return RedirectToAction("Inicio");
             }
             if (asignacion != null)
             {
@@ -241,7 +183,7 @@ namespace ALFINapp.Controllers
                 TempData["Message"] = "El id de Asignacion mandado es incorrecto";
             }
 
-            return RedirectToAction("VistaMainSupervisor");
+            return RedirectToAction("Inicio");
         }
 
         /*[HttpPost]
@@ -253,20 +195,20 @@ namespace ALFINapp.Controllers
             if (asignacionasesor == null)
             {
                 TempData["MessageError"] = "No se han enviado datos para asignar asesores.";
-                return RedirectToAction("VistaMainSupervisor");
+                return RedirectToAction("Inicio");
             }
 
             if (string.IsNullOrEmpty(selectAsesorBase))
             {
                 TempData["MessageError"] = "Debe seleccionar una Fuente Base.";
-                return RedirectToAction("VistaMainSupervisor");
+                return RedirectToAction("Inicio");
             }
 
             // Comprobación adicional para verificar si todas las entradas tienen NumClientes igual a 0
             if (asignacionasesor.All(a => a.NumClientes == 0))
             {
                 TempData["MessageError"] = "No se ha llenado ninguna entrada. Los campos no pueden estar vacíos.";
-                return RedirectToAction("VistaMainSupervisor");
+                return RedirectToAction("Inicio");
             }
             foreach (var asignacion in asignacionasesor)
             {
@@ -306,7 +248,7 @@ namespace ALFINapp.Controllers
             {
                 TempData["Message"] = "Las Asignaciones se culminaron con exito";
             }
-            return RedirectToAction("VistaMainSupervisor");
+            return RedirectToAction("Inicio");
         }*/
         [HttpGet]
         public IActionResult ObtenerVistaModificarAsignaciones(string IdUsuario, string dni)

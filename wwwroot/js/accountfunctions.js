@@ -22,7 +22,7 @@ function updatePasswordSubmit() {
     }
 
     $.ajax({
-        url: '/Accounts/SubmitNewPassword',
+        url: '/Perfil/SubmitNewPassword',
         type: 'POST',
         data: {
             newPassword: passwordInput.value
