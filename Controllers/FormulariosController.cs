@@ -89,7 +89,7 @@ namespace ALFINapp.Controllers
                 return Json(new { error = true, message = ex.Message });
             }
 
-            return RedirectToAction("Ventas");
+            return RedirectToAction("Inicio");
         }
     }
 }

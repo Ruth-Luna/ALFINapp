@@ -1,0 +1,41 @@
+@page
+@model ALFINapp.Views.Referido.Referido
+@{
+    ViewData["Title"] = "Clientes Referidos";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="container">
+    <div class="alert alert-info" role="alert">
+        <strong>Referidos:</strong> En la presente vista podra referir un cliente a la entidad financiera. Realizar
+        esta accion, le avisara al supervisor de la entidad financiera.
+    </div>
+</div>
+
+<div id="dni-section">
+    <h3>Busqueda de Clientes</h3>
+    <div class="form-group">
+        <label for="DNI"> Ingresa DNI </label>
+        <input type="text" id="dnicliente" class="form-control" placeholder="Ingrese DNI">
+        <br>
+        <button id="consultar-dni" class="btn btn-primary" onclick="validarDNI()">Consultar</button>
+    </div>
+</div>
+
+<div class="spacing"></div>
+
+<div id="datos-cliente-existente" style="display: none;">
+</div>
+
+<div id="error-message" class="alert alert-danger" style="display: none;">
+</div>
+
+<div class="form-control" id="ReferirClienteVista" style="display: none;">
+    <label for="NombresCompletosUsuario" class="form-label">Nombres Completos del Usuario</label>
+    <input type="text" class="form-control" id="NombresCompletosUsuario" >
+
+</div>
+
+@section Scripts {}

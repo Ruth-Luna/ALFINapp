@@ -1,5 +1,9 @@
 @model ALFINapp.Models.DetallesClienteDTO
 
+@{
+    var Asesores = ViewData["Asesores"];
+}
+
 @functions {
     public string GetColorCode(string colorName)
     {
@@ -34,13 +38,40 @@
 
     <div class="row mb-2">
         <div class="row mb-2 align-items-center">
+            @if (Asesores is List<AsesoresDeUnClienteDTO> AsesoresAsignados && AsesoresAsignados.Any())
+            {
+                <div class="alert alert-info mt-2" role="alert">
+                    El cliente a buscar tiene los siguientes asesores asignados
+                </div>
+
+                <div class="col-md-6">
+                    <label for="asesor">Asesor:</label>
+                    <select class="form-control" id="asesor" required>
+                        <option value="">Seleccione un asesor</option>
+                        @foreach (var asesor in AsesoresAsignados)
+                        {
+                            <option value="@asesor.IDAsesorPrimario">@asesor.NombreAsesorPrimario</option>
+                        }
+                    </select>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info mt-2" role="alert">
+                    El cliente a buscar no tiene asesores asignados
+                </div>
+            }
+
         </div>
     </div>
 
     <div id="detalle-campana">
-        <div class="alert alert-info mt-2" role="alert">
-            El cliente a buscar tiene las siguientes ofertas asignadas
-        </div>
+        @if (Model.TraidoDe == "BDALFIN")
+        {
+            <div class="alert alert-info mt-2" role="alert">
+                El cliente fue extraido de la base de datos de ALFIN
+            </div>
+        }
         <div class="row mb-2">
             <div class="col">
                 <legend>
@@ -60,9 +91,9 @@
                         </div>
                         <div class="d-flex align-items-center">
                             <input class="form-control ml-2"
-                                style="background-color: @GetColorCode(Model.Color); width: 35px; height: 35px;"
+                                style="background-color: @GetColorCode(Model.Color ?? string.Empty); width: 35px; height: 35px;"
                                 readonly>
-                            <input class="form-control ml-2" id="COLOR" type="text" value="@Model.Color.ToUpper()"
+                            <input class="form-control ml-2" id="COLOR" type="text" value="@(Model.Color?.ToUpper() ?? string.Empty)"
                                 readonly>
                         </div>
                     </div>
