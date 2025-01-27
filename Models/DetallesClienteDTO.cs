@@ -27,5 +27,15 @@ namespace ALFINapp.Models
         public string? Usuario { get; set; }
         public string? SegmentoUser { get; set; }
         public string? TraidoDe { get; set; }
+        public List<AsesoresDeUnClienteDTO>? AsesoresAsignados { get; set; }
+        public class AsesoresDeUnClienteDTO
+        {
+            public string? NombreAsesorPrimario { get; set; }
+            public int? IDAsesorPrimario { get; set; }
+            public int? IDAsignacion { get; set; }
+            public int? IDCliente { get; set; }
+
+        }
+
     }
 }

@@ -93,7 +93,7 @@ def cargar_csv_a_sql(csv_file):
         conn.close()
 
 # Nombre del archivo CSV (debe estar en la misma carpeta que este script)
-csv_file = 'HOJA2DATOS.csv'
+csv_file = 'HOJA1DATOS.csv'
 
 # Llamar a la función para cargar los datos
 cargar_csv_a_sql(csv_file)

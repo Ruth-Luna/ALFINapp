@@ -1,13 +1,16 @@
-function TakeThisClient(DNIdatos) {
+function TakeThisClient(DNIdatos, tipoBase) {
     console.log("Función llamada", DNIdatos); // Verifica si se llama la función
     DNIdatos = String(DNIdatos).padStart(8, '0');
     // Identificar la TipoBase activa
-    const activeTab = document.querySelector('.nav-link.active');
-    const tipoBase = activeTab ? activeTab.id.replace('fuenteBaseTab-', '') : null;
-
+    
     // Validar si se encontraron datos necesarios
     if (!DNIdatos || !tipoBase) {
-        alert('No se pudo identificar el cliente o la base activa.');
+        Swal.fire({
+            title: 'Error al realizar la asignación',
+            text: 'No se pudo identificar el cliente o la base activa.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
         return;
     }
 
@@ -46,7 +49,12 @@ function TakeThisClient(DNIdatos) {
             console.log('Status:', status);
             console.log('Response Text:', xhr.responseText);
             if (xhr.status !== 200) {
-                alert(`Error con el servidor: ${xhr.status}`);
+                Swal.fire({
+                    title: 'Hay un error en la solicitud',
+                    text: error,
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
             }
         }
     });

@@ -2,7 +2,7 @@
 
 @{
     Layout = "~/Views/Shared/_LayoutSupervisor.cshtml";
-    var BasesAsignadas = ViewData["BasesAsignadas"] as IEnumerable<string>;
+    var destinoBases = ViewData["DestinoBases"] as List<string>;
 }
 
 @section Styles {
@@ -12,6 +12,14 @@
 <div class="container-fluid mt-4">
     <div class="container-fluid mb-3">
         <h3>Seccion Asignaciones del Asesor de Ventas</h3>
+        <label for="BaseDestino">Destino</label>
+        <select class="form-control" name="BaseDestino" id="BaseDestino">
+            <option value="">Seleccione una Base de Destino</option>
+            @foreach (var destinoBase in destinoBases)
+            {
+                <option value="@destinoBase">@destinoBase</option>
+            }
+        </select>
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -140,7 +148,7 @@
                     }
                 }
             });
-            const selectAsesorBase = document.getElementById('selectAsesorBase').value;
+            const selectAsesorBase = document.getElementById('BaseDestino').value;
 
             // Imprimir la información completa a enviar antes de hacer el AJAX
             console.log("Información completa a enviar:", {

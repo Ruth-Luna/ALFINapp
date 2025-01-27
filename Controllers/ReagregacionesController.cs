@@ -34,32 +34,72 @@ namespace ALFINapp.Controllers
                 // Buscar el cliente por DNI
                 var GetClienteExistente = await _dbServicesConsultasClientes.GetClientsFromDBandBank(dni);
 
-                if (GetClienteExistente.IsSuccess == false && GetClienteExistente.Data == null)
+                if (GetClienteExistente.IsSuccess == false || GetClienteExistente.Data == null)
                 {
                     return Json(new { existe = false, error = true, message = GetClienteExistente.message });
                 }
 
-                // Buscar a sus asesores asignados
-                var AsesoresGeneral = await (from ca in _context.clientes_asignados
-                                                join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
-                                                join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
-                                                join u in _context.usuarios on ca.IdUsuarioV equals u.IdUsuario
-                                                where GetClienteExistente.Data.IdBase == bc.IdBase
-                                                select new
-                                                {
-                                                    NombreAsesorPrimario = u.NombresCompletos,
-                                                    IDAsesorPrimario = ca.IdUsuarioV,
-                                                    IDAsignacion = ca.IdAsignacion,
-                                                    IDCliente = ce.IdCliente
-                                                }).ToListAsync();
-
-                var detalleclienteExistenteBD = GetClienteExistente.Data != null 
-                    ? await _context.base_clientes.FirstOrDefaultAsync(c => c.IdBase == GetClienteExistente.Data.IdBase) 
-                    : null;
-                // Pasar información a la vista
-                ViewData["AsesoresGeneral"] = AsesoresGeneral;
-                ViewData["DetalleGeneralCliente"] = detalleclienteExistenteBD;
-                return PartialView("_DatosConsulta", GetClienteExistente.Data);
+                if (GetClienteExistente.Data.TraidoDe == "BDA365")
+                {
+                    // Buscar a sus asesores asignados
+                    var AsesoresGeneral = await (from ca in _context.clientes_asignados
+                                                 join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
+                                                 join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
+                                                 join u in _context.usuarios on ca.IdUsuarioV equals u.IdUsuario
+                                                 where GetClienteExistente.Data.IdBase == ce.IdBase
+                                                 select new AsesoresDeUnClienteDTO
+                                                 {
+                                                     NombreAsesorPrimario = u.NombresCompletos,
+                                                     IDAsesorPrimario = ca.IdUsuarioV,
+                                                     IDAsignacion = ca.IdAsignacion,
+                                                     IDCliente = ce.IdCliente
+                                                 }).ToListAsync();
+                    var detalleclienteExistenteBDA365 = GetClienteExistente.Data != null
+                                ? await _context.base_clientes.FirstOrDefaultAsync(c => c.IdBase == GetClienteExistente.Data.IdBase)
+                                : null;
+                    if (AsesoresGeneral == null)
+                    {
+                        ViewData["HayAsesores"] = false;
+                    }
+                    else
+                    {
+                        ViewData["HayAsesores"] = true;
+                        ViewData["AsesoresGeneral"] = AsesoresGeneral;
+                    }
+                    ViewData["HayDetalleCliente"] = true;
+                    ViewData["DetalleCliente"] = detalleclienteExistenteBDA365;
+                    return PartialView("_DatosConsulta", GetClienteExistente.Data);
+                }
+                if (GetClienteExistente.Data.TraidoDe == "BDALFIN")
+                {
+                    var AsesoresGeneral = await (from ca in _context.clientes_asignados
+                                                 join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
+                                                 join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
+                                                 join u in _context.usuarios on ca.IdUsuarioV equals u.IdUsuario
+                                                 where GetClienteExistente.Data.IdBase == ce.IdBaseBanco
+                                                 select new AsesoresDeUnClienteDTO
+                                                 {
+                                                     NombreAsesorPrimario = u.NombresCompletos,
+                                                     IDAsesorPrimario = ca.IdUsuarioV,
+                                                     IDAsignacion = ca.IdAsignacion,
+                                                     IDCliente = ce.IdCliente
+                                                 }).ToListAsync();
+                    if (AsesoresGeneral == null)
+                    {
+                        ViewData["HayAsesores"] = false;
+                    }
+                    else
+                    {
+                        ViewData["HayAsesores"] = true;
+                        ViewData["AsesoresGeneral"] = AsesoresGeneral;
+                    }
+                    ViewData["HayDetalleCliente"] = false;
+                    return PartialView("_DatosConsulta", GetClienteExistente.Data);
+                }
+                else
+                {
+                    return Json(new { existe = false, error = true, message = "La Base fue conseguida, pero no se le permite ver los datos de este cliente" });
+                }
             }
             catch (Exception ex)
             {

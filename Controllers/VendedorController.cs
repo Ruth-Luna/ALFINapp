@@ -290,7 +290,7 @@ namespace ALFINapp.Controllers
                 Console.WriteLine("El cliente fue Eliminado manualmente de la Tabla base_clientes");
                 return RedirectToAction("Ventas");
             }
-
+            
             var detalleTipificarCliente = detallesClientes != null
                 ? new DetalleTipificarClienteDTO
                 {

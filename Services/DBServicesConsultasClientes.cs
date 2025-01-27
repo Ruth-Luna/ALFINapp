@@ -83,7 +83,7 @@ namespace ALFINapp.Services
                                                         SaldoDiferencialReeng = bcb.Reenganche,
                                                         ClienteNuevo = bcb.Frescura == true ? "SI" : "NO",
                                                         Deuda1 = rd.RangoDeDeuda, //
-                                                        Entidad1 = $"bcb.NumEntidades",
+                                                        Entidad1 = bcb.NumEntidades.ToString(),
                                                         Tasa1 = bcb.Tasa1,
                                                         Tasa2 = bcb.Tasa2,
                                                         Tasa3 = bcb.Tasa3,

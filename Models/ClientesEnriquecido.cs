@@ -6,13 +6,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace ALFINapp.Models;
 
 public partial class ClientesEnriquecido
-{   
+{
     [Key]
     [Column("id_cliente")]
     public int IdCliente { get; set; }
     [Column("id_base")]
 
     public int IdBase { get; set; }
+    [Column("id_base_banco")]
+    public int? IdBaseBanco { get; set; }
     [Column("telefono_1")]
 
     public string? Telefono1 { get; set; }

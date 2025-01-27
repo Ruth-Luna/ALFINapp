@@ -352,7 +352,7 @@ namespace ALFINapp.Controllers
 
                 if (string.IsNullOrEmpty(selectAsesorBase))
                 {
-                    return Json(new { success = false, message = "Debe seleccionar una Fuente Base." });
+                    return Json(new { success = false, message = "Debe seleccionar un Destino de la Base." });
                 }
 
                 // Comprobación adicional para verificar si todas las entradas tienen NumClientes igual a 0
@@ -375,7 +375,7 @@ namespace ALFINapp.Controllers
                                             .Where(ca => ca.IdUsuarioS == idSupervisorActual && ca.IdUsuarioV == null
                                                     && ca.FechaAsignacionSup.HasValue && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
                                                     && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
-                                                    && ca.FuenteBase == selectAsesorBase)
+                                                    && ca.Destino == selectAsesorBase)
                                             .Take(nClientes)
                                             .ToList();
 

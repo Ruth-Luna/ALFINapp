@@ -1,10 +1,5 @@
 @model ALFINapp.Models.DetallesClienteDTO
 
-@{
-    var DetalleGeneralCliente = ViewData["DetalleGeneralCliente"] as ALFINapp.Models.BaseCliente;
-    var AsesoresGenerales = ViewData["AsesoresGeneral"] as IEnumerable<dynamic>;
-}
-
 @functions {
     public string GetColorCode(string colorName)
     {
@@ -39,38 +34,8 @@
 
     <div class="row mb-2">
         <div class="row mb-2 align-items-center">
-            <div class="col-md-6">
-                <label for="informacion_cliente">Información del Cliente:</label>
-            </div>
-            <div class="col-md-6">
-                <input type="text" id="informacion_cliente" class="form-control"
-                    value="@(DetalleGeneralCliente != null ? DetalleGeneralCliente.XAppaterno + " " + DetalleGeneralCliente.XApmaterno + ", " + DetalleGeneralCliente.Dni : string.Empty)"
-                    readonly>
-            </div>
-            @if (AsesoresGenerales != null && AsesoresGenerales.Any())
-            {
-                <div class="alert alert-warning mt-4" role="alert">
-                    El cliente tiene los siguientes asesores asignados:
-                </div>
-                @foreach (var AsesorPrimario in AsesoresGenerales)
-                {
-                    <div class="form-group align-items-center mb-2">
-                        <input type="text" id="asesor_primario" class="form-control" value="@(AsesorPrimario?.NombreAsesorPrimario != null 
-                                ? AsesorPrimario.NombreAsesorPrimario.ToUpper() 
-                                : "Nombre no disponible")" readonly>
-                    </div>
-                }
-            }
-            else
-            {
-                <div class="alert alert-info mt-4" role="alert">
-                    No hay asesores asignados para este cliente.
-                </div>
-            }
         </div>
     </div>
-
-    <input type="hidden" id="dni_cliente_reasignacion" value="@DetalleGeneralCliente.Dni">
 
     <div id="detalle-campana">
         <div class="alert alert-info mt-2" role="alert">
@@ -88,10 +53,10 @@
                     <div class="col-md-6">
                         <div class="d-flex align-items-center">
                             <input class="form-control ml-2"
-                                style="background-color: @GetColorCode(Model.ColorFinal); width: 35px; height: 35px;"
+                                style="background-color: @GetColorCode(Model.ColorFinal ?? string.Empty); width: 35px; height: 35px;"
                                 readonly>
                             <input class="form-control ml-2" id="COLOR_FINAL" type="text"
-                                value="@Model.ColorFinal.ToUpper()" readonly>
+                                value="@(Model.ColorFinal?.ToUpper() ?? string.Empty)" readonly>
                         </div>
                         <div class="d-flex align-items-center">
                             <input class="form-control ml-2"
@@ -270,7 +235,7 @@
     <div class="form-group row align-items-center">
         <div class="col-md-12">
             <a class="btn btn-primary" href="javascript:void(0);"
-                onclick="TakeThisClient(@DetalleGeneralCliente.Dni)">Tipifique Este Cliente</a>
+                onclick="TakeThisClient(@Model.Dni, @Model.TraidoDe)">Tipifique Este Cliente</a>
         </div>
     </div>
 </div>

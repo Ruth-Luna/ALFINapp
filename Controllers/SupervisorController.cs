@@ -74,8 +74,8 @@ namespace ALFINapp.Controllers
             var usuario = await _context.usuarios.FirstOrDefaultAsync(u => u.IdUsuario == usuarioId);
 
             var DestinoBases = await _context.clientes_asignados
-                                                            .Where(ca => ca.IdUsuarioS == usuarioId) // Filtrar por usuarioId
-                                                            .Select(ca => ca.Destino)                // Seleccionar solo la columna destino
+                                                            .Where(ca => ca.IdUsuarioS == usuarioId && ca.Destino != null) // Filtrar por usuarioId
+                                                            .Select(ca => ca.Destino)                        // Seleccionar solo la columna destino
                                                             .Distinct()                              // Obtener solo valores distintos
                                                             .ToListAsync();                          // Convertir a lista
 
@@ -135,17 +135,19 @@ namespace ALFINapp.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var GetBasesAsignadas = await _dbServicesConsultasSupervisores.GetBasesClientes(usuarioId.Value);
+            var DestinoBases = await _context.clientes_asignados
+                                                            .Where(ca => ca.IdUsuarioS == usuarioId && ca.Destino != null) // Filtrar por usuarioId
+                                                            .Select(ca => ca.Destino)                        // Seleccionar solo la columna destino
+                                                            .Distinct()                              // Obtener solo valores distintos
+                                                            .ToListAsync();                          // Convertir a lista
 
-            if (GetBasesAsignadas.IsSuccess == false)
+            if (DestinoBases == null)
             {
-                TempData["MessageError"] = GetVendedoresAsignados.Message;
+                TempData["MessageError"] = "No hay bases de destino disponibles para asignar.";
                 return RedirectToAction("Index", "Home");
             }
 
-            var BasesAsignadas = GetBasesAsignadas.Data;
-
-            ViewData["BasesAsignadas"] = BasesAsignadas;
+            ViewData["DestinoBases"] = DestinoBases;
             return View("Asignarvendedores", vendedoresConClientes);
         }
 
@@ -463,7 +465,7 @@ namespace ALFINapp.Controllers
             Console.WriteLine("Retornando la vista parcial");
             return PartialView("_InterfazActivarAsesor", asesorBusqueda); // Retorna una vista parcial
         }
-        
+
         [HttpGet]
         public IActionResult InformesTipificacionesView()
         {
