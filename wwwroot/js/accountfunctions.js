@@ -1,28 +1,16 @@
 function updatePasswordView() {
-    passwordInput = document.getElementById('ContrasenaUsuario');
-    passwordUpdateButtonView = document.getElementById('UpdatePasswordButtonView');
-    UpdatePasswordButtonSubmit = document.getElementById('UpdatePasswordButtonSubmit');
-    MessageUpdatePassword = document.getElementById('AlertUpdatePassword');
-
-    // Verifica si el campo está en readonly
-    if (passwordInput.hasAttribute('readonly')) {
-        // Si está en readonly, lo quita para permitir edición
-        passwordInput.removeAttribute('readonly');
-    } else {
-        // Si no está en readonly, lo pone como readonly nuevamente
-        passwordInput.setAttribute('readonly', true);
-    }
-    // Oculta o muestra el botón para actualizar la contraseña
-    passwordUpdateButtonView.style.display = 'none';
+    var AlertUpdatePassword = document.getElementById('AlertUpdatePassword');
+    AlertUpdatePassword.style.display = 'block';
+    var UpdatePasswordButtonView = document.getElementById('UpdatePasswordButtonView');
+    UpdatePasswordButtonView.style.display = 'none';
+    var UpdatePasswordButtonSubmit = document.getElementById('UpdatePasswordButtonSubmit');
     UpdatePasswordButtonSubmit.style.display = 'block';
-    MessageUpdatePassword.style.display = 'block';
 }
 
 function updatePasswordSubmit() {
-    var passwordInput = document.getElementById('ContrasenaUsuario');
-    var passwordUpdateButtonView = document.getElementById('UpdatePasswordButtonView');
-    var UpdatePasswordButtonSubmit = document.getElementById('UpdatePasswordButtonSubmit');
-    var MessageUpdatePassword = document.getElementById('AlertUpdatePassword');
+    
+    var passwordInput = document.getElementById('ContrasenaNueva'); 
+
     if (passwordInput.value === null) {
         Swal.fire({
             title: 'Error al mostrar la vista',
@@ -41,20 +29,22 @@ function updatePasswordSubmit() {
         },
         success: function (response) {
             if (response.success === true) {
-                if (passwordInput.hasAttribute('readonly')) {
-                    passwordInput.removeAttribute('readonly');
-                } else {
-                    passwordInput.setAttribute('readonly', true);
-                }
-                passwordUpdateButtonView.style.display = 'block';
+                var AlertUpdatePassword = document.getElementById('AlertUpdatePassword');
+                AlertUpdatePassword.style.display = 'none';
+                var UpdatePasswordButtonView = document.getElementById('UpdatePasswordButtonView');
+                UpdatePasswordButtonView.style.display = 'block';
+                var UpdatePasswordButtonSubmit = document.getElementById('UpdatePasswordButtonSubmit');
                 UpdatePasswordButtonSubmit.style.display = 'none';
-                MessageUpdatePassword.style.display = 'none';
                 Swal.fire({
                     title: 'Contraseña actualizada',
                     text: response.message,
                     icon: 'success',
-                    confirmButtonText: 'Aceptar'
+                    confirmButtonText: 'Aceptar',
+                    timer: 5000
                 });
+                setTimeout(function() {
+                    location.reload();
+                }, 5000);
             } else {
                 Swal.fire({
                     title: 'Error al actualizar la contraseña',

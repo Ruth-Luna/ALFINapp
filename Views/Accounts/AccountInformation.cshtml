@@ -48,7 +48,17 @@
                     <input type="password" class="form-control" id="ContrasenaUsuario" value="@Model.contraseña"
                         class="form-control" readonly>
                 </div>
-                <div class="alert alert-warning mt-4" id="AlertUpdatePassword" style="display: none;">
+                
+            </div>
+
+            <div class="row mb-3" style="display: none;" id="AlertUpdatePassword">
+                <div class="col-md-4">
+                    <label for="ContrasenaNueva" class="form-label">Ingrese la nueva contraseña</label>
+                </div>
+                <div class="col-md-8">
+                    <input type="text" class="form-control" id="ContrasenaNueva" >
+                </div>
+                <div class="alert alert-warning mt-4">
                     Puede actualizar la contraseña
                 </div>
             </div>
