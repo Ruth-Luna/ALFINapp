@@ -66,7 +66,7 @@ namespace ALFINapp.Controllers
                 TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
                 return RedirectToAction("Index", "Home");
             }
-            
+
             // Coger los resultados para mostrar la página de ventas
             var detallesClientes = await _dbServicesAsesores.DetallesClientesParaVentas(usuarioId.Value);
 
@@ -290,7 +290,7 @@ namespace ALFINapp.Controllers
                 Console.WriteLine("El cliente fue Eliminado manualmente de la Tabla base_clientes");
                 return RedirectToAction("Ventas");
             }
-            
+
             var detalleTipificarCliente = detallesClientes != null
                 ? new DetalleTipificarClienteDTO
                 {
@@ -384,11 +384,16 @@ namespace ALFINapp.Controllers
                                                                  FechaTipificacionSup = ta.FechaUltimaTipificacion
                                                              }).ToList();
             var agenciasDisponibles = (from db in _context.detalle_base
-                                       select new
-                                       {
-                                           numSucursal = db.SucursalComercial,
-                                           agenciaComercial = db.AgenciaComercial
-                                       }).ToList().Distinct();
+                                                where !string.IsNullOrEmpty(db.SucursalComercial)
+                                                        && !string.IsNullOrEmpty(db.AgenciaComercial)
+                                                select new
+                                                {
+                                                    numSucursal = db.SucursalComercial,
+                                                    agenciaComercial = db.AgenciaComercial
+                                                })
+                                                .Distinct()
+                                                .ToList();
+
             var dni = _context.base_clientes.FirstOrDefault(bc => bc.IdBase == id_base);
             ViewData["AgenciasDisponibles"] = agenciasDisponibles;
             ViewData["numerosCreadosPorElUsuario"] = resultados_telefonos_tipificados_vendedor;
@@ -730,7 +735,7 @@ namespace ALFINapp.Controllers
                 }
             }*/
 
-            
+
         }
 
         /*[HttpPost]

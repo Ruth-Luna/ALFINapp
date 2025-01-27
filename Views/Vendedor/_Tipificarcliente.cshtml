@@ -473,7 +473,13 @@
                                         <option value="">Seleccione la Agencia</option>
                                         @foreach (var agenciasAsignadas in agenciasDisponibles)
                                         {
-                                            <option value="@agenciasAsignadas.numSucursal - @agenciasAsignadas.agenciaComercial">@agenciasAsignadas.numSucursal - @agenciasAsignadas.agenciaComercial</option>
+                                            string numSucursalConCeros = agenciasAsignadas.numSucursal.Length == 3 
+                                                ? "0" + agenciasAsignadas.numSucursal 
+                                                : agenciasAsignadas.numSucursal;
+
+                                            <option value="@numSucursalConCeros - @agenciasAsignadas.agenciaComercial">
+                                                @numSucursalConCeros - @agenciasAsignadas.agenciaComercial
+                                            </option>
                                         }
                                     </select>
                                 </div>
