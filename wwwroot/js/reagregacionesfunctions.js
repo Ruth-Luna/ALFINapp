@@ -2,7 +2,7 @@ function TakeThisClient(DNIdatos, tipoBase) {
     console.log("Función llamada", DNIdatos); // Verifica si se llama la función
     DNIdatos = String(DNIdatos).padStart(8, '0');
     // Identificar la TipoBase activa
-    
+
     // Validar si se encontraron datos necesarios
     if (!DNIdatos || !tipoBase) {
         Swal.fire({
@@ -17,7 +17,7 @@ function TakeThisClient(DNIdatos, tipoBase) {
     console.log(DNIdatos, tipoBase);
 
     $.ajax({
-        url: '/Reagregaciones/ReAsignarClienteAUsuario',
+        url: '/Consulta/ReAsignarClienteAUsuario',
         type: 'POST',
         data: {
             DniAReasignar: DNIdatos,
@@ -34,6 +34,9 @@ function TakeThisClient(DNIdatos, tipoBase) {
                     icon: 'success',
                     confirmButtonText: 'Aceptar'
                 });
+                setTimeout(function () {
+                    location.reload();
+                }, 5000);
             } else {
                 Swal.fire({
                     title: 'Error al realizar la asignación',

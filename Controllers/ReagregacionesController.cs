@@ -94,30 +94,5 @@ namespace ALFINapp.Controllers
                 return Json(new { existe = false, error = true, message = "Ocurrió un error interno. Por favor, intente nuevamente." });
             }
         }
-
-        [HttpPost]
-        public IActionResult ReAsignarClienteAUsuario(string DniAReasignar, string BaseTipo)
-        {
-            try
-            {
-                var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-                if (usuarioId == null)
-                {
-                    return Json(new { success = false, message = "Debe de iniciar la sesion." });
-                }
-                var baseClienteReasignar = _dbServicesAsignacionesAsores.GuardarReAsignacionCliente(DniAReasignar, BaseTipo, usuarioId.Value);
-
-                if (baseClienteReasignar.Result.Item1 == false)
-                {
-                    return Json(new { success = false, message = $"{baseClienteReasignar.Result.Item2}" });
-                }
-
-                return Json(new { success = true, message = $"{baseClienteReasignar.Result.Item2}" });
-            }
-            catch (System.Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
-        }
     }
 }

@@ -12,7 +12,7 @@ public partial class ClientesEnriquecido
     public int IdCliente { get; set; }
     [Column("id_base")]
 
-    public int IdBase { get; set; }
+    public int? IdBase { get; set; }
     [Column("id_base_banco")]
     public int? IdBaseBanco { get; set; }
     [Column("telefono_1")]
