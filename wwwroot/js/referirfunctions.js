@@ -55,7 +55,33 @@ function ReferirDNI(dni, fuenteBase) {
     const NombresCompletosUsuario = document.getElementById('NombresCompletosUsuario');
     const ApellidosCompletosUsuario = document.getElementById('ApellidosCompletosUsuario');
     const DNIUsuario = document.getElementById('DNIUsuario');
-    if (dni == "" || fuenteBase == "" || NombresCompletosUsuario.value == "" || ApellidosCompletosUsuario.value == "" || DNIUsuario.value == "") {
+    const NombresCompletosCliente = document.getElementById('NombresCompletosCliente');
+    const CelularCliente = document.getElementById('CelularCliente');
+    const AgenciaAtencion = document.getElementById('AgenciaAtencion');
+    const FechaVisitaAgencia = document.getElementById('FechaVisitaAgencia');
+    const dniRegex = /^\d{8}$/;
+    const celularRegex = /^\d{9}$/;
+
+    if (!dniRegex.test(dni)) {
+        Swal.fire({
+            title: 'Error al referir',
+            text: 'El DNI debe contener exactamente 8 dígitos numéricos.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+
+    if (!celularRegex.test(CelularCliente.value)) {
+        Swal.fire({
+            title: 'Error al referir',
+            text: 'El número de celular debe contener exactamente 9 dígitos numéricos.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+    if (dni == "" || fuenteBase == "" || NombresCompletosUsuario.value == "" || ApellidosCompletosUsuario.value == "" || DNIUsuario.value == "" || CelularCliente.value == "" || AgenciaAtencion.value == "" || FechaVisitaAgencia.value == "") {
         Swal.fire({
             title: 'Error al referir',
             text: 'Hay un error en el envio de Datos. O no se han completado los campos.',
@@ -71,9 +97,13 @@ function ReferirDNI(dni, fuenteBase) {
         data: {
             dniReferir: dni,
             fuenteBase: baseFuente,
-            nombres: NombresCompletosUsuario.value.toUpperCase(),
-            apellidos: ApellidosCompletosUsuario.value.toUpperCase(),
-            dniUsuario: DNIUsuario.value
+            nombresUsuario: NombresCompletosUsuario.value.toUpperCase(),
+            apellidosUsuario: ApellidosCompletosUsuario.value.toUpperCase(),
+            nombrescliente: NombresCompletosCliente.value.toUpperCase(),
+            dniUsuario: DNIUsuario.value,
+            telefono: CelularCliente.value,
+            agencia: AgenciaAtencion.value,
+            fechaVisita: FechaVisitaAgencia.value
         },
         success: function (response) {
             if (response.success === false) {

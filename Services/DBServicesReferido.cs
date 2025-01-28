@@ -106,7 +106,7 @@ namespace ALFINapp.Services
         {
             try
             {
-                var clientebc = await _context.base_clientes.Where(bc => bc.Dni == DNI)
+                var clientebc = await _context.base_clientes.Where(bc => bc.Dni == DNI && bc.IdBaseBanco == null)
                                     .FirstOrDefaultAsync();
 
                 if (clientebc != null)
@@ -142,23 +142,58 @@ namespace ALFINapp.Services
                 return (true, ex.Message, null);
             }
         }
-        public async Task<(bool IsSuccess, string Message, ClientesReferidos? Data)> GetClienteReferido(string dni)
+        public async Task<(bool IsSuccess, string Message, dynamic? Data)> GetDataParaReferir(string dni)
         {
             try
             {
-                var clienteReferido = await _context.clientes_referidos.Where(cr => cr.DniCliente == dni)
-                                        .FirstOrDefaultAsync();
-
-                if (clienteReferido != null)
+                var clienteDetallesA365 = await (from bc in _context.base_clientes
+                                                join db in _context.detalle_base on bc.IdBase equals db.IdBase
+                                                where bc.Dni == dni && bc.IdBaseBanco == null
+                                                select new
+                                                {
+                                                    NombresCompletos = bc.XNombre + " " + bc.XAppaterno + " " + bc.XApmaterno,
+                                                    OfertaMax = db.OfertaMax,
+                                                }).FirstOrDefaultAsync();
+                if (clienteDetallesA365 != null)
                 {
-                    return (true, "El cliente referido ha sido encontrado en la base de datos", clienteReferido);
+                    return (true, "Se ha encontrado el cliente en la base de datos de A365", clienteDetallesA365);
                 }
+                
+                var clienteDetallesALFIN = await (from bcb in _context.base_clientes_banco
+                                                where bcb.Dni == dni
+                                                select new
+                                                {
+                                                    NombresCompletos = "DESCONOCIDO",
+                                                    OfertaMax = bcb.OfertaMax*100,
+                                                }).FirstOrDefaultAsync();
 
-                return (false, "El cliente referido no ha sido encontrado en la base de datos", null);
+                if (clienteDetallesALFIN != null)
+                {
+                    return (true, "Se ha encontrado el cliente en la base de datos de ALFIN", clienteDetallesALFIN);
+                }
+                return (false, "No se ha encontrado el cliente en ninguna de las bases de datos. Algo salio mal", null);
             }
+
             catch (System.Exception ex)
             {
                 return (false, ex.Message, null);
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message)> EnviarCorreoReferido(string destinatario, string mensaje, string asunto)
+        {
+            try
+            {
+                // Aquí va la lógica para enviar el correo
+                await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC msdb.dbo.sp_send_dbmail @profile_name = {0}, @recipients = {1}, @body = {2}, @body_format = {3}, @subject = {4}",
+                    "WyA", destinatario, mensaje, "HTML", asunto
+                );
+                return (true, "El correo ha sido enviado exitosamente");
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message);
             }
         }
     }

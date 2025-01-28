@@ -17,7 +17,7 @@ namespace ALFINapp.Services
         {
             try
             {
-                var clienteExistenteBD = await _context.base_clientes.FirstOrDefaultAsync(c => c.Dni == DNIBusqueda);
+                var clienteExistenteBD = await _context.base_clientes.FirstOrDefaultAsync(c => c.Dni == DNIBusqueda && c.IdBaseBanco == null);
                 if (clienteExistenteBD != null)
                 {
                     var detalleclienteExistenteBD = await _context.detalle_base.FirstOrDefaultAsync(c => c.IdBase == clienteExistenteBD.IdBase);
@@ -38,8 +38,8 @@ namespace ALFINapp.Services
                         CapacidadMax = detalleclienteExistenteBD.CapacidadMax,
                         SaldoDiferencialReeng = detalleclienteExistenteBD.SaldoDiferencialReeng,
                         ClienteNuevo = detalleclienteExistenteBD.ClienteNuevo,
-                        Deuda1 = $"{detalleclienteExistenteBD.Deuda1} - {detalleclienteExistenteBD.Deuda3}",
-                        Entidad1 = detalleclienteExistenteBD.Entidad1,
+                        Deuda1 = $"{detalleclienteExistenteBD.Deuda1} - {detalleclienteExistenteBD.Deuda2} - {detalleclienteExistenteBD.Deuda3}",
+                        Entidad1 = $"{detalleclienteExistenteBD.Entidad1} - {detalleclienteExistenteBD.Entidad2} - {detalleclienteExistenteBD.Entidad3}",
                         Tasa1 = detalleclienteExistenteBD.Tasa1,
                         Tasa2 = detalleclienteExistenteBD.Tasa2,
                         Tasa3 = detalleclienteExistenteBD.Tasa3,
@@ -59,6 +59,10 @@ namespace ALFINapp.Services
 
                 // Consulta a la base de datos del banco de clientes
                 var testingDBBank = await _context.base_clientes_banco.FirstOrDefaultAsync(c => c.Dni == DNIBusqueda);
+                if (testingDBBank == null)
+                {
+                    return (false, "El cliente no tiene Detalles en la Base de Datos del Banco Alfin, este DNI no se encuentra en ninguna de nuestras bases de datos conocidas", null);
+                }
                 var clienteExistenteBank = await(
                                                     from bcb in _context.base_clientes_banco
                                                     join pb in _context.base_clientes_banco_plazo on bcb.IdPlazoBanco equals pb.IdPlazo into PlazoGrupo
@@ -77,7 +81,7 @@ namespace ALFINapp.Services
                                                         Dni = bcb.Dni,
                                                         ColorFinal = c.NombreColor,
                                                         Campaña = cg.NombreCampana,
-                                                        OfertaMax = bcb.OfertaMax,
+                                                        OfertaMax = bcb.OfertaMax*100,
                                                         Plazo = pb.NumMeses,
                                                         CapacidadMax = bcb.CapacidadPagoMen,
                                                         SaldoDiferencialReeng = bcb.Reenganche,
