@@ -38,7 +38,7 @@ namespace ALFINapp.Services
                         CapacidadMax = detalleclienteExistenteBD.CapacidadMax,
                         SaldoDiferencialReeng = detalleclienteExistenteBD.SaldoDiferencialReeng,
                         ClienteNuevo = detalleclienteExistenteBD.ClienteNuevo,
-                        Deuda1 = $"{detalleclienteExistenteBD.Deuda1}{detalleclienteExistenteBD.Deuda2}{detalleclienteExistenteBD.Deuda3}",
+                        Deuda1 = $"{detalleclienteExistenteBD.Deuda1} - {detalleclienteExistenteBD.Deuda3}",
                         Entidad1 = detalleclienteExistenteBD.Entidad1,
                         Tasa1 = detalleclienteExistenteBD.Tasa1,
                         Tasa2 = detalleclienteExistenteBD.Tasa2,

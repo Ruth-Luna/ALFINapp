@@ -19,7 +19,18 @@
     }
 </div>
 
+<div class="form-group mb-3">
+    <label for="CanalTelecampo"> Canal Telecampo </label>
+    <input type="text" id="CanalTelecampo" class="form-control" placeholder="CanalTelecampo" value="A365" disabled
+        readonly>
+</div>
+
 <h3>Ingrese sus <strong>Datos Personales</strong> al mandar la referencia</h3>
+
+<div class="form-group mb-3">
+    <label for="DNIUsuario"> Ingrese su DNI </label>
+    <input type="text" id="DNIUsuario" class="form-control" placeholder="Codigo de Ejecutivo">
+</div>
 
 <div class="form-group mb-3">
     <label for="NombresCompletosUsuario"> Ingrese sus Nombres Completos </label>
@@ -31,9 +42,57 @@
     <input type="text" id="ApellidosCompletosUsuario" class="form-control" placeholder="Apellidos Completos">
 </div>
 
+<h3>Ingrese los <strong>Datos Personales</strong> del cliente <strong>Cliente Referenciado</strong></h3>
+
+@if (Model.TraidoDe == "DBALFIN")
+{
+    <div class="form-group mb-3">
+        <label for="NombresCompletosCliente"> Nombres Completos (Solo agregue una referencia)</label>
+        <input type="text" id="NombresCompletosCliente" class="form-control" placeholder="Nombres Completos"
+            value="@Model.NombresCompletos" disabled readonly>
+    </div>
+}
+
 <div class="form-group mb-3">
-    <label for="DNIUsuario"> Ingrese su DNI </label>
-    <input type="text" id="DNIUsuario" class="form-control" placeholder="Ingrese su DNI">
+    <label for="MontoSolicitado"> Monto Solicitado </label>
+    <input type="text" id="MontoSolicitado" class="form-control" placeholder="Monto Solicitado">
+</div>
+
+<div class="form-group mb-3">
+    <label for="CelularCliente"> Celular </label>
+    <input type="text" id="CelularCliente" class="form-control" placeholder="Celular">
+</div>
+
+<div class="form-group mb-3 row">
+    <div class="col md-6">
+        <label for="AgenciaAtencion">Agencia de Atencion</label>
+    </div>
+    <div class="col md-6">
+        <select class="form-select" id="AgenciaAtencion">
+            <option value="1">Agencia 1</option>
+            <option value="2">Agencia 2</option>
+            <option value="3">Agencia 3</option>
+    </div>
+</div>
+
+<div class="form-group mb-3 row">
+    <div class="col md-6">
+        <label for="FechaVisitaAgencia">Fecha de Visita a Agencia</label>
+    </div>
+    <div class="col md-6">
+        <input type="date" id="FechaVisitaAgencia" class="form-control">
+    </div>
+</div>
+
+<div class="form-group mb-3">
+    <div class="col md-6">
+        <label for="HoraVisitaAgencia">Hora de Visita Agencia</label>
+    </div>
+    <div class="col md-6">
+        <select class="form-select" id="HoraVisitaAgencia">
+            <option value="MAÑANA">MAÑANA</option>
+            <option value="TARDE">TARDE</option>
+    </div>
 </div>
 
 
