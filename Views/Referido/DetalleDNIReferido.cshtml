@@ -1,6 +1,7 @@
 @model ALFINapp.Models.DniReferidoData
 
 @{
+    var Agencias = ViewData["Agencias"] as List<String>;
 }
 
 <div class="alert alert-warning" role="alert">
@@ -48,15 +49,9 @@
 {
     <div class="form-group mb-3">
         <label for="NombresCompletosCliente"> Nombres Completos (Solo agregue una referencia)</label>
-        <input type="text" id="NombresCompletosCliente" class="form-control" placeholder="Nombres Completos"
-            value="@Model.NombresCompletos" disabled readonly>
+        <input type="text" id="NombresCompletosCliente" class="form-control" placeholder="Nombres Completos">
     </div>
 }
-
-<div class="form-group mb-3">
-    <label for="MontoSolicitado"> Monto Solicitado </label>
-    <input type="text" id="MontoSolicitado" class="form-control" placeholder="Monto Solicitado">
-</div>
 
 <div class="form-group mb-3">
     <label for="CelularCliente"> Celular </label>
@@ -69,9 +64,15 @@
     </div>
     <div class="col md-6">
         <select class="form-select" id="AgenciaAtencion">
-            <option value="1">Agencia 1</option>
-            <option value="2">Agencia 2</option>
-            <option value="3">Agencia 3</option>
+            <option value="">Seleccione una agencia</option>
+            @if (Agencias != null)
+            {
+                @foreach (var agencia in Agencias)
+                {
+                    <option value="@agencia">@agencia</option>
+                }
+            }
+        </select>
     </div>
 </div>
 
@@ -84,7 +85,13 @@
     </div>
 </div>
 
-<div class="form-group mb-3">
+<div class="btn btn-container mt-4">
+    <a href="javascript:void(0)" id="referirDniButton" class="btn btn-success"
+        onclick="ReferirDNI('@Model.DNI', '@Model.TraidoDe')">Referir a este Cliente</a>
+</div>
+
+
+@*<div class="form-group mb-3 row">
     <div class="col md-6">
         <label for="HoraVisitaAgencia">Hora de Visita Agencia</label>
     </div>
@@ -93,10 +100,6 @@
             <option value="MAÑANA">MAÑANA</option>
             <option value="TARDE">TARDE</option>
     </div>
-</div>
+</div>*@
 
 
-<div class="btn btn-container mt-4">
-    <a href="javascript:void(0)" id="referirDniButton" class="btn btn-success"
-        onclick="ReferirDNI('@Model.DNI', '@Model.TraidoDe')">Referir a este Cliente</a>
-</div>

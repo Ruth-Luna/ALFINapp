@@ -13,10 +13,12 @@ namespace ALFINapp.Controllers
     {
         public DBServicesGeneral _dbServicesGeneral;
         public DBServicesReferido _dbServicesReferido;
-        public ReferidoController( DBServicesGeneral dbServicesGeneral, DBServicesReferido dbServicesReferido)
+        private IEmailService _emailService;
+        public ReferidoController( DBServicesGeneral dbServicesGeneral, DBServicesReferido dbServicesReferido, IEmailService emailService)
         {
             _dbServicesGeneral = dbServicesGeneral;
             _dbServicesReferido = dbServicesReferido;
+            _emailService = emailService;
         }
         public async Task<IActionResult> Referido()
         {
@@ -26,11 +28,14 @@ namespace ALFINapp.Controllers
         public async Task<IActionResult> BuscarDNIReferido(string dniBusqueda)
         {
             var getDNIReferido = await _dbServicesReferido.GetDataFromDNI(dniBusqueda);
+            var getBases = await _dbServicesGeneral.GetAgenciasDisponibles();
 
             if (getDNIReferido.IsSuccess == false)
             {
                 return Json(new { success = false, message = getDNIReferido.Message});
             }
+
+            ViewData["Agencias"] = getBases.data;
 
             return PartialView("DetalleDNIReferido", getDNIReferido.data);
         }
@@ -41,11 +46,19 @@ namespace ALFINapp.Controllers
                                                                         string apellidos,
                                                                         string dniUsuario)
         {
-            var getReferido = await _dbServicesReferido.GuardarClienteReferido(dniReferir, fuenteBase, nombres, apellidos, dniUsuario);
-            if (getReferido.IsSuccess == false)
+            var mandarReferido = await _dbServicesReferido.GuardarClienteReferido(dniReferir, fuenteBase, nombres, apellidos, dniUsuario);
+            if (mandarReferido.IsSuccess == false)
             {
-                return Json(new { success = false, message = getReferido.Message});
+                //El cliente referido no ha podido ser guardado
+                return Json(new { success = false, message = mandarReferido.Message});
             }
+
+            var getReferido = await _dbServicesReferido.GetClienteReferido(dniReferir);
+            await _emailService.SendEmailAsync(
+                "santiagovl0308@gmail.com", // Destinatario
+                "Correo de prueba",           // Asunto
+                "<h1>Este es un correo de prueba</h1><p>Saludos, equipo A365.</p>" // Cuerpo en HTML
+            );
             return Json(new { success = true, message = getReferido.Message});
         }
     }

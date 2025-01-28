@@ -11,7 +11,7 @@ namespace ALFINapp.Services
     {
         private readonly MDbContext _context;
 
-        public DBServicesGeneral (MDbContext context)
+        public DBServicesGeneral(MDbContext context)
         {
             _context = context;
         }
@@ -46,7 +46,7 @@ namespace ALFINapp.Services
                 var FoundUser = await _context.usuarios
                                     .Where(u => u.IdUsuario == IdUsuario)
                                     .FirstOrDefaultAsync();
-                
+
                 if (FoundUser == null)
                 {
                     return (false, "El usuario a buscar no se encuentra registrado", null);
@@ -59,18 +59,18 @@ namespace ALFINapp.Services
                 return (false, ex.Message, null);
             }
         }
-        public async Task <(bool IsSuccess, string Message)> UpdatePasswordGeneralFunction (int IdUsuario, string password)
+        public async Task<(bool IsSuccess, string Message)> UpdatePasswordGeneralFunction(int IdUsuario, string password)
         {
             try
             {
                 var user = await _context.usuarios.Where(u => u.IdUsuario == IdUsuario)
                                     .FirstOrDefaultAsync();
-                
+
                 if (user == null)
                 {
                     return (false, "El usuario a modificar no se encuentra registrado");
                 }
-                
+
                 user.contraseña = password;  // Asegúrate de cifrarla si es necesario
                 // Guarda los cambios en la base de datos
                 await _context.SaveChangesAsync();
@@ -88,12 +88,12 @@ namespace ALFINapp.Services
             {
                 var cliente = await _context.base_clientes.Where(u => u.IdBase == IdBaseB)
                                     .FirstOrDefaultAsync();
-                
+
                 if (cliente == null)
                 {
                     return (false, "El usuario no se encuentra registrado", null);
                 }
-                
+
                 return (true, "El Usuario se ha encontrado", cliente);
             }
             catch (System.Exception ex)
@@ -107,12 +107,12 @@ namespace ALFINapp.Services
             {
                 var cliente = await _context.clientes_enriquecidos.Where(u => u.IdBase == IdBaseB)
                                     .FirstOrDefaultAsync();
-                
+
                 if (cliente == null)
                 {
                     return (false, "El usuario no se encuentra registrado, en la tabla enriquecida", null);
                 }
-                
+
                 return (true, "El Usuario se ha encontrado en la tabla enriquecida", cliente);
             }
             catch (System.Exception ex)
@@ -121,7 +121,30 @@ namespace ALFINapp.Services
             }
         }
 
-        
+        public async Task<(bool IsSuccess, string Message, List<string>? data)> GetAgenciasDisponibles()
+        {
+            try
+            {
+                var agencias = await _context.detalle_base
+                        .Where(db => db.AgenciaComercial != null) // Filtra primero para mejorar eficiencia
+                        .Select(db => db.AgenciaComercial)        // Selecciona solo el campo necesario
+                        .Distinct()                               // Elimina duplicados
+                        .ToListAsync();
+
+                if (agencias == null || !agencias.Any())      // Verifica si la lista es nula o vacía
+                {
+                    return (false, "No se encontraron agencias disponibles", null);
+                }
+
+                return (true, "Agencias encontradas", agencias);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message, null);
+            }
+        }
+
+
         // Other DB services can be added here
     }
 }

@@ -102,7 +102,6 @@ namespace ALFINapp.Services
                 return (false, ex.Message);
             }
         }
-
         public async Task<(bool IsSuccess, string Message, DniReferidoData? data)> GetDataFromDNI(string DNI)
         {
             try
@@ -141,6 +140,25 @@ namespace ALFINapp.Services
             catch (System.Exception ex)
             {
                 return (true, ex.Message, null);
+            }
+        }
+        public async Task<(bool IsSuccess, string Message, ClientesReferidos? Data)> GetClienteReferido(string dni)
+        {
+            try
+            {
+                var clienteReferido = await _context.clientes_referidos.Where(cr => cr.DniCliente == dni)
+                                        .FirstOrDefaultAsync();
+
+                if (clienteReferido != null)
+                {
+                    return (true, "El cliente referido ha sido encontrado en la base de datos", clienteReferido);
+                }
+
+                return (false, "El cliente referido no ha sido encontrado en la base de datos", null);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message, null);
             }
         }
     }
