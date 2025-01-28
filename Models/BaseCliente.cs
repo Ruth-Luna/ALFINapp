@@ -13,24 +13,19 @@ public partial class BaseCliente
     [Column("dni")]
     public string? Dni { get; set; }
     [Column("x_appaterno")]
-
     public string? XAppaterno { get; set; }
     [Column("x_apmaterno")]
-
     public string? XApmaterno { get; set; }
     [Column("x_nombre")]
-
     public string? XNombre { get; set; }
     [Column("edad")]
-
     public int? Edad { get; set; }
     [Column("departamento")]
-
     public string? Departamento { get; set; }
     [Column("provincia")]
-
     public string? Provincia { get; set; }
     [Column("distrito")]
-
     public string? Distrito { get; set; }
+    [Column("id_base_banco")]
+    public int? IdBaseBanco { get; set; }
 }

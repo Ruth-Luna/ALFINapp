@@ -70,7 +70,7 @@ namespace ALFINapp.Controllers
                                                     join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
                                                     join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
                                                     join u in _context.usuarios on ca.IdUsuarioV equals u.IdUsuario
-                                                    where GetClienteExistente.Data.IdBase == ce.IdBaseBanco
+                                                    where GetClienteExistente.Data.IdBase == bc.IdBaseBanco
                                                     select new AsesoresDeUnClienteDTO
                                                     {
                                                         NombreAsesorPrimario = u.NombresCompletos,

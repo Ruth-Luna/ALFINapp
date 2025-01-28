@@ -19,9 +19,12 @@ namespace ALFINapp.Services
         public async Task<List<DetalleBaseClienteDTO>> DetallesClientesParaVentas(int IdUsuarioVendedor)
         {
             var clientes = await (from bc in _context.base_clientes
-                                  join db in _context.detalle_base on bc.IdBase equals db.IdBase
-                                  join ce in _context.clientes_enriquecidos on bc.IdBase equals ce.IdBase
-                                  join ca in _context.clientes_asignados on ce.IdCliente equals ca.IdCliente
+                                  join db in _context.detalle_base on bc.IdBase equals db.IdBase into dbGroup
+                                  from db in dbGroup.DefaultIfEmpty()
+                                  join ce in _context.clientes_enriquecidos on bc.IdBase equals ce.IdBase into ceGroup
+                                  from ce in ceGroup.DefaultIfEmpty()
+                                  join ca in _context.clientes_asignados on ce.IdCliente equals ca.IdCliente into caGroup
+                                  from ca in caGroup.DefaultIfEmpty()
                                   where ca.ClienteDesembolso != true
                                         && ca.ClienteRetirado != true
                                         && db.TipoBase == ca.FuenteBase

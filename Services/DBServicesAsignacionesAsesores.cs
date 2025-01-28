@@ -47,6 +47,24 @@ namespace ALFINapp.Services
                     return (false, "No se encontró un supervisor asignado para el usuario vendedor.");
                 }
 
+                var clientePreviamenteAsignadoAUsted = await (
+                    from bc in _context.base_clientes
+                    join ce in _context.clientes_enriquecidos on bc.IdBase equals ce.IdBase into ceGroup
+                    from ce in ceGroup.DefaultIfEmpty()
+                    join ca in _context.clientes_asignados on ce.IdCliente equals ca.IdCliente into caGroup
+                    from ca in caGroup.DefaultIfEmpty()
+                    where ca.IdUsuarioV == IdUsuarioVAsignar &&
+                          bc.Dni == DNIBusqueda &&
+                        ca.FechaAsignacionVendedor.HasValue && 
+                        ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year &&
+                        ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month
+                    select ca
+                ).FirstOrDefaultAsync();
+                if (clientePreviamenteAsignadoAUsted != null)
+                {
+                    return (false, "El cliente a buscar ya se encuentra asignado a usted");
+                }
+
                 if (BaseTipo == "BDA365")
                 {
                     var ClienteDBA365 = await (
@@ -65,19 +83,6 @@ namespace ALFINapp.Services
                     var EnriquecidoClienteA365 = await _context.clientes_enriquecidos.FirstOrDefaultAsync(ce => ce.IdBase == ClienteDBA365.bc.IdBase);
                     if (EnriquecidoClienteA365 != null)
                     {
-                        var clientePreviamenteAsignadoAUsted =
-                            await _context.clientes_asignados
-                                .Where(ca => ca.IdUsuarioV == IdUsuarioVAsignar &&
-                                             ca.IdCliente == EnriquecidoClienteA365.IdCliente &&
-                                             ca.FechaAsignacionSup.HasValue &&
-                                             ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month &&
-                                             ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year)
-                                .FirstOrDefaultAsync();
-                        if (clientePreviamenteAsignadoAUsted != null)
-                        {
-                            return (false, "El cliente a buscar ya se encuentra asignado a usted");
-                        }
-
                         var nuevoClienteAsignado = new ClientesAsignado
                         {
                             IdUsuarioV = IdUsuarioVAsignar,
@@ -132,66 +137,64 @@ namespace ALFINapp.Services
                         return (false, "El cliente no tiene entrada en la Base de Datos de ALFIN, si el cliente tiene Datos en la base de Datos del banco A365 puede hacer la consulta con los datos correspondientes");
                     }
 
-                    var EnriquecidoClienteAlfin = await _context.clientes_enriquecidos.FirstOrDefaultAsync(ce => ce.IdBaseBanco == ClienteDBAlfinBanco.IdBaseBanco);
-                    if (EnriquecidoClienteAlfin != null)
-                    {
-                        var clientePreviamenteAsignadoAUsted =
-                            await _context.clientes_asignados
-                                .Where(ca => ca.IdUsuarioV == IdUsuarioVAsignar &&
-                                             ca.IdCliente == EnriquecidoClienteAlfin.IdCliente &&
-                                             ca.FechaAsignacionSup.HasValue &&
-                                             ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month &&
-                                             ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year)
-                                .FirstOrDefaultAsync();
-                        if (clientePreviamenteAsignadoAUsted != null)
-                        {
-                            return (false, "El cliente a buscar ya se encuentra asignado a usted");
-                        }
+                    var BaseClienteBanco = await _context.base_clientes.FirstOrDefaultAsync(c => c.IdBaseBanco == ClienteDBAlfinBanco.IdBaseBanco);
 
-                        var nuevoClienteAsignado = new ClientesAsignado
+                    var nuevoBaseClienteDelBanco = new BaseCliente();
+                    if (BaseClienteBanco == null)
+                    {
+                        //El Cliente No tiene Detalle Base de la Base de Datos de ALFIN
+                        nuevoBaseClienteDelBanco = new BaseCliente
                         {
-                            IdUsuarioV = IdUsuarioVAsignar,
-                            FechaAsignacionVendedor = DateTime.Now,
-                            IdCliente = EnriquecidoClienteAlfin.IdCliente,
-                            FuenteBase = "ALFINBANCO",
-                            FinalizarTipificacion = false,
-                            IdUsuarioS = supervisorAsignado.Value,
-                            FechaAsignacionSup = DateTime.Now,
-                            ClienteDesembolso = false,
-                            ClienteRetirado = false,
-                            Destino = "ALFIN_AGREGADO_MANUALMENTE",
+                            IdBaseBanco = ClienteDBAlfinBanco.IdBaseBanco,
+                            Dni = ClienteDBAlfinBanco.Dni,
+                            XNombre = "DESCONIDO",
+                            XAppaterno = "DESCONIDO",
+                            XApmaterno = "DESCONIDO",
                         };
-                        _context.clientes_asignados.Add(nuevoClienteAsignado);
+                        _context.base_clientes.Add(nuevoBaseClienteDelBanco);
                         await _context.SaveChangesAsync();
-                        return (true, "El cliente fue asignado correctamente de la Base ALFIN");
                     }
                     else
                     {
-                        var nuevoClienteEnriquecidos = new ClientesEnriquecido
+                        nuevoBaseClienteDelBanco = BaseClienteBanco;
+                    }
+
+                    var EnriquecidoClienteAlfin = await _context.clientes_enriquecidos.FirstOrDefaultAsync(ce => ce.IdBase == nuevoBaseClienteDelBanco.IdBase);
+
+                    var nuevoClienteEnriquecidos = new ClientesEnriquecido();
+
+                    if (EnriquecidoClienteAlfin == null)
+                    {
+                        //NO HAY ENTRADA DE CLIENTES ENRIQUECIDO SE CREARA LA ENTRADA
+                        nuevoClienteEnriquecidos = new ClientesEnriquecido
                         {
-                            IdBaseBanco = ClienteDBAlfinBanco.IdBaseBanco,
+                            IdBase = nuevoBaseClienteDelBanco.IdBase,
                             FechaEnriquecimiento = DateTime.Now,
                         };
                         _context.clientes_enriquecidos.Add(nuevoClienteEnriquecidos);
                         await _context.SaveChangesAsync();
-
-                        var nuevoClienteAsignado = new ClientesAsignado
-                        {
-                            IdCliente = nuevoClienteEnriquecidos.IdCliente,
-                            IdUsuarioS = supervisorAsignado.Value,
-                            IdUsuarioV = IdUsuarioVAsignar,
-                            FechaAsignacionSup = DateTime.Now,
-                            FechaAsignacionVendedor = DateTime.Now,
-                            FuenteBase = "ALFINBANCO",
-                            FinalizarTipificacion = false,
-                            ClienteDesembolso = false,
-                            ClienteRetirado = false,
-                            Destino = "ALFIN_AGREGADO_MANUALMENTE",
-                        };
-                        _context.clientes_asignados.Add(nuevoClienteAsignado);
-                        await _context.SaveChangesAsync();
-                        return (true, "El cliente fue asignado correctamente de la Base ALFIN");
                     }
+                    else
+                    {
+                        nuevoClienteEnriquecidos = EnriquecidoClienteAlfin;
+                    }
+
+                    var nuevoClienteAsignado = new ClientesAsignado
+                    {
+                        IdUsuarioV = IdUsuarioVAsignar,
+                        FechaAsignacionVendedor = DateTime.Now,
+                        IdCliente = nuevoClienteEnriquecidos.IdCliente,
+                        FuenteBase = "ALFINBANCO",
+                        FinalizarTipificacion = false,
+                        IdUsuarioS = supervisorAsignado.Value,
+                        FechaAsignacionSup = DateTime.Now,
+                        ClienteDesembolso = false,
+                        ClienteRetirado = false,
+                        Destino = "ALFIN_AGREGADO_MANUALMENTE",
+                    };
+                    _context.clientes_asignados.Add(nuevoClienteAsignado);
+                    await _context.SaveChangesAsync();
+                    return (true, "El cliente fue asignado correctamente de la Base ALFIN");
                 }
                 else
                 {
