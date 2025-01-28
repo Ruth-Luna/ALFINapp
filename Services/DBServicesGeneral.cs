@@ -126,7 +126,7 @@ namespace ALFINapp.Services
             try
             {
                 var agencias = await _context.detalle_base
-                        .Where(db => db.AgenciaComercial != null) // Filtra primero para mejorar eficiencia
+                        .Where(db => db.AgenciaComercial != null && db.AgenciaComercial != "None" && db.AgenciaComercial != "NULL" && db.AgenciaComercial != "") // Filtra primero para mejorar eficiencia
                         .Select(db => db.AgenciaComercial)        // Selecciona solo el campo necesario
                         .Distinct()                               // Elimina duplicados
                         .ToListAsync();

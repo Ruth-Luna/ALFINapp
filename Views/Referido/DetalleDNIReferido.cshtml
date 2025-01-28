@@ -75,7 +75,10 @@
             {
                 @foreach (var agencia in Agencias)
                 {
-                    <option value="@agencia">@agencia</option>
+                    if (agencia!=null && agencia != "")
+                    {
+                        <option value="@agencia">@agencia</option>
+                    }
                 }
             }
         </select>

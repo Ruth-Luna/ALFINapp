@@ -385,7 +385,10 @@ namespace ALFINapp.Controllers
                                                              }).ToList();
             var agenciasDisponibles = (from db in _context.detalle_base
                                                 where !string.IsNullOrEmpty(db.SucursalComercial)
-                                                        && !string.IsNullOrEmpty(db.AgenciaComercial)
+                                                        && !string.IsNullOrEmpty(db.AgenciaComercial) 
+                                                        && db.AgenciaComercial != "None" 
+                                                        && db.AgenciaComercial != "NULL" 
+                                                        && db.AgenciaComercial != ""
                                                 select new
                                                 {
                                                     numSucursal = db.SucursalComercial,
