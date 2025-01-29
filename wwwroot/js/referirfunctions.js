@@ -62,7 +62,7 @@ function ReferirDNI(dni, fuenteBase) {
     const dniRegex = /^\d{8}$/;
     const celularRegex = /^\d{9}$/;
 
-    if (!dniRegex.test(dni)) {
+    if (!dniRegex.test(DNIUsuario)) {
         Swal.fire({
             title: 'Error al referir',
             text: 'El DNI debe contener exactamente 8 dígitos numéricos.',
@@ -85,6 +85,38 @@ function ReferirDNI(dni, fuenteBase) {
         Swal.fire({
             title: 'Error al referir',
             text: 'Hay un error en el envio de Datos. O no se han completado los campos.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+
+    const nameRegex = /^[A-Za-z\s]+$/;
+
+    if (!nameRegex.test(NombresCompletosUsuario.value)) {
+        Swal.fire({
+            title: 'Error al referir',
+            text: 'El nombre del usuario solo debe contener letras y espacios.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+
+    if (!nameRegex.test(ApellidosCompletosUsuario.value)) {
+        Swal.fire({
+            title: 'Error al referir',
+            text: 'El apellido del usuario solo debe contener letras y espacios.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+
+    if (!nameRegex.test(NombresCompletosCliente.value)) {
+        Swal.fire({
+            title: 'Error al referir',
+            text: 'El nombre del cliente solo debe contener letras y espacios.',
             icon: 'error',
             confirmButtonText: 'Aceptar'
         });

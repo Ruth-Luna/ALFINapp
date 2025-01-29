@@ -43,10 +43,13 @@ function guardarTelefonoVendedor(idcliente) {
             if (result.success === true) {
                 Swal.fire({
                     title: 'Mensaje de Confirmación',
-                    text: result.message,
+                    text: `${result.message}. Este la pagina se recargara en 3 segundos.`,
                     icon: 'success',
                     confirmButtonText: 'Aceptar'
                 });
+                setTimeout(function () {
+                    location.reload();
+                }, 3000);
             } else {
                 Swal.fire({
                     title: 'Error en la operación',
@@ -55,9 +58,6 @@ function guardarTelefonoVendedor(idcliente) {
                     confirmButtonText: 'Aceptar'
                 });
             }
-            setTimeout(function() {
-                location.reload();
-            }, 5000);
         },
         error: function (xhr, status, error) {
             Swal.fire({

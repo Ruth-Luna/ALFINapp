@@ -82,11 +82,14 @@ namespace ALFINapp.Controllers
             // Obtener el usuario actual
             var usuario = await _context.usuarios.AsNoTracking().FirstOrDefaultAsync(u => u.IdUsuario == usuarioId);
 
+            var ClientesTraidosDBALFIN = await _dbServicesAsesores.ClientesTraidosDBALFIN(usuarioId.Value);
+
             ViewData["TotalClientes"] = totalClientes;
             ViewData["ClientesPendientes"] = clientesPendientes;
             ViewData["ClientesTipificados"] = clientesTipificados;
             // Asignar el nombre del usuario a la vista
             ViewData["UsuarioNombre"] = usuario != null ? usuario.NombresCompletos : "Usuario No Encontrado";
+            ViewData["ClientesTraidosDBALFIN"] = ClientesTraidosDBALFIN.Data;
             return View("Main", detallesClientes);
         }
 
@@ -262,68 +265,65 @@ namespace ALFINapp.Controllers
         [HttpGet]
         public IActionResult TipificarClienteView(int id_base)
         {
-            if (HttpContext.Session.GetInt32("UsuarioId") == null)
+            try
             {
-                TempData["MessageError"] = "No ha iniciado sesion, por favor inicie sesion.";
-                return RedirectToAction("Index", "Home");
-            }
-
-            Console.WriteLine($"DNI {id_base}");
-
-            var detallesClientes = (from bc in _context.base_clientes
-                                    join db in _context.detalle_base on bc.IdBase equals db.IdBase
-                                    join ce in _context.clientes_enriquecidos on bc.IdBase equals ce.IdBase
-                                    join ca in _context.clientes_asignados on ce.IdCliente equals ca.IdCliente
-
-                                    where bc.IdBase == id_base && db.TipoBase == ca.FuenteBase &&
-                                          ca.IdUsuarioV == HttpContext.Session.GetInt32("UsuarioId")
-                                    select new
-                                    {
-                                        bc,
-                                        db,
-                                        ce,
-                                        ca
-                                    }).FirstOrDefault();
-            if (detallesClientes == null)
-            {
-                TempData["MessageError"] = "Al cliente no se le permite tipificarlo.";
-                Console.WriteLine("El cliente fue Eliminado manualmente de la Tabla base_clientes");
-                return RedirectToAction("Inicio");
-            }
-
-            var detalleTipificarCliente = detallesClientes != null
-                ? new DetalleTipificarClienteDTO
+                if (HttpContext.Session.GetInt32("UsuarioId") == null)
                 {
-                    // Propiedades de BaseCliente
-                    Dni = detallesClientes.bc.Dni,
-                    XAppaterno = detallesClientes.bc.XAppaterno,
-                    XApmaterno = detallesClientes.bc.XApmaterno,
-                    XNombre = detallesClientes.bc.XNombre,
-                    Edad = detallesClientes.bc.Edad,
-                    Departamento = detallesClientes.bc.Departamento,
-                    Provincia = detallesClientes.bc.Provincia,
-                    Distrito = detallesClientes.bc.Distrito,
-                    IdBase = detallesClientes.bc.IdBase,
+                    return Json(new { success = false, message = "No ha iniciado sesion, por favor inicie sesion." });
+                }
 
-                    // Propiedades de DetalleBase
-                    Campaña = detallesClientes.db.Campaña,
-                    OfertaMax = detallesClientes.db.OfertaMax,
-                    TasaMinima = detallesClientes.db.TasaMinima,
-                    Sucursal = detallesClientes.db.Sucursal,
-                    AgenciaComercial = detallesClientes.db.AgenciaComercial,
-                    Plazo = detallesClientes.db.Plazo,
-                    Cuota = detallesClientes.db.Cuota,
-                    GrupoTasa = detallesClientes.db.GrupoTasa,
-                    GrupoMonto = detallesClientes.db.GrupoMonto,
-                    Propension = detallesClientes.db.Propension,
-                    TipoCliente = detallesClientes.db.TipoCliente,
-                    ClienteNuevo = detallesClientes.db.ClienteNuevo,
-                    Color = detallesClientes.db.Color,
-                    ColorFinal = detallesClientes.db.ColorFinal,
+                var detallesClientes = (from bc in _context.base_clientes
+                                        join db in _context.detalle_base on bc.IdBase equals db.IdBase
+                                        join ce in _context.clientes_enriquecidos on bc.IdBase equals ce.IdBase
+                                        join ca in _context.clientes_asignados on ce.IdCliente equals ca.IdCliente
 
-                    // Propiedades de ClientesEnriquecido
-                    Telefonos = new List<TelefonoDTO>
+                                        where bc.IdBase == id_base && db.TipoBase == ca.FuenteBase &&
+                                              ca.IdUsuarioV == HttpContext.Session.GetInt32("UsuarioId")
+                                        select new
+                                        {
+                                            bc,
+                                            db,
+                                            ce,
+                                            ca
+                                        }).FirstOrDefault();
+                if (detallesClientes == null)
+                {
+                    return Json(new { success = false, message = "No se encontró el cliente en la base de datos." });
+                }
+
+                var detalleTipificarCliente = detallesClientes != null
+                    ? new DetalleTipificarClienteDTO
                     {
+                        // Propiedades de BaseCliente
+                        Dni = detallesClientes.bc.Dni,
+                        XAppaterno = detallesClientes.bc.XAppaterno,
+                        XApmaterno = detallesClientes.bc.XApmaterno,
+                        XNombre = detallesClientes.bc.XNombre,
+                        Edad = detallesClientes.bc.Edad,
+                        Departamento = detallesClientes.bc.Departamento,
+                        Provincia = detallesClientes.bc.Provincia,
+                        Distrito = detallesClientes.bc.Distrito,
+                        IdBase = detallesClientes.bc.IdBase,
+
+                        // Propiedades de DetalleBase
+                        Campaña = detallesClientes.db.Campaña,
+                        OfertaMax = detallesClientes.db.OfertaMax,
+                        TasaMinima = detallesClientes.db.TasaMinima,
+                        Sucursal = detallesClientes.db.Sucursal,
+                        AgenciaComercial = detallesClientes.db.AgenciaComercial,
+                        Plazo = detallesClientes.db.Plazo,
+                        Cuota = detallesClientes.db.Cuota,
+                        GrupoTasa = detallesClientes.db.GrupoTasa,
+                        GrupoMonto = detallesClientes.db.GrupoMonto,
+                        Propension = detallesClientes.db.Propension,
+                        TipoCliente = detallesClientes.db.TipoCliente,
+                        ClienteNuevo = detallesClientes.db.ClienteNuevo,
+                        Color = detallesClientes.db.Color,
+                        ColorFinal = detallesClientes.db.ColorFinal,
+
+                        // Propiedades de ClientesEnriquecido
+                        Telefonos = new List<TelefonoDTO>
+                        {
                         new TelefonoDTO { Numero = detallesClientes.ce.Telefono1,
                                         Comentario = detallesClientes.ce.ComentarioTelefono1,
                                         DescripcionTipificacion = detallesClientes.ce.UltimaTipificacionTelefono1,
@@ -344,68 +344,238 @@ namespace ALFINapp.Controllers
                                         Comentario = detallesClientes.ce.ComentarioTelefono5,
                                         DescripcionTipificacion = detallesClientes.ce.UltimaTipificacionTelefono5,
                                         FechaTipificacion = detallesClientes.ce.FechaUltimaTipificacionTelefono5 }
-                    },
+                        },
+
+                        //Propiedades Tasas y Detalles
+                        Oferta12m = detallesClientes.db.Oferta12m,
+                        Tasa12m = detallesClientes.db.Tasa12m,
+                        Cuota12m = detallesClientes.db.Cuota12m,
+                        Oferta18m = detallesClientes.db.Oferta18m,
+                        Tasa18m = detallesClientes.db.Tasa18m,
+                        Cuota18m = detallesClientes.db.Cuota18m,
+                        Oferta24m = detallesClientes.db.Oferta24m,
+                        Tasa24m = detallesClientes.db.Tasa24m,
+                        Cuota24m = detallesClientes.db.Cuota24m,
+                        Oferta36m = detallesClientes.db.Oferta36m,
+                        Tasa36m = detallesClientes.db.Tasa36m,
+                        Cuota36m = detallesClientes.db.Cuota36m,
+                        Usuario = detallesClientes.db.Usuario,
+                        SegmentoUser = detallesClientes.db.SegmentoUser,
+                    }
+                    : null;
+
+                if (detalleTipificarCliente == null)
+                {
+                    return Json(new { success = false, message = "No se encontró el cliente en la base de datos." });
+                }
+
+                var tipificaciones = _context.tipificaciones.Select(t => new { t.IdTipificacion, t.DescripcionTipificacion }).ToList();
+                ViewData["Tipificaciones"] = tipificaciones;
+
+                var resultados_telefonos_tipificados_vendedor = (from ta in _context.telefonos_agregados
+                                                                 where detallesClientes != null && ta.IdCliente == detallesClientes.ca.IdCliente
+                                                                 select new
+                                                                 {
+                                                                     TelefonoTipificado = ta.Telefono,
+                                                                     ComentarioTelefono = ta.Comentario,
+                                                                     DescripcionTipificacion = ta.UltimaTipificacion,
+                                                                     FechaTipificacionSup = ta.FechaUltimaTipificacion
+                                                                 }).ToList();
+                var agenciasDisponibles = (from db in _context.detalle_base
+                                           where !string.IsNullOrEmpty(db.SucursalComercial)
+                                                   && !string.IsNullOrEmpty(db.AgenciaComercial)
+                                                   && db.AgenciaComercial != "None"
+                                                   && db.AgenciaComercial != "NULL"
+                                                   && db.AgenciaComercial != ""
+                                           select new
+                                           {
+                                               numSucursal = db.SucursalComercial,
+                                               agenciaComercial = db.AgenciaComercial
+                                           })
+                                                    .Distinct()
+                                                    .ToList();
+
+                var dni = _context.base_clientes.FirstOrDefault(bc => bc.IdBase == id_base);
+                ViewData["AgenciasDisponibles"] = agenciasDisponibles;
+                ViewData["numerosCreadosPorElUsuario"] = resultados_telefonos_tipificados_vendedor;
+                ViewData["DNIcliente"] = dni != null ? dni.Dni : "El usuario No tiene DNI Registrado";
+                ViewData["ID_asignacion"] = detallesClientes?.ca?.IdAsignacion ?? 0;
+                ViewData["Fuente_BD"] = detallesClientes?.ca?.FuenteBase ?? "Fuente no disponible";
+                ViewData["ID_cliente"] = detallesClientes?.ca?.IdCliente ?? 0;
+
+                return PartialView("_Tipificarcliente", detalleTipificarCliente);
+            }
+            catch (System.Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        public IActionResult TipificarClienteDBALFINView(int id_base)
+        {
+            try
+            {
+                var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+                if (usuarioId == null)
+                {
+                    return Json(new { success = false, message = "No ha iniciado sesion, por favor inicie sesion." });
+                }
+                var detallesClientes = (from bc in _context.base_clientes
+                                        join bcb in _context.base_clientes_banco on bc.IdBaseBanco equals bcb.IdBaseBanco
+                                        join bcg in _context.base_clientes_banco_campana_grupo on bcb.IdCampanaGrupoBanco equals bcg.IdCampanaGrupo into bcgGroup
+                                        from bcg in bcgGroup.DefaultIfEmpty()
+                                        join bcc in _context.base_clientes_banco_color on bcb.IdColorBanco equals bcc.IdColor into bccGroup
+                                        from bcc in bccGroup.DefaultIfEmpty()
+                                        join bcp in _context.base_clientes_banco_plazo on bcb.IdPlazoBanco equals bcp.IdPlazo into bcpGroup
+                                        from bcp in bcpGroup.DefaultIfEmpty()
+                                        join bcrd in _context.base_clientes_banco_rango_deuda on bcb.IdRangoDeuda equals bcrd.IdRangoDeuda into bcrdGroup
+                                        from bcrd in bcrdGroup.DefaultIfEmpty()
+                                        join bcu in _context.base_clientes_banco_usuario on bcb.IdUsuarioBanco equals bcu.IdUsuario into bcuGroup
+                                        from bcu in bcuGroup.DefaultIfEmpty()
+                                        join ce in _context.clientes_enriquecidos on bc.IdBase equals ce.IdBase
+                                        join ca in _context.clientes_asignados on ce.IdCliente equals ca.IdCliente
+                                        where bc.IdBase == id_base
+                                            && bc.IdBaseBanco != null
+                                            && ca.FechaAsignacionVendedor.HasValue
+                                            && ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
+                                            && ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month
+                                            && ca.IdUsuarioV == usuarioId
+                                        select new
+                                        {
+                                            bc,
+                                            bcb,
+                                            bcg,
+                                            bcc,
+                                            bcp,
+                                            bcrd,
+                                            bcu,
+                                            ce,
+                                            ca
+                                        }).FirstOrDefault();
+
+                if (detallesClientes == null)
+                {
+                    return Json(new { success = false, message = "No se encontró el cliente en la base de datos." });
+                }
+
+                var detalleTipificarCliente = new DetalleTipificarClienteDTO
+                {
+                    // Propiedades de BaseCliente
+                    Dni = detallesClientes.bc.Dni,
+                    XAppaterno = detallesClientes.bc.XAppaterno,
+                    XApmaterno = detallesClientes.bc.XApmaterno,
+                    XNombre = detallesClientes.bc.XNombre,
+                    Edad = 0,
+                    Departamento = "DESCONOCIDO",
+                    Provincia = "DESCONOCIDO",
+                    Distrito = "DESCONOCIDO",
+                    IdBase = detallesClientes.bc.IdBase,
+
+                    // Propiedades de DetalleBase
+                    Campaña = detallesClientes.bcg?.NombreCampana ?? "DESCONOCIDO",
+                    OfertaMax = detallesClientes.bcb?.OfertaMax*100 ?? 0,
+                    TasaMinima = 0,
+                    Sucursal = "DESCONOCIDO",
+                    AgenciaComercial = detallesClientes.bcb != null ? $"Numero Entidades: {detallesClientes.bcb.NumEntidades}" : "Numero Entidades: Desconocido",
+                    Plazo = detallesClientes.bcp.NumMeses,
+                    Cuota = 0,
+                    GrupoTasa = detallesClientes.bcb?.TasasEspeciales ?? "DESCONOCIDO",
+                    GrupoMonto = "DESCONIDO",
+                    Propension = 0,
+                    TipoCliente = detallesClientes.bcu?.TipoUsuario ?? "DESCONOCIDO",
+                    ClienteNuevo = "ANTIGUO",
+                    Color = detallesClientes.bcc?.NombreColor ?? "DESCONOCIDO",
+                    ColorFinal = detallesClientes.bcc?.NombreColor ?? "DESCONOCIDO",
+
+                    // Propiedades de ClientesEnriquecido
+                    Telefonos = new List<TelefonoDTO>
+                        {
+                            new TelefonoDTO
+                            {
+                                Numero = detallesClientes.ce?.Telefono1 ?? "0",
+                                Comentario = detallesClientes.ce?.ComentarioTelefono1,
+                                DescripcionTipificacion = detallesClientes.ce?.UltimaTipificacionTelefono1,
+                                FechaTipificacion = detallesClientes.ce?.FechaUltimaTipificacionTelefono1
+                            },
+                            new TelefonoDTO
+                            {
+                                Numero = detallesClientes.ce?.Telefono2 ?? "0",
+                                Comentario = detallesClientes.ce?.ComentarioTelefono2,
+                                DescripcionTipificacion = detallesClientes.ce?.UltimaTipificacionTelefono2,
+                                FechaTipificacion = detallesClientes.ce?.FechaUltimaTipificacionTelefono2
+                            },
+                            new TelefonoDTO
+                            {
+                                Numero = detallesClientes.ce?.Telefono3 ?? "0",
+                                Comentario = detallesClientes.ce?.ComentarioTelefono3,
+                                DescripcionTipificacion = detallesClientes.ce?.UltimaTipificacionTelefono3,
+                                FechaTipificacion = detallesClientes.ce?.FechaUltimaTipificacionTelefono3
+                            },
+                            new TelefonoDTO
+                            {
+                                Numero = detallesClientes.ce?.Telefono4 ?? "0",
+                                Comentario = detallesClientes.ce?.ComentarioTelefono4,
+                                DescripcionTipificacion = detallesClientes.ce?.UltimaTipificacionTelefono4,
+                                FechaTipificacion = detallesClientes.ce?.FechaUltimaTipificacionTelefono4
+                            },
+                            new TelefonoDTO
+                            {
+                                Numero = detallesClientes.ce?.Telefono5 ?? "0",
+                                Comentario = detallesClientes.ce?.ComentarioTelefono5,
+                                DescripcionTipificacion = detallesClientes.ce?.UltimaTipificacionTelefono5,
+                                FechaTipificacion = detallesClientes.ce?.FechaUltimaTipificacionTelefono5
+                            },
+                        },
 
                     //Propiedades Tasas y Detalles
-                    Oferta12m = detallesClientes.db.Oferta12m,
-                    Tasa12m = detallesClientes.db.Tasa12m,
-                    Cuota12m = detallesClientes.db.Cuota12m,
-                    Oferta18m = detallesClientes.db.Oferta18m,
-                    Tasa18m = detallesClientes.db.Tasa18m,
-                    Cuota18m = detallesClientes.db.Cuota18m,
-                    Oferta24m = detallesClientes.db.Oferta24m,
-                    Tasa24m = detallesClientes.db.Tasa24m,
-                    Cuota24m = detallesClientes.db.Cuota24m,
-                    Oferta36m = detallesClientes.db.Oferta36m,
-                    Tasa36m = detallesClientes.db.Tasa36m,
-                    Cuota36m = detallesClientes.db.Cuota36m,
-                    Usuario = detallesClientes.db.Usuario,
-                    SegmentoUser = detallesClientes.db.SegmentoUser,
-                }
-                : null;
+                    Tasa12m = detallesClientes.bcb?.Tasa1 ?? 0,
+                    Tasa18m = detallesClientes.bcb?.Tasa2 ?? 0,
+                    Tasa24m = detallesClientes.bcb?.Tasa3 ?? 0,
+                    Tasa36m = detallesClientes.bcb?.Tasa4 ?? 0,
+                    Usuario = detallesClientes.bcu?.NombreUsuario ?? "DESCONOCIDO",
+                    SegmentoUser = detallesClientes.bcu?.TipoUsuario ?? "DESCONOCIDO",
+                };
 
-            if (detalleTipificarCliente == null)
-            {
-                TempData["MessageError"] = "Al cliente no se le permite tipificarlo.";
-                Console.WriteLine("El cliente fue Eliminado manualmente de la Tabla clientes_tipificado");
-                return RedirectToAction("Inicio");
+                var tipificaciones = _context.tipificaciones.Select(t => new { t.IdTipificacion, t.DescripcionTipificacion }).ToList();
+                ViewData["Tipificaciones"] = tipificaciones;
+
+                var resultados_telefonos_tipificados_vendedor = (from ta in _context.telefonos_agregados
+                                                                 where detallesClientes != null && ta.IdCliente == detallesClientes.ca.IdCliente
+                                                                 select new
+                                                                 {
+                                                                     TelefonoTipificado = ta.Telefono,
+                                                                     ComentarioTelefono = ta.Comentario,
+                                                                     DescripcionTipificacion = ta.UltimaTipificacion,
+                                                                     FechaTipificacionSup = ta.FechaUltimaTipificacion
+                                                                 }).ToList();
+                var agenciasDisponibles = (from db in _context.detalle_base
+                                           where !string.IsNullOrEmpty(db.SucursalComercial)
+                                               && !string.IsNullOrEmpty(db.AgenciaComercial)
+                                               && db.AgenciaComercial != "None"
+                                               && db.AgenciaComercial != "NULL"
+                                               && db.AgenciaComercial != ""
+                                           select new
+                                           {
+                                               numSucursal = db.SucursalComercial,
+                                               agenciaComercial = db.AgenciaComercial
+                                           })
+                                            .Distinct()
+                                            .ToList();
+
+                var dni = _context.base_clientes.FirstOrDefault(bc => bc.IdBase == id_base);
+                ViewData["AgenciasDisponibles"] = agenciasDisponibles;
+                ViewData["numerosCreadosPorElUsuario"] = resultados_telefonos_tipificados_vendedor;
+                ViewData["DNIcliente"] = dni != null ? dni.Dni : "El usuario No tiene DNI Registrado";
+                ViewData["ID_asignacion"] = detallesClientes?.ca?.IdAsignacion ?? 0;
+                ViewData["Fuente_BD"] = "BASE_ASESORES";
+                ViewData["ID_cliente"] = detallesClientes?.ca?.IdCliente ?? 0;
+
+                return PartialView("_Tipificarcliente", detalleTipificarCliente);
             }
-
-            var tipificaciones = _context.tipificaciones.Select(t => new { t.IdTipificacion, t.DescripcionTipificacion }).ToList();
-            ViewData["Tipificaciones"] = tipificaciones;
-
-            var resultados_telefonos_tipificados_vendedor = (from ta in _context.telefonos_agregados
-                                                             where ta.IdCliente == detallesClientes.ca.IdCliente
-                                                             select new
-                                                             {
-                                                                 TelefonoTipificado = ta.Telefono,
-                                                                 ComentarioTelefono = ta.Comentario,
-                                                                 DescripcionTipificacion = ta.UltimaTipificacion,
-                                                                 FechaTipificacionSup = ta.FechaUltimaTipificacion
-                                                             }).ToList();
-            var agenciasDisponibles = (from db in _context.detalle_base
-                                                where !string.IsNullOrEmpty(db.SucursalComercial)
-                                                        && !string.IsNullOrEmpty(db.AgenciaComercial) 
-                                                        && db.AgenciaComercial != "None" 
-                                                        && db.AgenciaComercial != "NULL" 
-                                                        && db.AgenciaComercial != ""
-                                                select new
-                                                {
-                                                    numSucursal = db.SucursalComercial,
-                                                    agenciaComercial = db.AgenciaComercial
-                                                })
-                                                .Distinct()
-                                                .ToList();
-
-            var dni = _context.base_clientes.FirstOrDefault(bc => bc.IdBase == id_base);
-            ViewData["AgenciasDisponibles"] = agenciasDisponibles;
-            ViewData["numerosCreadosPorElUsuario"] = resultados_telefonos_tipificados_vendedor;
-            ViewData["DNIcliente"] = dni != null ? dni.Dni : "El usuario No tiene DNI Registrado";
-            ViewData["ID_asignacion"] = detallesClientes.ca.IdAsignacion;
-            ViewData["Fuente_BD"] = detallesClientes.ca.FuenteBase;
-            ViewData["ID_cliente"] = detallesClientes.ca.IdCliente;
-
-            return PartialView("_Tipificarcliente", detalleTipificarCliente);
+            catch (System.Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
 
         [HttpGet]
@@ -415,7 +585,7 @@ namespace ALFINapp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public async Task<(bool success, string errorMessage)> EnviarFormularioRemoto(
+        /*public async Task<(bool success, string errorMessage)> EnviarFormularioRemoto(
                     string DNIAsesor,
                     string DNICliente,
                     string NombreCliente,
@@ -488,7 +658,7 @@ namespace ALFINapp.Controllers
                 Console.WriteLine($"Error: {ex.Message}"); // Imprime el error en la consola del servidor
                 return (false, ex.Message); // Retorna el mensaje de error
             }
-        }
+        }*/
 
 
         [HttpPost]

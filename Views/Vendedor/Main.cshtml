@@ -4,6 +4,7 @@
     Layout = "~/Views/Shared/_LayoutVendedor.cshtml";
     var usuarioNombre = ViewData["UsuarioNombre"];
     var clientesPendientes = ViewData["ClientesPendientes"];
+    var ClientesTraidosDBALFIN = ViewData["ClientesTraidosDBALFIN"] as List<ALFINapp.Models.DetalleBaseClienteDTO>;
 }
 
 @section Styles {
@@ -172,15 +173,16 @@
                     <tr class="@rowClass">
                         <td>
                             <a href="javascript:void(0);" class="btn btn-primary"
-                                onclick="loadTipificarCliente(@ClienteDTO.IdBase)">
+                                onclick="loadTipificarCliente(@ClienteDTO.IdBase,'TipificarClienteView')">
                                 <i class="fa fa-eye"></i>
                             </a>
                         </td>
 
                         <td>@ClienteDTO.Dni</td>
-                        <td>@ClienteDTO.XAppaterno.ToUpper() @ClienteDTO.XApmaterno.ToUpper() @ClienteDTO.XNombre.ToUpper()
+                        <td>@(ClienteDTO.XAppaterno?.ToUpper() ?? "") @(ClienteDTO.XApmaterno?.ToUpper() ?? "")
+                            @(ClienteDTO.XNombre?.ToUpper() ?? "")
                         <td>@ClienteDTO.OfertaMax</td>
-                        <td>@ClienteDTO.Campaña.ToUpper()</td>
+                        <td>@(ClienteDTO.Campaña?.ToUpper() ?? "N/A")</td>
                         <td>@ClienteDTO.FechaAsignacionVendedor</td>
                         <td><textarea name=""
                                 id="comentarioGeneral[@ClienteDTO.IdAsignacion]">@ClienteDTO.ComentarioGeneral</textarea>
@@ -192,6 +194,47 @@
                         <td>@ClienteDTO.TipificacionDeMayorPeso</td>
                         <td>@ClienteDTO.FechaTipificacionDeMayorPeso</td>
                     </tr>
+                }
+                @if (ClientesTraidosDBALFIN != null)
+                {
+                    @foreach (var ClienteDTO in ClientesTraidosDBALFIN)
+                    {
+                        var pesotipMayor = ClienteDTO.PesoTipificacionMayor;
+                        var rowClass = ""; // Inicializa como cadena vacía
+                        if (pesotipMayor != null)
+                        {
+                            rowClass = "table-success"; // Clase base para filas con tipificación
+
+                            if (pesotipMayor > 100)
+                            {
+                                rowClass += " table-danger"; // Clase adicional para peso mayor a 100
+                            }
+                        }
+                        <tr class="@rowClass">
+                            <td>
+                                <a href="javascript:void(0);" class="btn btn-primary"
+                                    onclick="loadTipificarCliente(@ClienteDTO.IdBase, 'TipificarClienteDBALFINView')">
+                                    <i class="fa fa-eye"></i>
+                                </a>
+                            </td>
+
+                            <td>@ClienteDTO.Dni</td>
+                            <td>@(ClienteDTO.XAppaterno?.ToUpper() ?? "") @(ClienteDTO.XApmaterno?.ToUpper() ?? "")
+                                @(ClienteDTO.XNombre?.ToUpper() ?? "")
+                            <td>@ClienteDTO.OfertaMax</td>
+                            <td>@(ClienteDTO.Campaña?.ToUpper() ?? "N/A")</td>
+                            <td>@ClienteDTO.FechaAsignacionVendedor</td>
+                            <td><textarea name=""
+                                    id="comentarioGeneral[@ClienteDTO.IdAsignacion]">@ClienteDTO.ComentarioGeneral</textarea>
+                                <a href="javascript:void(0);" class="btn btn-primary"
+                                    onclick="guardarComentarioGeneral(@ClienteDTO.IdAsignacion)">
+                                    <i class="fa fa-pencil"></i>
+                                </a>
+                            </td>
+                            <td>@ClienteDTO.TipificacionDeMayorPeso</td>
+                            <td>@ClienteDTO.FechaTipificacionDeMayorPeso</td>
+                        </tr>
+                    }
                 }
             </tbody>
         </table>

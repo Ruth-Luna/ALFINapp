@@ -1,6 +1,11 @@
 namespace ALFINapp.Models;
 public class ActualizarDatosProspectoDTO
 {
+    public string X_NOMBRE { get; set; }
+    public string X_APPATERNO { get; set; }
+    public string X_APMATERNO { get; set; }
+    public int EDAD { get; set; }
+    public string DEPARTAMENTO { get; set; }
     public string CAMPAÑA { get; set; }
     public string CUOTA { get; set; }
     public string CUOTA12M { get; set; }

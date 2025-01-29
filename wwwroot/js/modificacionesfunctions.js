@@ -165,7 +165,7 @@ function cargarInterfazAsesor(idAsesor) {
     }
 }
 function cerrarInterfazAsesor() {
-    $('#interfazAsesorSelect').css('display', 'none'); // Asegurar que el contenedor sea visible
+    $('#cargarActualizacionDeAsignacionXAsesor').css('display', 'none'); // Asegurar que el contenedor sea visible
 }
 
 function cargarAsesoresTipificacionesView() {

@@ -12,14 +12,20 @@
 <div class="container-fluid mt-4">
     <div class="container-fluid mb-3">
         <h3>Seccion Asignaciones del Asesor de Creditos</h3>
-        <label for="BaseDestino">Destino</label>
-        <select class="form-control" name="BaseDestino" id="BaseDestino">
-            <option value="">Seleccione una Base de Destino</option>
-            @foreach (var destinoBase in destinoBases)
-            {
-                <option value="@destinoBase">@destinoBase</option>
-            }
-        </select>
+        <div class="form-group mb-3">
+            <label for="BaseDestino">Destino</label>
+            <select class="form-control" name="BaseDestino" id="BaseDestino">
+                <option value="">Seleccione una Base de Destino</option>
+                @foreach (var destinoBase in destinoBases)
+                {
+                    @if (@destinoBase != "A365_AGREGADO_MANUALMENTE" || @destinoBase != "ALFIN_AGREGADO_MANUALMENTE_2")
+                    {
+                        <option value="@destinoBase">@destinoBase</option>
+                    }
+                }
+            </select>
+        </div>
+
         <table class="table table-bordered">
             <thead>
                 <tr>

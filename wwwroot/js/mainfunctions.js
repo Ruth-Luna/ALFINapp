@@ -58,12 +58,22 @@ function guardarComentarioGeneral(idAsignacion) {
     });
 }
 
-function loadTipificarCliente(idBase) {
+function loadTipificarCliente(idBase, functionToExecute) {
     $.ajax({
-        url: '/Vendedor/TipificarClienteView', // Controlador y acción
+        url: `/Vendedor/${functionToExecute}`, // Controlador y acción
         type: 'GET',
         data: { id_base: idBase },
         success: function (result) {
+            if (result.success === false) {
+                Swal.fire({
+                    title: 'Error al cargar los datos',
+                    text: result.message,
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+                return;
+                
+            }
             $('#modalContentGeneralTemplate').html(result); // Inserta el contenido de la vista en el modal
             $('#GeneralTemplateModal').modal('show'); // Muestra el modal
             $('#GeneralTemplateTitleModalLabel').text("Tipificaciones al Usuario"); // Inserta el contenido de la vista en el modal

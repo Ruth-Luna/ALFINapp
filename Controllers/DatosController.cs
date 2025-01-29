@@ -32,8 +32,12 @@ namespace ALFINapp.Controllers
                 var prospectoData = new
                 {
                     //BaseClientes
+                    DEPARTAMENTO = formData.DEPARTAMENTO ?? string.Empty,
                     PROVINCIA = formData.PROVINCIA ?? string.Empty,
                     DISTRITO = formData.DISTRITO ?? string.Empty,
+                    X_NOMBRE = formData.X_NOMBRE ?? string.Empty,
+                    X_APPATERNO = formData.X_APPATERNO ?? string.Empty,
+                    X_APMATERNO = formData.X_APMATERNO ?? string.Empty,
 
                     // DetalleBase
                     CAMPAÑA = formData.CAMPAÑA ?? string.Empty,
@@ -119,40 +123,26 @@ namespace ALFINapp.Controllers
                 //SECCION DE ACTUALIZACION DE DATOS Y CONSULTA DE DATOS
 
                 var base_clientes = _context.base_clientes.FirstOrDefault(bc => bc.IdBase == idBase);
-                var detalle_base = _context.detalle_base.FirstOrDefault(db => db.IdBase == idBase);
-                if (base_clientes == null || detalle_base == null || base_clientes.IdBase != detalle_base.IdBase)
+                if (base_clientes == null)
                 {
                     return Json(new { success = false, message = "El id de Base Clientes fue modificado durante el llamado a la Funcion." });
                 }
+                
+                var base_clientes_banco = _context.base_clientes_banco.FirstOrDefault(bcb => bcb.IdBaseBanco == base_clientes.IdBaseBanco);
+                if (base_clientes_banco == null)
+                {
+                    return Json(new { success = false, message = "El id de Base Clientes Banco fue modificado durante el llamado a la Funcion." });
+                }
 
+                base_clientes.XNombre = formData.X_NOMBRE;
+                base_clientes.XAppaterno = formData.X_APPATERNO;
+                base_clientes.XApmaterno = formData.X_APMATERNO;
+                base_clientes.Edad = formData.EDAD;
+                base_clientes.Departamento = formData.DEPARTAMENTO;
                 base_clientes.Provincia = formData.PROVINCIA;
                 base_clientes.Distrito = formData.DISTRITO;
-                detalle_base.Campaña = formData.CAMPAÑA;
-                detalle_base.OfertaMax = datosDeOfertas.ContainsKey("OFERTAMAX") ? datosDeOfertas["OFERTAMAX"] : 0;
-                detalle_base.TasaMinima = datosDeOfertas.ContainsKey("TASAMIN") ? datosDeOfertas["TASAMIN"] : 0;
-                detalle_base.SucursalComercial = formData.SUCURSAL_COMERCIAL;
-                detalle_base.Plazo = datosEnteros.ContainsKey("PLAZO") ? datosEnteros["PLAZO"] : 0;
-                detalle_base.Cuota = datosDeOfertas.ContainsKey("CUOTA") ? datosDeOfertas["CUOTA"] : 0;
-                detalle_base.GrupoTasa = formData.GRUPO_TASA;
-                detalle_base.GrupoMonto = formData.GRUPO_MONTO;
-
-                detalle_base.Oferta12m = datosDeOfertas.ContainsKey("OFERTA12M") ? datosDeOfertas["OFERTA12M"] : 0;
-                detalle_base.Oferta18m = datosDeOfertas.ContainsKey("OFERTA18M") ? datosDeOfertas["OFERTA18M"] : 0;
-                detalle_base.Oferta24m = datosDeOfertas.ContainsKey("OFERTA24M") ? datosDeOfertas["OFERTA24M"] : 0;
-                detalle_base.Oferta36m = datosDeOfertas.ContainsKey("OFERTA36M") ? datosDeOfertas["OFERTA36M"] : 0;
-                detalle_base.Cuota12m = datosDeOfertas.ContainsKey("CUOTA12M") ? datosDeOfertas["CUOTA12M"] : 0;
-                detalle_base.Cuota18m = datosDeOfertas.ContainsKey("CUOTA18M") ? datosDeOfertas["CUOTA18M"] : 0;
-                detalle_base.Cuota24m = datosDeOfertas.ContainsKey("CUOTA24M") ? datosDeOfertas["CUOTA24M"] : 0;
-                detalle_base.Cuota36m = datosDeOfertas.ContainsKey("CUOTA36M") ? datosDeOfertas["CUOTA36M"] : 0;
-
-                detalle_base.Tasa12m = datosDeOfertas.ContainsKey("TASA12M") ? datosDeOfertas["TASA12M"] : 0;
-                detalle_base.Tasa18m = datosDeOfertas.ContainsKey("TASA18M") ? datosDeOfertas["TASA18M"] : 0;
-                detalle_base.Tasa24m = datosDeOfertas.ContainsKey("TASA24M") ? datosDeOfertas["TASA24M"] : 0;
-                detalle_base.Tasa36m = datosDeOfertas.ContainsKey("TASA36M") ? datosDeOfertas["TASA36M"] : 0;
-                detalle_base.Propension = datosEnteros.ContainsKey("PROPENSION") ? datosEnteros["PROPENSION"] : 0;
-
-                detalle_base.TipoCliente = formData.TIPO_CLIENTE;
-
+                //base_clientes_banco.IdCampanaGrupoBanco = formData.CAMPAÑA;
+                
                 _context.SaveChanges();
 
                 return Json(new { success = true, message = "Los campos recientemente llenados han sido agregados con éxito a la base de datos." });

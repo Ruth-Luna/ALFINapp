@@ -10,10 +10,9 @@
         </div>
 
         <div class="col-auto">
-            <button type="button" class="btn-close" aria-label="Close"
-                onclick="cerrarAsesoresTipificacionView()"
+            <button type="button" class="btn-close" aria-label="Close" onclick="cerrarAsesoresTipificacionView()"
                 style="filter: invert(1) brightness(2); background-color: transparent; border: none; "
-                onmouseover="this.style.filter='invert(1) brightness(2.5)';" 
+                onmouseover="this.style.filter='invert(1) brightness(2.5)';"
                 onmouseout="this.style.filter='invert(1) brightness(2)';">
             </button>
         </div>
@@ -44,7 +43,12 @@
 <script>
     function cargarInterfazAsesorPorTipificacion(tipificacion) {
         if (!tipificacion) {
-            alert("Por favor, seleccione una tipificación.");
+            Swal.fire({
+                title: 'Error',
+                text: 'Por favor seleccione una tipificacion.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
             return;
         }
 
@@ -57,8 +61,13 @@
                 $("#resultadoAsesorXTipificacion").html(response);
             },
             error: function (xhr, status, error) {
-                console.error("Error al obtener los datos:", error);
-                alert("Ocurrió un error al cargar los datos. Inténtalo nuevamente.");
+                // Mostrar un mensaje de error en caso de que falle la solicitud
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Ocurrió un error al cargar la interfaz de asignación de asesores por tipificación.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
             }
         });
     }

@@ -42,7 +42,7 @@
     }
 }
 
-<div class="row">
+<div class="container">
     @if (isEditable)
     {
         <div class="alert alert-info" role="alert">
@@ -61,31 +61,38 @@
             </div>
             <div class="form-group">
                 <label for="X_APPATERNO">Apellido Paterno</label>
-                <input class="form-control" id="X_APPATERNO" type="text" value="@Model.XAppaterno" readonly>
+                <input class="form-control form-control-editable" id="X_APPATERNO" type="text" value="@Model.XAppaterno"
+                @(isEditable ? "" : "readonly")>
             </div>
             <div class="form-group">
                 <label for="X_APMATERNO">Apellido Materno</label>
-                <input class="form-control" id="X_APMATERNO" type="text" value="@Model.XApmaterno" readonly>
+                <input class="form-control form-control-editable" id="X_APMATERNO" type="text" value="@Model.XApmaterno"
+                @(isEditable ? "" : "readonly")>
             </div>
             <div class="form-group">
                 <label for="X_NOMBRE">Nombre</label>
-                <input class="form-control" id="X_NOMBRE" type="text" value="@Model.XNombre" readonly>
+                <input class="form-control form-control-editable" id="X_NOMBRE" type="text" value="@Model.XNombre"
+                @(isEditable ? "" : "readonly")>
             </div>
             <div class="form-group">
                 <label for="EDAD">Edad</label>
-                <input class="form-control" id="EDAD" type="text" value="@Model.Edad" readonly>
+                <input class="form-control form-control-editable" id="EDAD" type="text" value="@Model.Edad" @(isEditable
+                    ? "" : "readonly")>
             </div>
             <div class="form-group">
                 <label for="DEPARTAMENTO">Departamento</label>
-                <input class="form-control" id="DEPARTAMENTO" type="text" value="@Model.Departamento" readonly>
+                <input class="form-control form-control-editable" id="DEPARTAMENTO" type="text"
+                    value="@Model.Departamento" @(isEditable ? "" : "readonly")>
             </div>
             <div class="form-group">
                 <label for="PROVINCIA">Provincia</label>
-                <input class="form-control form-control-editable" id="PROVINCIA" type="text" value="@Model.Provincia" @(isEditable ? "" : "readonly")>
+                <input class="form-control form-control-editable" id="PROVINCIA" type="text" value="@Model.Provincia"
+                @(isEditable ? "" : "readonly")>
             </div>
             <div class="form-group">
                 <label for="DISTRITO">Distrito</label>
-                <input class="form-control form-control-editable" id="DISTRITO" type="text" value="@Model.Distrito" @(isEditable ? "" : "readonly")>
+                <input class="form-control form-control-editable" id="DISTRITO" type="text" value="@Model.Distrito"
+                @(isEditable ? "" : "readonly")>
             </div>
             <div class="spacing"></div>
         </div>
@@ -95,41 +102,41 @@
             <input class="form-control ml-2" id="IDBASEUSUARIO" value="@Model.IdBase" hidden>
             <div class="form-group">
                 <label for="CAMPAÑA">Campaña</label>
-                <input class="form-control form-control-editable" id="CAMPAÑA" type="text" value="@Model.Campaña" @(isEditable ? "" :
-                    "readonly")>
+                <input class="form-control form-control-editable" id="CAMPAÑA" type="text" value="@Model.Campaña"
+                    readonly>
             </div>
             <div class="form-group">
                 <label for="OFERTA_MAX">Oferta Máxima</label>
-                <input class="form-control form-control-editable" id="OFERTA_MAX" type="text" value="@Model.OfertaMax" @(isEditable ? "" :
-                    "readonly")>
+                <input class="form-control form-control-editable" id="OFERTA_MAX" type="text" value="@Model.OfertaMax"
+                    readonly>
             </div>
             <div class="form-group">
                 <label for="TASA_MINIMA">Tasa Mínima</label>
-                <input class="form-control form-control-editable" id="TASA_MINIMA" type="text" value="@Model.TasaMinima" @(isEditable ? "" :
-                    "readonly")>
+                <input class="form-control form-control-editable" id="TASA_MINIMA" type="text" value="@Model.TasaMinima"
+                    readonly>
             </div>
             <div class="form-group">
                 <label for="SUCURSAL_COMERCIAL">Sucursal Comercial</label>
                 <input class="form-control form-control-editable" id="SUCURSAL_COMERCIAL" type="text"
-                    value="@Model.Sucursal @Model.AgenciaComercial" @(isEditable ? "" : "readonly")>
+                    value="@Model.Sucursal @Model.AgenciaComercial" readonly>
             </div>
             <div class="form-group">
                 <label for="PLAZO">Plazo</label>
-                <input class="form-control form-control-editable" id="PLAZO" type="text" value="@Model.Plazo" @(isEditable ? "" : "readonly")>
+                <input class="form-control form-control-editable" id="PLAZO" type="text" value="@Model.Plazo" readonly>
             </div>
             <div class="form-group">
                 <label for="CUOTA">Cuota</label>
-                <input class="form-control form-control-editable" id="CUOTA" type="text" value="@Model.Cuota" @(isEditable ? "" : "readonly")>
+                <input class="form-control form-control-editable" id="CUOTA" type="text" value="@Model.Cuota" readonly>
             </div>
             <div class="form-group">
                 <label for="GRUPO_TASA">Grupo Tasa</label>
-                <input class="form-control form-control-editable" id="GRUPO_TASA" type="text" value="@Model.GrupoTasa" @(isEditable ? "" :
-                    "readonly")>
+                <input class="form-control form-control-editable" id="GRUPO_TASA" type="text" value="@Model.GrupoTasa"
+                    readonly>
             </div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Grupo Monto</label>
-                <input class="form-control form-control-editable" id="GRUPO_MONTO" type="text" value="@Model.GrupoMonto" @(isEditable ? "" :
-                    "readonly")>
+                <input class="form-control form-control-editable" id="GRUPO_MONTO" type="text" value="@Model.GrupoMonto"
+                    readonly>
             </div>
             <div class="spacing"></div>
 
@@ -150,67 +157,67 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="GRUPO_MONTO">Oferta 12 Meses</label>
-                <input class="form-control form-control-editable" id="OFERTA12M" type="text" value="@Model.Oferta12m" @(isEditable ? "" :
-                    "readonly")>
+                <input class="form-control form-control-editable" id="OFERTA12M" type="text" value="@Model.Oferta12m"
+                    readonly>
             </div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Tasa 12 Meses</label>
-                <input class="form-control form-control-editable" id="TASA12M" type="text" value="@Model.Tasa12m" @(isEditable ? "" :
-                    "readonly")>
+                <input class="form-control form-control-editable" id="TASA12M" type="text" value="@Model.Tasa12m %"
+                    readonly>
             </div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Cuota 12 Meses</label>
-                <input class="form-control form-control-editable" id="CUOTA12M" type="text" value="@Model.Cuota12m" @(isEditable ? "" :
-                    "readonly")>
+                <input class="form-control form-control-editable" id="CUOTA12M" type="text" value="@Model.Cuota12m"
+                    readonly>
             </div>
             <div class="spacing"></div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Oferta 18 Meses</label>
-                <input class="form-control form-control-editable" id="OFERTA18M" type="text" value="@Model.Oferta18m" @(isEditable ? "" :
-                    "readonly")>
+                <input class="form-control form-control-editable" id="OFERTA18M" type="text" value="@Model.Oferta18m"
+                    readonly>
             </div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Tasa 18 Meses</label>
-                <input class="form-control form-control-editable" id="TASA18M" type="text" value="@Model.Tasa18m" @(isEditable ? "" :
-                    "readonly")>
+                <input class="form-control form-control-editable" id="TASA18M" type="text" value="@Model.Tasa18m %"
+                    readonly>
             </div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Cuota 18 Meses</label>
-                <input class="form-control form-control-editable" id="CUOTA18M" type="text" value="@Model.Cuota18m" @(isEditable ? "" :
-                    "readonly")>
+                <input class="form-control form-control-editable" id="CUOTA18M" type="text" value="@Model.Cuota18m"
+                    readonly>
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-group">
                 <label for="GRUPO_MONTO">Oferta 24 Meses</label>
-                <input class="form-control form-control-editable" id="OFERTA24M" type="text" value="@Model.Oferta24m" @(isEditable ? "" :
-                    "readonly")>
+                <input class="form-control form-control-editable" id="OFERTA24M" type="text" value="@Model.Oferta24m"
+                    readonly>
             </div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Tasa 24 Meses</label>
-                <input class="form-control form-control-editable" id="TASA24M" type="text" value="@Model.Tasa24m" @(isEditable ? "" :
-                    "readonly")>
+                <input class="form-control form-control-editable" id="TASA24M" type="text" value="@Model.Tasa24m %"
+                    readonly>
             </div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Cuota 24 Meses</label>
-                <input class="form-control form-control-editable" id="CUOTA24M" type="text" value="@Model.Cuota24m" @(isEditable ? "" :
-                    "readonly")>
+                <input class="form-control form-control-editable" id="CUOTA24M" type="text" value="@Model.Cuota24m"
+                    readonly>
             </div>
             <div class="spacing"></div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Oferta 36 Meses</label>
-                <input class="form-control form-control-editable" id="OFERTA36M" type="text" value="@Model.Oferta36m" @(isEditable ? "" :
-                    "readonly")>
+                <input class="form-control form-control-editable" id="OFERTA36M" type="text" value="@Model.Oferta36m"
+                    readonly>
             </div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Tasa 36 Meses</label>
-                <input class="form-control form-control-editable" id="TASA36M" type="text" value="@Model.Tasa36m" @(isEditable ? "" :
-                    "readonly")>
+                <input class="form-control form-control-editable" id="TASA36M" type="text" value="@Model.Tasa36m %"
+                    readonly>
             </div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Cuota 36 Meses</label>
-                <input class="form-control form-control-editable" id="CUOTA36M" type="text" value="@Model.Cuota36m" @(isEditable ? "" :
-                    "readonly")>
+                <input class="form-control form-control-editable" id="CUOTA36M" type="text" value="@Model.Cuota36m"
+                    readonly>
             </div>
         </div>
     </div>
@@ -220,17 +227,18 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="PROPENSION">Propensión</label>
-                <input class="form-control form-control-editable" id="PROPENSION" type="text" value="@Model.Propension" @(isEditable ? "" :
-                    "readonly")>
+                <input class="form-control form-control-editable" id="PROPENSION" type="text" value="@Model.Propension"
+                    readonly>
             </div>
             <div class="form-group">
                 <label for="TIPO_CLIENTE">Tipo de Cliente</label>
-                <input class="form-control form-control-editable" id="TIPO_CLIENTE" type="text" value="@Model.TipoCliente" @(isEditable ? "" :
-                    "readonly")>
+                <input class="form-control form-control-editable" id="TIPO_CLIENTE" type="text"
+                    value="@Model.TipoCliente" readonly>
             </div>
             <div class="form-group">
                 <label for="CLIENTE_NUEVO">Antiguedad del Cliente</label>
-                <input class="form-control form-control-editable" id="CLIENTE_NUEVO" type="text" value="@Model.ClienteNuevo" readonly>
+                <input class="form-control form-control-editable" id="CLIENTE_NUEVO" type="text"
+                    value="@Model.ClienteNuevo" readonly>
             </div>
         </div>
         <div class="col-md-6">
@@ -253,7 +261,8 @@
             </div>
             <div class="form-group">
                 <label for="TIPO_USUARIO">Usuario Tipo</label>
-                <input class="form-control form-control-editable" id="TIPO_USUARIO" type="text" value="@Model.Usuario" readonly>
+                <input class="form-control form-control-editable" id="TIPO_USUARIO" type="text" value="@Model.Usuario"
+                    readonly>
             </div>
         </div>
     </div>
@@ -267,7 +276,8 @@
                 "Detalles de la campaña" y "Detalles de las Ofertas"
             </div>
             <div class="col-md-6">
-                <a href="javascript:void(0);" class="btn btn-primary" href="javascript:void(0)" id="saveChangesButton" onclick="guardarCambiosPorAsesor()">Guardar Cambios</a>
+                <a href="javascript:void(0);" class="btn btn-primary" href="javascript:void(0)" id="saveChangesButton"
+                    onclick="guardarCambiosPorAsesor()">Guardar Cambios</a>
             </div>
         </div>
     }
@@ -320,7 +330,7 @@
                         <input class="form-control" list="tipificacionesList_@contadorNumeros"
                             name="tipificaciones[@contadorNumeros].TipificacionDescripcion"
                             id="tipificacionSelect_@contadorNumeros" placeholder="Presione 2 veces para ver las tipificaciones"
-                            oninput="actualizarIdTipificacion(@contadorNumeros); verificarTipificacion(@contadorNumeros)"/>
+                            oninput="actualizarIdTipificacion(@contadorNumeros); verificarTipificacion(@contadorNumeros)" />
 
                         <datalist id="tipificacionesList_@contadorNumeros">
                             <option value="">Seleccione la descripción de Tipificación</option>
@@ -340,12 +350,20 @@
                                         id="fechaVisita_@contadorNumeros" />
                                 </div>
                                 <div class="col">
-                                    <label for="agenciasasignadas_@contadorNumeros" class="form-label">Seleccione una Agencia: </label>
-                                    <select class="form-select" name="tipificaciones[@contadorNumeros].AgenciaAsignada" id="tipificaciones[@contadorNumeros].AgenciaAsignada">
+                                    <label for="agenciasasignadas_@contadorNumeros" class="form-label">Seleccione una Agencia:
+                                    </label>
+                                    <select class="form-select" name="tipificaciones[@contadorNumeros].AgenciaAsignada"
+                                        id="tipificaciones[@contadorNumeros].AgenciaAsignada">
                                         <option value="">Seleccione la Agencia</option>
                                         @foreach (var agenciasAsignadas in agenciasDisponibles)
                                         {
-                                            <option value="@agenciasAsignadas.numSucursal">@agenciasAsignadas.numSucursal - @agenciasAsignadas.agenciaComercial</option>
+                                            string numSucursalConCeros = agenciasAsignadas.numSucursal.Length == 3
+                                            ? "0" + agenciasAsignadas.numSucursal
+                                            : agenciasAsignadas.numSucursal;
+
+                                            <option value="@numSucursalConCeros - @agenciasAsignadas.agenciaComercial">
+                                                @numSucursalConCeros - @agenciasAsignadas.agenciaComercial
+                                            </option>
                                         }
                                     </select>
                                 </div>
@@ -353,16 +371,19 @@
                         </div>
 
                         <div class="row mt-1">
-                                <div class="col">
-                                    <input class="form-control" id="GRUPO_MONTO" type="text" value="@telefonosVendedor.DescripcionTipificacion" readonly>
-                                </div>
-                                <div class="col-auto">
-                                    <a class="btn btn-primary" href="javascript:void(0)" id="buttonDerivacionContainer_@contadorNumeros" 
-                                        onclick="enviarFormularioDerivacion('tipificaciones[@contadorNumeros].AgenciaAsignada', 'fechaVisita_@contadorNumeros', @Model.IdBase, 'Telefono_@contadorNumeros')" style="display: none;">
-                                        <i class="fa fa-upload" aria-hidden="true"></i> Envie la Derivacion
-                                    </a>
-                                </div>
+                            <div class="col">
+                                <input class="form-control" id="GRUPO_MONTO" type="text"
+                                    value="@telefonosVendedor.DescripcionTipificacion" readonly>
                             </div>
+                            <div class="col-auto">
+                                <a class="btn btn-primary" href="javascript:void(0)"
+                                    id="buttonDerivacionContainer_@contadorNumeros"
+                                    onclick="enviarFormularioDerivacion('tipificaciones[@contadorNumeros].AgenciaAsignada', 'fechaVisita_@contadorNumeros', @Model.IdBase, 'Telefono_@contadorNumeros')"
+                                    style="display: none;">
+                                    <i class="fa fa-upload" aria-hidden="true"></i> Envie la Derivacion
+                                </a>
+                            </div>
+                        </div>
                     </div>
                     <div class="spacing"></div>
                 </div>
@@ -388,7 +409,7 @@
         </div>
 
     }
-    
+
     <div class="spacing"></div>
     <hr>
     <div>
@@ -428,12 +449,14 @@
             <div class="form-group row align-items-center mb-3">
                 <div class="col-12 col-md-4">
                     <label for="Telefono_@j" class="form-label">Telefono @j</label>
-                    <input class="form-control" name="Telefono_@j" id="Telefono_db_@j" type="text" value="@Model.Telefonos[@i].Numero" readonly>
+                    <input class="form-control" name="Telefono_@j" id="Telefono_db_@j" type="text"
+                        value="@Model.Telefonos[@i].Numero" readonly>
                     <div class="spacing"></div>
                     @if (Model.Telefonos[@i].Numero != null && !string.IsNullOrEmpty(Model.Telefonos[@i].Numero))
                     {
-                        <textarea class="form-control" id="comentarioAsesor_teldb_@j" data-telefono="@Model.Telefonos[@i].Numero"
-                        data-id-cliente="@id_cliente">@Model.Telefonos[@i].Comentario</textarea>
+                        <textarea class="form-control" id="comentarioAsesor_teldb_@j"
+                            data-telefono="@Model.Telefonos[@i].Numero"
+                            data-id-cliente="@id_cliente">@Model.Telefonos[@i].Comentario</textarea>
                         <div class="spacing"></div>
                         <a href="javascript:void(0);" class="btn btn-primary"
                             onclick="enviarComentarioTelefonoDB('@id_cliente', '@Model.Telefonos[@i].Numero', 'comentarioAsesor_teldb_@j', @j)">
@@ -450,11 +473,10 @@
                         <input class="form-control" list="tipificacionesList_db_@j"
                             name="tipificacionesdbTipificacionDescripcion_@j" id="tipificacionSelect_db_@j"
                             placeholder="Presione 2 veces para ver las tipificaciones"
-                            oninput="actualizarIdTipificacion('db_@j'); verificarTipificacion('db_@j')"
-                            type="text">
+                            oninput="actualizarIdTipificacion('db_@j'); verificarTipificacion('db_@j')" type="text">
                         <datalist id="tipificacionesList_db_@j">
                             <option value="">Seleccione la descripción de Tipificacion</option>
-                            @foreach(var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
+                            @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
                             {
                                 <option value="@tipificacion.DescripcionTipificacion" data-id="@tipificacion.IdTipificacion">
                                     @tipificacion.DescripcionTipificacion</option>
@@ -464,8 +486,7 @@
                             <div class="row">
                                 <div class="col">
                                     <label for="fechaVisita_db_@j" class="form-label">Fecha de Visita:</label>
-                                    <input class="form-control" type="date" name="DerivacionDb_@j"
-                                        id="fechaVisita_db_@j" />
+                                    <input class="form-control" type="date" name="DerivacionDb_@j" id="fechaVisita_db_@j" />
                                 </div>
                                 <div class="col">
                                     <label for="AgenciaComercialDb_@j" class="form-label">Agencia Comercial:</label>
@@ -473,10 +494,10 @@
                                         <option value="">Seleccione la Agencia</option>
                                         @foreach (var agenciasAsignadas in agenciasDisponibles)
                                         {
-                                            string numSucursalConCeros = agenciasAsignadas.numSucursal.Length == 3 
-                                                ? "0" + agenciasAsignadas.numSucursal 
-                                                : agenciasAsignadas.numSucursal;
-                                            
+                                            string numSucursalConCeros = agenciasAsignadas.numSucursal.Length == 3
+                                            ? "0" + agenciasAsignadas.numSucursal
+                                            : agenciasAsignadas.numSucursal;
+
                                             <option value="@numSucursalConCeros - @agenciasAsignadas.agenciaComercial">
                                                 @numSucursalConCeros - @agenciasAsignadas.agenciaComercial
                                             </option>
@@ -486,18 +507,20 @@
                             </div>
                         </div>
 
-                        @if(Model.Telefonos[@i].FechaTipificacion.HasValue
-                            && Model.Telefonos[@i].FechaTipificacion.Value.Year == DateTime.Now.Year
-                            && Model.Telefonos[@i].FechaTipificacion.Value.Month == DateTime.Now.Month
-                            && Model.Telefonos[@i].DescripcionTipificacion != null)
+                        @if (Model.Telefonos[@i].FechaTipificacion.HasValue
+                       && Model.Telefonos[@i].FechaTipificacion.Value.Year == DateTime.Now.Year
+                       && Model.Telefonos[@i].FechaTipificacion.Value.Month == DateTime.Now.Month
+                       && Model.Telefonos[@i].DescripcionTipificacion != null)
                         {
                             <div class="row mt-1">
                                 <div class="col">
-                                    <input class="form-control" id="GRUPO_MONTO" type="text" value="@Model.Telefonos[@i].DescripcionTipificacion" readonly>
+                                    <input class="form-control" id="GRUPO_MONTO" type="text"
+                                        value="@Model.Telefonos[@i].DescripcionTipificacion" readonly>
                                 </div>
                                 <div class="col-auto">
-                                    <a class="btn btn-primary" href="javascript:void(0)" id="buttonDerivacionContainer_db_@j" 
-                                        onclick="enviarFormularioDerivacion('AgenciaComercialDb_@j', 'fechaVisita_db_@j', @Model.IdBase, 'Telefono_db_@j' )" style="display: none;">
+                                    <a class="btn btn-primary" href="javascript:void(0)" id="buttonDerivacionContainer_db_@j"
+                                        onclick="enviarFormularioDerivacion('AgenciaComercialDb_@j', 'fechaVisita_db_@j', @Model.IdBase, 'Telefono_db_@j' )"
+                                        style="display: none;">
                                         <i class="fa fa-upload" aria-hidden="true"></i> Envie la Derivacion
                                     </a>
                                 </div>
@@ -507,16 +530,13 @@
                         {
                             <div class="row align-items-center">
                                 <div class="col">
-                                    <input 
-                                        class="form-control" 
-                                        id="GRUPO_MONTO" 
-                                        type="text" 
-                                        value="@Model.Telefonos[@i].DescripcionTipificacion" 
-                                        readonly>
+                                    <input class="form-control" id="GRUPO_MONTO" type="text"
+                                        value="@Model.Telefonos[@i].DescripcionTipificacion" readonly>
                                 </div>
                                 <div class="col-auto">
-                                    <a class="btn btn-primary" href="javascript:void(0)" id="buttonDerivacionContainer_db_@j" 
-                                        onclick="enviarFormularioDerivacion('AgenciaComercialDb_@j', 'fechaVisita_db_@j', @Model.IdBase, 'Telefono_db_@j' )" style="display: none;">
+                                    <a class="btn btn-primary" href="javascript:void(0)" id="buttonDerivacionContainer_db_@j"
+                                        onclick="enviarFormularioDerivacion('AgenciaComercialDb_@j', 'fechaVisita_db_@j', @Model.IdBase, 'Telefono_db_@j' )"
+                                        style="display: none;">
                                         <i class="fa fa-upload" aria-hidden="true"></i> Envie la Derivacion
                                     </a>
                                 </div>
@@ -531,21 +551,18 @@
                         {
                             <div class="row align-items-center">
                                 <div class="col">
-                                    <input 
-                                        class="form-control" 
-                                        id="GRUPO_MONTO" 
-                                        type="text" 
-                                        value="" 
-                                        readonly>
+                                    <input class="form-control" id="GRUPO_MONTO" type="text" value="" readonly>
                                 </div>
                                 <div class="col-auto">
-                                    <a class="btn btn-primary" href="javascript:void(0)" id="buttonDerivacionContainer_db_@j" 
-                                        onclick="enviarFormularioDerivacion('AgenciaComercialDb_@j', 'fechaVisita_db_@j', @Model.IdBase, 'Telefono_db_@j' )" style="display: none;">
+                                    <a class="btn btn-primary" href="javascript:void(0)" id="buttonDerivacionContainer_db_@j"
+                                        onclick="enviarFormularioDerivacion('AgenciaComercialDb_@j', 'fechaVisita_db_@j', @Model.IdBase, 'Telefono_db_@j' )"
+                                        style="display: none;">
                                         <i class="fa fa-upload" aria-hidden="true"></i> Envie la Derivacion
                                     </a>
                                 </div>
                                 <div class="col-auto">
-                                    <span class="tooltip-symbol" title="Este cliente no tiene una tipificacion Asignada a este numero">
+                                    <span class="tooltip-symbol"
+                                        title="Este cliente no tiene una tipificacion Asignada a este numero">
                                         <i class="fa fa-info-circle" aria-hidden="true"></i>
                                     </span>
                                 </div>
@@ -566,13 +583,13 @@
             <hr>
         }
 
-    <div class="spacing"></div>
+        <div class="spacing"></div>
 
-    <div class="form-group">
-        <div class="alert alert-info" role="alert">
-            Use este boton para agregar las tipificaciones de los numeros de TELEFONOS ASIGNADOS POR LA EMPRESA
+        <div class="form-group">
+            <div class="alert alert-info" role="alert">
+                Use este boton para agregar las tipificaciones de los numeros de TELEFONOS ASIGNADOS POR LA EMPRESA
+            </div>
+            <button class="btn btn-success" type="submit">Guardar Tipificaciones</button>
+            <button class="btn btn-danger" type="button" data-bs-dismiss="modal" aria-label="Close">Cancelar</button>
         </div>
-        <button class="btn btn-success" type="submit">Guardar Tipificaciones</button>
-        <button class="btn btn-danger" type="button" data-bs-dismiss="modal" aria-label="Close">Cancelar</button>
-    </div>
 </form>
