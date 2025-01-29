@@ -68,8 +68,14 @@
     <div id="detalle-campana">
         @if (Model.TraidoDe == "BDALFIN")
         {
-            <div class="alert alert-info mt-2" role="alert">
+            <div class="alert alert-warning mt-2" role="alert">
                 El cliente fue extraido de la base de datos de ALFIN
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info mt-2" role="alert">
+                El cliente fue extraido de la base de datos de A365
             </div>
         }
         <div class="row mb-2">
