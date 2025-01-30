@@ -6,5 +6,5 @@ public class StringDTO
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
-    public string Cadena { get; set; }
+    public string? Cadena { get; set; }
 }

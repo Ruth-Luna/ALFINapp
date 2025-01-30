@@ -6,5 +6,5 @@ namespace ALFINapp.Models;
 public class NumerosEnterosDTO
 {
     [Key]
-    public int NumeroEntero { get; set; }
+    public int? NumeroEntero { get; set; }
 }

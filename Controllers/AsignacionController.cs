@@ -18,7 +18,7 @@ namespace ALFINapp.Controllers
         private MDbContext _context;
         private DBServicesConsultasSupervisores _dbServicesConsultasSupervisores;
         private DBServicesGeneral _dbServicesGeneral;
-        public AsignacionController(MDbContext context , DBServicesConsultasSupervisores dbServicesConsultasSupervisores, DBServicesGeneral dbServicesGeneral)
+        public AsignacionController(MDbContext context, DBServicesConsultasSupervisores dbServicesConsultasSupervisores, DBServicesGeneral dbServicesGeneral)
         {
             _context = context;
             _dbServicesConsultasSupervisores = dbServicesConsultasSupervisores;
@@ -93,105 +93,135 @@ namespace ALFINapp.Controllers
                     TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
                     return RedirectToAction("Index", "Home");
                 }
-    
+
+                /*var stringTasks = new List<Task<(bool IsSuccess, string Message, List<StringDTO>? data)>>()
+                {
+                    _dbServicesGeneral.GetUCampanas(),
+                    _dbServicesGeneral.GetUClienteEstado(),
+                    _dbServicesGeneral.GetUColor(),
+                    _dbServicesGeneral.GetUColorFinal(),
+                    _dbServicesGeneral.GetUGrupoMonto(),
+                    _dbServicesGeneral.GetUGrupoTasa(),
+                    _dbServicesGeneral.GetURangoEdad(),
+                    _dbServicesGeneral.GetURangoOferta(),
+                    _dbServicesGeneral.GetURangoTasas(),
+                    _dbServicesGeneral.GetUTipoCliente(),
+                    _dbServicesGeneral.GetUUsuario(),
+                    _dbServicesGeneral.GetUTipoBase()
+                };
+
+                var numberTasks = new List<Task<(bool IsSuccess, string Message, List<NumerosEnterosDTO>? data)>>()
+                {
+                    _dbServicesGeneral.GetUFrescura(),
+                    _dbServicesGeneral.GetUPropension()
+                };
+
+                var stringResults = await Task.WhenAll(stringTasks);
+                var numberResults = await Task.WhenAll(numberTasks);
+
+
+                // Asignar resultados a variables individuales
+                var GetUCampanas = stringTasks[0];
+                var GetUClienteEstado = stringTasks[1];
+                var GetUColor = stringTasks[2];
+                var GetUColorFinal = stringTasks[3];
+                var GetUGrupoMonto = stringTasks[4];
+                var GetUGrupoTasa = stringTasks[5];
+                var GetURangoEdad = stringTasks[6];
+                var GetURangoOferta = stringTasks[7];
+                var GetURangoTasas = stringTasks[8];
+                var GetUTipoCliente = stringTasks[9];
+                var GetUUsuario = stringTasks[10];
+                var GetUTipoBase = stringTasks[11];
+
+                var GetUFrescura = numberTasks[0];
+                var GetUPropension = numberTasks[1];*/
+
                 var GetUCampanas = await _dbServicesGeneral.GetUCampanas();
+                var GetUClienteEstado = await _dbServicesGeneral.GetUClienteEstado();
+                var GetUColor = await _dbServicesGeneral.GetUColor();
+                var GetUColorFinal = await _dbServicesGeneral.GetUColorFinal();
+                var GetUFrescura = await _dbServicesGeneral.GetUFrescura();
+                var GetUGrupoMonto = await _dbServicesGeneral.GetUGrupoMonto();
+                var GetUGrupoTasa = await _dbServicesGeneral.GetUGrupoTasa();
+                var GetUPropension = await _dbServicesGeneral.GetUPropension();
+                var GetURangoEdad = await _dbServicesGeneral.GetURangoEdad();
+                var GetURangoOferta = await _dbServicesGeneral.GetURangoOferta();
+                var GetURangoTasas = await _dbServicesGeneral.GetURangoTasas();
+                var GetUTipoCliente = await _dbServicesGeneral.GetUTipoCliente();
+                var GetUUsuario = await _dbServicesGeneral.GetUUsuario();
+                var GetUTipoBase = await _dbServicesGeneral.GetUTipoBase();
+
                 if (GetUCampanas.IsSuccess == false || GetUCampanas.data == null)
                 {
                     TempData["MessageError"] = GetUCampanas.Message;
                     return RedirectToAction("Inicio", "Administrador");
                 }
-
-                var GetUClienteEstado = await _dbServicesGeneral.GetUClienteEstado();
                 if (GetUClienteEstado.IsSuccess == false || GetUClienteEstado.data == null)
                 {
                     TempData["MessageError"] = GetUClienteEstado.Message;
                     return RedirectToAction("Inicio", "Administrador");
                 }
-
-                var GetUColor = await _dbServicesGeneral.GetUColor();
                 if (GetUColor.IsSuccess == false || GetUColor.data == null)
                 {
                     TempData["MessageError"] = GetUColor.Message;
                     return RedirectToAction("Inicio", "Administrador");
                 }
-
-                var GetUColorFinal = await _dbServicesGeneral.GetUColorFinal();
                 if (GetUColorFinal.IsSuccess == false || GetUColorFinal.data == null)
                 {
                     TempData["MessageError"] = GetUColorFinal.Message;
                     return RedirectToAction("Inicio", "Administrador");
                 }
-
-                var GetUFrescura = await _dbServicesGeneral.GetUFrescura();
                 if (GetUFrescura.IsSuccess == false || GetUFrescura.data == null)
                 {
                     TempData["MessageError"] = GetUFrescura.Message;
                     return RedirectToAction("Inicio", "Administrador");
                 }
-
-                var GetUGrupoMonto = await _dbServicesGeneral.GetUGrupoMonto();
                 if (GetUGrupoMonto.IsSuccess == false || GetUGrupoMonto.data == null)
                 {
                     TempData["MessageError"] = GetUGrupoMonto.Message;
                     return RedirectToAction("Inicio", "Administrador");
                 }
-
-                var GetUGrupoTasa = await _dbServicesGeneral.GetUGrupoTasa();
                 if (GetUGrupoTasa.IsSuccess == false || GetUGrupoTasa.data == null)
                 {
                     TempData["MessageError"] = GetUGrupoTasa.Message;
                     return RedirectToAction("Inicio", "Administrador");
                 }
-
-                var GetUPropension = await _dbServicesGeneral.GetUPropension();
                 if (GetUPropension.IsSuccess == false || GetUPropension.data == null)
                 {
                     TempData["MessageError"] = GetUPropension.Message;
                     return RedirectToAction("Inicio", "Administrador");
                 }
-
-                var GetURangoEdad = await _dbServicesGeneral.GetURangoEdad();
                 if (GetURangoEdad.IsSuccess == false || GetURangoEdad.data == null)
                 {
                     TempData["MessageError"] = GetURangoEdad.Message;
                     return RedirectToAction("Inicio", "Administrador");
                 }
-
-                var GetURangoOferta = await _dbServicesGeneral.GetURangoOferta();
                 if (GetURangoOferta.IsSuccess == false || GetURangoOferta.data == null)
                 {
                     TempData["MessageError"] = GetURangoOferta.Message;
                     return RedirectToAction("Inicio", "Administrador");
                 }
-
-                var GetURangoTasas = await _dbServicesGeneral.GetURangoTasas();
                 if (GetURangoTasas.IsSuccess == false || GetURangoTasas.data == null)
                 {
                     TempData["MessageError"] = GetURangoTasas.Message;
                     return RedirectToAction("Inicio", "Administrador");
                 }
-
-                var GetUTipoCliente = await _dbServicesGeneral.GetUTipoCliente();
                 if (GetUTipoCliente.IsSuccess == false || GetUTipoCliente.data == null)
                 {
                     TempData["MessageError"] = GetUTipoCliente.Message;
                     return RedirectToAction("Inicio", "Administrador");
                 }
-
-                var GetUUsuario = await _dbServicesGeneral.GetUUsuario();
                 if (GetUUsuario.IsSuccess == false || GetUUsuario.data == null)
                 {
                     TempData["MessageError"] = GetUUsuario.Message;
                     return RedirectToAction("Inicio", "Administrador");
                 }
-
-                var GetUTipoBase = await _dbServicesGeneral.GetUTipoBase();
                 if (GetUTipoBase.IsSuccess == false || GetUTipoBase.data == null)
                 {
                     TempData["MessageError"] = GetUTipoBase.Message;
                     return RedirectToAction("Inicio", "Administrador");
                 }
-    
                 var GetDataLabels = new AsignacionSupervisoresDTO
                 {
                     UCampanas = GetUCampanas.data,
@@ -223,7 +253,7 @@ namespace ALFINapp.Controllers
                     TempData["MessageError"] = GetSupervisores.Message;
                     return RedirectToAction("Index", "Home");
                 }*/
-    
+
                 return View("Supervisores", GetDataLabels);
             }
             catch (System.Exception ex)

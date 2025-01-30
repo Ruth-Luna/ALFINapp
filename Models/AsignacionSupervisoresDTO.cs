@@ -11,7 +11,7 @@ namespace ALFINapp.Models
         public List<StringDTO>? UClienteEstado { get; set; }
         public List<StringDTO>? UColor { get; set; }
         public List<StringDTO>? UColorFinal { get; set; }
-        public List<StringDTO>? UFrescura { get; set; }
+        public List<NumerosEnterosDTO>? UFrescura { get; set; }
         public List<StringDTO>? UGrupoMonto { get; set; }
         public List<StringDTO>? UGrupoTasa { get; set; }
         public List<NumerosEnterosDTO>? UPropension { get; set; }

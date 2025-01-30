@@ -249,11 +249,11 @@ namespace ALFINapp.Services
             }
         }
 
-        public async Task<(bool IsSuccess, string Message, List<StringDTO>? data)> GetUFrescura()
+        public async Task<(bool IsSuccess, string Message, List<NumerosEnterosDTO>? data)> GetUFrescura()
         {
             try
             {
-            var frescura = await _context.string_dto
+            var frescura = await _context.numeros_enteros_dto
             .FromSqlRaw("EXEC SP_U_frescura")
             .ToListAsync();
 
