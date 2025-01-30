@@ -21,7 +21,7 @@ public class MDbContext : DbContext
     public DbSet<CargaManualCsv> carga_manual_csv { get; set; }
     public DbSet<AsesoresSecundariosAsignacion> asesores_secundarios_asignacion { get; set; }
     public DbSet<DerivacionesAsesores> derivaciones_asesores { get; set; }
-    public DbSet<NumerosEnterosDTO> numeros_enteros_dto { get; set; }
+    
     public DbSet<BaseClientesBanco> base_clientes_banco { get; set; }
     public DbSet<CampanaGrupo> base_clientes_banco_campana_grupo { get; set; }
     public DbSet<Color> base_clientes_banco_color { get; set; }
@@ -30,4 +30,9 @@ public class MDbContext : DbContext
     public DbSet<UsuarioBanco> base_clientes_banco_usuario { get; set; }
 
     public DbSet<ClientesReferidos> clientes_referidos { get; set; }
+
+    //DTOS Y PROCEDIMIENTOS ALMACENADOS
+    public DbSet<StringDTO> string_dto { get; set; }
+    public DbSet<NumerosEnterosDTO> numeros_enteros_dto { get; set; }
+    public DbSet<USupervisoresDTO> u_supervisores_dto { get; set; }
 }

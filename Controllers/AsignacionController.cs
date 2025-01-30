@@ -17,10 +17,12 @@ namespace ALFINapp.Controllers
     {
         private MDbContext _context;
         private DBServicesConsultasSupervisores _dbServicesConsultasSupervisores;
-        public AsignacionController(MDbContext context , DBServicesConsultasSupervisores dbServicesConsultasSupervisores)
+        private DBServicesGeneral _dbServicesGeneral;
+        public AsignacionController(MDbContext context , DBServicesConsultasSupervisores dbServicesConsultasSupervisores, DBServicesGeneral dbServicesGeneral)
         {
             _context = context;
             _dbServicesConsultasSupervisores = dbServicesConsultasSupervisores;
+            _dbServicesGeneral = dbServicesGeneral;
         }
 
         [HttpGet]
@@ -79,6 +81,75 @@ namespace ALFINapp.Controllers
 
             ViewData["DestinoBases"] = DestinoBases;
             return View("Asignacion", vendedoresConClientes);
+        }
+
+        public async Task<IActionResult> Supervisores()
+        {
+            try
+            {
+                var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+                if (usuarioId == null)
+                {
+                    TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
+                    return RedirectToAction("Index", "Home");
+                }
+    
+                var GetUCampanas = await _dbServicesGeneral.GetUCampanas();
+                if (GetUCampanas.IsSuccess == false || GetUCampanas.data == null)
+                {
+                    TempData["MessageError"] = GetUCampanas.Message;
+                    return RedirectToAction("Inicio", "Administrador");
+                }
+
+                var GetUColor = await _dbServicesGeneral.GetUColor();
+                if (GetUColor.IsSuccess == false || GetUColor.data == null)
+                {
+                    TempData["MessageError"] = GetUColor.Message;
+                    return RedirectToAction("Inicio", "Administrador");
+                }
+
+                var GetUUsuario = await _dbServicesGeneral.GetUUsuario();
+                if (GetUUsuario.IsSuccess == false || GetUUsuario.data == null)
+                {
+                    TempData["MessageError"] = GetUUsuario.Message;
+                    return RedirectToAction("Inicio", "Administrador");
+                }
+
+                var GetUTipoBase = await _dbServicesGeneral.GetUTipoBase();
+                if (GetUTipoBase.IsSuccess == false || GetUTipoBase.data == null)
+                {
+                    TempData["MessageError"] = GetUTipoBase.Message;
+                    return RedirectToAction("Inicio", "Administrador");
+                }
+    
+                var GetDataLabels = new AsignacionSupervisoresDTO
+                {
+                    UCampanas = GetUCampanas.data,
+                    UUsuario = GetUUsuario.data,
+                    UTipoBase = GetUTipoBase.data
+                };
+
+                /*if (GetSupervisores.IsSuccess == false)
+                {
+                    TempData["MessageError"] = GetSupervisores.Message;
+                    return RedirectToAction("Index", "Home");
+                }
+    
+                var supervisores = GetSupervisores.Data;
+    
+                if (supervisores == null)
+                {
+                    TempData["MessageError"] = GetSupervisores.Message;
+                    return RedirectToAction("Index", "Home");
+                }*/
+    
+                return View("Supervisores", GetDataLabels);
+            }
+            catch (System.Exception ex)
+            {
+                TempData["MessageError"] = ex.Message;
+                return RedirectToAction("Inicio", "Administrador");
+            }
         }
 
     }

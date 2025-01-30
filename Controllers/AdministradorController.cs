@@ -23,7 +23,7 @@ namespace ALFINapp.Controllers
             _context = context;
         }
         [HttpGet]
-        public async Task<IActionResult> VistaMainAdministrador(int page = 1, int pageSize = 20)
+        public async Task<IActionResult> Inicio(int page = 1, int pageSize = 20)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
 
@@ -81,11 +81,11 @@ namespace ALFINapp.Controllers
             ViewData["PageSize"] = pageSize;
             ViewData["TotalPages"] = (int)Math.Ceiling(totalClientes / (double)pageSize);
 
-            return View("MainAdministrador");
+            return View("Administrador");
         }
-        public async Task<IActionResult> VistaMainAdministrador()
+        public async Task<IActionResult> Inicio()
         {
-            return await VistaMainAdministrador(1, 20);
+            return await Inicio(1, 20);
         }
     }
 
