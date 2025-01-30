@@ -105,7 +105,7 @@ namespace ALFINapp.Controllers
             </table>";
 
             var enviarCorreo = await _dbServicesReferido.EnviarCorreoReferido(
-                                                                        "weba365.no.reply@gmail.com",
+                                                                        "rperaltam@grupoa365.com.pe",
                                                                         mensaje,
                                                                         $"Nuevos Datos {DateTime.Now.ToString("dd/MM/yyyy")}");
 
