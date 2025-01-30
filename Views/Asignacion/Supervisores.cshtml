@@ -10,13 +10,6 @@
     <div class="row">
         <div class="col-md-2">
             <div class="form-group">
-                <label for="filter1">Filtro 1:</label>
-                <select id="filter1" class="form-control">
-                    <option value="filter1Option1">Opción 1</option>
-                    <option value="filter1Option2">Opción 2</option>
-                </select>
-            </div>
-            <div class="form-group">
                 <label for="filter2">Filtro 2:</label>
                 <select id="filter2" class="form-control">
                     <option value="filter2Option1">Opción 1</option>
@@ -27,35 +20,61 @@
                 <label for="entryCount">Número de entradas:</label>
                 <input type="text" id="entryCount" class="form-control" readonly value="0">
             </div>
-            <button id="assignButton" class="btn btn-success mt-2">Asignar</button>
         </div>
         <div class="col-md-10">
-            <div class="form-group">
-                <label for="searchTags">Bases Creadas:</label>
-                <select id="searchTags" class="form-control" multiple>
-                    <option value="">Elija una Base a elegir</option>
-                    @if (Model.UTipoBase != null)
-                    {
-                        foreach (var tbase in Model.UTipoBase)
-                        {
-                            <option value="@tbase.Cadena">@tbase.Cadena</option>
-                        }
-                    }
-                </select>
-                <a href="javascript:void(0)" class="btn btn-primary mt-2"><i class="fa fa-search"></i>Buscar</a>
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="BasesCreadas">Bases Creadas:</label>
+                        <select id="BasesCreadas" class="form-control">
+                            <option value="">Elija una Base</option>
+                            @if (Model.UTipoBase != null)
+                            {
+                                foreach (var tbase in Model.UTipoBase)
+                                {
+                                    <option value="@tbase.Cadena">@tbase.Cadena</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="CampañasCreadas">Campañas:</label>
+                        <select class="form-control" id="CampañasCreadas">
+                            <option value="">Seleccione una Campaña</option>
+                            @if (Model.UCampanas != null)
+                            {
+                                foreach (var item in Model.UCampanas)
+                                {
+                                    <option value="@item.Cadena">@item.Cadena</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
             </div>
-            <table class="table table-striped mt-4">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Departamento</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="resultsTable">
-                    <!-- Resultados de la búsqueda se mostrarán aquí -->
-                </tbody>
-            </table>
+
+            <a href="javascript:void(0)" class="btn btn-primary mt-2"><i class="fa fa-search"></i> Buscar</a>
+            <a href="javascript:void(0)" class="btn btn-primary mt-2"><i class="fa fa-edit"></i> Asignar</a>
+
+            <div class="container">
+                @*
+                    <table class="table table-striped mt-4">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Departamento</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsTable">
+                            <!-- Resultados de la búsqueda se mostrarán aquí -->
+                        </tbody>
+                    </table>
+                    Aca SE CARGARA LA TABLA DE ASIGNACIONES A CADA SUPERVISOR
+                *@
+            </div>
         </div>
     </div>
 </div>
