@@ -19,11 +19,11 @@ namespace ALFINapp.Models
         public string? distrito { get; set; }
         public int? id_base_banco { get; set; }
         public int? id_detalle { get; set; }
-        public int? sucursal { get; set; }
+        public string? sucursal { get; set; }
         public string? tienda { get; set; }
         public decimal? oferta_max { get; set; }
         public decimal? tasa_minima { get; set; }
-        public string? tipo_verificacion { get; set; }
+        public int? tipo_verificacion { get; set; }
         public string? canal { get; set; }
         public string? tipovisita { get; set; }
         public decimal? tasa_1 { get; set; }
@@ -36,7 +36,7 @@ namespace ALFINapp.Models
         public string? segmento { get; set; }
         public int? plazo { get; set; }
         public string? campaña { get; set; }
-        public decimal? tem { get; set; }
+        public string? tem { get; set; }
         public decimal? desgravamen { get; set; }
         public decimal? cuota { get; set; }
         public decimal? oferta_12M { get; set; }
@@ -56,7 +56,7 @@ namespace ALFINapp.Models
         public decimal? desgravamen_36M { get; set; }
         public decimal? cuota_36M { get; set; }
         public string? validador_telefono { get; set; }
-        public int? prioridad { get; set; }
+        public string? prioridad { get; set; }
         public string? nombre_prioridad { get; set; }
         public decimal? deuda_1 { get; set; }
         public string? entidad_1 { get; set; }
@@ -80,26 +80,26 @@ namespace ALFINapp.Models
         public string? peer { get; set; }
         public string? tipo_gest { get; set; }
         public string? tipo_cliente { get; set; }
-        public bool? cliente_nuevo { get; set; }
+        public string? cliente_nuevo { get; set; }
         public string? grupo_tasa { get; set; }
         public string? grupo_monto { get; set; }
-        public decimal? tasa_vs_monto { get; set; }
+        public string? tasa_vs_monto { get; set; }
         public string? grupo_tasa_reenganche { get; set; }
         public decimal? saldo_diferencial_reeng { get; set; }
-        public bool? flag_reeng { get; set; }
+        public string? flag_reeng { get; set; }
         public string? color { get; set; }
         public string? color_final { get; set; }
-        public decimal? propension { get; set; }
+        public int? propension { get; set; }
         public string? marca_base { get; set; }
         public string? segmento_user { get; set; }
         public string? usuario { get; set; }
         public string? tipo_cliente_riegos { get; set; }
-        public decimal? incremento_monto_riesgos { get; set; }
+        public int? incremento_monto_riesgos { get; set; }
         public DateTime? fecha_carga { get; set; }
         public string? tipo_base { get; set; }
         public string? rango_tasas { get; set; }
-        public bool? flg_deuda_plus { get; set; }
-        public string? frescura { get; set; }
+        public int? flg_deuda_plus { get; set; }
+        public int? frescura { get; set; }
         public int? id_cliente { get; set; }
     }
 }

@@ -6,6 +6,25 @@
 @section Styles {
     <link rel="stylesheet" href="~/css/main_page.css">
 }
+
+<!-- Modal -->
+<div class="modal fade" id="SupervisoresYDestinosModal" tabindex="-1" role="dialog"
+    aria-labelledby="supervisoresModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalLabel">Supervisores y Destino</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="SupervisoresYDestinos">
+                    @*Aca se renderizaran UNA LISTA DE SUPERVISORES Y DESTINOS*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container">
     <div class="row">
         <div class="col-md-2">
@@ -145,10 +164,7 @@
                     }
                 </select>
             </div>
-
-            <div class="form-group">
-                <label for="entryCount">Número de entradas:</label>
-                <input type="text" id="entryCount" class="form-control" readonly value="0">
+            <div class="row" id="idEtiquetasLabel">
             </div>
         </div>
         <div class="col-md-10">
@@ -244,15 +260,15 @@
                     </div>
                 </div>
                 <div class="col">
-                    <a href="javascript:void(0)" class="btn btn-primary mt-2" id="idBuscarBtn" onclick="BuscarAsignacionFiltrarBases()"><i class="fa fa-search"></i> Buscar</a>
+                    <a href="javascript:void(0)" class="btn btn-primary mt-2" id="idBuscarBtn"
+                        onclick="BuscarAsignacionFiltrarBases();"><i class="fa fa-search"></i> Buscar</a>
                 </div>
                 <div class="col">
-                    <a href="javascript:void(0)" class="btn btn-primary mt-2" id="idAsignarBtn" onclick=""><i class="fa fa-edit"></i> Asignar</a>
+                    <a href="javascript:void(0)" class="btn btn-primary mt-2" id="idAsignarBtn"
+                        onclick="MostrarSupervisoresYDestinos();"><i class="fa fa-edit"></i> Asignar</a>
                 </div>
             </div>
-            <div class="row" id="idEtiquetasLabel">
 
-            </div>
             <div id="idTablaAsignacionLabel">
                 @*
                     <table class="table table-striped mt-4">

@@ -1,0 +1,38 @@
+@{
+    var supervisores = ViewData["Supervisores"] as List<Usuario>;
+}
+
+<div class="container">
+    <div class="form-group mb-3">
+        <label for="destinosBasesInsercion">Destino</label>
+        <input name="destinosBasesInsercion" id="destinosBasesInsercion" class="form-control" type="text">
+    </div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Supervisor</th>
+                <th>Numero de clientes asignados</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (supervisores != null)
+            {
+                foreach (var vendedores in supervisores)
+                {
+                    <tr>
+                        <td>
+                            <input class="form-control" id="NombresCompletos_@vendedores.IdUsuario" type="text" value="@vendedores.NombresCompletos"
+                                readonly>
+                        </td>
+                        <td>
+                            <input class="form-control" id="NumeroClientesAsignados_@vendedores.IdUsuario" type="number">
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    <a href="javascript:void(0)" class="btn btn-primary mt-2" id="idAsignarBtn" onclick="InsertarAsignacionBases();"><i
+            class="fa fa-edit"></i> Asignar</a>
+</div>
