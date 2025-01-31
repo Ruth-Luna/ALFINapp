@@ -1,0 +1,38 @@
+@model List<ALFINapp.Models.AsignacionFiltrarBasesDTO>
+@{
+}
+
+<div class="container table-responsive">
+    <table class="table table-bordered" id="clientesTable">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Telefono</th>
+                <th>Correo</th>
+                <th>Fecha de Nacimiento</th>
+                <th>Genero</th>
+                <th>Estado Civil</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.id_base</td>
+                    <td>@item.dni</td>
+                    <td>@item.x_appaterno</td>
+                    <td>@item.x_apmaterno</td>
+                    <td>@item.x_nombre</td>
+                    <td>@item.edad</td>
+                    <td>@item.departamento</td>
+                    <td>@item.provincia</td>
+                    <td>@item.distrito</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

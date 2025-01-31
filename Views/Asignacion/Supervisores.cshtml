@@ -9,8 +9,19 @@
 <div class="container">
     <div class="row">
         <div class="col-md-2">
-            
-            
+            <div class="form-group">
+                <label for="TipoBase">Tipo Base:</label>
+                <select id="TipoBase" class="form-control">
+                    <option value="">Base</option>
+                    @if (Model.UTipoBase != null)
+                    {
+                        foreach (var item in Model.UTipoBase)
+                        {
+                            <option value="@item.Cadena">@item.Cadena</option>
+                        }
+                    }
+                </select>
+            </div>
             <div class="form-group">
                 <label for="RangoEdad">Rango Edad:</label>
                 <select id="RangoEdad" class="form-control">
@@ -63,7 +74,7 @@
                     }
                 </select>
             </div>
-            <div class="form-group">-
+            <div class="form-group">
                 <label for="TipoCliente">Tipo Cliente:</label>
                 <select id="TipoCliente" class="form-control">
                     <option value="">Seleccione un Tipo de Cliente</option>
@@ -97,7 +108,10 @@
                     {
                         foreach (var item in Model.UGrupoTasa)
                         {
-                            <option value="@item.Cadena">@item.Cadena</option>
+                            if (item.Cadena != "")
+                            {
+                                <option value="@item.Cadena">@item.Cadena</option>
+                            }
                         }
                     }
                 </select>
@@ -110,7 +124,10 @@
                     {
                         foreach (var item in Model.UGrupoMonto)
                         {
-                            <option value="@item.Cadena">@item.Cadena</option>
+                            if (item.Cadena != "")
+                            {
+                                <option value="@item.Cadena">@item.Cadena</option>
+                            }
                         }
                     }
                 </select>
@@ -119,11 +136,11 @@
                 <label for="Deudas">Deudas:</label>
                 <select id="Deudas" class="form-control">
                     <option value="">Seleccione una Deuda</option>
-                    @if (Model.UDeudas != null)
+                    @if (Model.UFlgDeudaPlus != null)
                     {
-                        foreach (var item in Model.UDeudas)
+                        foreach (var item in Model.UFlgDeudaPlus)
                         {
-                            <option value="@item.Cadena">@item.Cadena</option>
+                            <option value="@item.NumeroEntero">@item.NumeroEntero</option>
                         }
                     }
                 </select>
@@ -152,14 +169,91 @@
                     </div>
                 </div>
                 <div class="col">
-
+                    <div class="form-group">
+                        <label for="Usuarios">Usuarios:</label>
+                        <select class="form-control" id="Usuarios">
+                            <option value="">Seleccione un Usuario</option>
+                            @if (Model.UUsuario != null)
+                            {
+                                foreach (var item in Model.UUsuario)
+                                {
+                                    <option value="@item.Cadena">@item.Cadena</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="Propension">Propension:</label>
+                        <select class="form-control" id="Propension">
+                            <option value="">Seleccione una Propension</option>
+                            @if (Model.UPropension != null)
+                            {
+                                foreach (var item in Model.UPropension)
+                                {
+                                    <option value="@item.NumeroEntero">@item.NumeroEntero</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="Color">Color:</label>
+                        <select class="form-control" id="Color">
+                            <option value="">Seleccione un Color</option>
+                            @if (Model.UColor != null)
+                            {
+                                foreach (var item in Model.UColor)
+                                {
+                                    <option value="@item.Cadena">@item.Cadena</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="ColorFinal">Color Final:</label>
+                        <select class="form-control" id="ColorFinal">
+                            <option value="">Seleccione un Color Final</option>
+                            @if (Model.UColorFinal != null)
+                            {
+                                foreach (var item in Model.UColorFinal)
+                                {
+                                    <option value="@item.Cadena">@item.Cadena</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="Frescura">Frescura:</label>
+                        <select class="form-control" id="Frescura">
+                            <option value="">Seleccione una Frescura</option>
+                            @if (Model.UFrescura != null)
+                            {
+                                foreach (var item in Model.UFrescura)
+                                {
+                                    <option value="@item.NumeroEntero">@item.NumeroEntero</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <a href="javascript:void(0)" class="btn btn-primary mt-2" id="idBuscarBtn" onclick="BuscarAsignacionFiltrarBases()"><i class="fa fa-search"></i> Buscar</a>
+                </div>
+                <div class="col">
+                    <a href="javascript:void(0)" class="btn btn-primary mt-2" id="idAsignarBtn" onclick=""><i class="fa fa-edit"></i> Asignar</a>
                 </div>
             </div>
+            <div class="row" id="idEtiquetasLabel">
 
-            <a href="javascript:void(0)" class="btn btn-primary mt-2"><i class="fa fa-search"></i> Buscar</a>
-            <a href="javascript:void(0)" class="btn btn-primary mt-2"><i class="fa fa-edit"></i> Asignar</a>
-
-            <div class="container">
+            </div>
+            <div id="idTablaAsignacionLabel">
                 @*
                     <table class="table table-striped mt-4">
                         <thead>
@@ -181,4 +275,5 @@
 </div>
 
 @section Scripts {
+    <script src="~/js/Asignacion/Supervisores.js"></script>
 }

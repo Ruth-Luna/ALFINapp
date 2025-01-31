@@ -18,11 +18,16 @@ namespace ALFINapp.Controllers
         private MDbContext _context;
         private DBServicesConsultasSupervisores _dbServicesConsultasSupervisores;
         private DBServicesGeneral _dbServicesGeneral;
-        public AsignacionController(MDbContext context, DBServicesConsultasSupervisores dbServicesConsultasSupervisores, DBServicesGeneral dbServicesGeneral)
+        private DBServicesConsultasAdministrador _dbServicesConsultasAdministrador;
+        public AsignacionController(MDbContext context, 
+                        DBServicesConsultasSupervisores dbServicesConsultasSupervisores, 
+                        DBServicesGeneral dbServicesGeneral,
+                        DBServicesConsultasAdministrador dbServicesConsultasAdministrador)
         {
             _context = context;
             _dbServicesConsultasSupervisores = dbServicesConsultasSupervisores;
             _dbServicesGeneral = dbServicesGeneral;
+            _dbServicesConsultasAdministrador = dbServicesConsultasAdministrador;
         }
 
         [HttpGet]
@@ -151,6 +156,7 @@ namespace ALFINapp.Controllers
                 var GetUTipoCliente = await _dbServicesGeneral.GetUTipoCliente();
                 var GetUUsuario = await _dbServicesGeneral.GetUUsuario();
                 var GetUTipoBase = await _dbServicesGeneral.GetUTipoBase();
+                var GetUFlgDeudaPlus = await _dbServicesGeneral.GetUFlgDeudaPlus();
 
                 if (GetUCampanas.IsSuccess == false || GetUCampanas.data == null)
                 {
@@ -222,6 +228,11 @@ namespace ALFINapp.Controllers
                     TempData["MessageError"] = GetUTipoBase.Message;
                     return RedirectToAction("Inicio", "Administrador");
                 }
+                if (GetUFlgDeudaPlus.IsSuccess == false || GetUFlgDeudaPlus.data == null)
+                {
+                    TempData["MessageError"] = GetUFlgDeudaPlus.Message;
+                    return RedirectToAction("Inicio", "Administrador");
+                }
                 var GetDataLabels = new AsignacionSupervisoresDTO
                 {
                     UCampanas = GetUCampanas.data,
@@ -238,6 +249,7 @@ namespace ALFINapp.Controllers
                     UTipoCliente = GetUTipoCliente.data,
                     UUsuario = GetUUsuario.data,
                     UTipoBase = GetUTipoBase.data,
+                    UFlgDeudaPlus = GetUFlgDeudaPlus.data
                 };
 
                 /*if (GetSupervisores.IsSuccess == false)
@@ -263,5 +275,32 @@ namespace ALFINapp.Controllers
             }
         }
 
+        public async Task<IActionResult> BuscarAsignacionFiltrarBases (
+                                string? base_busqueda = null,
+                                List<string>? campaña = null,
+                                decimal? oferta = null)
+        {
+            try
+            {
+                var campaña_busqueda = string.Empty;
+                if (campaña != null)
+                {
+                    campaña_busqueda = string.Join(",", campaña);
+                }
+                
+                var getAsignacionFiltrarBases = await _dbServicesConsultasAdministrador.AsignacionFiltrarBases(base_busqueda, campaña_busqueda, oferta);
+
+                if (getAsignacionFiltrarBases.IsSuccess == false)
+                {
+                    return Json(new { success = false, message = getAsignacionFiltrarBases.Message });
+                }
+                
+                return PartialView ("TablaAsignacion", getAsignacionFiltrarBases.Data);
+            }
+            catch (System.Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
     }
 }

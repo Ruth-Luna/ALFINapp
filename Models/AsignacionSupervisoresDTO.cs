@@ -21,5 +21,6 @@ namespace ALFINapp.Models
         public List<StringDTO>? UTipoCliente { get; set; }
         public List<StringDTO>? UUsuario { get; set; }
         public List<StringDTO>? UTipoBase { get; set; }
+        public List<NumerosEnterosDTO>? UFlgDeudaPlus { get; set; }
     }
 }

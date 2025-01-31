@@ -35,4 +35,13 @@ public class MDbContext : DbContext
     public DbSet<StringDTO> string_dto { get; set; }
     public DbSet<NumerosEnterosDTO> numeros_enteros_dto { get; set; }
     public DbSet<USupervisoresDTO> u_supervisores_dto { get; set; }
+    public DbSet<AsignacionFiltrarBasesDTO> asignacion_filtrar_bases_dto { get; set; }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<AsignacionFiltrarBasesDTO>()
+            .HasNoKey()
+            .ToView(null);
+    }
 }

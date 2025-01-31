@@ -228,11 +228,11 @@ namespace ALFINapp.Services
             }
         }
         
-        public async Task<(bool IsSuccess, string Message, List<StringDTO>? data)> GetUFlgDeudaPlus()
+        public async Task<(bool IsSuccess, string Message, List<NumerosEnterosDTO>? data)> GetUFlgDeudaPlus()
         {
             try
             {
-            var flgDeudaPlus = await _context.string_dto
+            var flgDeudaPlus = await _context.numeros_enteros_dto
             .FromSqlRaw("EXEC SP_U_flg_deuda_plus")
             .ToListAsync();
 
