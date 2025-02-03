@@ -1,7 +1,7 @@
 @model ALFINapp.Models.Usuario
 @{
     int? RolUser = ViewData["RolUser"] as int?;
-    if (RolUser == 1)
+    if (RolUser == 3)
     {
         Layout = "~/Views/Shared/_LayoutVendedor.cshtml";
     }

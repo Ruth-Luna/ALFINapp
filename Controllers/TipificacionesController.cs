@@ -56,7 +56,7 @@ namespace ALFINapp.Controllers
                 NombreCliente = getClienteBase.data.XNombre + " " + getClienteBase.data.XAppaterno + " " + getClienteBase.data.XApmaterno,
                 TelefonoCliente = Telefono,
                 NombreAgencia = "73"+agenciaComercial,
-                FueProcesado = false
+                FueProcesado = false,
             };
             var enviarFomularioAsignacion = await _dbServicesTipificaciones.EnviarFomularioDerivacion(enviarDerivacion);
             return Json(new { success = true, message = "La Derivacion se ha enviado correctamente, pero para guardar los cambios debe darle al boton Guardar Tipificaciones" });;

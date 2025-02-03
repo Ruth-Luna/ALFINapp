@@ -1,0 +1,38 @@
+@{
+    var Asesores = ViewData["Asesores"] as List<Usuario>;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/main_page.css">
+}
+
+<div class="container">
+    <h3> Derivaciones de sus Asesores </h3>
+
+    <div class="alert alert-primary" role="alert">
+        <span> En esta seccion puede ver las Derivaciones de sus asesores </span>
+    </div>
+
+    <label for="IdAsesoresDerivacion">Asesor</label>
+    <select class="form-select" name="IdAsesoresDerivacion" id="IdAsesoresDerivacion"
+        onchange="cargarDerivacionesXAsesor(this.value)">
+        <option value="">Seleccione un Asesor</option>
+        @if (Asesores != null)
+        {
+            foreach (var asesor in Asesores)
+            {
+                <option value="@asesor.Dni">@asesor.Dni - @asesor.NombresCompletos</option>
+            }
+        }
+    </select>
+</div>
+
+<div class="container">
+    <div id="DerivacionXAsesor">
+
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/Derivacion/Derivacion.js"></script>
+}

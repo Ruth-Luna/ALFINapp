@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ALFINapp.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ALFINapp.Services
@@ -13,7 +14,6 @@ namespace ALFINapp.Services
         {
             _context = context;
         }
-
         public async Task<(bool IsSuccess, string Message)> GenerarDerivacion(DateTime FechaVisitaDerivacion,
                                                     string AgenciaDerivacion,
                                                     string AsesorDerivacion,
@@ -40,6 +40,23 @@ namespace ALFINapp.Services
             catch (System.Exception ex)
             {
                 return (false, ex.Message);
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message, List<DerivacionesAsesores>? Data)> GetDerivacionesXAsesor (string dni)
+        {
+            try
+            {
+                var getDerivaciones = await _context.derivaciones_asesores.FromSqlRaw("EXEC sp_Derivacion_consulta_derivaciones_x_asesor {0}", dni).ToListAsync();
+                if (getDerivaciones == null)
+                {
+                    return (false, "No se encontraron derivaciones", null);
+                }
+                return (true, "Derivaciones obtenidas correctamente", getDerivaciones);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message, null);
             }
         }
     }

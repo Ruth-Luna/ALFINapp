@@ -55,6 +55,9 @@
             <div class="sidebar" id="sidebar"
                 style="width: 250px; min-width: 250px; background-color: #20374c !important">
                 <ul class="nav flex-column pt-4 sidebar-links">
+                    <div id="sidebarToggleRender">
+                        
+                    </div>
                     <li class="nav-item px-3 py-2">
                         <a class="nav-link text-white rounded-3"
                             href="@Url.Action("Perfil", "Perfil")">
@@ -86,6 +89,13 @@
                         <a class="nav-link text-white rounded-3" href="@Url.Action("Consultas", "Consulta")">
                             <i class="bi bi-person-bounding-box me-2"></i>
                             Consulta DNI
+                        </a>
+                    </li>
+
+                    <li class="nav-item px-3 py-2">
+                        <a class="nav-link text-white rounded-3" href="@Url.Action("Derivacion", "Derivacion")">
+                            <i class="bi bi-mailbox-flag me-2"></i>
+                            Derivaciones
                         </a>
                     </li>
                 </ul>
@@ -187,6 +197,17 @@
                         }
                     }
                 }, 250);
+            });
+
+            $.ajax ({
+                url: 'Home/SidebarToggle',
+                type: 'GET',
+                success: function (response) {
+                    $('#sidebarToggleRender').response;
+                }
+                error: function (error) {
+                    console.log(error);
+                }
             });
         });
     </script>

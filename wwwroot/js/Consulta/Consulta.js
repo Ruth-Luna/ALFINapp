@@ -1,9 +1,9 @@
 function deriveEsteCliente() {
-    const fechaVisitaDerivacion = document.getElementById('FechaVisitaDerivacion').value;
-    const agenciaDerivacion = document.getElementById('AgenciaDerivacion').value;
-    const asesorDerivacion = document.getElementById('AsesorDerivacion').value;
+    const fechaVisitaDerivacion = document.getElementById('fechaVisitaDerivacion').value;
+    const agenciaDerivacion = document.getElementById('agenciaDerivacion').value;
+    const asesorDerivacion = document.getElementById('asesorDerivacion').value;
     const DNIAsesorDerivacion = document.getElementById('DNIAsesorDerivacion').value;
-    const telefonoDerivacion = document.getElementById('TelefonoDerivacion').value;
+    const telefonoDerivacion = document.getElementById('telefonoDerivacion').value;
     const DNIClienteDerivacion = document.getElementById('DNIClienteDerivacion').value;
     const nombreClienteDerivacion = document.getElementById('nombreClienteDerivacion').value;
 

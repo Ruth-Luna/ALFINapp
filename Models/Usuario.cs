@@ -48,4 +48,8 @@ public partial class Usuario
     public string? REGION { get; set; }
     [Column("contraseña")]
     public string? contraseña { get; set; }
+    [Column("NOMBRE_CAMPAÑA")]
+    public string? NOMBRECAMPAÑA { get; set; }
+    [Column("id_rol")]
+    public int? IdRol { get; set; }
 }

@@ -15,6 +15,33 @@ namespace ALFINapp.Services
         {
             _context = context;
         }
+
+        /// <summary>
+        /// Obtiene la lista de asesores asignados a un supervisor específico
+        /// </summary>
+        /// <param name="IdSupervisor">ID del supervisor del cual se desean obtener los asesores asignados. Puede ser null</param>
+        /// <returns>
+        /// Una tupla que contiene:
+        /// - IsSuccess: Indica si la operación fue exitosa
+        /// - Message: Mensaje descriptivo del resultado de la operación
+        /// - Data: Lista de usuarios (asesores) asignados al supervisor. Puede ser null si ocurre un error
+        /// </returns>
+        /// <remarks>
+        /// Este método consulta la base de datos para obtener todos los usuarios cuyo IDUSUARIOSUP
+        /// coincida con el ID del supervisor proporcionado.
+        /// </remarks>
+        /// <exception cref="Exception">Se lanza cuando ocurre un error en la consulta a la base de datos</exception>
+        /// <example>
+        /// Ejemplo de uso:
+        /// <code>
+        /// var result = await GetAsesorsFromSupervisor(1);
+        /// if (result.IsSuccess)
+        /// {
+        ///     var asesores = result.Data;
+        ///     // Procesar la lista de asesores
+        /// }
+        /// </code>
+        /// </example>
         public async Task<(bool IsSuccess, string Message, List<Usuario>? Data)> GetAsesorsFromSupervisor(int? IdSupervisor)
         {
             try
@@ -72,6 +99,35 @@ namespace ALFINapp.Services
             }
         }
 
+        /// <summary>
+        /// Obtiene las bases de clientes asignadas a un supervisor específico en el mes actual
+        /// </summary>
+        /// <param name="SupervisorId">ID del supervisor del cual se desean obtener las bases asignadas</param>
+        /// <returns>
+        /// Una tupla que contiene:
+        /// - IsSuccess: Indica si la operación fue exitosa
+        /// - Message: Mensaje descriptivo del resultado de la operación
+        /// - Data: Lista de nombres de bases asignadas. Puede ser null si ocurre un error
+        /// </returns>
+        /// <remarks>
+        /// Este método:
+        /// - Consulta la tabla clientes_asignados
+        /// - Filtra por supervisor y mes/año actual
+        /// - Retorna nombres únicos de bases (FuenteBase)
+        /// - Los resultados se limitan al mes y año actual de la consulta
+        /// </remarks>
+        /// <exception cref="Exception">Se lanza cuando ocurre un error en la consulta a la base de datos</exception>
+        /// <example>
+        /// Ejemplo de uso:
+        /// <code>
+        /// var result = await GetBasesClientes(supervisorId);
+        /// if (result.IsSuccess)
+        /// {
+        ///     var bases = result.Data;
+        ///     // Procesar la lista de bases
+        /// }
+        /// </code>
+        /// </example>
         public async Task<(bool IsSuccess, string Message, List<string>? Data)> GetBasesClientes(int SupervisorId)
         {
             try

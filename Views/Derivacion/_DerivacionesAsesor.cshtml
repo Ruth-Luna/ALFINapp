@@ -1,0 +1,33 @@
+@{
+    var DerivacionesAsesores = ViewData["Derivaciones"] as List<DerivacionesAsesores>;
+}
+
+<div class="container mt-4">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>DNI Cliente</th>
+                <th>Nombres</th>
+                <th>Telefono</th>
+                <th>Agencia</th>
+                <th>Fue Procesado</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (DerivacionesAsesores != null)
+            {
+                foreach (var derivacionAsesor in DerivacionesAsesores)
+                {
+                    <tr>
+                        <td>@derivacionAsesor.DniCliente</td>
+                        <td>@derivacionAsesor.NombreCliente</td>
+                        <td>@derivacionAsesor.TelefonoCliente</td>
+                        <td>@derivacionAsesor.NombreAgencia</td>
+                        <td>@derivacionAsesor.FueProcesado</td>
+                    </tr>
+                }
+            }
+        </tbody>
+
+    </table>
+</div>

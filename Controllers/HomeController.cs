@@ -36,12 +36,11 @@ public class HomeController : Controller
     {
         return View();
     }
-
     // Acción para verificar si el DNI existe
     [HttpPost]
     public IActionResult VerificarUsuario(string dni, string password)
     {
-        if (string.IsNullOrWhiteSpace(dni) ||!long.TryParse(dni, out _))
+        if (string.IsNullOrWhiteSpace(dni) || !long.TryParse(dni, out _))
         {
             TempData["MessageError"] = "El DNI no puede estar vacio.";
             return RedirectToAction("Index", "Home");
@@ -90,11 +89,11 @@ public class HomeController : Controller
             TempData["MessageError"] = "El rol del usuario no está definido. Comuníquese con su Supervisor.";
             return RedirectToAction("Index", "Home");
         }
-        
+
         HttpContext.Session.SetInt32("UsuarioId", usuario.IdUsuario);
         if (usuario.Rol == "VENDEDOR")
         {
-            HttpContext.Session.SetInt32("RolUser", 1);
+            HttpContext.Session.SetInt32("RolUser", 3);
             return RedirectToAction("Inicio", "Vendedor");
         }
         if (usuario.Rol == "SUPERVISOR")
@@ -104,12 +103,17 @@ public class HomeController : Controller
         }
         if (usuario.Rol == "ADMINISTRADOR")
         {
-            HttpContext.Session.SetInt32("RolUser", 3);
+            HttpContext.Session.SetInt32("RolUser", 1);
             return RedirectToAction("Inicio", "Administrador");
         }
 
         TempData["MessageError"] = "Algo salio Mal en la Autenticacion";
         return RedirectToAction("Index", "Home");
     }
-
+    [HttpGet]
+    public IActionResult SidebarToggle()
+    {
+        var UserRol = HttpContext.Session.GetInt32("RolUser");
+        return PartialView("_SidebarToggle");
+    }
 }
