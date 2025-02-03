@@ -1,0 +1,77 @@
+@{
+    var Agencias = ViewData["Agencias"] as List<AgenciasDisponiblesDTO>;
+}
+
+<div class="container">
+    <h3>Derivación Manual</h3>
+    <div class="row form-group">
+        <div class="col">
+            <label for="fechaVisitaDerivacion">Fecha Visita</label>
+        </div>
+        <div class="col">
+            <input type="date" id="fechaVisitaDerivacion" class="form-control">
+        </div>
+    </div>
+
+    <div class="row form-group">
+        <div class="col">
+            <label for="agenciaDerivacion">Agencias:</label>
+        </div>
+        <div class="col">
+            <select name="agenciaDerivacion" id="agenciaDerivacion" class="form-control">
+                <option value="">Seleccione una Agencia</option>
+                @if (Agencias != null)
+                {
+                    foreach (var agencia in Agencias)
+                    {
+                        <option value="@agencia.sucursal_comercial - @agencia.agencia_comercial">@agencia.sucursal_comercial - @agencia.agencia_comercial</option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+
+    <h4>Datos del Asesor</h4>
+
+    <div class="row form-group">
+        <div class="col">
+            <label for="asesorDerivacion">Nombre Completo del Asesor</label>
+        </div>
+        <div class="col">
+            <input type="text" id="asesorDerivacion" class="form-control">
+        </div>
+    </div>
+
+    <div class="row form-group">
+        <div class="col">
+            <label for="DNIAsesorDerivacion">DNI del Asesor</label>
+        </div>
+        <div class="col">
+            <input type="text" id="DNIAsesorDerivacion" class="form-control">
+        </div>
+    </div>
+
+    <div class="row form-group">
+        <div class="col">
+            <label for="telefonoDerivacion">Telefono Derivado</label>
+        </div>
+        <div class="col">
+            <input type="text" id="telefonoDerivacion" class="form-control">
+        </div>
+    </div>
+
+    <h4>Datos del Cliente</h4>
+
+    <div class="row form-group">
+        <div class="col">
+            <label for="nombreClienteDerivacion">Nombre Completo del Cliente</label>
+        </div>
+        <div class="col">
+            <input type="text" id="nombreClienteDerivacion" class="form-control">
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <a class="btn btn-primary" href="javascript:void(0)" onclick="deriveEsteCliente()">Derive Este cliente</a>
+    </div>
+</div>

@@ -143,7 +143,26 @@ namespace ALFINapp.Services
                 return (false, ex.Message, null);
             }
         }
+        public async Task<(bool IsSuccess, string Message, List<AgenciasDisponiblesDTO>? data)> GetUAgenciasConNumeros()
+        {
+            try
+            {
+                var agenciasDisponibles = await _context.agencias_disponibles_dto
+                .FromSqlRaw("EXEC sp_U_agencias_con_numeros")
+                .ToListAsync();
 
+                if (agenciasDisponibles == null || !agenciasDisponibles.Any())
+                {
+                    return (false, "No se encontraron agencias disponibles", null);
+                }
+
+                return (true, "Campañas encontradas", agenciasDisponibles);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message, null);
+            }
+        }
         public async Task<(bool IsSuccess, string Message, List<StringDTO>? data)> GetUCampanas()
         {
             try

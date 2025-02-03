@@ -32,7 +32,25 @@
 <div id="datos-cliente-existente" style="display: none;">
 </div>
 
+<div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="GeneralTemplateTitleModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalContentGeneralTemplate">
+                    <!-- Aquí se cargará el formulario de agregar cliente -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="error-message" class="alert alert-danger" style="display: none;">
 </div>
 
-@section Scripts {}
+@section Scripts {
+    <script src="~/js/Consulta/Consulta.js"></script>
+}

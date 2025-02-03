@@ -38,7 +38,7 @@ namespace ALFINapp.Controllers
 
 
         [HttpGet]
-        public IActionResult DescargarClientesAsignados(DateTime fechaInicio, DateTime fechaFin, string destinoBase)
+        public IActionResult DescargarClientesAsignados(DateTime? fechaInicio, DateTime? fechaFin, string? destinoBase)
         {
             try
             {
@@ -109,15 +109,18 @@ namespace ALFINapp.Controllers
                  */
 
                 // Obtén los datos necesarios (simplificado para mostrar la idea)
-                fechaFin = fechaFin.Date.AddHours(23).AddMinutes(59).AddSeconds(59);
-                fechaInicio = fechaInicio.Date.AddMinutes(-1); // Reducir un minuto
-                /*if (filtroBase == "Identificador Por Defecto")
+                if (fechaFin.HasValue)
                 {
-                    filtroBase = string.Empty;
-                }*/
+                    fechaFin = fechaFin.Value.Date.AddHours(23).AddMinutes(59).AddSeconds(59);
+                }
+                if (fechaInicio.HasValue)
+                {
+                    fechaInicio = fechaInicio.Value.Date.AddMinutes(-1); // Reducir un minuto
+                }
+                
                 /*El filtro base aun no sera usado*/
-                Console.WriteLine($"Fecha de inicio: {fechaInicio}");
-                Console.WriteLine($"Fecha de fin: {fechaFin}");
+                DateTime fechaInicioMes = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                DateTime fechaFinMes = fechaInicioMes.AddMonths(1).AddDays(-1).Date.AddHours(23).AddMinutes(59).AddSeconds(59);
 
                 var supervisorData = (from ca in _context.clientes_asignados
                                         join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
@@ -127,58 +130,67 @@ namespace ALFINapp.Controllers
                                                 && ca.ClienteDesembolso != true
                                                 && ca.ClienteRetirado != true
                                                 && ca.FechaAsignacionSup.HasValue
-                                                && ca.FechaAsignacionSup >= fechaInicio
-                                                && ca.FechaAsignacionSup <= fechaFin
+                                                && (fechaInicio == null || ca.FechaAsignacionSup >= fechaInicio)
+                                                && (fechaFin == null || ca.FechaAsignacionSup <= fechaFin)
                                                 && db.TipoBase == ca.FuenteBase
-                                                && ca.Destino == destinoBase
-                                                /*&& ca.IdentificadorBase == filtroBase*/
+                                                && (destinoBase == null || ca.Destino == destinoBase)
+                                                && (fechaInicio == null && fechaFin == null || (ca.FechaAsignacionSup >= fechaInicioMes && ca.FechaAsignacionSup <= fechaFinMes))
                                         select new
                                         {
-                                            // Todos los campos de cada tabla
-                                            IdBase = db.IdBase,
-                                            FechaCarga = db.FechaCarga,
-                                            Campaña = db.Campaña,
-                                            OfertaMax = db.OfertaMax,
-                                            TasaMinima = db.TasaMinima,
-                                            SucursalComercial = db.SucursalComercial,
-                                            AgenciaComercial = db.AgenciaComercial,
-                                            Plazo = db.Plazo,
-                                            Cuota = db.Cuota,
-                                            Oferta12m = db.Oferta12m,
-                                            Tasa12m = db.Tasa12m,
-                                            Cuota12m = db.Cuota12m,
-                                            Oferta18m = db.Oferta18m,
-                                            Tasa18m = db.Tasa18m,
-                                            Cuota18m = db.Cuota18m,
-                                            Oferta24m = db.Oferta24m,
-                                            Tasa24m = db.Tasa24m,
-                                            Cuota24m = db.Cuota24m,
-                                            Oferta36m = db.Oferta36m,
-                                            Tasa36m = db.Tasa36m,
-                                            Cuota36m = db.Cuota36m,
-                                            GrupoTasa = db.GrupoTasa,
-                                            GrupoMonto = db.GrupoMonto,
-                                            Propension = db.Propension,
-                                            TipoCliente = db.TipoCliente,
-                                            ClienteNuevo = db.ClienteNuevo,
-                                            Color = db.Color,
-                                            ColorFinal = db.ColorFinal,
-                                            Dni = bc.Dni,
-                                            XAppaterno = bc.XAppaterno,
-                                            XApmaterno = bc.XApmaterno,
-                                            XNombre = bc.XNombre,
-                                            Edad = bc.Edad,
-                                            Departamento = bc.Departamento,
-                                            Provincia = bc.Provincia,
-                                            Distrito = bc.Distrito,
-                                            Telefono1 = ce.Telefono1,
-                                            Telefono2 = ce.Telefono2,
-                                            Telefono3 = ce.Telefono3,
-                                            Telefono4 = ce.Telefono4,
-                                            Telefono5 = ce.Telefono5,
-                                            FechaAsignacionSup = ca.FechaAsignacionSup,
-                                            IdUsuarioS = ca.IdUsuarioS
+                                            db.IdBase,
+                                            db.FechaCarga,
+                                            db.Campaña,
+                                            db.OfertaMax,
+                                            db.TasaMinima,
+                                            db.SucursalComercial,
+                                            db.AgenciaComercial,
+                                            db.Plazo,
+                                            db.Cuota,
+                                            db.Oferta12m,
+                                            db.Tasa12m,
+                                            db.Cuota12m,
+                                            db.Oferta18m,
+                                            db.Tasa18m,
+                                            db.Cuota18m,
+                                            db.Oferta24m,
+                                            db.Tasa24m,
+                                            db.Cuota24m,
+                                            db.Oferta36m,
+                                            db.Tasa36m,
+                                            db.Cuota36m,
+                                            db.GrupoTasa,
+                                            db.GrupoMonto,
+                                            db.Propension,
+                                            db.TipoCliente,
+                                            db.ClienteNuevo,
+                                            db.Color,
+                                            db.ColorFinal,
+                                            bc.Dni,
+                                            bc.XAppaterno,
+                                            bc.XApmaterno,
+                                            bc.XNombre,
+                                            bc.Edad,
+                                            bc.Departamento,
+                                            bc.Provincia,
+                                            bc.Distrito,
+                                            ce.Telefono1,
+                                            ce.Telefono2,
+                                            ce.Telefono3,
+                                            ce.Telefono4,
+                                            ce.Telefono5,
+                                            ca.FechaAsignacionSup,
+                                            ca.IdUsuarioS
                                         }).ToList();
+                
+                var supervisorUsuario = _context.usuarios
+                    .Where(u => u.IdUsuario == idSupervisorActual)
+                    .FirstOrDefault();
+
+                if (supervisorUsuario == null)
+                {
+                    TempData["Message"] = "Error al verificar el usuario. Intente iniciar sesión nuevamente.";
+                    return RedirectToAction("Index", "Home");
+                }
                 /*var supervisorData = (from ca in _context.clientes_asignados
                                       join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
                                       join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
@@ -344,7 +356,7 @@ namespace ALFINapp.Controllers
 
                     // Devuelve el csvFile
                     var excelBytes = package.GetAsByteArray();
-                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{destinoBase} - ({detallesClientesSupervisor.Count()}).xlsx");
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{supervisorUsuario.NombresCompletos} - {destinoBase} - ({detallesClientesSupervisor.Count()}).xlsx");
                 }
             }
             catch (Exception ex)

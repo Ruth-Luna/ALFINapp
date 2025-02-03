@@ -124,3 +124,7 @@ function validarDNI() {
         console.warn(`No se encontró la sección con ID: detalle-campana_${fuenteBase}`);
     }
 }*/
+
+function VistaDeriveEsteCliente(DNIdatos, tipoBase) {
+    
+}

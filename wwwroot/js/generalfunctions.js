@@ -1,3 +1,13 @@
+/**
+ * Displays a modal with content fetched from a specified API endpoint.
+ *
+ * @param {string} apiName - The name of the API to fetch data from.
+ * @param {string} controllerName - The name of the controller to fetch data from.
+ * @param {string} type - The type of the HTTP request (e.g., 'GET', 'POST').
+ * @param {string} templateTitle - The title to be displayed on the modal.
+ *
+ * @throws Will display a Swal alert if any of the parameters are null or undefined.
+ */
 function showMyModal(apiName, controllerName, type, templateTitle) {
     TemplateModalRenderer = document.getElementById('GeneralTemplateModal');
     ContentModalRenderer = document.getElementById('modalContentGeneralTemplate');

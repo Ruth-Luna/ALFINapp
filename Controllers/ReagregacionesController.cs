@@ -29,6 +29,11 @@ namespace ALFINapp.Controllers
         {
             try
             {
+                var GetUserRol = HttpContext.Session.GetInt32("RolUser");
+                if (GetUserRol == null)
+                {
+                    return Json(new { existe = false, error = true, message = "No ha iniciado sesion" });
+                }
                 Console.WriteLine($"DNI recibido: {dni}");
 
                 // Buscar el cliente por DNI
@@ -38,7 +43,7 @@ namespace ALFINapp.Controllers
                 {
                     return Json(new { existe = false, error = true, message = GetClienteExistente.message });
                 }
-
+                ViewData["RolUser"] = GetUserRol;
                 if (GetClienteExistente.Data.TraidoDe == "BDA365")
                 {
                     // Buscar a sus asesores asignados
@@ -67,17 +72,17 @@ namespace ALFINapp.Controllers
                 if (GetClienteExistente.Data.TraidoDe == "BDALFIN")
                 {
                     var AsesoresGeneral = await (from ca in _context.clientes_asignados
-                                                    join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
-                                                    join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
-                                                    join u in _context.usuarios on ca.IdUsuarioV equals u.IdUsuario
-                                                    where GetClienteExistente.Data.IdBase == bc.IdBaseBanco
-                                                    select new AsesoresDeUnClienteDTO
-                                                    {
-                                                        NombreAsesorPrimario = u.NombresCompletos,
-                                                        IDAsesorPrimario = ca.IdUsuarioV,
-                                                        IDAsignacion = ca.IdAsignacion,
-                                                        IDCliente = ce.IdCliente
-                                                    }).ToListAsync();
+                                                 join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
+                                                 join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
+                                                 join u in _context.usuarios on ca.IdUsuarioV equals u.IdUsuario
+                                                 where GetClienteExistente.Data.IdBase == bc.IdBaseBanco
+                                                 select new AsesoresDeUnClienteDTO
+                                                 {
+                                                     NombreAsesorPrimario = u.NombresCompletos,
+                                                     IDAsesorPrimario = ca.IdUsuarioV,
+                                                     IDAsignacion = ca.IdAsignacion,
+                                                     IDCliente = ce.IdCliente
+                                                 }).ToListAsync();
 
                     ViewData["Asesores"] = AsesoresGeneral;
                     ViewData["HayDetalleCliente"] = false;

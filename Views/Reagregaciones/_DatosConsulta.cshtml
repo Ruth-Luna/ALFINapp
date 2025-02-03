@@ -2,6 +2,7 @@
 
 @{
     var Asesores = ViewData["Asesores"];
+    var RolUser = ViewData["RolUser"] as int?;
 }
 
 @functions {
@@ -78,6 +79,7 @@
                 El cliente fue extraido de la base de datos de A365
             </div>
         }
+        <input type="text" id="DNIClienteDerivacion" value="@Model.Dni" hidden>
         <div class="row mb-2">
             <div class="col">
                 <legend>
@@ -99,8 +101,8 @@
                             <input class="form-control ml-2"
                                 style="background-color: @GetColorCode(Model.Color ?? string.Empty); width: 35px; height: 35px;"
                                 readonly>
-                            <input class="form-control ml-2" id="COLOR" type="text" value="@(Model.Color?.ToUpper() ?? string.Empty)"
-                                readonly>
+                            <input class="form-control ml-2" id="COLOR" type="text"
+                                value="@(Model.Color?.ToUpper() ?? string.Empty)" readonly>
                         </div>
                     </div>
                 </div>
@@ -273,6 +275,13 @@
         <div class="col-md-12">
             <a class="btn btn-primary" href="javascript:void(0);"
                 onclick="TakeThisClient('@Model.Dni', '@Model.TraidoDe')">Tipifique Este Cliente</a>
+            @if ( RolUser == 2)
+            {
+                <a class="btn btn-warning" href="javascript:void(0);"
+                    onclick="showMyModal('Consulta', 'VistaDerivacionManual', 'GET', 'Derivacion Manual por Supervisor')">
+                    <i class="fas fa-sync-alt"></i> Derive Este Cliente
+                </a>
+            }
         </div>
     </div>
 </div>

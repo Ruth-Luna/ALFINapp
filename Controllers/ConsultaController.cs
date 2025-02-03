@@ -14,9 +14,11 @@ namespace ALFINapp.Controllers
     public class ConsultaController : Controller
     {
         private readonly DBServicesAsignacionesAsesores _dbServicesAsignacionesAsesores;
-        public ConsultaController(DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores)
+        private readonly DBServicesGeneral _dbServicesGeneral;
+        public ConsultaController(DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores , DBServicesGeneral dbServicesGeneral)
         {
             _dbServicesAsignacionesAsesores = dbServicesAsignacionesAsesores;
+            _dbServicesGeneral = dbServicesGeneral;
         }
 
         [HttpGet]
@@ -50,6 +52,30 @@ namespace ALFINapp.Controllers
                 }
 
                 return Json(new { success = true, message = $"{baseClienteReasignar.message}" });
+            }
+            catch (System.Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> VistaDerivacionManual()
+        {
+            try
+            {
+                var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+                if (usuarioId == null)
+                {
+                    return Json(new { success = false, message = "Debe Iniciar Sesion" });
+                }
+                var getAgencias = await _dbServicesGeneral.GetUAgenciasConNumeros();
+                if (getAgencias.IsSuccess == false)
+                {
+                    return Json(new { success = false, message = $"{getAgencias.Message}" });
+                }
+                ViewData["Agencias"] = getAgencias.data;
+                return PartialView("_VistaDerivacionManual");
             }
             catch (System.Exception ex)
             {

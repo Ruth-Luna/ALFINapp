@@ -22,16 +22,10 @@ function descargarDatos() {
     const fechaInicio = document.getElementById('fechaInicio').value;
     const fechaFin = document.getElementById('fechaFin').value;
     const destinoBase = document.getElementById('BaseDestino').value;
+    let messages = [];
 
     if (fechaInicio == "" || fechaFin == "") {
-
-        Swal.fire({
-            title: 'Error al descargar datos',
-            text: 'Debe seleccionar un rango de fechas.',
-            icon: 'error',
-            confirmButtonText: 'Aceptar'
-        });
-        return;
+        messages.push("No se ha seleccionado un rango de fechas.");
     }
 
     if (fechaInicio > fechaFin) {
@@ -43,8 +37,20 @@ function descargarDatos() {
         });
         return;
     }
+
+    if (destinoBase == "") {
+        messages.push("No ha seleccionado una base destino.");
+    }
+
+    if (messages.length > 0) {
+        Swal.fire({
+            title: 'Precaucion',
+            html: messages.join("<br>"),
+            icon: 'warning',
+            confirmButtonText: 'Aceptar'
+        });
+    }
     
-    console.log("Fecha inicio:", fechaInicio, "Fecha fin:", fechaFin);
     window.location.href = '/Excel/DescargarClientesAsignados?fechaInicio=' + fechaInicio + '&fechaFin=' + fechaFin + '&destinoBase=' + destinoBase;
 }
 
