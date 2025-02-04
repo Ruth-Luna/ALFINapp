@@ -42,7 +42,6 @@ namespace ALFINapp.Services
                 return (false, ex.Message);
             }
         }
-
         public async Task<(bool IsSuccess, string Message, List<DerivacionesAsesores>? Data)> GetDerivacionesXAsesor (string dni)
         {
             try
@@ -53,6 +52,40 @@ namespace ALFINapp.Services
                     return (false, "No se encontraron derivaciones", null);
                 }
                 return (true, "Derivaciones obtenidas correctamente", getDerivaciones);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message, null);
+            }
+        }
+        public async Task<(bool IsSuccess, string Message, List<DerivacionesAsesores>? Data)> GetClientesDerivadosGenerales(List<Usuario> asesores)
+        {
+            try
+            {
+                var getClientesDerivados = new List<DerivacionesAsesores>();
+                foreach (var asesor in asesores)
+                {
+                    var derivaciones = await _context.derivaciones_asesores.FromSqlRaw("EXEC sp_Derivacion_consulta_derivaciones_x_asesor_por_dni {0}", asesor.Dni).ToListAsync();
+                    getClientesDerivados.AddRange(derivaciones);
+                }
+                return (true, "Derivaciones obtenidas correctamente", getClientesDerivados);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message, null);
+            }
+        }
+        public async Task<(bool IsSuccess, string Message, List<FeedGReportes>? Data)> GetEntradasBSDialXSupervisor(List<Usuario> asesores)
+        {
+            try
+            {
+                var getEntradasBSDial = new List<FeedGReportes>();
+                foreach (var asesor in asesores)
+                {
+                    var entradas = await _context.feed_G_REPORTES.FromSqlRaw("EXEC sp_Derivacion_consulta_derivaciones_x_asesor_BS_dial {0}", asesor.Dni).ToListAsync();
+                    getEntradasBSDial.AddRange(entradas);
+                }
+                return (true, "Se encontraron las siguientes entradas en BSDIAL", getEntradasBSDial);
             }
             catch (System.Exception ex)
             {

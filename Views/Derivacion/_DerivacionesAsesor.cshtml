@@ -1,16 +1,20 @@
 @{
-    var DerivacionesAsesores = ViewData["Derivaciones"] as List<DerivacionesAsesores>;
+    var DerivacionesAsesores = ViewData["Derivaciones"] as List<FeedGReportes>;
 }
 
 <div class="container mt-4">
+    <div class="form-group mb-3">
+        <label for="numeroClientesDerivacion">Numero de Clientes</label>
+        <input type="text" class="form-control" id="numeroClientesDerivacion" name="numeroClientesDerivacion"
+            value="@(DerivacionesAsesores != null ? DerivacionesAsesores.Count : 0)" readonly>
+    </div>
     <table class="table table-bordered">
         <thead>
             <tr>
                 <th>DNI Cliente</th>
-                <th>Nombres</th>
                 <th>Telefono</th>
-                <th>Agencia</th>
-                <th>Fue Procesado</th>
+                <th>DNI Asesor</th>
+                <th>Origen</th>
             </tr>
         </thead>
         <tbody>
@@ -19,11 +23,10 @@
                 foreach (var derivacionAsesor in DerivacionesAsesores)
                 {
                     <tr>
-                        <td>@derivacionAsesor.DniCliente</td>
-                        <td>@derivacionAsesor.NombreCliente</td>
-                        <td>@derivacionAsesor.TelefonoCliente</td>
-                        <td>@derivacionAsesor.NombreAgencia</td>
-                        <td>@derivacionAsesor.FueProcesado</td>
+                        <td>@derivacionAsesor.DNI</td>
+                        <td>@derivacionAsesor.TELEFONO</td>
+                        <td>@derivacionAsesor.DNI_ASESOR</td>
+                        <td>@derivacionAsesor.ORIGEN_TELEFONO</td>
                     </tr>
                 }
             }
