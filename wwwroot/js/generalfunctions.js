@@ -1,3 +1,6 @@
+
+
+
 /**
  * Displays a modal with content fetched from a specified API endpoint.
  *
@@ -81,3 +84,5 @@ function showMyModal(apiName, controllerName, type, templateTitle) {
         }
     });
 }
+
+

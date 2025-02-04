@@ -110,10 +110,4 @@ public class HomeController : Controller
         TempData["MessageError"] = "Algo salio Mal en la Autenticacion";
         return RedirectToAction("Index", "Home");
     }
-    [HttpGet]
-    public IActionResult SidebarToggle()
-    {
-        var UserRol = HttpContext.Session.GetInt32("RolUser");
-        return PartialView("_SidebarToggle");
-    }
 }

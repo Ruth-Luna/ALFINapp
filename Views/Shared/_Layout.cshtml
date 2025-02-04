@@ -26,7 +26,7 @@
 
     <div class="d-flex flex-column vh-100 bg-white">
         <!-- navbar -->
-        <nav class="navbar navbar-dark bg-dark" style="background-color: #0f2537 !important">
+        <nav class="navbar navbar-dark bg-dark" style="background-color: #074072 !important">
             <div class="container-fluid">
                 <div class="d-flex align-items-center gap-3">
                     <button class="navbar-toggler" type="button" id="sidebarToggle">
@@ -53,51 +53,11 @@
         <div class="flex-grow-1 d-flex overflow-hidden">
             <!-- sidebar -->
             <div class="sidebar" id="sidebar"
-                style="width: 250px; min-width: 250px; background-color: #20374c !important">
+                style="width: 250px; min-width: 250px; background-color: #053763 !important">
                 <ul class="nav flex-column pt-4 sidebar-links">
                     <div id="sidebarToggleRender">
-                        
-                    </div>
-                    <li class="nav-item px-3 py-2">
-                        <a class="nav-link text-white rounded-3"
-                            href="@Url.Action("Perfil", "Perfil")">
-                            <i class="bi bi-person-circle me-2"></i>
-                            Perfil
-                        </a>
-                    </li>
-                    <li class="nav-item px-3 py-2">
-                        <a class="nav-link text-white rounded-3"
-                            href="@Url.Action("Usuarios", "Usuario")">
-                            <i class="bi bi-ui-checks-grid me-2"></i>
-                            Gestión de asesores
-                        </a>
-                    </li>
-                    <li class="nav-item px-3 py-2">
-                        <a class="nav-link text-white rounded-3"
-                            href="@Url.Action("Usuarios", "Usuario")">
-                            <i class="bi bi-kanban me-2"></i>
-                            Gestión Asignaciones
-                        </a>
-                    </li>
-                    <li class="nav-item px-3 py-2">
-                        <a class="nav-link text-white rounded-3" href="@Url.Action("Inicio", "Vendedor")">
-                            <i class="bi bi-sliders2 me-2"></i>
-                            Gestion Leads
-                        </a>
-                    </li>
-                    <li class="nav-item px-3 py-2">
-                        <a class="nav-link text-white rounded-3" href="@Url.Action("Consultas", "Consulta")">
-                            <i class="bi bi-person-bounding-box me-2"></i>
-                            Consulta DNI
-                        </a>
-                    </li>
 
-                    <li class="nav-item px-3 py-2">
-                        <a class="nav-link text-white rounded-3" href="@Url.Action("Derivacion", "Derivacion")">
-                            <i class="bi bi-mailbox-flag me-2"></i>
-                            Derivaciones
-                        </a>
-                    </li>
+                    </div>
                 </ul>
             </div>
 
@@ -198,19 +158,43 @@
                     }
                 }, 250);
             });
-
-            $.ajax ({
-                url: 'Home/SidebarToggle',
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            $.ajax({
+                url: '/Rol/Sidebar',
                 type: 'GET',
                 success: function (response) {
-                    $('#sidebarToggleRender').response;
-                }
-                error: function (error) {
-                    console.log(error);
+                    if (response.success === false) {
+                        Swal.fire({
+                            title: 'Error',
+                            text: response.message,
+                            icon: 'error',
+                            confirmButtonText: 'Aceptar'
+                        });
+                        return;
+                    } else {
+                        $('#sidebarToggleRender').html(response); // Asegúrate de que el servidor retorne el HTML correcto
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error en la petición AJAX:");
+                    console.error("Estado:", status);
+                    console.error("Error:", error);
+                    console.error("Respuesta del servidor:", xhr.responseText);
+
+                    Swal.fire({
+                        title: 'Error',
+                        text: xhr.responseText || 'Error desconocido',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
                 }
             });
         });
     </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 

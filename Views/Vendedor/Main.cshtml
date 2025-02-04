@@ -1,7 +1,6 @@
 @model IEnumerable<ALFINapp.Models.DetalleBaseClienteDTO>
 
 @{
-    Layout = "~/Views/Shared/_LayoutVendedor.cshtml";
     var usuarioNombre = ViewData["UsuarioNombre"];
     var clientesPendientes = ViewData["ClientesPendientes"];
     var ClientesTraidosDBALFIN = ViewData["ClientesTraidosDBALFIN"] as List<ALFINapp.Models.DetalleBaseClienteDTO>;

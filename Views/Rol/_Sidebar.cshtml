@@ -1,0 +1,11 @@
+@model List<ALFINapp.Models.VistasPorRolDTO>
+
+@foreach (var item in Model)
+{
+    <li class="nav-item px-3 py-2">
+        <a class="nav-link text-white rounded-3" href="@Url.Action(item.ruta_vista, item.nombre_vista)">
+            <i class="bi @item.bi_logo me-2"></i>
+            @item.nombre_sidebar
+        </a>
+    </li>
+}

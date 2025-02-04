@@ -1,15 +1,6 @@
 @model ALFINapp.Models.BaseCliente
 
 @{
-    int? RolUser = ViewData["RolUser"] as int?;
-    if (RolUser == 3)
-    {
-        Layout = "~/Views/Shared/_LayoutVendedor.cshtml";
-    }
-    else if (RolUser == 2)
-    {
-        Layout = "~/Views/Shared/_LayoutSupervisor.cshtml";
-    }
 }
 
 @section Styles {

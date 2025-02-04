@@ -1,7 +1,6 @@
 @model IEnumerable<ALFINapp.Models.SupervisorDTO>
 
 @{
-    Layout = "~/Views/Shared/_LayoutSupervisor.cshtml";
     var usuarioNombre = ViewData["UsuarioNombre"];
 
     var currentPage = (int)(ViewData["CurrentPage"] ?? 10);
