@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using ALFINapp.Filters;
 using ALFINapp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -13,11 +14,11 @@ namespace ALFINapp.Controllers
     {
         public DBServicesGeneral _dbServicesGeneral;
         public DBServicesReferido _dbServicesReferido;
-        public ReferidoController( DBServicesGeneral dbServicesGeneral, DBServicesReferido dbServicesReferido)
+        public ReferidoController(DBServicesGeneral dbServicesGeneral, DBServicesReferido dbServicesReferido)
         {
             _dbServicesGeneral = dbServicesGeneral;
             _dbServicesReferido = dbServicesReferido;
-            
+
         }
         public async Task<IActionResult> Referido()
         {
@@ -31,7 +32,7 @@ namespace ALFINapp.Controllers
 
             if (getDNIReferido.IsSuccess == false)
             {
-                return Json(new { success = false, message = getDNIReferido.Message});
+                return Json(new { success = false, message = getDNIReferido.Message });
             }
 
             ViewData["Agencias"] = getBases.data;
@@ -49,16 +50,16 @@ namespace ALFINapp.Controllers
                                                                         string agencia,
                                                                         DateTime fechaVisita)
         {
-            var mandarReferido = await _dbServicesReferido.GuardarClienteReferido(dniReferir, fuenteBase, nombresUsuario, apellidosUsuario, dniUsuario);
+            var mandarReferido = await _dbServicesReferido.GuardarClienteReferido(dniReferir, fuenteBase, nombresUsuario, apellidosUsuario, dniUsuario, telefono, agencia, fechaVisita, nombrescliente);
             if (mandarReferido.IsSuccess == false)
             {
                 //El cliente referido no ha podido ser guardado
-                return Json(new { success = false, message = mandarReferido.Message});
+                return Json(new { success = false, message = mandarReferido.Message });
             }
             var getReferido = await _dbServicesReferido.GetDataParaReferir(dniReferir);
             if (getReferido.IsSuccess == false || getReferido.Data == null)
             {
-                return Json(new { success = false, message = getReferido.Message});
+                return Json(new { success = false, message = getReferido.Message });
             }
             var mensaje = $@"
             <table>
@@ -111,10 +112,35 @@ namespace ALFINapp.Controllers
 
             if (enviarCorreo.IsSuccess == false)
             {
-                return Json(new { success = false, message = enviarCorreo.Message});
+                return Json(new { success = false, message = enviarCorreo.Message });
             }
 
-            return Json(new { success = true, message = getReferido.Message + ". " +enviarCorreo.Message});
+            return Json(new { success = true, message = getReferido.Message + ". " + enviarCorreo.Message });
+        }
+        public async Task<IActionResult> Referidos()
+        { 
+            try
+            {
+                var idUsuarioSupervisor = HttpContext.Session.GetInt32("idUsuarioSupervisor");
+                if (idUsuarioSupervisor == null)
+                {
+                    ViewData["MessageError"] = "No se ha podido obtener el id del usuario supervisor";
+                    return RedirectToAction("Inicio", "Supervisor");
+                }
+
+                var getReferidos = await _dbServicesReferido.GetReferidosGeneral();
+                if (getReferidos.IsSuccess == false || getReferidos.Data == null)
+                {
+                    ViewData["MessageError"] = getReferidos.Message;
+                    return View("Inicio", "Supervisor");
+                }
+                return View("Referidos", getReferidos.Data);
+            }
+            catch (System.Exception ex)
+            {
+                ViewData["MessageError"] = ex.Message;
+                return View("Inicio", "Supervisor");
+            }
         }
     }
 }

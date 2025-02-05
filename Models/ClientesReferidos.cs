@@ -30,6 +30,12 @@ namespace ALFINapp.Models
         public DateTime? FechaReferido { get; set; }
         [Column("traido_de")]
         public string? TraidoDe { get; set; }
+        [Column("telefono_cliente")]
+        public string? Telefono { get; set; }
+        [Column("agencia_referido")]
+        public string? Agencia { get; set; }
+        [Column("fecha_visita_agencia")]
+        public DateTime? FechaVisita { get; set; }
         [Column("fue_procesado")]
         public bool? FueProcesado { get; set; }
     }

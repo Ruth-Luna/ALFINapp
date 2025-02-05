@@ -1,0 +1,83 @@
+@model List<ALFINapp.Models.ClientesReferidos>
+@{
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/main_page.css">
+}
+
+<div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="GeneralTemplateTitleModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalContentGeneralTemplate">
+                    <!-- Aquí se cargará el formulario de agregar cliente -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <table class="table table-bordered" id="ReferidoTable">
+        <thead>
+            <tr>
+                <th>Derivar</th>
+                <th>Fue Procesado</th>
+                <th>DNI Cliente</th>
+                <th>Telefono</th>
+                <th>DNI Asesor</th>
+                <th>Origen</th>
+            </tr>
+        </thead>
+        <tbody id="data-table">
+            <tr>
+                <td></td>
+                <td>
+                    <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('ReferidoTable', 2, 'bool')"
+                        data-sort-ignore>
+                        <i class="bi bi-caret-down-square"></i>
+                    </button>
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            @if (Model != null)
+            {
+                foreach (var referido in Model)
+                {
+                    <tr>
+                        @{
+                            var referidoIdCliente = referido.IdBaseClienteA365 != null ? referido.IdBaseClienteA365 :
+                            referido.IdBaseClienteBanco;
+                        }
+                        <td><a href="javascript:void(0)" onclick="cargarDerivacionManual('@referido.FechaReferido', '@referido.Agencia', '@referido.DniAsesor', '@referido.Telefono', '@referido.DniCliente', '@referido.NombreCompletoCliente');" 
+                            class="btn btn-primary"><i class="fas fa-sync-alt"></i>Derivar</a></td>
+                        <td>@referido.FueProcesado</td>
+                        <td>@referido.DniCliente</td>
+                        <td>@referido.Telefono</td>
+                        <td>@referido.DniAsesor</td>
+                        @if (referido.IdBaseClienteA365 != null)
+                        {
+                            <td>@referidoIdCliente Traido de A365</td>
+                        }
+                        else if (referido.IdBaseClienteBanco != null)
+                        {
+                            <td>@referidoIdCliente Traido de Alfin</td>
+                        }
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="~/js/Referidos/Referidos.js"></script>
+}

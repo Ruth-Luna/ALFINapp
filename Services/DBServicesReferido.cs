@@ -25,11 +25,15 @@ namespace ALFINapp.Services
         /// <param name="apellidos">Los apellidos del asesor que refiere al cliente.</param>
         /// <param name="dniUsuario">El DNI del usuario que refiere al cliente.</param>
         /// <returns>Una tupla que indica si la operación fue exitosa y un mensaje asociado.</returns>
-        public async Task<(bool IsSuccess, string Message)> GuardarClienteReferido(string dni, 
+        public async Task<(bool IsSuccess, string Message)> GuardarClienteReferido(string dni,
                                                                                                             string fuenteBase,
                                                                                                             string nombres,
                                                                                                             string apellidos,
-                                                                                                            string dniUsuario)
+                                                                                                            string dniUsuario,
+                                                                                                            string telefono,
+                                                                                                            string agencia,
+                                                                                                            DateTime fechaVisita, 
+                                                                                                            string nombresCliente)
         {
             try
             {
@@ -57,7 +61,10 @@ namespace ALFINapp.Services
                         DniCliente = datosClienteReferido.bc.Dni,
                         FechaReferido = DateTime.Now,
                         TraidoDe = "DBA365",
-                        FueProcesado = false
+                        FueProcesado = false,
+                        Telefono = telefono,
+                        Agencia = agencia,
+                        FechaVisita = fechaVisita
                     };
                     _context.Add(clienteReferido);
                     await _context.SaveChangesAsync();
@@ -82,12 +89,15 @@ namespace ALFINapp.Services
                         IdBaseClienteBanco = datosClienteReferido.bcb.IdBaseBanco,
                         IdSupervisorReferido = 39,
                         NombreCompletoAsesor = nombres + " " + apellidos,
-                        //NombreCompletoCliente = datosClienteReferido.bcb.XNombre + " " + datosClienteReferido.bcb.XAppaterno + " " + datosClienteReferido.bcb.XApmaterno,
+                        NombreCompletoCliente = nombresCliente,
                         DniAsesor = dniUsuario,
                         DniCliente = datosClienteReferido.bcb.Dni,
                         FechaReferido = DateTime.Now,
                         TraidoDe = "DBALFIN",
-                        FueProcesado = false
+                        FueProcesado = false,
+                        Telefono = telefono,
+                        Agencia = agencia,
+                        FechaVisita = fechaVisita
                     };
                     _context.Add(clienteReferido);
                     await _context.SaveChangesAsync();
@@ -102,6 +112,35 @@ namespace ALFINapp.Services
                 return (false, ex.Message);
             }
         }
+
+        /// <summary>
+        /// Busca información de un cliente por DNI en las bases de datos A365 y ALFIN
+        /// </summary>
+        /// <param name="DNI">Número de documento de identidad del cliente a buscar</param>
+        /// <returns>
+        /// Una tupla que contiene:
+        /// - IsSuccess: Indica si la búsqueda fue exitosa
+        /// - Message: Mensaje descriptivo del resultado de la operación
+        /// - data: Objeto DniReferidoData con la información del cliente. Null si no se encuentra
+        /// </returns>
+        /// <remarks>
+        /// Este método realiza la búsqueda en dos bases de datos:
+        /// 1. Primero busca en base_clientes (A365)
+        /// 2. Si no encuentra, busca en base_clientes_banco (ALFIN)
+        /// La búsqueda prioriza los registros de A365 sobre ALFIN
+        /// </remarks>
+        /// <exception cref="Exception">Se lanza cuando ocurre un error en la consulta a la base de datos</exception>
+        /// <example>
+        /// Ejemplo de uso:
+        /// <code>
+        /// var result = await GetDataFromDNI("12345678");
+        /// if (result.IsSuccess && result.data != null)
+        /// {
+        ///     var clienteData = result.data;
+        ///     // Procesar datos del cliente
+        /// }
+        /// </code>
+        /// </example>
         public async Task<(bool IsSuccess, string Message, DniReferidoData? data)> GetDataFromDNI(string DNI)
         {
             try
@@ -142,30 +181,62 @@ namespace ALFINapp.Services
                 return (true, ex.Message, null);
             }
         }
+
+        /// <summary>
+        /// Obtiene los datos detallados de un cliente para referirlo, buscando en las bases de datos A365 y ALFIN
+        /// </summary>
+        /// <param name="dni">DNI del cliente a buscar</param>
+        /// <returns>
+        /// Una tupla que contiene:
+        /// - IsSuccess: Indica si la búsqueda fue exitosa
+        /// - Message: Mensaje descriptivo del resultado
+        /// - Data: Objeto dinámico con NombresCompletos y OfertaMax del cliente. Null si no se encuentra
+        /// </returns>
+        /// <remarks>
+        /// El método busca secuencialmente en:
+        /// 1. Base A365 (base_clientes join detalle_base)
+        /// 2. Base ALFIN (base_clientes_banco)
+        /// 
+        /// Para ALFIN:
+        /// - NombresCompletos siempre es "DESCONOCIDO"
+        /// - OfertaMax se multiplica por 100
+        /// </remarks>
+        /// <exception cref="Exception">Se lanza cuando hay error en la consulta a la base de datos</exception>
+        /// <example>
+        /// Ejemplo de uso:
+        /// <code>
+        /// var result = await GetDataParaReferir("12345678");
+        /// if (result.IsSuccess)
+        /// {
+        ///     var nombres = result.Data.NombresCompletos;
+        ///     var oferta = result.Data.OfertaMax;
+        /// }
+        /// </code>
+        /// </example>
         public async Task<(bool IsSuccess, string Message, dynamic? Data)> GetDataParaReferir(string dni)
         {
             try
             {
                 var clienteDetallesA365 = await (from bc in _context.base_clientes
-                                                join db in _context.detalle_base on bc.IdBase equals db.IdBase
-                                                where bc.Dni == dni && bc.IdBaseBanco == null
-                                                select new
-                                                {
-                                                    NombresCompletos = bc.XNombre + " " + bc.XAppaterno + " " + bc.XApmaterno,
-                                                    OfertaMax = db.OfertaMax,
-                                                }).FirstOrDefaultAsync();
+                                                 join db in _context.detalle_base on bc.IdBase equals db.IdBase
+                                                 where bc.Dni == dni && bc.IdBaseBanco == null
+                                                 select new
+                                                 {
+                                                     NombresCompletos = bc.XNombre + " " + bc.XAppaterno + " " + bc.XApmaterno,
+                                                     OfertaMax = db.OfertaMax,
+                                                 }).FirstOrDefaultAsync();
                 if (clienteDetallesA365 != null)
                 {
                     return (true, "Se ha encontrado el cliente en la base de datos de A365", clienteDetallesA365);
                 }
-                
+
                 var clienteDetallesALFIN = await (from bcb in _context.base_clientes_banco
-                                                where bcb.Dni == dni
-                                                select new
-                                                {
-                                                    NombresCompletos = "DESCONOCIDO",
-                                                    OfertaMax = bcb.OfertaMax*100,
-                                                }).FirstOrDefaultAsync();
+                                                  where bcb.Dni == dni
+                                                  select new
+                                                  {
+                                                      NombresCompletos = "DESCONOCIDO",
+                                                      OfertaMax = bcb.OfertaMax * 100,
+                                                  }).FirstOrDefaultAsync();
 
                 if (clienteDetallesALFIN != null)
                 {
@@ -180,6 +251,36 @@ namespace ALFINapp.Services
             }
         }
 
+        /// <summary>
+        /// Envía un correo electrónico utilizando el procedimiento almacenado sp_send_dbmail de SQL Server
+        /// </summary>
+        /// <param name="destinatario">Dirección de correo electrónico del destinatario</param>
+        /// <param name="mensaje">Contenido del correo electrónico en formato HTML</param>
+        /// <param name="asunto">Asunto del correo electrónico</param>
+        /// <returns>
+        /// Una tupla que contiene:
+        /// - IsSuccess: Indica si el envío fue exitoso
+        /// - Message: Mensaje descriptivo del resultado de la operación
+        /// </returns>
+        /// <remarks>
+        /// Este método utiliza el procedimiento almacenado sp_send_dbmail de SQL Server con el perfil 'WyA'
+        /// para enviar correos electrónicos. El contenido del mensaje se envía en formato HTML.
+        /// </remarks>
+        /// <exception cref="Exception">Se lanza cuando ocurre un error al enviar el correo</exception>
+        /// <example>
+        /// Ejemplo de uso:
+        /// <code>
+        /// var result = await EnviarCorreoReferido(
+        ///     "destinatario@ejemplo.com",
+        ///     "<h1>Hola</h1><p>Contenido del mensaje</p>",
+        ///     "Asunto del correo"
+        /// );
+        /// if (result.IsSuccess)
+        /// {
+        ///     // Correo enviado exitosamente
+        /// }
+        /// </code>
+        /// </example>
         public async Task<(bool IsSuccess, string Message)> EnviarCorreoReferido(string destinatario, string mensaje, string asunto)
         {
             try
@@ -194,6 +295,19 @@ namespace ALFINapp.Services
             catch (System.Exception ex)
             {
                 return (false, ex.Message);
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message, List<ClientesReferidos>? Data)> GetReferidosGeneral()
+        {
+            try
+            {
+                var referidos = await _context.clientes_referidos.ToListAsync();
+                return (true, "Se han encontrado referidos", referidos);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message, null);
             }
         }
     }
