@@ -27,17 +27,7 @@ function descargarDatos() {
     if (fechaInicio == "" || fechaFin == "") {
         messages.push("No se ha seleccionado un rango de fechas.");
     }
-
-    if (fechaInicio > fechaFin) {
-        Swal.fire({
-            title: 'Error al descargar datos',
-            text: 'La fecha de inicio no puede ser mayor que la fecha de fin.',
-            icon: 'error',
-            confirmButtonText: 'Aceptar'
-        });
-        return;
-    }
-
+    
     if (destinoBase == "") {
         messages.push("No ha seleccionado una base destino.");
     }
