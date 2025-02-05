@@ -7,7 +7,8 @@
     <div>
         <h3> <strong> Derivacion</strong> Manual </h3>
         <div class="alert alert-info" role="alert">
-            <strong>Nota:</strong> Estos datos seran enviados a la plataforma de <strong> ALFIN </strong> como derivacion. Puede modificar los campos antes de ser enviados.
+            <strong>Nota:</strong> Estos datos seran enviados a la plataforma de <strong> ALFIN </strong> como
+            derivacion. Puede modificar los campos antes de ser enviados.
         </div>
     </div>
     <div class="row">
@@ -15,34 +16,45 @@
             <h4>Datos del Referido</h4>
             <div class="form-group mb-2">
                 <label for="DniClienteDerivacion">DNI del Cliente a enviar</label>
-                <input type="text" class="form-control" placeholder="DNI Cliente" id="DniClienteDerivacion" value="@Model.DNIClienteDerivacion">
+                <input type="text" class="form-control" placeholder="DNI Cliente" id="DniClienteDerivacion"
+                    value="@Model.DNIClienteDerivacion">
             </div>
             <div class="form-group mb-2">
                 <label for="NombreClienteReferido">Nombre del Referido</label>
-                <input type="text" class="form-control" placeholder="Nombre del Referido" id="NombreClienteReferido" value="@Model.NombreClienteDerivacion">
+                <input type="text" class="form-control" placeholder="Nombre del Referido" id="NombreClienteReferido"
+                    value="@Model.NombreClienteDerivacion">
             </div>
             <div class="form-group mb-2">
                 <label for="TelefonoClienteReferido">Telefono del Referido</label>
-                <input type="text" class="form-control" placeholder="Telefono del Referido" id="TelefonoClienteReferido" value="@Model.TelefonoDerivacion">
+                <input type="text" class="form-control" placeholder="Telefono del Referido" id="TelefonoClienteReferido"
+                    value="@Model.TelefonoDerivacion">
             </div>
             <div class="form-group mb-2">
                 <label for="AgenciaDerivacion">Agencia de Derivacion</label>
-                <input type="text" class="form-control" placeholder="Agencia de Derivacion" id="AgenciaDerivacion" value="@Model.AgenciaDerivacion">
+                <input type="text" class="form-control" placeholder="Agencia de Derivacion" id="AgenciaDerivacion"
+                    value="@Model.AgenciaDerivacion">
             </div>
         </div>
         <div class="col">
             <h4>Datos del Asesor</h4>
             <div class="form-group mb-2">
                 <label for="DniAsesorDerivacion">DNI del Asesor</label>
-                <input type="text" class="form-control" placeholder="DNI Asesor" id="DniAsesorDerivacion" value="@Model.DNIAsesorDerivacion">
+                <input type="text" class="form-control" placeholder="DNI Asesor" id="DniAsesorDerivacion"
+                    value="@Model.DNIAsesorDerivacion">
             </div>
             <div class="form-group mb-2">
                 <label for="FechaVisitaDerivacion">Fecha de Visita</label>
-                <input type="text" class="form-control" placeholder="DNI Asesor" id="FechaVisitaDerivacion" value="@Model.FechaVisitaDerivacion">
+                <input type="text" class="form-control" placeholder="DNI Asesor" id="FechaVisitaDerivacion"
+                    value="@Model.FechaVisitaDerivacion">
             </div>
-            <div class="btn-group" role="group" aria-label="Basic example">
-                <a href="javascript:void(0)" class="btn btn-primary" onclick="enviarDerivacionPorReferencia(@Model)"></a>
-            </div>
+        </div>
+        <div class="btn-group" role="group" aria-label="Basic example">
+            <a href="javascript:void(0)" 
+                class="btn btn-primary" 
+                onclick="enviarDerivacionPorReferencia('@Model.AgenciaDerivacion', '@Model.AsesorDerivacion', '@Model.DNIAsesorDerivacion', '@Model.DNIClienteDerivacion', '@Model.FechaVisitaDerivacion', '@Model.NombreClienteDerivacion', '@Model.TelefonoDerivacion')">
+                <i class="fas fa-sync-alt"></i>
+                 Derivar
+            </a>
         </div>
     </div>
 </div>

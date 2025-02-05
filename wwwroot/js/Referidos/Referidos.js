@@ -46,6 +46,52 @@ function cargarDerivacionManual(FechaReferido, AgenciaDerivacion, DniAsesor, Tel
     });
 }
 
-function enviarDerivacionPorReferencia(params) {
-    console.log(params);
+function enviarDerivacionPorReferencia(AgenciaDerivacion, 
+    AsesorDerivacion, 
+    DNIAsesorDerivacion, 
+    DNIClienteDerivacion, 
+    FechaVisitaDerivacion, 
+    NombreClienteDerivacion, 
+    TelefonoDerivacion) {
+    
+    $.ajax({
+        type: 'POST',
+        url: '/Referidos/EnviarDerivacionPorReferencia',
+        data: {
+            AgenciaDerivacion: AgenciaDerivacion,
+            AsesorDerivacion: AsesorDerivacion,
+            DNIAsesorDerivacion: DNIAsesorDerivacion,
+            DNIClienteDerivacion: DNIClienteDerivacion,
+            FechaVisitaDerivacion: FechaVisitaDerivacion,
+            NombreClienteDerivacion: NombreClienteDerivacion,
+            TelefonoDerivacion: TelefonoDerivacion,
+        },
+        success: function (response) {
+            if (response.success === false) {
+                Swal.fire({
+                    title: 'Error al enviar la derivacion',
+                    text: response.message,
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+                return;
+            } else {
+                Swal.fire({
+                    title: 'Derivacion enviada',
+                    text: response.message,
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar'
+                });
+                $('#GeneralTemplateModal').modal('hide');
+            }
+        },
+        error: function (error) {
+            Swal.fire({
+                title: 'Error al enviar la derivacion',
+                text: 'Hubo un error inesperado al enviar la derivacion.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    });    
 }

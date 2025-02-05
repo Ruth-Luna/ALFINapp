@@ -15,11 +15,15 @@ namespace ALFINapp.Controllers
     {
         public DBServicesGeneral _dbServicesGeneral;
         public DBServicesReferido _dbServicesReferido;
-        public ReferidosController(DBServicesGeneral dbServicesGeneral, DBServicesReferido dbServicesReferido)
+        public DBServicesDerivacion _dBServicesDerivacion;
+        public ReferidosController(
+            DBServicesGeneral dbServicesGeneral, 
+            DBServicesReferido dbServicesReferido,
+            DBServicesDerivacion dBServicesDerivacion)
         {
             _dbServicesGeneral = dbServicesGeneral;
             _dbServicesReferido = dbServicesReferido;
-
+            _dBServicesDerivacion = dBServicesDerivacion;
         }
         public async Task<IActionResult> Referidos()
         { 
@@ -70,6 +74,37 @@ namespace ALFINapp.Controllers
                     NombreClienteDerivacion = NombreClienteDerivacion
                 };
                 return PartialView("_DatosEnviarDerivacion", generarDerivacion);
+            }
+            catch (System.Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+        public async Task<IActionResult> EnviarDerivacionPorReferencia (
+            string AgenciaDerivacion,
+            string AsesorDerivacion,
+            string DNIAsesorDerivacion,
+            string DNIClienteDerivacion,
+            DateTime FechaVisitaDerivacion,
+            string NombreClienteDerivacion,
+            string TelefonoDerivacion)
+        {
+            try
+            {
+                var enviarDerivacion = await _dBServicesDerivacion.GenerarDerivacion(
+                    FechaVisitaDerivacion, 
+                    AgenciaDerivacion, 
+                    AsesorDerivacion, 
+                    DNIAsesorDerivacion, 
+                    TelefonoDerivacion, 
+                    DNIClienteDerivacion, 
+                    NombreClienteDerivacion);
+
+                if (enviarDerivacion.IsSuccess == false)
+                {
+                    return Json(new { success = false, message = enviarDerivacion.Message });
+                }
+                return Json(new { success = true, message = "Derivacion enviada correctamente" });
             }
             catch (System.Exception ex)
             {

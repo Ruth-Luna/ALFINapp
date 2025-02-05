@@ -80,7 +80,14 @@ namespace ALFINapp.Controllers
         {
             try
             {
-                var enviarDerivacion = await _dBServicesDerivacion.GenerarDerivacion(FechaVisitaDerivacion, AgenciaDerivacion, AsesorDerivacion, DNIAsesorDerivacion, TelefonoDerivacion, DNIClienteDerivacion, NombreClienteDerivacion);
+                var enviarDerivacion = await _dBServicesDerivacion.GenerarDerivacion(
+                    FechaVisitaDerivacion, 
+                    AgenciaDerivacion, 
+                    AsesorDerivacion, 
+                    DNIAsesorDerivacion, 
+                    TelefonoDerivacion, 
+                    DNIClienteDerivacion, 
+                    NombreClienteDerivacion);
                 if (enviarDerivacion.IsSuccess)
                 {
                     return Json(new { success = false, message = enviarDerivacion.Message });
