@@ -32,6 +32,7 @@ public class MDbContext : DbContext
     //DTOS Y PROCEDIMIENTOS ALMACENADOS
     public DbSet<StringDTO> string_dto { get; set; }
     public DbSet<NumerosEnterosDTO> numeros_enteros_dto { get; set; }
+    public DbSet<BoolDTO> bool_dto { get; set; }
     public DbSet<USupervisoresDTO> u_supervisores_dto { get; set; }
     public DbSet<AgenciasDisponiblesDTO> agencias_disponibles_dto { get; set; }
     public DbSet<AsignacionFiltrarBasesDTO> asignacion_filtrar_bases_dto { get; set; }
