@@ -70,19 +70,27 @@ namespace ALFINapp.Controllers
             // Coger los resultados para mostrar la página de Inicio
             var detallesClientes = await _dbServicesAsesores.DetallesClientesParaVentas(usuarioId.Value);
 
-            // Total de clientes
-            int totalClientes = detallesClientes.Count;
-
-            // Clientes aún no tipificados (su campo 'TipificacionDeMayorPeso' es null o vacío)
-            int clientesPendientes = detallesClientes.Count(dc => string.IsNullOrEmpty(dc.TipificacionDeMayorPeso));
-
-            // Clientes ya tipificados (su campo 'TipificacionDeMayorPeso' no es null ni vacío)
-            int clientesTipificados = detallesClientes.Count(dc => !string.IsNullOrEmpty(dc.TipificacionDeMayorPeso));
-
             // Obtener el usuario actual
             var usuario = await _context.usuarios.AsNoTracking().FirstOrDefaultAsync(u => u.IdUsuario == usuarioId);
 
             var ClientesTraidosDBALFIN = await _dbServicesAsesores.ClientesTraidosDBALFIN(usuarioId.Value);
+
+            // Clientes aún no tipificados (su campo 'TipificacionDeMayorPeso' es null o vacío)
+            int clientesPendientes = detallesClientes.Count(dc =>
+                (dc.FechaTipificacionDeMayorPeso.HasValue && dc.FechaTipificacionDeMayorPeso.Value.Year != DateTime.Now.Year && dc.FechaTipificacionDeMayorPeso.Value.Month != DateTime.Now.Month) || (!dc.FechaTipificacionDeMayorPeso.HasValue)) +
+                (ClientesTraidosDBALFIN.Data == null ? 0 :
+                ClientesTraidosDBALFIN.Data.Count(da =>
+                (da.FechaTipificacionDeMayorPeso.HasValue && da.FechaTipificacionDeMayorPeso.Value.Year != DateTime.Now.Year && da.FechaTipificacionDeMayorPeso.Value.Month != DateTime.Now.Month) || (!da.FechaTipificacionDeMayorPeso.HasValue)));
+
+            // Clientes ya tipificados (su campo 'TipificacionDeMayorPeso' no es null ni vacío)
+            int clientesTipificados = detallesClientes.Count(dc =>
+                dc.FechaTipificacionDeMayorPeso.HasValue && dc.FechaTipificacionDeMayorPeso.Value.Year == DateTime.Now.Year && dc.FechaTipificacionDeMayorPeso.Value.Month == DateTime.Now.Month) +
+                (ClientesTraidosDBALFIN.Data == null ? 0 :
+                ClientesTraidosDBALFIN.Data.Count(da =>
+                da.FechaTipificacionDeMayorPeso.HasValue && da.FechaTipificacionDeMayorPeso.Value.Year == DateTime.Now.Year && da.FechaTipificacionDeMayorPeso.Value.Month == DateTime.Now.Month));
+
+            // Total de clientes
+            int totalClientes = detallesClientes.Count + (ClientesTraidosDBALFIN.Data == null ? 0 : ClientesTraidosDBALFIN.Data.Count);
 
             ViewData["TotalClientes"] = totalClientes;
             ViewData["ClientesPendientes"] = clientesPendientes;
@@ -473,7 +481,7 @@ namespace ALFINapp.Controllers
 
                     // Propiedades de DetalleBase
                     Campaña = detallesClientes.bcg?.NombreCampana ?? "DESCONOCIDO",
-                    OfertaMax = detallesClientes.bcb?.OfertaMax*100 ?? 0,
+                    OfertaMax = detallesClientes.bcb?.OfertaMax * 100 ?? 0,
                     TasaMinima = 0,
                     Sucursal = "DESCONOCIDO",
                     AgenciaComercial = detallesClientes.bcb != null ? $"Numero Entidades: {detallesClientes.bcb.NumEntidades}" : "Numero Entidades: Desconocido",
