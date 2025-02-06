@@ -8,8 +8,19 @@ function cargarDerivacionManual(NombreCompletoAsesor, DniCliente, NombreCliente,
         });
         return;
     }
+    console.log(FechaVisita);
 
-    OfertaEnviada = parseFloat(OfertaEnviada);
+    // Conversión manual de la fecha en formato 'dd/mm/yyyy hh:mm:ss' a formato ISO
+    let fechaParts = FechaVisita.split(' '); // Separar la fecha y la hora
+    let dateParts = fechaParts[0].split('/'); // Separar el día, mes y año
+    let timeParts = fechaParts[1].split(':'); // Separar las horas, minutos y segundos
+
+    // Crear una nueva fecha en formato ISO (yyyy-mm-ddTHH:mm:ss)
+    let fechaISO = new Date(dateParts[2], dateParts[1] - 1, dateParts[0], timeParts[0], timeParts[1], timeParts[2]).toISOString();
+
+    console.log(fechaISO);
+
+    /*OfertaEnviada = parseFloat(OfertaEnviada);
     if (!isNaN(OfertaEnviada)) {
         Swal.fire({
             title: 'Error al derivar',
@@ -18,20 +29,27 @@ function cargarDerivacionManual(NombreCompletoAsesor, DniCliente, NombreCliente,
             confirmButtonText: 'Aceptar'
         });
         return;
-    }
+    }*/
+
+
+
+    let oferta = OfertaEnviada;  // Este es el valor como string con coma
+    oferta = oferta.replace(",", ".");  // Convertir coma a punto
+    oferta = parseFloat(oferta);  // Convertir a número decimal
+
 
     $.ajax({
         type: 'GET',
         url: '/Referidos/DatosEnviarDerivacion',
         data: {
-            FechaVisitaDerivacion: FechaVisita,
+            FechaVisitaDerivacion: fechaISO,
             AgenciaDerivacion: Agencia,
             NombreAsesorDerivacion: NombreCompletoAsesor,
             DNIAsesorDerivacion: DniAsesor,
             TelefonoDerivacion: Telefono,
             DNIClienteDerivacion: DniCliente,
             NombreClienteDerivacion: NombreCliente,
-            OfertaEnviadaDerivacion: OfertaEnviada,
+            OfertaEnviadaDerivacion: oferta,
         },
         success: function (response) {
             if (response.success === false) {
@@ -59,14 +77,22 @@ function cargarDerivacionManual(NombreCompletoAsesor, DniCliente, NombreCliente,
     });
 }
 
-function enviarDerivacionPorReferencia(AgenciaDerivacion, 
-    AsesorDerivacion, 
-    DNIAsesorDerivacion, 
-    DNIClienteDerivacion, 
-    FechaVisitaDerivacion, 
-    NombreClienteDerivacion, 
+function enviarDerivacionPorReferencia(AgenciaDerivacion,
+    AsesorDerivacion,
+    DNIAsesorDerivacion,
+    DNIClienteDerivacion,
+    FechaVisitaDerivacion,
+    NombreClienteDerivacion,
     TelefonoDerivacion) {
-    
+
+    let fechaParts = FechaVisitaDerivacion.split(' '); // Separar la fecha y la hora
+    let dateParts = fechaParts[0].split('/'); // Separar el día, mes y año
+    let timeParts = fechaParts[1].split(':'); // Separar las horas, minutos y segundos
+
+    // Crear una nueva fecha en formato ISO (yyyy-mm-ddTHH:mm:ss)
+    let fechaISO = new Date(dateParts[2], dateParts[1] - 1, dateParts[0], timeParts[0], timeParts[1], timeParts[2]).toISOString();
+
+
     $.ajax({
         type: 'POST',
         url: '/Referidos/EnviarDerivacionPorReferencia',
@@ -75,7 +101,7 @@ function enviarDerivacionPorReferencia(AgenciaDerivacion,
             AsesorDerivacion: AsesorDerivacion,
             DNIAsesorDerivacion: DNIAsesorDerivacion,
             DNIClienteDerivacion: DNIClienteDerivacion,
-            FechaVisitaDerivacion: FechaVisitaDerivacion,
+            FechaVisitaDerivacion: fechaISO,
             NombreClienteDerivacion: NombreClienteDerivacion,
             TelefonoDerivacion: TelefonoDerivacion,
         },
@@ -106,5 +132,5 @@ function enviarDerivacionPorReferencia(AgenciaDerivacion,
                 confirmButtonText: 'Aceptar'
             });
         }
-    });    
+    });
 }

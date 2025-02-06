@@ -105,9 +105,7 @@ namespace ALFINapp.Services
                     await _context.SaveChangesAsync();
                     return (true, "Usuario referido exitosamente");
                 }
-
                 return (false, "No se ha encontrado la fuente de la base de datos asignada");
-
             }
             catch (System.Exception ex)
             {

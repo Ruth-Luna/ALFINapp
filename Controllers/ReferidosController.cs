@@ -106,7 +106,7 @@ namespace ALFINapp.Controllers
                 {
                     return Json(new { success = false, message = enviarDerivacion.Message });
                 }
-
+                FechaVisitaDerivacion = FechaVisitaDerivacion.AddHours(-10);
                 var modificarEstadoReferido = await _dbServicesReferido.ModificarEstadoReferido(DNIAsesorDerivacion, DNIClienteDerivacion, AgenciaDerivacion, TelefonoDerivacion, FechaVisitaDerivacion);
                 if (modificarEstadoReferido.IsSuccess == false)
                 {

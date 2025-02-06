@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Data;
 using ALFINapp.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace ALFINapp.Services
@@ -27,18 +25,26 @@ namespace ALFINapp.Services
                 var idDni = await (from bc in _context.base_clientes
                                    join ce in _context.clientes_enriquecidos on bc.IdBase equals ce.IdBase
                                    where bc.Dni == DNIClienteDerivacion
-                                   select ce.IdCliente).FirstOrDefaultAsync();
+                                   select (int?)ce.IdCliente).FirstOrDefaultAsync();
 
+                // Definir los parámetros con nombre
+                var parametros = new[]
+                {
+                    new SqlParameter("@fecha_visita_derivacion", FechaVisitaDerivacion) { SqlDbType = SqlDbType.DateTime },
+                    new SqlParameter("@dni_asesor_derivacion", DNIAsesorDerivacion),
+                    new SqlParameter("@DNI_cliente_derivacion", DNIClienteDerivacion),
+                    new SqlParameter("@id_cliente", idDni != null ? idDni.Value : DBNull.Value),
+                    new SqlParameter("@nombre_cliente_derivacion", NombreClienteDerivacion),
+                    new SqlParameter("@telefono_derivacion", TelefonoDerivacion),
+                    new SqlParameter("@agencia_derivacion", AgenciaDerivacion),
+                    new SqlParameter("@num_agencia", DBNull.Value) // Si necesitas pasar un valor nulo
+                };
+
+                // Ejecutar el procedimiento almacenado con parámetros con nombre
                 var generarDerivacion = _context.Database.ExecuteSqlRaw(
-                    "EXEC SP_derivacion_insertar_derivacion {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}",
-                    FechaVisitaDerivacion,
-                    DNIAsesorDerivacion,
-                    DNIClienteDerivacion,
-                    (object?)idDni ?? DBNull.Value,
-                    NombreClienteDerivacion,
-                    TelefonoDerivacion,
-                    AgenciaDerivacion,
-                    DBNull.Value);
+                    "EXEC SP_derivacion_insertar_derivacion @fecha_visita_derivacion, @dni_asesor_derivacion, @DNI_cliente_derivacion, @id_cliente, @nombre_cliente_derivacion, @telefono_derivacion, @agencia_derivacion, @num_agencia",
+                    parametros);
+
                 if (generarDerivacion == 0)
                 {
                     return (false, "No se pudo generar la derivación");

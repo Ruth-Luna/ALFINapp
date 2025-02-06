@@ -54,11 +54,11 @@
             </div>
             <div class="form-group mb-2">
                 <label for="FechaVisitaDerivacion">Fecha de Visita</label>
-                <input type="date" class="form-control" placeholder="DNI Asesor" id="FechaVisitaDerivacion"
+                <input type="date" class="form-control" placeholder="Fecha de Visita" id="FechaVisitaDerivacion"
                     value="@Model.FechaVisitaDerivacion">
             </div>
         </div>
-        <div class="btn-group" role="group" aria-label="Basic example">
+        <div class="btn-group mt-4" role="group" aria-label="Basic example">
             <a href="javascript:void(0)" 
                 class="btn btn-primary" 
                 onclick="enviarDerivacionPorReferencia('@Model.AgenciaDerivacion', '@Model.NombreAsesorDerivacion', '@Model.DNIAsesorDerivacion', '@Model.DNIClienteDerivacion', '@Model.FechaVisitaDerivacion', '@Model.NombreClienteDerivacion', '@Model.TelefonoDerivacion')">

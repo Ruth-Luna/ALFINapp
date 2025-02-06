@@ -37,6 +37,7 @@ public class MDbContext : DbContext
     public DbSet<AsignacionFiltrarBasesDTO> asignacion_filtrar_bases_dto { get; set; }
     public DbSet<VistasPorRolDTO> vistas_por_rol_dto { get; set; }
     public DbSet<DerivacionesBSDIALDTO> derivaciones_bsdial_dto { get; set; }
+    public DbSet<DetallesClienteDTO> detalles_clientes_dto { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -58,6 +59,10 @@ public class MDbContext : DbContext
             .ToView(null);
 
         modelBuilder.Entity<DerivacionesBSDIALDTO>()
+            .HasNoKey()
+            .ToView(null);
+
+        modelBuilder.Entity<DetallesClienteDTO>()
             .HasNoKey()
             .ToView(null);
     }

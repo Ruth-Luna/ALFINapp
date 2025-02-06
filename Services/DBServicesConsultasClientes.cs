@@ -1,5 +1,6 @@
 using ALFINapp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace ALFINapp.Services
@@ -20,10 +21,15 @@ namespace ALFINapp.Services
                 var clienteExistenteBD = await _context.base_clientes.FirstOrDefaultAsync(c => c.Dni == DNIBusqueda && c.IdBaseBanco == null);
                 if (clienteExistenteBD != null)
                 {
-                    var detalleclienteExistenteBD = await _context.detalle_base.FirstOrDefaultAsync(c => c.IdBase == clienteExistenteBD.IdBase);
+                    var detalleclienteExistenteBD = _context.detalle_base
+                        .FromSqlRaw("EXEC SP_Consulta_Obtener_detalle_cliente_por_idbase @IdBase",
+                            new SqlParameter("@IdBase", clienteExistenteBD.IdBase))
+                        .AsEnumerable()
+                        .FirstOrDefault();
+
                     if (detalleclienteExistenteBD == null)
                     {
-                        return (false, "El cliente no tiene Detalle Base en la Base de Datos de A365, este dato fue eliminado manualmente, este error debe de ser reportado", null);
+                        return (false, "El cliente no tiene Detalle Base en la Base de Datos de A365, este dato fue eliminado manualmente, o es previo a la fecha correspondiente", null);
                     }
 
                     // Consulta a la base de datos del A365
@@ -63,44 +69,11 @@ namespace ALFINapp.Services
                 {
                     return (false, "El cliente no tiene Detalles en la Base de Datos del Banco Alfin, este DNI no se encuentra en ninguna de nuestras bases de datos conocidas", null);
                 }
-                var clienteExistenteBank = await(
-                                                    from bcb in _context.base_clientes_banco
-                                                    join pb in _context.base_clientes_banco_plazo on bcb.IdPlazoBanco equals pb.IdPlazo into PlazoGrupo
-                                                    from pb in PlazoGrupo.DefaultIfEmpty() // Left Join con base_clientes_banco_plazo
-                                                    join cg in _context.base_clientes_banco_campana_grupo on bcb.IdCampanaGrupoBanco equals cg.IdCampanaGrupo into CampanaGrupo
-                                                    from cg in CampanaGrupo.DefaultIfEmpty() // Left Join con base_clientes_banco_campana_grupo
-                                                    join c in _context.base_clientes_banco_color on bcb.IdColorBanco equals c.IdColor into ColorGrupo
-                                                    from c in ColorGrupo.DefaultIfEmpty() // Left Join con base_clientes_banco_color
-                                                    join u in _context.base_clientes_banco_usuario on bcb.IdUsuarioBanco equals u.IdUsuario into UsuarioGrupo
-                                                    from u in UsuarioGrupo.DefaultIfEmpty() // Left Join con base_clientes_banco_usuario
-                                                    join rd in _context.base_clientes_banco_rango_deuda on bcb.IdRangoDeuda equals rd.IdRangoDeuda into RangoDeudaGrupo
-                                                    from rd in RangoDeudaGrupo.DefaultIfEmpty() 
-                                                    where bcb.Dni == DNIBusqueda
-                                                    select new DetallesClienteDTO
-                                                    {
-                                                        Dni = bcb.Dni,
-                                                        ColorFinal = c.NombreColor,
-                                                        Campaña = cg.NombreCampana,
-                                                        OfertaMax = bcb.OfertaMax*100,
-                                                        Plazo = pb.NumMeses,
-                                                        CapacidadMax = bcb.CapacidadPagoMen,
-                                                        SaldoDiferencialReeng = bcb.Reenganche,
-                                                        ClienteNuevo = bcb.Frescura == true ? "SI" : "NO",
-                                                        Deuda1 = rd.RangoDeDeuda, //
-                                                        Entidad1 = bcb.NumEntidades.ToString(),
-                                                        Tasa1 = bcb.Tasa1,
-                                                        Tasa2 = bcb.Tasa2,
-                                                        Tasa3 = bcb.Tasa3,
-                                                        Tasa4 = bcb.Tasa4,
-                                                        Tasa5 = bcb.Tasa5,
-                                                        Tasa6 = bcb.Tasa6,
-                                                        Tasa7 = bcb.Tasa7,
-                                                        GrupoTasa = null, //
-                                                        Usuario = u.NombreUsuario,
-                                                        SegmentoUser = null,
-                                                        TraidoDe = "BDALFIN",
-                                                        IdBase = bcb.IdBaseBanco
-                                                    }).FirstOrDefaultAsync();
+                var clienteExistenteBank = _context.detalles_clientes_dto
+                    .FromSqlRaw("EXEC SP_Consulta_Obtener_Cliente_Banco_Alfin @DNIBusqueda",
+                        new SqlParameter("@DNIBusqueda", DNIBusqueda))
+                    .AsEnumerable()
+                    .FirstOrDefault();
 
                 if (clienteExistenteBank == null)
                 {

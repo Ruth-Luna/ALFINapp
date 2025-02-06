@@ -84,26 +84,26 @@ public class HomeController : Controller
             return RedirectToAction("Index", "Home");
         }
 
-        if (string.IsNullOrEmpty(usuario.Rol))
+        if (usuario.IdRol == null)
         {
             TempData["MessageError"] = "El rol del usuario no está definido. Comuníquese con su Supervisor.";
             return RedirectToAction("Index", "Home");
         }
 
         HttpContext.Session.SetInt32("UsuarioId", usuario.IdUsuario);
-        if (usuario.Rol == "VENDEDOR")
+        if (usuario.IdRol == 3)
         {
-            HttpContext.Session.SetInt32("RolUser", 3);
+            HttpContext.Session.SetInt32("RolUser", usuario.IdRol.Value);
             return RedirectToAction("Inicio", "Vendedor");
         }
-        if (usuario.Rol == "SUPERVISOR")
+        if (usuario.IdRol == 2)
         {
-            HttpContext.Session.SetInt32("RolUser", 2);
+            HttpContext.Session.SetInt32("RolUser", usuario.IdRol.Value);
             return RedirectToAction("Inicio", "Supervisor");
         }
-        if (usuario.Rol == "ADMINISTRADOR")
+        if (usuario.IdRol == 1)
         {
-            HttpContext.Session.SetInt32("RolUser", 1);
+            HttpContext.Session.SetInt32("RolUser", usuario.IdRol.Value);
             return RedirectToAction("Inicio", "Administrador");
         }
 

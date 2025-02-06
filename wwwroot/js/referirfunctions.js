@@ -91,6 +91,18 @@ function ReferirDNI(dni, fuenteBase) {
         return;
     }
 
+    console.log({
+        dniReferir: dni,
+        fuenteBase: baseFuente,
+        nombresUsuario: NombresCompletosUsuario.value.toUpperCase(),
+        apellidosUsuario: ApellidosCompletosUsuario.value.toUpperCase(),
+        nombrescliente: NombresCompletosCliente.value.toUpperCase(),
+        dniUsuario: DNIUsuario.value,
+        telefono: CelularCliente.value,
+        agencia: AgenciaAtencion.value,
+        fechaVisita: FechaVisitaAgencia.value
+    });
+
     $.ajax({
         url: '/Referido/ReferirCliente',
         type: 'POST',
@@ -123,7 +135,8 @@ function ReferirDNI(dni, fuenteBase) {
                 });
             }
         },
-        error: function () {
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error("Error details:", textStatus, errorThrown);
             Swal.fire({
                 title: 'Error al referir',
                 text: 'Ocurrió un error al referir el cliente.',

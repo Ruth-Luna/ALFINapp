@@ -28,7 +28,7 @@ namespace ALFINapp.Controllers
         public async Task<IActionResult> BuscarDNIReferido(string dniBusqueda)
         {
             var getDNIReferido = await _dbServicesReferido.GetDataFromDNI(dniBusqueda);
-            var getBases = await _dbServicesGeneral.GetAgenciasDisponibles();
+            var getBases = await _dbServicesGeneral.GetUAgenciasConNumeros();
 
             if (getDNIReferido.IsSuccess == false)
             {
@@ -57,12 +57,11 @@ namespace ALFINapp.Controllers
             }
 
             var mandarReferido = await _dbServicesReferido.GuardarClienteReferido(dniReferir, fuenteBase, nombresUsuario, apellidosUsuario, dniUsuario, telefono, agencia, fechaVisita, nombrescliente, getReferido.Data?.OfertaMax);
-            if (mandarReferido.IsSuccess == false)
-            {
-                //El cliente referido no ha podido ser guardado
-                return Json(new { success = false, message = mandarReferido.Message });
-            }
 
+            if (!mandarReferido.Item1) // Accede al primer valor de la tupla (bool IsSuccess)
+            {
+                return Json(new { success = false, message = mandarReferido.Item2 }); // Segundo valor de la tupla (string Message)
+            }
             var mensaje = $@"
             <table>
                 <tr>
