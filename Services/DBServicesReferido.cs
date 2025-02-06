@@ -26,14 +26,15 @@ namespace ALFINapp.Services
         /// <param name="dniUsuario">El DNI del usuario que refiere al cliente.</param>
         /// <returns>Una tupla que indica si la operación fue exitosa y un mensaje asociado.</returns>
         public async Task<(bool IsSuccess, string Message)> GuardarClienteReferido(string dni,
-                                                                                                            string fuenteBase,
-                                                                                                            string nombres,
-                                                                                                            string apellidos,
-                                                                                                            string dniUsuario,
-                                                                                                            string telefono,
-                                                                                                            string agencia,
-                                                                                                            DateTime fechaVisita, 
-                                                                                                            string nombresCliente)
+                                                                                string fuenteBase,
+                                                                                string nombres,
+                                                                                string apellidos,
+                                                                                string dniUsuario,
+                                                                                string telefono,
+                                                                                string agencia,
+                                                                                DateTime fechaVisita, 
+                                                                                string nombresCliente,
+                                                                                decimal OfertaEnviada)
         {
             try
             {
@@ -64,6 +65,7 @@ namespace ALFINapp.Services
                         FueProcesado = false,
                         Telefono = telefono,
                         Agencia = agencia,
+                        OfertaEnviada = OfertaEnviada,
                         FechaVisita = fechaVisita
                     };
                     _context.Add(clienteReferido);
@@ -308,6 +310,27 @@ namespace ALFINapp.Services
             catch (System.Exception ex)
             {
                 return (false, ex.Message, null);
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message)> ModificarEstadoReferido(string DNIAsesorDerivacion, string DNIClienteDerivacion, string AgenciaDerivacion, string TelefonoDerivacion, DateTime FechaVisitaDerivacion)
+        {
+            try
+            {
+                var referido = await _context.clientes_referidos.Where(cr => cr.DniAsesor == DNIAsesorDerivacion && cr.DniCliente == DNIClienteDerivacion && cr.Agencia == AgenciaDerivacion && cr.Telefono == TelefonoDerivacion && cr.FechaVisita == FechaVisitaDerivacion).FirstOrDefaultAsync();
+                if (referido == null)
+                {
+                    return (false, "No se ha encontrado el referido");
+                }
+
+                referido.FueProcesado = true;
+                _context.Update(referido);
+                await _context.SaveChangesAsync();
+                return (true, "Referido procesado exitosamente");
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message);
             }
         }
     }

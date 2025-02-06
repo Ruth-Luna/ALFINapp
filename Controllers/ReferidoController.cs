@@ -50,17 +50,19 @@ namespace ALFINapp.Controllers
                                                                         string agencia,
                                                                         DateTime fechaVisita)
         {
-            var mandarReferido = await _dbServicesReferido.GuardarClienteReferido(dniReferir, fuenteBase, nombresUsuario, apellidosUsuario, dniUsuario, telefono, agencia, fechaVisita, nombrescliente);
-            if (mandarReferido.IsSuccess == false)
-            {
-                //El cliente referido no ha podido ser guardado
-                return Json(new { success = false, message = mandarReferido.Message });
-            }
             var getReferido = await _dbServicesReferido.GetDataParaReferir(dniReferir);
             if (getReferido.IsSuccess == false || getReferido.Data == null)
             {
                 return Json(new { success = false, message = getReferido.Message });
             }
+
+            var mandarReferido = await _dbServicesReferido.GuardarClienteReferido(dniReferir, fuenteBase, nombresUsuario, apellidosUsuario, dniUsuario, telefono, agencia, fechaVisita, nombrescliente, getReferido.Data?.OfertaMax);
+            if (mandarReferido.IsSuccess == false)
+            {
+                //El cliente referido no ha podido ser guardado
+                return Json(new { success = false, message = mandarReferido.Message });
+            }
+
             var mensaje = $@"
             <table>
                 <tr>
@@ -118,7 +120,7 @@ namespace ALFINapp.Controllers
             return Json(new { success = true, message = getReferido.Message + ". " + enviarCorreo.Message });
         }
         public async Task<IActionResult> Referidos()
-        { 
+        {
             try
             {
                 var idUsuarioSupervisor = HttpContext.Session.GetInt32("idUsuarioSupervisor");

@@ -9,7 +9,8 @@ namespace ALFINapp.Models
     {
         public DateTime? FechaVisitaDerivacion { get; set; }
         public string? AgenciaDerivacion { get; set; }
-        public string? AsesorDerivacion { get; set; }
+        public string? NombreAsesorDerivacion { get; set; }
+        public decimal? OfertaEnviadaDerivacion { get; set; }
         public string? DNIAsesorDerivacion { get; set; }
         public string? TelefonoDerivacion { get; set; }
         public string? DNIClienteDerivacion { get; set; }

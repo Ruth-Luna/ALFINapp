@@ -36,6 +36,8 @@ namespace ALFINapp.Models
         public string? Agencia { get; set; }
         [Column("fecha_visita_agencia")]
         public DateTime? FechaVisita { get; set; }
+        [Column("oferta_enviada")]
+        public decimal? OfertaEnviada { get; set; }
         [Column("fue_procesado")]
         public bool? FueProcesado { get; set; }
     }

@@ -54,11 +54,12 @@ namespace ALFINapp.Controllers
         public IActionResult DatosEnviarDerivacion(
             DateTime FechaVisitaDerivacion,
             string AgenciaDerivacion,
-            string AsesorDerivacion,
+            string NombreAsesorDerivacion,
             string DNIAsesorDerivacion,
             string TelefonoDerivacion,
             string DNIClienteDerivacion,
-            string NombreClienteDerivacion
+            string NombreClienteDerivacion,
+            decimal OfertaEnviadaDerivacion
         )
         {
             try
@@ -67,11 +68,12 @@ namespace ALFINapp.Controllers
                 {
                     FechaVisitaDerivacion = FechaVisitaDerivacion,
                     AgenciaDerivacion = AgenciaDerivacion,
-                    AsesorDerivacion = AsesorDerivacion,
+                    NombreAsesorDerivacion = NombreAsesorDerivacion,
                     DNIAsesorDerivacion = DNIAsesorDerivacion,
                     TelefonoDerivacion = TelefonoDerivacion,
                     DNIClienteDerivacion = DNIClienteDerivacion,
-                    NombreClienteDerivacion = NombreClienteDerivacion
+                    NombreClienteDerivacion = NombreClienteDerivacion,
+                    OfertaEnviadaDerivacion = OfertaEnviadaDerivacion
                 };
                 return PartialView("_DatosEnviarDerivacion", generarDerivacion);
             }
@@ -103,6 +105,12 @@ namespace ALFINapp.Controllers
                 if (enviarDerivacion.IsSuccess == false)
                 {
                     return Json(new { success = false, message = enviarDerivacion.Message });
+                }
+
+                var modificarEstadoReferido = await _dbServicesReferido.ModificarEstadoReferido(DNIAsesorDerivacion, DNIClienteDerivacion, AgenciaDerivacion, TelefonoDerivacion, FechaVisitaDerivacion);
+                if (modificarEstadoReferido.IsSuccess == false)
+                {
+                    return Json(new { success = false, message = modificarEstadoReferido.Message });
                 }
                 return Json(new { success = true, message = "Derivacion enviada correctamente" });
             }

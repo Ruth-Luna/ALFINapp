@@ -43,15 +43,25 @@
                     value="@Model.DNIAsesorDerivacion">
             </div>
             <div class="form-group mb-2">
+                <label for="NombreAsesorDerivacion">Nombre del Asesor</label>
+                <input type="text" class="form-control" placeholder="Nombre del Asesor" id="NombreAsesorDerivacion"
+                    value="@Model.NombreAsesorDerivacion">
+            </div>
+            <div class="form-group mb-2">
+                <label for="OfertaDerivacion">Oferta Enviada</label>
+                <input type="text" class="form-control" placeholder="Oferta Enviada" id="OfertaDerivacion"
+                    value="@Model.OfertaEnviadaDerivacion">
+            </div>
+            <div class="form-group mb-2">
                 <label for="FechaVisitaDerivacion">Fecha de Visita</label>
-                <input type="text" class="form-control" placeholder="DNI Asesor" id="FechaVisitaDerivacion"
+                <input type="date" class="form-control" placeholder="DNI Asesor" id="FechaVisitaDerivacion"
                     value="@Model.FechaVisitaDerivacion">
             </div>
         </div>
         <div class="btn-group" role="group" aria-label="Basic example">
             <a href="javascript:void(0)" 
                 class="btn btn-primary" 
-                onclick="enviarDerivacionPorReferencia('@Model.AgenciaDerivacion', '@Model.AsesorDerivacion', '@Model.DNIAsesorDerivacion', '@Model.DNIClienteDerivacion', '@Model.FechaVisitaDerivacion', '@Model.NombreClienteDerivacion', '@Model.TelefonoDerivacion')">
+                onclick="enviarDerivacionPorReferencia('@Model.AgenciaDerivacion', '@Model.NombreAsesorDerivacion', '@Model.DNIAsesorDerivacion', '@Model.DNIClienteDerivacion', '@Model.FechaVisitaDerivacion', '@Model.NombreClienteDerivacion', '@Model.TelefonoDerivacion')">
                 <i class="fas fa-sync-alt"></i>
                  Derivar
             </a>

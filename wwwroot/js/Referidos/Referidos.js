@@ -1,4 +1,4 @@
-function cargarDerivacionManual(FechaReferido, AgenciaDerivacion, DniAsesor, Telefono, DniCliente, NombreCliente) {
+function cargarDerivacionManual(NombreCompletoAsesor, DniCliente, NombreCliente, OfertaEnviada, Telefono, Agencia, FechaVisita, DniAsesor) {
     if (!DniCliente || !Telefono || !DniAsesor) {
         Swal.fire({
             title: 'Error al derivar',
@@ -8,17 +8,30 @@ function cargarDerivacionManual(FechaReferido, AgenciaDerivacion, DniAsesor, Tel
         });
         return;
     }
+
+    OfertaEnviada = parseFloat(OfertaEnviada);
+    if (!isNaN(OfertaEnviada)) {
+        Swal.fire({
+            title: 'Error al derivar',
+            text: 'El campo Oferta Enviada debe ser un número decimal válido',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+
     $.ajax({
         type: 'GET',
         url: '/Referidos/DatosEnviarDerivacion',
         data: {
-            FechaVisitaDerivacion: FechaReferido,
-            AgenciaDerivacion: AgenciaDerivacion,
-            AsesorDerivacion: DniAsesor,
+            FechaVisitaDerivacion: FechaVisita,
+            AgenciaDerivacion: Agencia,
+            NombreAsesorDerivacion: NombreCompletoAsesor,
             DNIAsesorDerivacion: DniAsesor,
             TelefonoDerivacion: Telefono,
             DNIClienteDerivacion: DniCliente,
             NombreClienteDerivacion: NombreCliente,
+            OfertaEnviadaDerivacion: OfertaEnviada,
         },
         success: function (response) {
             if (response.success === false) {
