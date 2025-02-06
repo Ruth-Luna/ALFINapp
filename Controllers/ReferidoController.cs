@@ -125,21 +125,21 @@ namespace ALFINapp.Controllers
                 var idUsuarioSupervisor = HttpContext.Session.GetInt32("idUsuarioSupervisor");
                 if (idUsuarioSupervisor == null)
                 {
-                    ViewData["MessageError"] = "No se ha podido obtener el id del usuario supervisor";
+                    TempData["MessageError"] = "No se ha podido obtener el id del usuario supervisor";
                     return RedirectToAction("Inicio", "Supervisor");
                 }
 
                 var getReferidos = await _dbServicesReferido.GetReferidosGeneral();
                 if (getReferidos.IsSuccess == false || getReferidos.Data == null)
                 {
-                    ViewData["MessageError"] = getReferidos.Message;
+                    TempData["MessageError"] = getReferidos.Message;
                     return View("Inicio", "Supervisor");
                 }
                 return View("Referidos", getReferidos.Data);
             }
             catch (System.Exception ex)
             {
-                ViewData["MessageError"] = ex.Message;
+                TempData["MessageError"] = ex.Message;
                 return View("Inicio", "Supervisor");
             }
         }

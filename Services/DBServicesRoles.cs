@@ -75,7 +75,24 @@ namespace ALFINapp.Services
             {
                 return (false, ex.Message, null);
             }
+        }
 
+        public async Task<(bool IsSuccess, string Message, List<VistaRutas>? Data)> getTodasLasVistasRutas()
+        {
+            try
+            {
+                var vistas = await (from v in _context.Vista_Rutas
+                                    select v).ToListAsync();
+                if (vistas.Count > 0)
+                {
+                    return (true, "Vistas encontradas", vistas);
+                }
+                return (false, "No se encontraron vistas", null);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message, null);
+            }
         }
     }
 }
