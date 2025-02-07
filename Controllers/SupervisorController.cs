@@ -89,7 +89,6 @@ namespace ALFINapp.Controllers
             ViewData["CurrentPage"] = page;
             ViewData["PageSize"] = pageSize;
             ViewData["TotalPages"] = (int)Math.Ceiling(totalClientes / (double)pageSize);
-
             return View("MainSupervisor", supervisorData);
         }
 

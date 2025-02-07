@@ -1,0 +1,58 @@
+@model List<List<ALFINapp.Models.VistasPorRolDTO>>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/main_page.css">
+}
+@{
+    var Vistas = ViewData["Vistas"] as List<ALFINapp.Models.VistaRutas>;
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Nombre de Rol</th>
+            <th>Vistas del Rol</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item[0].Rol</td>
+                @foreach (var vista in Vistas)
+                {
+                    @if (item.Any(x => x.nombre_vista == vista.NombreVista && x.ruta_vista == vista.RutaVista))
+                    {
+                        <td style="background-color: rgb(134, 255, 166);">
+                            <div class="row">
+                                <div class="col-md-10">
+                                    @vista.NombreVista @vista.RutaVista
+                                </div>
+                                <div class="col-md-2">
+                                    <a href="javascript:void(0)">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                    }
+                    else
+                    {
+                        <td style="background-color: rgb(255, 133, 133);">
+                            <div class="row">
+                                <div class="col-md-10">
+                                    @vista.NombreVista @vista.RutaVista
+                                </div>
+                                <div class="col-md-2">
+                                    <a href="javascript:void(0)">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                    }
+                }
+            </tr>
+        }
+    </tbody>
+</table>

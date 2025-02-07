@@ -28,10 +28,12 @@ public class MDbContext : DbContext
     public DbSet<UsuarioBanco> base_clientes_banco_usuario { get; set; }
     public DbSet<ClientesReferidos> clientes_referidos { get; set; }
     public DbSet<FeedGReportes> feed_G_REPORTES { get; set; }
+    public DbSet<VistaRutas> Vista_Rutas { get; set; }
     
     //DTOS Y PROCEDIMIENTOS ALMACENADOS
     public DbSet<StringDTO> string_dto { get; set; }
     public DbSet<NumerosEnterosDTO> numeros_enteros_dto { get; set; }
+    public DbSet<BoolDTO> bool_dto { get; set; }
     public DbSet<USupervisoresDTO> u_supervisores_dto { get; set; }
     public DbSet<AgenciasDisponiblesDTO> agencias_disponibles_dto { get; set; }
     public DbSet<AsignacionFiltrarBasesDTO> asignacion_filtrar_bases_dto { get; set; }
@@ -63,6 +65,10 @@ public class MDbContext : DbContext
             .ToView(null);
 
         modelBuilder.Entity<DetallesClienteDTO>()
+            .HasNoKey()
+            .ToView(null);
+
+        modelBuilder.Entity<BoolDTO>()
             .HasNoKey()
             .ToView(null);
     }

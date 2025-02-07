@@ -27,5 +27,8 @@ namespace ALFINapp.Models
         public string? Usuario { get; set; }
         public string? SegmentoUser { get; set; }
         public string? TraidoDe { get; set; }
+        public string? ApellidoPaterno { get; set; }
+        public string? ApellidoMaterno { get; set; }
+        public string? Nombres { get; set; }
     }
 }

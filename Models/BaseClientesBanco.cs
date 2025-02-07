@@ -70,4 +70,10 @@ public partial class BaseClientesBanco
     public string? TasasEspeciales { get; set; }
     [Column("fecha_subida")]
     public DateTime? FechaSubida { get; set; }
+    [Column("PATERNO")]
+    public string? PATERNO { get; set; }
+    [Column("NOMBRES")]
+    public string? NOMBRES { get; set; }
+    [Column("MATERNO")]
+    public string? MATERNO { get; set; }
 }
