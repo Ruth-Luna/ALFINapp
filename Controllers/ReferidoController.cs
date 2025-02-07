@@ -84,6 +84,7 @@ namespace ALFINapp.Controllers
                 return Json(new { success = false, message = mandarReferido.Item2 }); // Segundo valor de la tupla (string Message)
             }
             var mensaje = $@"
+            <h2>Referido</h2>
             <table>
                 <tr>
                     <td>CANAL TELECAMPO</td>
@@ -130,7 +131,7 @@ namespace ALFINapp.Controllers
             var enviarCorreo = await _dbServicesReferido.EnviarCorreoReferido(
                                                                         /*"rperaltam@grupoa365.com.pe"*/"santiagovl0308@gmail.com",
                                                                         mensaje,
-                                                                        $"Nuevos Datos {DateTime.Now.ToString("dd/MM/yyyy")}");
+                                                                        $"REFERIDOS - SISTEMA ALFIN {DateTime.Now.ToString("dd/MM/yyyy")}");
 
             if (enviarCorreo.IsSuccess == false)
             {

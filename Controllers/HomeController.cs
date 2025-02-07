@@ -106,6 +106,11 @@ public class HomeController : Controller
             HttpContext.Session.SetInt32("RolUser", usuario.IdRol.Value);
             return RedirectToAction("Inicio", "Administrador");
         }
+        if (usuario.IdRol == 4)
+        {
+            HttpContext.Session.SetInt32("RolUser", usuario.IdRol.Value);
+            return RedirectToAction("Inicio", "GerenteZonal");
+        }
 
         TempData["MessageError"] = "Algo salio Mal en la Autenticacion";
         return RedirectToAction("Index", "Home");

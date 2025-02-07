@@ -1,7 +1,7 @@
 function agregarNuevoAsesorView() {
     // Realiza una llamada AJAX para cargar la vista parcial
     $.ajax({
-        url: "/Usuario/AgregarNuevoAsesorView", // URL del controlador que devuelve la vista parcial
+        url: "/Asesores/AgregarNuevoAsesorView", // URL del controlador que devuelve la vista parcial
         type: "GET",
         success: function (response) {
             $('#interfazAgregarAsesor').html(response);

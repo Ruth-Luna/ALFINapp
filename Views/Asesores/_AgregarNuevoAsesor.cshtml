@@ -1,6 +1,11 @@
 @model ALFINapp.Models.Usuario
 @{
     var rol = Model?.Rol ?? "ASESOR DE CREDITOS";
+    var RolUsuarioActual = ViewData["RolActual"] as int?;
+    if (RolUsuarioActual == null)
+    {
+        RolUsuarioActual = 0; // or any default value you prefer
+    }
 }
 <div class="label-for-sup-sec">
     <div class="row">
@@ -32,7 +37,34 @@
         </div>
         <div class="mb-3">
             <label for="departamento" class="form-label">Departamento</label>
-            <input type="text" class="form-control" id="departamento" name="departamento" required>
+            <select class="form-control" id="departamento" name="departamento" required>
+                <option value="">Seleccione un departamento</option>
+                <option value="Amazonas">Amazonas</option>
+                <option value="Áncash">Áncash</option>
+                <option value="Apurímac">Apurímac</option>
+                <option value="Arequipa">Arequipa</option>
+                <option value="Ayacucho">Ayacucho</option>
+                <option value="Cajamarca">Cajamarca</option>
+                <option value="Callao">Callao</option>
+                <option value="Cusco">Cusco</option>
+                <option value="Huancavelica">Huancavelica</option>
+                <option value="Huánuco">Huánuco</option>
+                <option value="Ica">Ica</option>
+                <option value="Junín">Junín</option>
+                <option value="La Libertad">La Libertad</option>
+                <option value="Lambayeque">Lambayeque</option>
+                <option value="Lima">Lima</option>
+                <option value="Loreto">Loreto</option>
+                <option value="Madre de Dios">Madre de Dios</option>
+                <option value="Moquegua">Moquegua</option>
+                <option value="Pasco">Pasco</option>
+                <option value="Piura">Piura</option>
+                <option value="Puno">Puno</option>
+                <option value="San Martín">San Martín</option>
+                <option value="Tacna">Tacna</option>
+                <option value="Tumbes">Tumbes</option>
+                <option value="Ucayali">Ucayali</option>
+            </select>
         </div>
         <div class="mb-3">
             <label for="provincia" class="form-label">Provincia</label>
@@ -50,13 +82,13 @@
                 El campo Region solo puede tener letras.
             </div>
         </div>
-        @if (rol == "ADMINISTRADOR")
+        @if (RolUsuarioActual == 4 || RolUsuarioActual == 1)
         {
             <div class="mb-3">
                 <label for="rol" class="form-label">Rol</label>
                 <select class="form-control" id="rol" name="rol" required>
-                    <option value="SUPERVISOR">SUPERVISOR</option>
-                    <option value="VENDEDOR">ASESOR DE CREDITOS</option>
+                    <option value="2">SUPERVISOR</option>
+                    <option value="3">ASESOR DE CREDITOS</option>
                 </select>
             </div>
         }
@@ -101,8 +133,6 @@
                 El telefono solo puede tener números.
             </div>
         </div>
-
-
     </div>
 </div>
 <div class="spacing"> </div>
@@ -125,17 +155,17 @@
 
         // Get the DNI value and perform validation
         var dni = document.getElementById('dni').value.trim();
-        if (!/^[0-9]{8}$/.test(dni)) {
+        if (!/^[0-9]{10}$/.test(dni)) {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'El DNI debe tener 8 dígitos y solo números.'
+                text: 'El DNI debe tener 10 dígitos y solo números.'
             });
             return;
         }
 
         // Define an array of field IDs that should only contain letters
-        var soloLetrasCampos = ['departamento', 'provincia', 'distrito', 'region', 'apellido_paterno', 'apellido_materno', 'nombres'];
+        var soloLetrasCampos = ['region', 'apellido_paterno', 'apellido_materno', 'nombres'];
         var valid = true;
         // Perform validation for each field in the array
         soloLetrasCampos.forEach(function (campo) {
@@ -176,11 +206,11 @@
             Provincia: document.getElementById('provincia').value.trim(),
             Distrito: document.getElementById('distrito').value.trim(),
             REGION: document.getElementById('region').value.trim(),
-            Rol: document.getElementById('rol').value.trim(),
             NombresCompletos: document.getElementById('nombres').value.trim()
                 + ' ' + document.getElementById('apellido_paterno').value.trim()
                 + ' ' + document.getElementById('apellido_materno').value.trim(),
-            Telefono: telefono
+            Telefono: telefono,
+            IdRol: document.getElementById('rol').value.trim()
         };
 
         // Send an AJAX request to the server

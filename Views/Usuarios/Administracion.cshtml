@@ -1,0 +1,152 @@
+@model List<ALFINapp.Models.Usuario>
+
+@{
+}
+
+@section Styles {
+    <link href="~/css/Usuarios/Administracion.css" rel="stylesheet" />
+}
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Dni</th>
+                <th>Nombres Completos</th>
+                <th>Departamento</th>
+                <th>Provincia</th>
+                <th>Distrito</th>
+                <th>Telefono</th>
+                <th>Fecha Registro</th>
+                <th>Estado</th>
+                <th>ID Supervisor Asignado</th>
+                <th>Nombres Supervisor Asignado</th>
+                <th>Region</th>
+                <th>Nombre Campaña</th>
+                <th>Id Rol</th>
+                <th>Rol</th>
+                <th>Accion</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var usuario in Model)
+            {
+                @if (usuario.Estado == "ACTIVO")
+                {
+                    <tr>
+                        <td>
+                            <textarea type="text" id="DNI_@usuario.IdUsuario" value="@usuario.Dni">
+                                </td>
+                                <td>
+                                    <textarea type="text" id="NombresCompletos_@usuario.IdUsuario">@usuario.NombresCompletos</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="Departamento_@usuario.IdUsuario">@usuario.Departamento</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="Provincia_@usuario.IdUsuario">@usuario.Provincia</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="Distrito_@usuario.IdUsuario">@usuario.Distrito</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="Telefono_@usuario.IdUsuario">@usuario.Telefono</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="FechaRegistro_@usuario.IdUsuario">@usuario.FechaRegistro</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="Estado_@usuario.IdUsuario">@usuario.Estado</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="IDUSUARIOSUP_@usuario.IdUsuario">@usuario.IDUSUARIOSUP</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="RESPONSABLESUP_@usuario.IdUsuario">@usuario.RESPONSABLESUP</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="REGION_@usuario.IdUsuario">@usuario.REGION</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="NOMBRECAMPAÑA_@usuario.IdUsuario">@usuario.NOMBRECAMPAÑA</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="IdRol_@usuario.IdUsuario">@usuario.IdRol</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="Rol_@usuario.IdUsuario">@usuario.Rol</textarea>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="javascript:void(0)" class="btn btn-primary"
+                                    onclick="cambiarDatos('@usuario.IdUsuario')"><i class="bi bi-pencil"></i>Editar</a>
+                                <a href="javascript:void(0)" class="btn btn-warning">Desactivar</a>
+                                <a href="javascript:void(0)" class="btn btn-danger">Eliminar</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    <tr class="table-danger">
+                        <td>
+                            <textarea type="text" id="DNI_@usuario.IdUsuario" value="@usuario.Dni">
+                                </td>
+                                <td>
+                                    <textarea type="text" id="NombresCompletos_@usuario.IdUsuario">@usuario.NombresCompletos</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="Departamento_@usuario.IdUsuario">@usuario.Departamento</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="Provincia_@usuario.IdUsuario">@usuario.Provincia</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="Distrito_@usuario.IdUsuario">@usuario.Distrito</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="Telefono_@usuario.IdUsuario">@usuario.Telefono</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="FechaRegistro_@usuario.IdUsuario">@usuario.FechaRegistro</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="Estado_@usuario.IdUsuario">@usuario.Estado</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="IDUSUARIOSUP_@usuario.IdUsuario">@usuario.IDUSUARIOSUP</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="RESPONSABLESUP_@usuario.IdUsuario">@usuario.RESPONSABLESUP</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="REGION_@usuario.IdUsuario">@usuario.REGION</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="NOMBRECAMPAÑA_@usuario.IdUsuario">@usuario.NOMBRECAMPAÑA</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="IdRol_@usuario.IdUsuario">@usuario.IdRol</textarea>
+                        </td>
+                        <td>
+                            <textarea type="text" id="Rol_@usuario.IdUsuario">@usuario.Rol</textarea>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="javascript:void(0)" class="btn btn-primary"
+                                    onclick="cambiarDatos('@usuario.IdUsuario')"><i class="bi bi-pencil"></i>Editar</a>
+                                <a href="javascript:void(0)" class="btn btn-warning">Desactivar</a>
+                                <a href="javascript:void(0)" class="btn btn-danger">Eliminar</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="~/js/Usuarios/Administracion.js"></script>
+
+}

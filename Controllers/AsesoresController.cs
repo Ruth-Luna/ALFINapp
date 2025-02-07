@@ -12,13 +12,13 @@ using Microsoft.Extensions.Logging;
 namespace ALFINapp.Controllers
 {
     [RequireSession]
-    public class UsuarioController : Controller
+    public class AsesoresController : Controller
     {
         private readonly MDbContext _context;
         private readonly DBServicesAsignacionesAsesores _dbServicesAsignacionesAsesores;
         private readonly DBServicesConsultasSupervisores _dbServicesConsultasSupervisores;
         private readonly DBServicesGeneral _dbServicesGeneral;
-        public UsuarioController(DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores, 
+        public AsesoresController(DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores, 
                                                 DBServicesGeneral dbServicesGeneral,
                                                 DBServicesConsultasSupervisores dbServicesConsultasSupervisores, 
                                                 MDbContext context)
@@ -109,13 +109,20 @@ namespace ALFINapp.Controllers
                                                                                             && g.ca.IdUsuarioV == grouped.Key.IdUsuario
                                                                                             && g.ca.IdUsuarioS == idSupervisorActual) // Diferencia entre asignados y trabajados
                                                     }).ToList();
-                return View("_ModificarAsesores", asesoresAsignadosaSupervisor);
+                return View("Usuarios", asesoresAsignadosaSupervisor);
             }
-            
         }
+
         [HttpGet]
         public IActionResult AgregarNuevoAsesorView()
         {
+            int? rolSupervisorActual = HttpContext.Session.GetInt32("RolUser");
+            if (rolSupervisorActual == null)
+            {
+                return Json(new { success = false, message = "Usted no ha iniciado sesion" });
+            }
+
+            ViewData["RolActual"] = rolSupervisorActual.Value;
             return PartialView("_AgregarNuevoAsesor");
         }
 

@@ -201,7 +201,27 @@ namespace ALFINapp.Controllers
                 }
 
                 nuevoUsuario.NombresCompletos = nuevoUsuario.NombresCompletos?.ToUpper();
-                nuevoUsuario.Rol = nuevoUsuario.Rol?.ToUpper();
+                if (nuevoUsuario.IdRol == 0)
+                {
+                    return Json(new { success = false, message = "Debe seleccionar un Rol para el nuevo usuario" });
+                }
+                nuevoUsuario.IdRol = nuevoUsuario.IdRol;
+                if (nuevoUsuario.IdRol == 1)
+                {
+                    nuevoUsuario.Rol = "ADMINISTRADOR";
+                }
+                else if (nuevoUsuario.IdRol == 2)
+                {
+                    nuevoUsuario.Rol = "SUPERVISOR";
+                }
+                else if (nuevoUsuario.IdRol == 3)
+                {
+                    nuevoUsuario.Rol = "VENDEDOR";
+                }
+                else
+                {
+                    nuevoUsuario.Rol = "DESCONOCIDO";
+                }
                 nuevoUsuario.Departamento = nuevoUsuario.Departamento?.ToUpper();
                 nuevoUsuario.Provincia = nuevoUsuario.Provincia?.ToUpper();
                 nuevoUsuario.Distrito = nuevoUsuario.Distrito?.ToUpper();

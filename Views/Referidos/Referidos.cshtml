@@ -28,74 +28,77 @@
         <strong>Nota:</strong> En esta vista puede Derivar una Cliente previamente referido.
 
     </div>
-    <table class="table table-bordered" id="ReferidoTable">
-        <thead>
-            <tr>
-                <th>Accion</th>
-                <th>Estado</th>
-                <th>CDV Alfin</th>
-                <th>DNI Cliente</th>
-                <th>Nombre Cliente</th>
-                <th>Monto Solicitado</th>
-                <th>Telefono</th>
-                <th>Agencia</th>
-                <th>Fecha de Visita</th>
-            </tr>
-        </thead>
-        <tbody id="data-table">
-            <tr>
-                <td></td>
-                <td>
-                    <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('ReferidoTable', 2, 'bool')"
-                        data-sort-ignore>
-                        <i class="bi bi-caret-down-square"></i>
-                    </button>
-                </td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            @if (Model != null)
-            {
-                foreach (var referido in Model)
+    <div class="table-responsive">
+        <table class="table table-bordered" id="ReferidoTable">
+            <thead>
+                <tr>
+                    <th>Accion</th>
+                    <th>Estado</th>
+                    <th>CDV Alfin</th>
+                    <th>DNI Cliente</th>
+                    <th>Nombre Cliente</th>
+                    <th>Monto Solicitado</th>
+                    <th>Telefono</th>
+                    <th>Agencia</th>
+                    <th>Fecha de Visita</th>
+                </tr>
+            </thead>
+            <tbody id="data-table">
+                <tr>
+                    <td></td>
+                    <td>
+                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('ReferidoTable', 2, 'bool')"
+                            data-sort-ignore>
+                            <i class="bi bi-caret-down-square"></i>
+                        </button>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                @if (Model != null)
                 {
-                    <tr>
-                        @{
-                            var referidoIdCliente = referido.IdBaseClienteA365 != null ? referido.IdBaseClienteA365 :
-                            referido.IdBaseClienteBanco;
-                        }
-                        <td>
-                            <a href="javascript:void(0)"
-                                onclick="cargarDerivacionManual('@referido.NombreCompletoAsesor', '@referido.DniCliente', '@referido.NombreCompletoCliente', '@referido.OfertaEnviada', '@referido.Telefono', '@referido.Agencia', '@referido.FechaVisita', '@referido.DniAsesor');"
-                                class="btn btn-primary">
-                                <i class="fas fa-sync-alt"></i>
-                                Derivar
-                            </a>
-                        </td>
-                        @if (referido.FueProcesado == true)
-                        {
-                            <td><span class="badge bg-success">Procesado</span></td>
-                        }
-                        else
-                        {
-                            <td><span class="badge bg-danger">Pendiente</span></td>
-                        }
-                        <td>@(referido.NombreCompletoAsesor?.ToUpper() ?? "No Especificado")</td>
-                        <td>@referido.DniCliente</td>
-                        <td>@(referido.NombreCompletoCliente?.ToUpper() ?? "No Especificado")</td>
-                        <td>@referido.OfertaEnviada</td>
-                        <td>@referido.Telefono</td>
-                        <td>@(referido.Agencia?.ToUpper() ?? "No Especificado")</td>
-                        <td>@referido.FechaVisita</td>
-                    </tr>
+                    foreach (var referido in Model)
+                    {
+                        <tr>
+                            @{
+                                var referidoIdCliente = referido.IdBaseClienteA365 != null ? referido.IdBaseClienteA365 :
+                                referido.IdBaseClienteBanco;
+                            }
+                            <td>
+                                <a href="javascript:void(0)"
+                                    onclick="cargarDerivacionManual('@referido.NombreCompletoAsesor', '@referido.DniCliente', '@referido.NombreCompletoCliente', '@referido.OfertaEnviada', '@referido.Telefono', '@referido.Agencia', '@referido.FechaVisita', '@referido.DniAsesor');"
+                                    class="btn btn-primary">
+                                    <i class="fas fa-sync-alt"></i>
+                                    Derivar
+                                </a>
+                            </td>
+                            @if (referido.FueProcesado == true)
+                            {
+                                <td><span class="badge bg-success">Procesado</span></td>
+                            }
+                            else
+                            {
+                                <td><span class="badge bg-danger">Pendiente</span></td>
+                            }
+                            <td>@(referido.NombreCompletoAsesor?.ToUpper() ?? "No Especificado")</td>
+                            <td>@referido.DniCliente</td>
+                            <td>@(referido.NombreCompletoCliente?.ToUpper() ?? "No Especificado")</td>
+                            <td>@referido.OfertaEnviada</td>
+                            <td>@referido.Telefono</td>
+                            <td>@(referido.Agencia?.ToUpper() ?? "No Especificado")</td>
+                            <td>@referido.FechaVisita</td>
+                        </tr>
+                    }
                 }
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
+
 </div>
 
 @section Scripts {

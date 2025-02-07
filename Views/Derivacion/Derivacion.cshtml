@@ -40,32 +40,34 @@
             value="@Model.Count" readonly>
     </div>
 
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>DNI Cliente</th>
-                <th>Telefono</th>
-                <th>DNI Asesor</th>
-                <th>Origen del Telefono</th>
-                <th>Fecha de Derivacion</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model != null)
-            {
-                foreach (var derivacionAsesor in Model)
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>DNI Cliente</th>
+                    <th>Telefono</th>
+                    <th>DNI Asesor</th>
+                    <th>Origen del Telefono</th>
+                    <th>Fecha de Derivacion</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null)
                 {
-                    <tr>
-                        <td>@derivacionAsesor.DNI</td>
-                        <td>@derivacionAsesor.TELEFONO</td>
-                        <td>@derivacionAsesor.DNI_ASESOR</td>
-                        <td>@derivacionAsesor.ORIGEN_TELEFONO</td>
-                        <td>@derivacionAsesor.FECHA_ENVIO</td>
-                    </tr>
+                    foreach (var derivacionAsesor in Model)
+                    {
+                        <tr>
+                            <td>@derivacionAsesor.DNI</td>
+                            <td>@derivacionAsesor.TELEFONO</td>
+                            <td>@derivacionAsesor.DNI_ASESOR</td>
+                            <td>@derivacionAsesor.ORIGEN_TELEFONO</td>
+                            <td>@derivacionAsesor.FECHA_ENVIO</td>
+                        </tr>
+                    }
                 }
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 @section Scripts {
