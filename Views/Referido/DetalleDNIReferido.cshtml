@@ -30,7 +30,9 @@
         }
     </div>
 
-    <h3>Ingrese sus <strong>Datos Personales</strong> al mandar la referencia</h3>
+    <div class="mb-3">
+        <h3>Ingrese sus <strong>Datos Personales</strong> al mandar la referencia</h3>
+    </div>
 
     <div class="form-group mb-3">
         <label for="DNIUsuario"> Ingrese su DNI </label>
@@ -47,7 +49,68 @@
         <input type="text" id="ApellidosCompletosUsuario" class="form-control" placeholder="Apellidos Completos">
     </div>
 
-    <h3>Ingrese los <strong>Datos Personales</strong> del cliente <strong>Cliente Referenciado</strong></h3>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group mb-3">
+                <label for="CelularUsuario"> Ingrese su Numero de Celular </label>
+                <input type="text" id="CelularUsuario" class="form-control" placeholder="Celular">
+            </div>
+            <div class="form-group mb-3">
+                <label for="CorreoUsuario"> Ingrese su Correo Electronico </label>
+                <input type="text" id="CorreoUsuario" class="form-control" placeholder="Correo Electronico">
+            </div>
+            <div class="form-group mb-3">
+                <label for="CCIUsuario">CCI</label>
+                <input type="text" id="CCIUsuario" class="form-control" placeholder="Ingrese su CCI">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group mb-3">
+                <label for="DepartamentoUsuario">Seleccione su Departamento</label>
+                <select id="DepartamentoUsuario" class="form-select">
+                    <option value="">Seleccione un Departamento</option>
+                    <option value="Amazonas">Amazonas</option>
+                    <option value="Áncash">Áncash</option>
+                    <option value="Apurímac">Apurímac</option>
+                    <option value="Arequipa">Arequipa</option>
+                    <option value="Ayacucho">Ayacucho</option>
+                    <option value="Cajamarca">Cajamarca</option>
+                    <option value="Callao">Callao</option>
+                    <option value="Cusco">Cusco</option>
+                    <option value="Huancavelica">Huancavelica</option>
+                    <option value="Huánuco">Huánuco</option>
+                    <option value="Ica">Ica</option>
+                    <option value="Junín">Junín</option>
+                    <option value="La Libertad">La Libertad</option>
+                    <option value="Lambayeque">Lambayeque</option>
+                    <option value="Lima">Lima</option>
+                    <option value="Loreto">Loreto</option>
+                    <option value="Madre de Dios">Madre de Dios</option>
+                    <option value="Moquegua">Moquegua</option>
+                    <option value="Pasco">Pasco</option>
+                    <option value="Piura">Piura</option>
+                    <option value="Puno">Puno</option>
+                    <option value="San Martín">San Martín</option>
+                    <option value="Tacna">Tacna</option>
+                    <option value="Tumbes">Tumbes</option>
+                    <option value="Ucayali">Ucayali</option>
+                </select>
+            </div>
+            <div class="form-group mb-3">
+                <label for="UbigeoUsuario"> Ingrese su Ubigeo </label>
+                <input type="text" id="UbigeoUsuario" class="form-control" placeholder="Ubigeo">
+            </div>
+            <div class="form-group mb-3">
+                <label for="BancoUsuario"> Ingrese su Banco </label>
+                <input type="text" id="BancoUsuario" class="form-control" placeholder="Banco">
+            </div>
+        </div>
+    </div>
+
+
+    <div class="mb-3">
+        <h3>Ingrese los <strong>Datos Personales</strong> del cliente <strong>Cliente Referenciado</strong></h3>
+    </div>
 
     @if (Model.TraidoDe == "DBALFIN")
     {
@@ -75,7 +138,8 @@
                     {
                         if (agencia != null)
                         {
-                            <option value="@agencia.sucursal_comercial - @agencia.agencia_comercial">@agencia.sucursal_comercial - @agencia.agencia_comercial</option>
+                            <option value="@agencia.sucursal_comercial - @agencia.agencia_comercial">@agencia.sucursal_comercial -
+                                @agencia.agencia_comercial</option>
                         }
                     }
                 }

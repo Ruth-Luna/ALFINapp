@@ -34,7 +34,13 @@ namespace ALFINapp.Services
                                                                                 string agencia,
                                                                                 DateTime fechaVisita, 
                                                                                 string nombresCliente,
-                                                                                decimal OfertaEnviada)
+                                                                                decimal OfertaEnviada,
+                                                                                string celular,
+                                                                                string correo,
+                                                                                string cci,
+                                                                                string departamento,
+                                                                                string ubigeo,
+                                                                                string banco)
         {
             try
             {
@@ -66,7 +72,13 @@ namespace ALFINapp.Services
                         Telefono = telefono,
                         Agencia = agencia,
                         OfertaEnviada = OfertaEnviada,
-                        FechaVisita = fechaVisita
+                        FechaVisita = fechaVisita,
+                        CelularAsesor = celular,
+                        CorreoAsesor = correo,
+                        CciAsesor = cci,
+                        DepartamentoAsesor = departamento,
+                        UbigeoAsesor = ubigeo,
+                        BancoAsesor = banco
                     };
                     _context.Add(clienteReferido);
                     await _context.SaveChangesAsync();
@@ -76,6 +88,7 @@ namespace ALFINapp.Services
                 {
                     var datosClienteReferido = await (from bcb in _context.base_clientes_banco
                                                       where bcb.Dni == dni
+                                                      orderby bcb.FechaSubida descending
                                                       select new
                                                       {
                                                           bcb
@@ -99,7 +112,14 @@ namespace ALFINapp.Services
                         FueProcesado = false,
                         Telefono = telefono,
                         Agencia = agencia,
-                        FechaVisita = fechaVisita
+                        FechaVisita = fechaVisita,
+                        OfertaEnviada = OfertaEnviada,
+                        CelularAsesor = celular,
+                        CorreoAsesor = correo,
+                        CciAsesor = cci,
+                        DepartamentoAsesor = departamento,
+                        UbigeoAsesor = ubigeo,
+                        BancoAsesor = banco
                     };
                     _context.Add(clienteReferido);
                     await _context.SaveChangesAsync();
@@ -160,7 +180,7 @@ namespace ALFINapp.Services
                     return (true, "El Usuario se ha encontrado en la Base de Datos de A365", dataclientebc);
                 }
 
-                var clientebcb = await _context.base_clientes_banco.Where(bcb => bcb.Dni == DNI)
+                var clientebcb = await _context.base_clientes_banco.Where(bcb => bcb.Dni == DNI && bcb.FechaSubida.HasValue && bcb.FechaSubida.Value.Month == DateTime.Now.Month && bcb.FechaSubida.Value.Year == DateTime.Now.Year)
                                     .FirstOrDefaultAsync();
 
                 if (clientebcb != null)
@@ -174,7 +194,7 @@ namespace ALFINapp.Services
 
                     return (true, "El Usuario se ha encontrado en la Base de Datos de ALFIN", dataclientebcb);
                 }
-                return (false, "El Usuario no se encuentra registrado en ninguna de las bases de datos", null);
+                return (false, "El Usuario no se encuentra registrado en ninguna de las bases de datos, o su entrada no corresponde a este mes", null);
             }
             catch (System.Exception ex)
             {
@@ -220,6 +240,7 @@ namespace ALFINapp.Services
                 var clienteDetallesA365 = await (from bc in _context.base_clientes
                                                  join db in _context.detalle_base on bc.IdBase equals db.IdBase
                                                  where bc.Dni == dni && bc.IdBaseBanco == null
+                                                 orderby db.FechaCarga descending
                                                  select new
                                                  {
                                                      NombresCompletos = bc.XNombre + " " + bc.XAppaterno + " " + bc.XApmaterno,
@@ -232,6 +253,7 @@ namespace ALFINapp.Services
 
                 var clienteDetallesALFIN = await (from bcb in _context.base_clientes_banco
                                                   where bcb.Dni == dni
+                                                  orderby bcb.FechaSubida descending
                                                   select new
                                                   {
                                                       NombresCompletos = "DESCONOCIDO",
@@ -242,7 +264,7 @@ namespace ALFINapp.Services
                 {
                     return (true, "Se ha encontrado el cliente en la base de datos de ALFIN", clienteDetallesALFIN);
                 }
-                return (false, "No se ha encontrado el cliente en ninguna de las bases de datos. Algo salio mal", null);
+                return (false, "No se ha encontrado el cliente en ninguna de las bases de datos. Algo salio mal en la busqueda", null);
             }
 
             catch (System.Exception ex)

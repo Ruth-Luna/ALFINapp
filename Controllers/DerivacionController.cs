@@ -55,10 +55,10 @@ namespace ALFINapp.Controllers
                 {
                     DNI = item.DniCliente ?? string.Empty,
                     COD_CANAL = "DESCONOCIDO",
-                    CANAL = "CANAL DESCONOCIDO",
+                    CANAL = "A365",
                     FECHA_ENVIO = item.FechaDerivacion,
                     TELEFONO = item.TelefonoCliente,
-                    ORIGEN_TELEFONO = "CLIENTES ENRIQUECIDOS",
+                    ORIGEN_TELEFONO = "A365",
                     COD_CAMPAÑA = item.NombreAgencia,
                     COD_TIP = 2,
                     DNI_ASESOR = item.DniAsesor,

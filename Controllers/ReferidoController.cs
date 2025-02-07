@@ -48,7 +48,13 @@ namespace ALFINapp.Controllers
                                                                         string dniUsuario,
                                                                         string telefono,
                                                                         string agencia,
-                                                                        DateTime fechaVisita)
+                                                                        DateTime fechaVisita,
+                                                                        string celular,
+                                                                        string correo,
+                                                                        string cci,
+                                                                        string departamento,
+                                                                        string ubigeo,
+                                                                        string banco)
         {
             var getReferido = await _dbServicesReferido.GetDataParaReferir(dniReferir);
             if (getReferido.IsSuccess == false || getReferido.Data == null)
@@ -56,7 +62,22 @@ namespace ALFINapp.Controllers
                 return Json(new { success = false, message = getReferido.Message });
             }
 
-            var mandarReferido = await _dbServicesReferido.GuardarClienteReferido(dniReferir, fuenteBase, nombresUsuario, apellidosUsuario, dniUsuario, telefono, agencia, fechaVisita, nombrescliente, getReferido.Data?.OfertaMax);
+            var mandarReferido = await _dbServicesReferido.GuardarClienteReferido(dniReferir, 
+                fuenteBase, 
+                nombresUsuario, 
+                apellidosUsuario, 
+                dniUsuario, 
+                telefono, 
+                agencia, 
+                fechaVisita, 
+                nombrescliente, 
+                getReferido.Data?.OfertaMax ?? 0,
+                celular,
+                correo,
+                cci,
+                departamento,
+                ubigeo,
+                banco);
 
             if (!mandarReferido.Item1) // Accede al primer valor de la tupla (bool IsSuccess)
             {
@@ -107,7 +128,7 @@ namespace ALFINapp.Controllers
             </table>";
 
             var enviarCorreo = await _dbServicesReferido.EnviarCorreoReferido(
-                                                                        "rperaltam@grupoa365.com.pe",
+                                                                        /*"rperaltam@grupoa365.com.pe"*/"santiagovl0308@gmail.com",
                                                                         mensaje,
                                                                         $"Nuevos Datos {DateTime.Now.ToString("dd/MM/yyyy")}");
 

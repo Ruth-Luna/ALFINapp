@@ -59,6 +59,14 @@ function ReferirDNI(dni, fuenteBase) {
     const CelularCliente = document.getElementById('CelularCliente');
     const AgenciaAtencion = document.getElementById('AgenciaAtencion');
     const FechaVisitaAgencia = document.getElementById('FechaVisitaAgencia');
+    //MAS CAMPOS
+    const CelularUsuario = document.getElementById('CelularUsuario');
+    const CorreoUsuario = document.getElementById('CorreoUsuario');
+    const CCIUsuario = document.getElementById('CCIUsuario');
+    const DepartamentoUsuario = document.getElementById('DepartamentoUsuario');
+    const UbigeoUsuario = document.getElementById('UbigeoUsuario');
+    const BancoUsuario = document.getElementById('BancoUsuario');
+
     const dniRegex = /^\d{8}$/;
     const celularRegex = /^\d{9}$/;
 
@@ -72,36 +80,38 @@ function ReferirDNI(dni, fuenteBase) {
         return;
     }
 
-    if (!celularRegex.test(CelularCliente.value)) {
+    if (!celularRegex.test(CelularCliente.value) || !celularRegex.test(CelularUsuario.value)) {
         Swal.fire({
             title: 'Error al referir',
-            text: 'El número de celular debe contener exactamente 9 dígitos numéricos.',
-            icon: 'error',
-            confirmButtonText: 'Aceptar'
-        });
-        return;
-    }
-    if (dni == "" || fuenteBase == "" || NombresCompletosUsuario.value == "" || ApellidosCompletosUsuario.value == "" || DNIUsuario.value == "" || CelularCliente.value == "" || AgenciaAtencion.value == "" || FechaVisitaAgencia.value == "") {
-        Swal.fire({
-            title: 'Error al referir',
-            text: 'Hay un error en el envio de Datos. O no se han completado los campos.',
+            text: 'El número de celular debe contener exactamente 9 dígitos numéricos, y no puede estar vacio.',
             icon: 'error',
             confirmButtonText: 'Aceptar'
         });
         return;
     }
 
-    console.log({
-        dniReferir: dni,
-        fuenteBase: baseFuente,
-        nombresUsuario: NombresCompletosUsuario.value.toUpperCase(),
-        apellidosUsuario: ApellidosCompletosUsuario.value.toUpperCase(),
-        nombrescliente: NombresCompletosCliente.value.toUpperCase(),
-        dniUsuario: DNIUsuario.value,
-        telefono: CelularCliente.value,
-        agencia: AgenciaAtencion.value,
-        fechaVisita: FechaVisitaAgencia.value
-    });
+    if (dni == "" || 
+        fuenteBase == "" || 
+        NombresCompletosUsuario.value == "" || 
+        ApellidosCompletosUsuario.value == "" || 
+        DNIUsuario.value == "" || 
+        CelularCliente.value == "" || 
+        AgenciaAtencion.value == "" || 
+        FechaVisitaAgencia.value == "" || 
+        CelularUsuario.value == "" ||
+        CorreoUsuario.value == "" ||
+        CCIUsuario.value == "" ||
+        DepartamentoUsuario.value == "" ||
+        UbigeoUsuario.value == "" ||
+        BancoUsuario.value == "") {
+        Swal.fire({
+            title: 'Error al referir',
+            text: 'No se han completado todos los campos. Asegurese de llenar todos los campos',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
 
     $.ajax({
         url: '/Referido/ReferirCliente',
@@ -115,7 +125,14 @@ function ReferirDNI(dni, fuenteBase) {
             dniUsuario: DNIUsuario.value,
             telefono: CelularCliente.value,
             agencia: AgenciaAtencion.value,
-            fechaVisita: FechaVisitaAgencia.value
+            fechaVisita: FechaVisitaAgencia.value,
+
+            celular: CelularUsuario.value,
+            correo: CorreoUsuario.value,
+            cci: CCIUsuario.value,
+            departamento: DepartamentoUsuario.value,
+            ubigeo: UbigeoUsuario.value,
+            banco: BancoUsuario.value
         },
         success: function (response) {
             if (response.success === false) {

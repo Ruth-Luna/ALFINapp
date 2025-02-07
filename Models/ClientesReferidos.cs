@@ -40,5 +40,17 @@ namespace ALFINapp.Models
         public decimal? OfertaEnviada { get; set; }
         [Column("fue_procesado")]
         public bool? FueProcesado { get; set; }
+        [Column("celular_asesor")]
+        public string? CelularAsesor { get; set; }
+        [Column("correo_asesor")]
+        public string? CorreoAsesor { get; set; }
+        [Column("cci_asesor")]
+        public string? CciAsesor { get; set; }
+        [Column("departamento_asesor")]
+        public string? DepartamentoAsesor { get; set; }
+        [Column("ubigeo_asesor")]
+        public string? UbigeoAsesor { get; set; }
+        [Column("banco_asesor")]
+        public string? BancoAsesor { get; set; }
     }
 }
