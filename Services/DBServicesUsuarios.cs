@@ -25,21 +25,20 @@ namespace ALFINapp.Services
                     new SqlParameter("@IdUsuario", usuario.IdUsuario),
                     new SqlParameter("@Dni", usuario.Dni),
                     new SqlParameter("@NombresCompletos", usuario.NombresCompletos),
-                    new SqlParameter("@Rol", usuario.Rol),
-                    new SqlParameter("@Departamento", usuario.Departamento),
-                    new SqlParameter("@Provincia", usuario.Provincia),
-                    new SqlParameter("@Distrito", usuario.Distrito),
-                    new SqlParameter("@Telefono", usuario.Telefono),
-                    new SqlParameter("@FechaRegistro", usuario.FechaRegistro),
-                    new SqlParameter("@Estado", usuario.Estado),
-                    new SqlParameter("@IDUSUARIOSUP", usuario.IDUSUARIOSUP),
-                    new SqlParameter("@RESPONSABLESUP", usuario.RESPONSABLESUP),
-                    new SqlParameter("@REGION", usuario.REGION),
-                    new SqlParameter("@NOMBRECAMPAÑA", usuario.NOMBRECAMPAÑA),
+                    new SqlParameter("@Rol", usuario.Rol != null ? usuario.Rol : (object)DBNull.Value),
+                    new SqlParameter("@Departamento", usuario.Departamento != null ? usuario.Departamento : (object)DBNull.Value),
+                    new SqlParameter("@Provincia", usuario.Provincia != null ? usuario.Provincia : (object)DBNull.Value),
+                    new SqlParameter("@Distrito", usuario.Distrito != null ? usuario.Distrito : (object)DBNull.Value),
+                    new SqlParameter("@Telefono", usuario.Telefono != null ? usuario.Telefono : (object)DBNull.Value),
+                    new SqlParameter("@Estado", usuario.Estado != null ? usuario.Estado : "ACTIVO"),
+                    new SqlParameter("@IDUSUARIOSUP", usuario.IDUSUARIOSUP != null ? usuario.IDUSUARIOSUP : (object)DBNull.Value),
+                    new SqlParameter("@RESPONSABLESUP", usuario.RESPONSABLESUP != null ? usuario.RESPONSABLESUP : (object)DBNull.Value),
+                    new SqlParameter("@REGION", usuario.REGION != null ? usuario.REGION : (object)DBNull.Value),
+                    new SqlParameter("@NOMBRECAMPAÑA", usuario.NOMBRECAMPAÑA != null ? usuario.NOMBRECAMPAÑA : (object)DBNull.Value),
                     new SqlParameter("@IdRol", usuario.IdRol)
                 };
  
-                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_modificacion_existente @IdUsuario, @Dni, @NombresCompletos, @Rol, @Departamento, @Provincia, @Distrito, @Telefono, @FechaRegistro, @Estado, @IDUSUARIOSUP, @RESPONSABLESUP, @REGION, @NOMBRECAMPAÑA, @IdRol", parameters);
+                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_modificacion_existente @IdUsuario, @Dni, @NombresCompletos, @Rol, @Departamento, @Provincia, @Distrito, @Telefono, @Estado, @IDUSUARIOSUP, @RESPONSABLESUP, @REGION, @NOMBRECAMPAÑA, @IdRol", parameters);
 
                 return (true, "Datos actualizados correctamente");
             }
@@ -49,5 +48,93 @@ namespace ALFINapp.Services
             }
         }
 
+        public async Task<(bool IsSuccess, string Message)> DesactivarUsuario(int usuarioId)
+        {
+            try
+            {
+                var parameters = new[]
+                {
+                    new SqlParameter("@IdUsuario", usuarioId)
+                };
+
+                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_desactivar @IdUsuario", parameters);
+
+                return (true, "Usuario desactivado correctamente");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message)> ActivarUsuario(int usuarioId)
+        {
+            try
+            {
+                var parameters = new[]
+                {
+                    new SqlParameter("@IdUsuario", usuarioId)
+                };
+
+                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_activar @IdUsuario", parameters);
+
+                return (true, "Usuario activado correctamente");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message)> CrearUsuario(Usuario usuario)
+        {
+            try
+            {
+                if (usuario.IdRol == null)
+                {
+                    return (false, "El rol del usuario es obligatorio");
+                }
+                if (usuario.Dni == null)
+                {
+                    return (false, "El DNI del usuario es obligatorio");
+                }
+                if (usuario.NombresCompletos == null)
+                {
+                    return (false, "El nombre del usuario es obligatorio");
+                }
+                var getUsuario = new Usuario();
+                if (usuario.IDUSUARIOSUP != null)
+                {
+                    getUsuario = await _context.usuarios.FirstOrDefaultAsync(x => x.IdUsuario == usuario.IDUSUARIOSUP);
+                    if (getUsuario == null)
+                    {
+                        return (false, "El usuario supervisor no existe");
+                    }
+                }
+                var parameters = new[]
+                {
+                    new SqlParameter("@Dni", usuario.Dni),
+                    new SqlParameter("@NombresCompletos", usuario.NombresCompletos),
+                    new SqlParameter("@Rol", usuario.Rol != null ? usuario.Rol : (object)DBNull.Value),
+                    new SqlParameter("@Departamento", usuario.Departamento != null ? usuario.Departamento : (object)DBNull.Value),
+                    new SqlParameter("@Provincia", usuario.Provincia != null ? usuario.Provincia : (object)DBNull.Value),
+                    new SqlParameter("@Distrito", usuario.Distrito != null ? usuario.Distrito : (object)DBNull.Value),
+                    new SqlParameter("@Telefono", usuario.Telefono != null ? usuario.Telefono : (object)DBNull.Value),
+                    new SqlParameter("@Estado", usuario.Estado != null ? usuario.Estado : "ACTIVO"),
+                    new SqlParameter("@IDUSUARIOSUP", usuario.IDUSUARIOSUP != null ? usuario.IDUSUARIOSUP : (object)DBNull.Value),
+                    new SqlParameter("@RESPONSABLESUP", getUsuario != null ? getUsuario.NombresCompletos : (object)DBNull.Value),
+                    new SqlParameter("@REGION", usuario.REGION != null ? usuario.REGION : (object)DBNull.Value),
+                    new SqlParameter("@NOMBRECAMPAÑA", usuario.NOMBRECAMPAÑA != null ? usuario.NOMBRECAMPAÑA : (object)DBNull.Value),
+                    new SqlParameter("@IdRol", usuario.IdRol)
+                };
+                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_crear_nuevo @Dni, @NombresCompletos, @Rol, @Departamento, @Provincia, @Distrito, @Telefono, @Estado, @IDUSUARIOSUP, @RESPONSABLESUP, @REGION, @NOMBRECAMPAÑA, @IdRol", 
+                    parameters);
+                return (true, "Usuario creado correctamente");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
     }
 }

@@ -60,7 +60,9 @@ namespace ALFINapp.Services
                         IdBase = detalleclienteExistenteBD.IdBase,
                         ApellidoPaterno = clienteExistenteBD.XAppaterno,
                         ApellidoMaterno = clienteExistenteBD.XApmaterno,
-                        Nombres = clienteExistenteBD.XNombre
+                        Nombres = clienteExistenteBD.XNombre,
+                        UserV3 = detalleclienteExistenteBD.UserV3,
+                        FlagDeudaVOferta = detalleclienteExistenteBD.FlagDeudaVOferta
                     };
                     // El DNI se encuentra registrado en la Base de Datos de A365
                     return (true, "El DNI se encuentra registrado en la Base de Datos de A365. Se devolvera la entrada correspondiente", clienteA365Encontrado); // Se devuelve la entrada correspondiente

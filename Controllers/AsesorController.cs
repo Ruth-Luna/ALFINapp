@@ -229,6 +229,7 @@ namespace ALFINapp.Controllers
 
                 nuevoUsuario.FechaRegistro = DateTime.Now;
                 nuevoUsuario.Estado = "ACTIVO";
+                nuevoUsuario.contraseña = $"{nuevoUsuario.Dni}$clave123";
                 _context.usuarios.Add(nuevoUsuario);
                 _context.SaveChanges();
                 return Json(new { success = true, message = $"Se ha agregado al nuevo Usuario {nuevoUsuario.NombresCompletos} con el Rol {nuevoUsuario.Rol}" });
@@ -236,7 +237,7 @@ namespace ALFINapp.Controllers
             catch (System.Exception ex)
             {
                 Console.WriteLine("Error: " + ex.Message);
-                return Json(new { success = false, message = "Ha ocurrido un error inesperado" });
+                return Json(new { success = false, message = ex.Message});
             }
         }
 

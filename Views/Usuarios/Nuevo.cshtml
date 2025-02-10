@@ -1,0 +1,149 @@
+@model List<ALFINapp.Models.Usuario>
+
+@{
+    var RolUsuarioActual = ViewData["RolActual"] as int?;
+    if (RolUsuarioActual == null)
+    {
+        RolUsuarioActual = 0;
+    }
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/main_page.css">
+}
+
+<div class="container mt-3">
+    <h3> Agregar un nuevo Usuario </h3>
+    <div class="row mb-3">
+        <div class="alert alert-info mb-2">
+            Llene los campos para poder agregar un nuevo usuario. <strong>No todos son obligatorios</strong>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-2">
+                <label for="Nuevo_dni" class="form-label">DNI</label>
+                <input type="text" class="form-control" id="Nuevo_dni" name="Nuevo_dni" required
+                    oninput="validarDNISupervisor('Nuevo_dni')">
+                <div class="invalid-feedback" id="Nuevo_dni-error">
+                    El DNI debe tener 8 dígitos y solo números.
+                </div>
+            </div>
+            <div class="mb-2">
+                <label for="Nuevo_departamento" class="form-label">Departamento</label>
+                <select class="form-control" id="Nuevo_departamento" name="Nuevo_departamento" required>
+                    <option value="">Seleccione un departamento</option>
+                    <option value="Amazonas">Amazonas</option>
+                    <option value="Áncash">Áncash</option>
+                    <option value="Apurímac">Apurímac</option>
+                    <option value="Arequipa">Arequipa</option>
+                    <option value="Ayacucho">Ayacucho</option>
+                    <option value="Cajamarca">Cajamarca</option>
+                    <option value="Callao">Callao</option>
+                    <option value="Cusco">Cusco</option>
+                    <option value="Huancavelica">Huancavelica</option>
+                    <option value="Huánuco">Huánuco</option>
+                    <option value="Ica">Ica</option>
+                    <option value="Junín">Junín</option>
+                    <option value="La Libertad">La Libertad</option>
+                    <option value="Lambayeque">Lambayeque</option>
+                    <option value="Lima">Lima</option>
+                    <option value="Loreto">Loreto</option>
+                    <option value="Madre de Dios">Madre de Dios</option>
+                    <option value="Moquegua">Moquegua</option>
+                    <option value="Pasco">Pasco</option>
+                    <option value="Piura">Piura</option>
+                    <option value="Puno">Puno</option>
+                    <option value="San Martín">San Martín</option>
+                    <option value="Tacna">Tacna</option>
+                    <option value="Tumbes">Tumbes</option>
+                    <option value="Ucayali">Ucayali</option>
+                </select>
+            </div>
+            <div class="mb-2">
+                <label for="Nuevo_provincia" class="form-label">Provincia</label>
+                <input type="text" class="form-control" id="Nuevo_provincia" name="Nuevo_provincia" required>
+            </div>
+            <div class="mb-2">
+                <label for="Nuevo_distrito" class="form-label">Distrito</label>
+                <input type="text" class="form-control" id="Nuevo_distrito" name="Nuevo_distrito" required>
+            </div>
+            <div class="mb-2">
+                <label for="Nuevo_region" class="form-label">Region</label>
+                <input type="text" class="form-control" id="Nuevo_region" name="Nuevo_region" required
+                    oninput="validarLetras('Nuevo_region')">
+                <div class="invalid-feedback" id="Nuevo_region-error">
+                    El campo Region solo puede tener letras.
+                </div>
+            </div>
+
+            <div class="mb-2">
+                <label for="Nuevo_rol" class="form-label">Rol</label>
+                <select class="form-control" id="Nuevo_rol" name="Nuevo_rol" required
+                    onchange="agregarCampoSupervisores(this.value)">
+                    <option value="">Seleccione un Rol</option>
+                    <option value="2">SUPERVISOR</option>
+                    <option value="3">ASESOR DE CREDITOS</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="mb-2">
+                <label for="Nuevo_apellido_paterno" class="form-label">Apellido Paterno</label>
+                <input type="text" class="form-control" id="Nuevo_apellido_paterno" name="Nuevo_apellido_paterno"
+                    required oninput="validarLetras('Nuevo_apellido_paterno')">
+                <div class="invalid-feedback" id="Nuevo_apellido_paterno-error">
+                    El campo Apellido Paterno solo puede tener letras.
+                </div>
+            </div>
+            <div class="mb-2">
+                <label for="Nuevo_apellido_materno" class="form-label">Apellido Materno</label>
+                <input type="text" class="form-control" id="Nuevo_apellido_materno" name="Nuevo_apellido_materno"
+                    required oninput="validarLetras('Nuevo_apellido_materno')">
+                <div class="invalid-feedback" id="Nuevo_apellido_materno-error">
+                    El campo Apellido Materno solo puede tener letras.
+                </div>
+            </div>
+            <div class="mb-2">
+                <label for="Nuevo_nombres" class="form-label">Nombres Completos</label>
+                <input type="text" class="form-control" id="Nuevo_nombres" name="Nuevo_nombres" required
+                    oninput="validarLetras('Nuevo_nombres')">
+                <div class="invalid-feedback" id="Nuevo_nombres-error">
+                    El campo Nombres Completos solo puede tener letras.
+                </div>
+            </div>
+            <div class="mb-2">
+                <label for="Nuevo_telefono" class="form-label">Telefono</label>
+                <input type="text" class="form-control" id="Nuevo_telefono" name="Nuevo_telefono" required
+                    oninput="validarTelefono('Nuevo_telefono')">
+                <div class="invalid-feedback" id="Nuevo_telefono-error">
+                    El telefono solo puede tener números.
+                </div>
+            </div>
+            <div class="mb-2" id="campoSupervisores" style="display: none;">
+                <div class="alert alert-secondary mb-2">
+                    <strong>Nota:</strong> Si el rol seleccionado es de <strong>ASESOR DE CREDITOS</strong> es necesario
+                    seleccionar un supervisor.
+                </div>
+                <label for="Nuevo_Supervisor" class="form-label">Supervisor asignado</label>
+                <select class="form-control" name="Nuevo_Supervisor" id="Nuevo_Supervisor">
+                    <option value="">Seleccione un supervisor</option>
+                    @foreach (var supervisor in Model)
+                    {
+                        <option value="@supervisor.IdUsuario">@supervisor.Dni - @supervisor.NombresCompletos</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-md-12">
+            <a href="javascript:void(0)" class="btn btn-success" onclick="guardarNuevoUsuario()">Agregar</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/Usuarios/Nuevo.js"></script>
+    <script src="~/js/Asesores/Usuarios.js"></script>
+}

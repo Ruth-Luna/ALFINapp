@@ -96,11 +96,7 @@ namespace ALFINapp.Controllers
                 {
                     return Json(new { existe = false, error = true, message = "No ha iniciado sesion" });
                 }
-                Console.WriteLine($"DNI recibido: {dni}");
-
-                // Buscar el cliente por DNI
                 var GetClienteExistente = await _dbServicesConsultasClientes.GetClientsFromDBandBank(dni);
-
                 if (GetClienteExistente.IsSuccess == false || GetClienteExistente.Data == null)
                 {
                     return Json(new { existe = false, error = true, message = GetClienteExistente.message });
@@ -108,7 +104,7 @@ namespace ALFINapp.Controllers
                 ViewData["RolUser"] = GetUserRol;
                 if (GetClienteExistente.Data.TraidoDe == "BDA365")
                 {
-                        return PartialView("_DatosConsulta", GetClienteExistente.Data);
+                    return PartialView("_DatosConsulta", GetClienteExistente.Data);
                 }
                 if (GetClienteExistente.Data.TraidoDe == "BDALFIN")
                 {
@@ -121,8 +117,7 @@ namespace ALFINapp.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al verificar el DNI: {ex.Message}");
-                return Json(new { existe = false, error = true, message = "Ocurrió un error interno. Por favor, intente nuevamente." });
+                return Json(new { existe = false, error = true, message = ex.Message });
             }
         }
 

@@ -80,13 +80,15 @@
             </div>
         }
         <input type="text" id="DNIClienteDerivacion" value="@Model.Dni" hidden>
-        <div class="container">
+        <div class="container mb-3">
             <div class="form-group row align-items-center mb-2">
                 <label for=""></label>
-                <input type="text" id="NombresCompletosCliente" class="form-control" value="@((Model.ApellidoPaterno?.ToUpper() ?? string.Empty) + " " + (Model.ApellidoMaterno?.ToUpper() ?? string.Empty) + " " + (Model.Nombres?.ToUpper() ?? string.Empty))" readonly>
+                <input type="text" id="NombresCompletosCliente" class="form-control"
+                    value="@((Model.ApellidoPaterno?.ToUpper() ?? string.Empty) + " " + (Model.ApellidoMaterno?.ToUpper() ?? string.Empty) + " " + (Model.Nombres?.ToUpper() ?? string.Empty))"
+                    readonly>
             </div>
         </div>
-        <div class="row mb-2">
+        <div class="row mb-3">
             <div class="col">
                 <legend>
                     <h3>Condiciones de Campaña</h3>
@@ -182,6 +184,14 @@
                             readonly>
                     </div>
                 </div>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="usuario_v3">Usuario V3:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="usuario_v3" class="form-control" value="@Model.UserV3" required readonly>
+                    </div>
+                </div>
             </div>
             <div class="col">
                 <h3>Tasas Aprobadas</h3>
@@ -274,6 +284,14 @@
                             required readonly>
                     </div>
                 </div>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="flag_deuda_v_oferta">Flag Deuda Vs Oferta:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="flag_deuda_v_oferta" class="form-control" value="@Model.FlagDeudaVOferta" required readonly>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -284,7 +302,7 @@
                 <a class="btn btn-primary" href="javascript:void(0);"
                     onclick="TakeThisClient('@Model.Dni', '@Model.TraidoDe')">Tipifique Este Cliente</a>
             }
-            
+
             @*@if ( RolUser == 2)
             {
                 <a class="btn btn-warning" href="javascript:void(0);"

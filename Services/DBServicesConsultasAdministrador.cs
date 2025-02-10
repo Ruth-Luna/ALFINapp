@@ -80,13 +80,8 @@ namespace ALFINapp.Services
             try
             {
                 var TodosLosSupervisores = await (from u in _context.usuarios
-                                                  where u.Rol == "SUPERVISOR"
-                                                  select new Usuario
-                                                  {
-                                                      IdUsuario = u.IdUsuario,
-                                                      Dni = u.Dni,
-                                                      NombresCompletos = u.NombresCompletos,
-                                                  }
+                                                  where u.IdRol == 2
+                                                  select u
                                 ).ToListAsync();
 
                 if (TodosLosSupervisores == null)

@@ -1,0 +1,44 @@
+.textarea-custom {
+    background: transparent;  /* Sin fondo */
+    border: none;              /* Sin borde */  
+    outline: none;            /* Evita el borde de enfoque */
+    text-align: center;       /* Centrar horizontalmente el texto */
+    align-items: center;      /* Centrar verticalmente */
+    justify-content: center;  /* Asegurar que el texto esté en el centro */
+    padding: 5px;             /* Espaciado interno para buena legibilidad */
+}
+
+/* Asegurar que tome la altura de la celda de los botones */
+td {
+    vertical-align: middle;  /* Alinear el contenido verticalmente */
+    padding: 8px;            /* Espaciado interno */
+}
+
+.table-danger-custom{
+    background-color: rgba(230, 0, 0, 0.671); /* Color de fondo */
+    justify-content: center;  /* Alinear horizontalmente */
+}
+
+.table-row-custom {
+    justify-content: center;  /* Alinear horizontalmente */
+    align-items: center;      /* Centra verticalmente */
+}
+
+.textarea-custom-danger {
+    color: aliceblue;         /* Color de texto */
+}
+
+.select-custom {
+    background: transparent;  /* Sin fondo */
+    border: none;             /* Sin borde */  
+    outline: none;            /* Evita el borde de enfoque */
+    border-bottom: 1px solid black; /* Borde inferior negro */
+}
+
+.select-custom-danger {
+    background: transparent;  /* Sin fondo */
+    border: none;             /* Sin borde */  
+    outline: none;            /* Evita el borde de enfoque */
+    border-bottom: 1px solid rgb(255, 255, 255); /* Borde inferior negro */
+    color: rgb(255, 255, 255);
+}

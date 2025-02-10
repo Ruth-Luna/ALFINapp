@@ -4,149 +4,208 @@
 }
 
 @section Styles {
-    <link href="~/css/Usuarios/Administracion.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/main_page.css">
+    <link rel="stylesheet" href="~/css/Usuarios/Administracion.css">
 }
 
-<div class="table-responsive">
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Dni</th>
-                <th>Nombres Completos</th>
-                <th>Departamento</th>
-                <th>Provincia</th>
-                <th>Distrito</th>
-                <th>Telefono</th>
-                <th>Fecha Registro</th>
-                <th>Estado</th>
-                <th>ID Supervisor Asignado</th>
-                <th>Nombres Supervisor Asignado</th>
-                <th>Region</th>
-                <th>Nombre Campaña</th>
-                <th>Id Rol</th>
-                <th>Rol</th>
-                <th>Accion</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var usuario in Model)
-            {
-                @if (usuario.Estado == "ACTIVO")
+
+<div class="container mt-4">
+    <div class="mb-2">
+        <h3> Administracion de Usuarios </h3>
+        <div class="alert alert-primary" role="alert">
+            <p>En esta sección podra administrar los usuarios de la plataforma A365. Aca podra <strong>editar, desactivar y eliminar</strong> usuarios.</p>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Dni</th>
+                    <th>Nombres Completos</th>
+                    <th>Departamento</th>
+                    <th>Provincia</th>
+                    <th>Distrito</th>
+                    <th>Telefono</th>
+                    <th>Estado</th>
+                    <th>Supervisor Asignado</th>
+                    <th>Region</th>
+                    <th>Nombre Campaña</th>
+                    <th>Id Rol</th>
+                    <th>Rol</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var usuario in Model)
                 {
-                    <tr>
-                        <td>
-                            <textarea type="text" id="DNI_@usuario.IdUsuario" value="@usuario.Dni">
-                                </td>
-                                <td>
-                                    <textarea type="text" id="NombresCompletos_@usuario.IdUsuario">@usuario.NombresCompletos</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="Departamento_@usuario.IdUsuario">@usuario.Departamento</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="Provincia_@usuario.IdUsuario">@usuario.Provincia</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="Distrito_@usuario.IdUsuario">@usuario.Distrito</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="Telefono_@usuario.IdUsuario">@usuario.Telefono</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="FechaRegistro_@usuario.IdUsuario">@usuario.FechaRegistro</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="Estado_@usuario.IdUsuario">@usuario.Estado</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="IDUSUARIOSUP_@usuario.IdUsuario">@usuario.IDUSUARIOSUP</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="RESPONSABLESUP_@usuario.IdUsuario">@usuario.RESPONSABLESUP</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="REGION_@usuario.IdUsuario">@usuario.REGION</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="NOMBRECAMPAÑA_@usuario.IdUsuario">@usuario.NOMBRECAMPAÑA</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="IdRol_@usuario.IdUsuario">@usuario.IdRol</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="Rol_@usuario.IdUsuario">@usuario.Rol</textarea>
-                        </td>
-                        <td>
-                            <div class="btn-group">
-                                <a href="javascript:void(0)" class="btn btn-primary"
-                                    onclick="cambiarDatos('@usuario.IdUsuario')"><i class="bi bi-pencil"></i>Editar</a>
-                                <a href="javascript:void(0)" class="btn btn-warning">Desactivar</a>
-                                <a href="javascript:void(0)" class="btn btn-danger">Eliminar</a>
-                            </div>
-                        </td>
-                    </tr>
+                    @if (usuario.Estado == "ACTIVO")
+                    {
+                        <tr class="table-row-custom">
+                            <td class="table-row-custom">
+                                <textarea class="textarea-custom" rows="2" type="text" id="DNI_@usuario.IdUsuario">@usuario.Dni</textarea>
+                            </td>
+                            <td class="table-row-custom">
+                                <textarea class="textarea-custom" rows="2" type="text"
+                                    id="NombresCompletos_@usuario.IdUsuario">@usuario.NombresCompletos</textarea>
+                            </td>
+                            <td class="table-row-custom">
+                                <textarea class="textarea-custom" rows="2" type="text" id="Departamento_@usuario.IdUsuario">@usuario.Departamento</textarea>
+                            </td>
+                            <td class="table-row-custom">
+                                <textarea class="textarea-custom" rows="2" type="text" id="Provincia_@usuario.IdUsuario">@usuario.Provincia</textarea>
+                            </td>
+                            <td class="table-row-custom">
+                                <textarea class="textarea-custom" rows="2" type="text" id="Distrito_@usuario.IdUsuario">@usuario.Distrito</textarea>
+                            </td>
+                            <td class="table-row-custom">
+                                <textarea class="textarea-custom" rows="2" type="text" id="Telefono_@usuario.IdUsuario">@usuario.Telefono</textarea>
+                            </td>
+                            <td class="table-row-custom">
+                                <textarea class="textarea-custom" rows="2" type="text" id="Estado_@usuario.IdUsuario">@usuario.Estado</textarea>
+                            </td>
+                            <td class="table-row-custom">
+                                @if (usuario.IdRol == 3)
+                                {
+                                    <select class="select-custom" name="NAMEUSUARIOSUP_@usuario.IdUsuario" id="IDUSUARIOSUP_@usuario.IdUsuario">
+                                        <option value="@usuario.IDUSUARIOSUP">@usuario.IDUSUARIOSUP - @usuario.RESPONSABLESUP</option>
+                                        @foreach (var supervisor in Model)
+                                        {
+                                            if (supervisor.IdRol == 2)
+                                            {
+                                                <option value="@supervisor.IdUsuario">@supervisor.IdUsuario - @supervisor.NombresCompletos</option>
+                                            }
+                                        }
+                                    </select>
+                                }
+                                else if(usuario.IdRol == 2)
+                                {
+                                    <select class="select-custom" name="NAMEUSUARIOSUP_@usuario.IdUsuario" id="IDUSUARIOSUP_@usuario.IdUsuario">
+                                        <option value="@usuario.IDUSUARIOSUP">EL USUARIO ES SUPERVISOR</option>
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select class="select-custom" name="NAMEUSUARIOSUP_@usuario.IdUsuario" id="IDUSUARIOSUP_@usuario.IdUsuario">
+                                        <option value="@usuario.IDUSUARIOSUP">NO SE ENCONTRO NINGUN SUPERVISOR</option>
+                                    </select>
+                                }
+                                <textarea class="textarea-custom" rows="2" type="text" id="RESPONSABLESUP_@usuario.IdUsuario" readonly hidden>@usuario.RESPONSABLESUP</textarea>
+                            </td>
+                            <td class="table-row-custom">
+                                <textarea class="textarea-custom" rows="2" type="text" id="REGION_@usuario.IdUsuario">@usuario.REGION</textarea>
+                            </td>
+                            <td class="table-row-custom">
+                                <textarea class="textarea-custom" rows="2" type="text" id="NOMBRECAMPAÑA_@usuario.IdUsuario">@usuario.NOMBRECAMPAÑA</textarea>
+                            </td>
+                            <td class="table-row-custom">
+                                <textarea class="textarea-custom" rows="2" type="text" id="IdRol_@usuario.IdUsuario">@usuario.IdRol</textarea>
+                            </td>
+                            <td class="table-row-custom">
+                                <textarea class="textarea-custom" rows="2" type="text" id="Rol_@usuario.IdUsuario">@usuario.Rol</textarea>
+                            </td>
+                            <td class="table-row-custom" class="text-center align-middle">
+                                <div class="d-flex flex-column align-items-center">
+                                    <div class="d-flex justify-content-center gap-2 mb-2">
+                                        <a href="javascript:void(0)" class="btn btn-warning btn-sm"
+                                            onclick="CambiarEstadoUsuario(0, '@usuario.IdUsuario');">
+                                            <i class="bi bi-toggle-off"></i>
+                                        </a>
+                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm"
+                                            onclick="cambiarDatos('@usuario.IdUsuario')">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </div>
+                                    <a href="javascript:void(0)" class="btn btn-danger btn-sm">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr class="table-danger-custom">
+                            <td class="table-row-custom">
+                                <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text" id="DNI_@usuario.IdUsuario">@usuario.Dni</textarea>
+                            </td>
+                            <td class="table-row-custom">
+                                <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text"
+                                    id="NombresCompletos_@usuario.IdUsuario">@usuario.NombresCompletos</textarea>
+                            </td>
+                            <td class="table-row-custom">
+                                <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text" id="Departamento_@usuario.IdUsuario">@usuario.Departamento</textarea>
+                            </td>
+                            <td class="table-row-custom">
+                                <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text" id="Provincia_@usuario.IdUsuario">@usuario.Provincia</textarea>
+                            </td>
+                            <td class="table-row-custom">
+                                <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text" id="Distrito_@usuario.IdUsuario">@usuario.Distrito</textarea>
+                            </td>
+                            <td class="table-row-custom">
+                                <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text" id="Telefono_@usuario.IdUsuario">@usuario.Telefono</textarea>
+                            </td>
+                            <td class="table-row-custom">
+                                <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text" id="Estado_@usuario.IdUsuario">@usuario.Estado</textarea>
+                            </td>
+                            <td class="table-row-custom">
+                                @if (usuario.IdRol == 3)
+                                {
+                                    <select class="select-custom-danger" name="NAMEUSUARIOSUP_@usuario.IdUsuario" id="IDUSUARIOSUP_@usuario.IdUsuario">
+                                        <option value="@usuario.IDUSUARIOSUP">@usuario.IDUSUARIOSUP - @usuario.RESPONSABLESUP</option>
+                                        @foreach (var supervisor in Model)
+                                        {
+                                            if (supervisor.IdRol == 2)
+                                            {
+                                                <option value="@supervisor.IdUsuario">@supervisor.IdUsuario - @supervisor.NombresCompletos</option>
+                                            }
+                                        }
+                                    </select>
+                                }
+                                else if (usuario.IdRol == 2)
+                                {
+                                    <select class="select-custom-danger" name="NAMEUSUARIOSUP_@usuario.IdUsuario" id="IDUSUARIOSUP_@usuario.IdUsuario">
+                                        <option value="@usuario.IDUSUARIOSUP">EL USUARIO ES SUPERVISOR</option>
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select class="select-custom-danger" name="NAMEUSUARIOSUP_@usuario.IdUsuario" id="IDUSUARIOSUP_@usuario.IdUsuario">
+                                        <option value="@usuario.IDUSUARIOSUP">NO SE ENCONTRO NINGUN SUPERVISOR</option>
+                                    </select>
+                                }
+                                <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text" id="RESPONSABLESUP_@usuario.IdUsuario" readonly hidden>@usuario.RESPONSABLESUP</textarea>
+                            </td>
+                            <td class="table-row-custom">
+                                <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text" id="REGION_@usuario.IdUsuario" >@usuario.REGION</textarea>
+                            </td>
+                            <td class="table-row-custom">
+                                <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text" id="NOMBRECAMPAÑA_@usuario.IdUsuario">@usuario.NOMBRECAMPAÑA</textarea>
+                            </td>
+                            <td class="table-row-custom">
+                                <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text" id="IdRol_@usuario.IdUsuario">@usuario.IdRol</textarea>
+                            </td>
+                            <td class="table-row-custom">
+                                <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text" id="Rol_@usuario.IdUsuario">@usuario.Rol</textarea>
+                            </td>
+                            <td class="table-row-custom" class="text-center align-middle">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a href="javascript:void(0)" class="btn btn-success btn-sm"
+                                        onclick="CambiarEstadoUsuario(1, '@usuario.IdUsuario');">
+                                        <i class="bi bi-toggle-on"></i>
+                                    </a>
+                                    <a href="javascript:void(0)" class="btn btn-danger btn-sm">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
                 }
-                else
-                {
-                    <tr class="table-danger">
-                        <td>
-                            <textarea type="text" id="DNI_@usuario.IdUsuario" value="@usuario.Dni">
-                                </td>
-                                <td>
-                                    <textarea type="text" id="NombresCompletos_@usuario.IdUsuario">@usuario.NombresCompletos</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="Departamento_@usuario.IdUsuario">@usuario.Departamento</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="Provincia_@usuario.IdUsuario">@usuario.Provincia</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="Distrito_@usuario.IdUsuario">@usuario.Distrito</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="Telefono_@usuario.IdUsuario">@usuario.Telefono</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="FechaRegistro_@usuario.IdUsuario">@usuario.FechaRegistro</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="Estado_@usuario.IdUsuario">@usuario.Estado</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="IDUSUARIOSUP_@usuario.IdUsuario">@usuario.IDUSUARIOSUP</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="RESPONSABLESUP_@usuario.IdUsuario">@usuario.RESPONSABLESUP</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="REGION_@usuario.IdUsuario">@usuario.REGION</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="NOMBRECAMPAÑA_@usuario.IdUsuario">@usuario.NOMBRECAMPAÑA</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="IdRol_@usuario.IdUsuario">@usuario.IdRol</textarea>
-                        </td>
-                        <td>
-                            <textarea type="text" id="Rol_@usuario.IdUsuario">@usuario.Rol</textarea>
-                        </td>
-                        <td>
-                            <div class="btn-group">
-                                <a href="javascript:void(0)" class="btn btn-primary"
-                                    onclick="cambiarDatos('@usuario.IdUsuario')"><i class="bi bi-pencil"></i>Editar</a>
-                                <a href="javascript:void(0)" class="btn btn-warning">Desactivar</a>
-                                <a href="javascript:void(0)" class="btn btn-danger">Eliminar</a>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 @section Scripts {
     <script src="~/js/Usuarios/Administracion.js"></script>
-
 }

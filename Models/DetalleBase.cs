@@ -247,4 +247,20 @@ public partial class DetalleBase
 
     [Column("tipo_base")]
     public string? TipoBase { get; set; }
+    [Column("rango_tasas")]
+    public string? RangoTasas { get; set; }
+    [Column("flg_deuda_plus")]
+    public int? FlgDeudaPlus { get; set; }
+    [Column("frescura")]
+    public int? Frescura { get; set; }
+    [Column("id_NombreBase")]
+    public int? IdNombreBase { get; set; }
+    [Column("LEAD_CALIDAD")]
+    public int? LeadCalidad { get; set; }
+    [Column("USER_V3")]
+    public string? UserV3 { get; set; }
+    [Column("base_banco")]
+    public string? BaseBanco { get; set; }
+    [Column("flag_deuda_v_oferta")]
+    public int? FlagDeudaVOferta { get; set; }
 }
