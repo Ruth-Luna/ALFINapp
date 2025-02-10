@@ -20,7 +20,8 @@ namespace ALFINapp.Services
         {
             try
             {
-                var vistas = await Task.Run(() => _context.vistas_por_rol_dto.FromSqlRaw("EXEC sp_Roles_get_vistas {0}", idRol).ToList());
+                var vistas = await Task.Run(() => _context.vistas_por_rol_dto.FromSqlRaw("EXEC sp_Roles_get_vistas {0}", idRol)
+                    .ToList());
                 if (vistas.Count > 0)
                 {
                     return (true, "Vistas encontradas", vistas);

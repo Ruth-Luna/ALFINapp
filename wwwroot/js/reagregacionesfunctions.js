@@ -65,42 +65,70 @@ function TakeThisClient(DNIdatos, tipoBase) {
 
 function validarDNI() {
     const dniInput = document.getElementById("dnicliente");
-    const Message = document.getElementById("error-message");
     const datosClienteExistente = document.getElementById("datos-cliente-existente");
-    const dniForm = document.getElementById("DNIForm");
 
     const dniValue = dniInput.value;
 
-    Message.style.display = "none";
     datosClienteExistente.style.display = "none";
 
     if (dniValue === "") {
-        Message.style.display = "block";
-        Message.innerHTML = "El DNI no puede estar vacío.";
+        Swal.fire({
+            title: 'Error',
+            text: 'El campo del Cliente es obligatorio.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
     } else if (!/^\d{8}$/.test(dniValue)) {
-        Message.style.display = "block";
-        Message.innerHTML = "El DNI debe contener exactamente 8 dígitos y solo números.";
+        Swal.fire({
+            title: 'Error',
+            text: 'El DNI debe contener exactamente 8 dígitos y solo números.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
     } else {
         $.ajax({
-            url: `/Reagregaciones/VerificarDNIenBDoBanco`,
+            url: `/Consulta/VerificarDNIenBDoBanco`,
             type: 'GET',
             data: { dni: dniValue },
             success: function (data) {
                 if (data.existe === false && data.error === false) {
-                    Message.style.display = "block";
-                    Message.innerHTML = data.message;
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message,
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                    return;
                 } else if (data.existe === false && data.error === true) {
-                    Message.style.display = "block";
-                    Message.innerHTML = data.message;
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Hubo un error al verificar el DNI.',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                    return;
                 } else {
+                    Swal.fire({
+                        title: 'Cliente encontrado',
+                        text: 'El cliente existe en la base de datos.',
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar'
+                    });
                     datosClienteExistente.style.display = "block";
                     datosClienteExistente.innerHTML = data; // Carga la vista parcial
                 }
             },
             error: function (xhr, status, error) {
                 console.error('Error:', error);
-                Message.style.display = "block";
-                Message.innerHTML = "Hubo un error al verificar el DNI.";
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Hubo un error al verificar el DNI.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+                return;
             }
         });
     }

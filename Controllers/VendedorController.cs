@@ -77,20 +77,31 @@ namespace ALFINapp.Controllers
 
             // Clientes aún no tipificados (su campo 'TipificacionDeMayorPeso' es null o vacío)
             int clientesPendientes = detallesClientes.Count(dc =>
-                (dc.FechaTipificacionDeMayorPeso.HasValue && dc.FechaTipificacionDeMayorPeso.Value.Year != DateTime.Now.Year && dc.FechaTipificacionDeMayorPeso.Value.Month != DateTime.Now.Month) || (!dc.FechaTipificacionDeMayorPeso.HasValue)) +
+                (dc.FechaTipificacionDeMayorPeso.HasValue 
+                && dc.FechaTipificacionDeMayorPeso.Value.Year != DateTime.Now.Year 
+                && dc.FechaTipificacionDeMayorPeso.Value.Month != DateTime.Now.Month) 
+                || (!dc.FechaTipificacionDeMayorPeso.HasValue)) +
                 (ClientesTraidosDBALFIN.Data == null ? 0 :
                 ClientesTraidosDBALFIN.Data.Count(da =>
-                (da.FechaTipificacionDeMayorPeso.HasValue && da.FechaTipificacionDeMayorPeso.Value.Year != DateTime.Now.Year && da.FechaTipificacionDeMayorPeso.Value.Month != DateTime.Now.Month) || (!da.FechaTipificacionDeMayorPeso.HasValue)));
+                (da.FechaTipificacionDeMayorPeso.HasValue 
+                 && da.FechaTipificacionDeMayorPeso.Value.Year != DateTime.Now.Year 
+                 && da.FechaTipificacionDeMayorPeso.Value.Month != DateTime.Now.Month) 
+                 || (!da.FechaTipificacionDeMayorPeso.HasValue)));
 
             // Clientes ya tipificados (su campo 'TipificacionDeMayorPeso' no es null ni vacío)
             int clientesTipificados = detallesClientes.Count(dc =>
-                dc.FechaTipificacionDeMayorPeso.HasValue && dc.FechaTipificacionDeMayorPeso.Value.Year == DateTime.Now.Year && dc.FechaTipificacionDeMayorPeso.Value.Month == DateTime.Now.Month) +
+                dc.FechaTipificacionDeMayorPeso.HasValue 
+                && dc.FechaTipificacionDeMayorPeso.Value.Year == DateTime.Now.Year 
+                && dc.FechaTipificacionDeMayorPeso.Value.Month == DateTime.Now.Month) +
                 (ClientesTraidosDBALFIN.Data == null ? 0 :
                 ClientesTraidosDBALFIN.Data.Count(da =>
-                da.FechaTipificacionDeMayorPeso.HasValue && da.FechaTipificacionDeMayorPeso.Value.Year == DateTime.Now.Year && da.FechaTipificacionDeMayorPeso.Value.Month == DateTime.Now.Month));
+                da.FechaTipificacionDeMayorPeso.HasValue 
+                && da.FechaTipificacionDeMayorPeso.Value.Year == DateTime.Now.Year 
+                && da.FechaTipificacionDeMayorPeso.Value.Month == DateTime.Now.Month));
 
             // Total de clientes
-            int totalClientes = detallesClientes.Count + (ClientesTraidosDBALFIN.Data == null ? 0 : ClientesTraidosDBALFIN.Data.Count);
+            int totalClientes = detallesClientes.Count +
+             (ClientesTraidosDBALFIN.Data == null ? 0 : ClientesTraidosDBALFIN.Data.Count);
 
             ViewData["TotalClientes"] = totalClientes;
             ViewData["ClientesPendientes"] = clientesPendientes;
