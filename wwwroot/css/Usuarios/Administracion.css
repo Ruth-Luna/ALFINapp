@@ -2,8 +2,6 @@
     background: transparent;  /* Sin fondo */
     border: none;              /* Sin borde */  
     outline: none;            /* Evita el borde de enfoque */
-    text-align: center;       /* Centrar horizontalmente el texto */
-    align-items: center;      /* Centrar verticalmente */
     justify-content: center;  /* Asegurar que el texto esté en el centro */
     padding: 5px;             /* Espaciado interno para buena legibilidad */
 }

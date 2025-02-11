@@ -42,13 +42,12 @@ namespace ALFINapp.Services
         /// }
         /// </code>
         /// </example>
-        public async Task<(bool IsSuccess, string Message, List<Usuario>? Data)> GetAsesorsFromSupervisor(int? IdSupervisor)
+        public async Task<(bool IsSuccess, string Message, List<Usuario>? Data)> GetAsesorsFromSupervisor(int IdSupervisor)
         {
             try
             {
-                var asesores = await _context.usuarios
-                                    .Where(u => u.IDUSUARIOSUP == IdSupervisor)
-                                    .ToListAsync();
+                var asesores = await _context.usuarios.FromSqlRaw("EXEC SP_asesores_conseguir_asesores_asignados_no_contador @IdSupervisor = {0}", IdSupervisor).ToListAsync();
+                                    
                 if (asesores.Count == 0)
                 {
                     return (false, "No hay asesores registrados para este supervisor", null);
@@ -158,25 +157,6 @@ namespace ALFINapp.Services
                 return (false, $"Ocurrió un error al obtener los asesores: {ex.Message}", null);
             }
         }
-        public async Task<(bool IsSuccess, string Message, List<Usuario>? Data)> GetGeneralSupervisores()
-        {
-            try
-            {
-                var supervisores = await _context.usuarios
-                                    .Where(u => u.Rol == "SUPERVISOR")
-                                    .ToListAsync();
-                if (supervisores.Count == 0)
-                {
-                    return (false, "No hay supervisores registrados", null);
-                }
-                return (true, "Los supervisores han sido correctamente enviados", supervisores);
-            }
-            catch (System.Exception ex)
-            {
-                return (false, $"Ocurrió un error al obtener los supervisores: {ex.Message}", null);
-            }
-        }
-
         public async Task<(bool IsSuccess, string Message, SupervisorConAsesoresDTO? Data)> GetAssessorsFromSupervisor(Usuario SupervisorBusqueda)
         {
             try
@@ -208,44 +188,6 @@ namespace ALFINapp.Services
             catch (System.Exception ex)
             {
                 return (false, $"Ocurrió un error al obtener los supervisores: {ex.Message}", null);
-            }
-        }
-
-        public async Task<(bool IsSuccess, string Message, List<Usuario>? Data)> GetAllSupervisor()
-        {
-            try
-            {
-                var GetAllSupervisor = await _context.usuarios
-                                    .Where(u => u.Rol == "SUPERVISOR")
-                                    .ToListAsync();
-                if (GetAllSupervisor.Count == 0)
-                {
-                    return (false, "No hay supervisores registrados", null);
-                }
-                return (true, "La consulta se desarrollo con exito", GetAllSupervisor);
-            }
-            catch (System.Exception ex)
-            {
-                return (false, "Ocurrio un error con una consulta: " + ex.Message, null);
-            }
-        }
-
-        public async Task<(bool IsSuccess, string Message, List<Usuario>? Data)> GetAllAssessors()
-        {
-            try
-            {
-                var GetAllAssessors = await _context.usuarios
-                                   .Where(u => u.Rol == "VENDEDOR")
-                                   .ToListAsync();
-                if (GetAllAssessors.Count == 0)
-                {
-                    return (false, "No hay asesores registrados para este supervisor", null);
-                }
-                return (true, "La consulta se desarrollo con exito", GetAllAssessors);
-            }
-            catch (System.Exception ex)
-            {
-                return (false, "Ocurrio un error con una consulta: " + ex.Message, null);
             }
         }
         //... other methods...

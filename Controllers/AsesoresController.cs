@@ -18,9 +18,9 @@ namespace ALFINapp.Controllers
         private readonly DBServicesAsignacionesAsesores _dbServicesAsignacionesAsesores;
         private readonly DBServicesConsultasSupervisores _dbServicesConsultasSupervisores;
         private readonly DBServicesGeneral _dbServicesGeneral;
-        public AsesoresController(DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores, 
+        public AsesoresController(DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores,
                                                 DBServicesGeneral dbServicesGeneral,
-                                                DBServicesConsultasSupervisores dbServicesConsultasSupervisores, 
+                                                DBServicesConsultasSupervisores dbServicesConsultasSupervisores,
                                                 MDbContext context)
         {
             _dbServicesConsultasSupervisores = dbServicesConsultasSupervisores;
@@ -29,88 +29,29 @@ namespace ALFINapp.Controllers
             _context = context;
         }
         [HttpGet]
-        public async Task<IActionResult> Usuarios()
+        public IActionResult Usuarios()
         {
             int? idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
             if (idSupervisorActual == null)
             {
-                return Json(new { success = false, message = "Usted no ha iniciado sesion" });
+                return RedirectToAction("Home", "Index");
             }
-
-            var getUsuarioConsulta = await _dbServicesGeneral.GetUserInformation(idSupervisorActual.Value);
-            if (getUsuarioConsulta.IsSuccess == false || getUsuarioConsulta.Data == null)
+            return View("Usuarios");
+        }
+        public async Task<IActionResult> Estado()
+        {
+            int? idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
+            if (idSupervisorActual == null)
             {
-                return Json(new { success = false, message = getUsuarioConsulta.Message });
+                return RedirectToAction("Home", "Index");
             }
-
-            if (getUsuarioConsulta.Data.Rol == "ADMINISTRADOR")
+            var asesoresAsignadosaSupervisor = await _dbServicesConsultasSupervisores.GetAsesorsFromSupervisor(idSupervisorActual.Value);
+            if (asesoresAsignadosaSupervisor.IsSuccess == false || asesoresAsignadosaSupervisor.Data == null)
             {
-                var getAsesorFromSupervisor = await _dbServicesConsultasSupervisores.GetAssessorsFromSupervisor(getUsuarioConsulta.Data);
-                if (getAsesorFromSupervisor.IsSuccess == false || getAsesorFromSupervisor.Data == null)
-                {
-                    return Json(new { success = false, message = getAsesorFromSupervisor.Message });
-                }
-                var getTodosLosSupervisores = await _dbServicesConsultasSupervisores.GetAllSupervisor();
-                if (getTodosLosSupervisores.IsSuccess == false || getTodosLosSupervisores.Data == null)
-                {
-                    return Json(new { success = false, message = getTodosLosSupervisores.Message });
-                }
-                var getTodosLosAsesores = await _dbServicesConsultasSupervisores.GetAllAssessors();
-                if (getTodosLosAsesores.IsSuccess == false || getTodosLosAsesores.Data == null)
-                {
-                    return Json(new { success = false, message = getTodosLosAsesores.Message });
-                }
-                ViewData["AsesorFromSupervisor"] = getAsesorFromSupervisor.Data;
-                ViewData["TodosLosSupervisores"] = getTodosLosSupervisores.Data;
-                return PartialView("_ModificarSupervisoresYAsesores", getTodosLosAsesores.Data);
+                TempData["Error"] = "No se encontraron asesores asignados a su cuenta";
+                return RedirectToAction("Supervisor", "Inicio");
             }
-            else
-            {
-                var asesoresAsignadosaSupervisor = (from u in _context.usuarios
-                                                    where u.Rol == "VENDEDOR" && u.IDUSUARIOSUP == idSupervisorActual
-                                                    join ca in _context.clientes_asignados on u.IdUsuario equals ca.IdUsuarioV into caGroup
-                                                    from ca in caGroup.DefaultIfEmpty()  // Realizamos un left join
-                                                    group new { u, ca }
-                                                    by new
-                                                    {
-                                                        u.IdUsuario,
-                                                        u.NombresCompletos,
-                                                        u.Dni,
-                                                        u.Telefono,
-                                                        u.Departamento,
-                                                        u.Provincia,
-                                                        u.Distrito,
-                                                        u.Estado,
-                                                        u.Rol
-                                                    } into grouped
-                                                    select new UsuarioAsesorDTO
-                                                    {
-                                                        IdUsuario = grouped.Key.IdUsuario,
-                                                        Dni = grouped.Key.Dni,
-                                                        NombresCompletos = grouped.Key.NombresCompletos,
-                                                        Telefono = grouped.Key.Telefono,
-                                                        Departamento = grouped.Key.Departamento,
-                                                        Provincia = grouped.Key.Provincia,
-                                                        Distrito = grouped.Key.Distrito,
-                                                        Estado = grouped.Key.Estado,
-                                                        Rol = grouped.Key.Rol,
-                                                        TotalClientesAsignados = grouped.Count(g => g.ca != null
-                                                                                            && g.ca.IdUsuarioV == grouped.Key.IdUsuario
-                                                                                            && g.ca.IdUsuarioS == idSupervisorActual), // Clientes asignados
-                                                        ClientesTrabajando = grouped.Count(g => g.ca != null
-                                                                                            && g.ca.TipificacionMayorPeso != null
-                                                                                            && g.ca.IdUsuarioV == grouped.Key.IdUsuario
-                                                                                            && g.ca.IdUsuarioS == idSupervisorActual), // Clientes trabajados
-                                                        ClientesSinTrabajar = grouped.Count(g => g.ca != null
-                                                                                            && g.ca.IdUsuarioV == grouped.Key.IdUsuario
-                                                                                            && g.ca.IdUsuarioS == idSupervisorActual)
-                                                                                             - grouped.Count(g => g.ca != null
-                                                                                            && g.ca.TipificacionMayorPeso != null
-                                                                                            && g.ca.IdUsuarioV == grouped.Key.IdUsuario
-                                                                                            && g.ca.IdUsuarioS == idSupervisorActual) // Diferencia entre asignados y trabajados
-                                                    }).ToList();
-                return View("Usuarios", asesoresAsignadosaSupervisor);
-            }
+            return View("Estado", asesoresAsignadosaSupervisor.Data);
         }
 
         [HttpGet]

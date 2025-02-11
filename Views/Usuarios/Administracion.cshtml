@@ -20,6 +20,7 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
+                    <th>Accion</th>
                     <th>Dni</th>
                     <th>Nombres Completos</th>
                     <th>Departamento</th>
@@ -32,7 +33,7 @@
                     <th>Nombre Campaña</th>
                     <th>Id Rol</th>
                     <th>Rol</th>
-                    <th>Accion</th>
+                    <th>Ultima Actualizacion</th>
                 </tr>
             </thead>
             <tbody>
@@ -41,27 +42,41 @@
                     @if (usuario.Estado == "ACTIVO")
                     {
                         <tr class="table-row-custom">
+                            <td class="table-row-custom" class="text-center align-middle">
+                                <div class="d-flex flex-column align-items-center">
+                                    <div class="d-flex justify-content-center gap-2 mb-2">
+                                        <a href="javascript:void(0)" class="btn btn-warning btn-sm"
+                                            onclick="CambiarEstadoUsuario(0, '@usuario.IdUsuario');">
+                                            <i class="bi bi-toggle-off"></i>
+                                        </a>
+                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm"
+                                            onclick="cambiarDatos('@usuario.IdUsuario')">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
                             <td class="table-row-custom">
-                                <textarea class="textarea-custom" rows="2" type="text" id="DNI_@usuario.IdUsuario">@usuario.Dni</textarea>
+                                <textarea class="textarea-custom" rows="2" cols="5" type="text" id="DNI_@usuario.IdUsuario">@usuario.Dni</textarea>
                             </td>
                             <td class="table-row-custom">
                                 <textarea class="textarea-custom" rows="2" type="text"
                                     id="NombresCompletos_@usuario.IdUsuario">@usuario.NombresCompletos</textarea>
                             </td>
                             <td class="table-row-custom">
-                                <textarea class="textarea-custom" rows="2" type="text" id="Departamento_@usuario.IdUsuario">@usuario.Departamento</textarea>
+                                <textarea class="textarea-custom" rows="2" cols="6" type="text" id="Departamento_@usuario.IdUsuario">@usuario.Departamento</textarea>
                             </td>
                             <td class="table-row-custom">
-                                <textarea class="textarea-custom" rows="2" type="text" id="Provincia_@usuario.IdUsuario">@usuario.Provincia</textarea>
+                                <textarea class="textarea-custom" rows="2" cols="5" type="text" id="Provincia_@usuario.IdUsuario">@usuario.Provincia</textarea>
                             </td>
                             <td class="table-row-custom">
-                                <textarea class="textarea-custom" rows="2" type="text" id="Distrito_@usuario.IdUsuario">@usuario.Distrito</textarea>
+                                <textarea class="textarea-custom" rows="2" cols="5" type="text" id="Distrito_@usuario.IdUsuario">@usuario.Distrito</textarea>
                             </td>
                             <td class="table-row-custom">
-                                <textarea class="textarea-custom" rows="2" type="text" id="Telefono_@usuario.IdUsuario">@usuario.Telefono</textarea>
+                                <textarea class="textarea-custom" rows="2" cols="6" type="text" id="Telefono_@usuario.IdUsuario">@usuario.Telefono</textarea>
                             </td>
                             <td class="table-row-custom">
-                                <textarea class="textarea-custom" rows="2" type="text" id="Estado_@usuario.IdUsuario">@usuario.Estado</textarea>
+                                <textarea class="textarea-custom" rows="2" cols="5" type="text" id="Estado_@usuario.IdUsuario">@usuario.Estado</textarea>
                             </td>
                             <td class="table-row-custom">
                                 @if (usuario.IdRol == 3)
@@ -92,60 +107,58 @@
                                 <textarea class="textarea-custom" rows="2" type="text" id="RESPONSABLESUP_@usuario.IdUsuario" readonly hidden>@usuario.RESPONSABLESUP</textarea>
                             </td>
                             <td class="table-row-custom">
-                                <textarea class="textarea-custom" rows="2" type="text" id="REGION_@usuario.IdUsuario">@usuario.REGION</textarea>
+                                <textarea class="textarea-custom" rows="2" cols="4" type="text" id="REGION_@usuario.IdUsuario">@usuario.REGION</textarea>
                             </td>
                             <td class="table-row-custom">
-                                <textarea class="textarea-custom" rows="2" type="text" id="NOMBRECAMPAÑA_@usuario.IdUsuario">@usuario.NOMBRECAMPAÑA</textarea>
+                                <textarea class="textarea-custom" rows="2" cols="7" type="text" id="NOMBRECAMPAÑA_@usuario.IdUsuario">@usuario.NOMBRECAMPAÑA</textarea>
                             </td>
                             <td class="table-row-custom">
-                                <textarea class="textarea-custom" rows="2" type="text" id="IdRol_@usuario.IdUsuario">@usuario.IdRol</textarea>
+                                <textarea class="textarea-custom" rows="2" cols="4" type="text" id="IdRol_@usuario.IdUsuario">@usuario.IdRol</textarea>
                             </td>
                             <td class="table-row-custom">
-                                <textarea class="textarea-custom" rows="2" type="text" id="Rol_@usuario.IdUsuario">@usuario.Rol</textarea>
+                                <textarea class="textarea-custom" rows="2" cols="10" type="text" id="Rol_@usuario.IdUsuario">@usuario.Rol</textarea>
                             </td>
-                            <td class="table-row-custom" class="text-center align-middle">
-                                <div class="d-flex flex-column align-items-center">
-                                    <div class="d-flex justify-content-center gap-2 mb-2">
-                                        <a href="javascript:void(0)" class="btn btn-warning btn-sm"
-                                            onclick="CambiarEstadoUsuario(0, '@usuario.IdUsuario');">
-                                            <i class="bi bi-toggle-off"></i>
-                                        </a>
-                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm"
-                                            onclick="cambiarDatos('@usuario.IdUsuario')">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                    </div>
-                                    <a href="javascript:void(0)" class="btn btn-danger btn-sm">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
-                                </div>
+                            <td class="table-row-custom">
+                                @usuario.FechaActualizacion
                             </td>
                         </tr>
                     }
                     else
                     {
                         <tr class="table-danger-custom">
+                            <td class="table-row-custom" class="text-center align-middle">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a href="javascript:void(0)" class="btn btn-success btn-sm"
+                                        onclick="CambiarEstadoUsuario(1, '@usuario.IdUsuario');">
+                                        <i class="bi bi-toggle-on"></i>
+                                    </a>
+                                    <a href="javascript:void(0)" class="btn btn-primary btn-sm"
+                                        onclick="cambiarDatos('@usuario.IdUsuario')">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                </div>
+                            </td>
                             <td class="table-row-custom">
-                                <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text" id="DNI_@usuario.IdUsuario">@usuario.Dni</textarea>
+                                <textarea class="textarea-custom textarea-custom-danger" rows="2" cols="5" type="text" id="DNI_@usuario.IdUsuario">@usuario.Dni</textarea>
                             </td>
                             <td class="table-row-custom">
                                 <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text"
                                     id="NombresCompletos_@usuario.IdUsuario">@usuario.NombresCompletos</textarea>
                             </td>
                             <td class="table-row-custom">
-                                <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text" id="Departamento_@usuario.IdUsuario">@usuario.Departamento</textarea>
+                                <textarea class="textarea-custom textarea-custom-danger" rows="2" cols="6" type="text" id="Departamento_@usuario.IdUsuario">@usuario.Departamento</textarea>
                             </td>
                             <td class="table-row-custom">
-                                <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text" id="Provincia_@usuario.IdUsuario">@usuario.Provincia</textarea>
+                                <textarea class="textarea-custom textarea-custom-danger" rows="2" cols="5" type="text" id="Provincia_@usuario.IdUsuario">@usuario.Provincia</textarea>
                             </td>
                             <td class="table-row-custom">
-                                <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text" id="Distrito_@usuario.IdUsuario">@usuario.Distrito</textarea>
+                                <textarea class="textarea-custom textarea-custom-danger" rows="2" cols="5" type="text" id="Distrito_@usuario.IdUsuario">@usuario.Distrito</textarea>
                             </td>
                             <td class="table-row-custom">
-                                <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text" id="Telefono_@usuario.IdUsuario">@usuario.Telefono</textarea>
+                                <textarea class="textarea-custom textarea-custom-danger" rows="2" cols="6" type="text" id="Telefono_@usuario.IdUsuario">@usuario.Telefono</textarea>
                             </td>
                             <td class="table-row-custom">
-                                <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text" id="Estado_@usuario.IdUsuario">@usuario.Estado</textarea>
+                                <textarea class="textarea-custom textarea-custom-danger" rows="2" cols="5" type="text" id="Estado_@usuario.IdUsuario">@usuario.Estado</textarea>
                             </td>
                             <td class="table-row-custom">
                                 @if (usuario.IdRol == 3)
@@ -176,27 +189,19 @@
                                 <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text" id="RESPONSABLESUP_@usuario.IdUsuario" readonly hidden>@usuario.RESPONSABLESUP</textarea>
                             </td>
                             <td class="table-row-custom">
-                                <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text" id="REGION_@usuario.IdUsuario" >@usuario.REGION</textarea>
+                                <textarea class="textarea-custom textarea-custom-danger" rows="2" cols="4" type="text" id="REGION_@usuario.IdUsuario" >@usuario.REGION</textarea>
                             </td>
                             <td class="table-row-custom">
-                                <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text" id="NOMBRECAMPAÑA_@usuario.IdUsuario">@usuario.NOMBRECAMPAÑA</textarea>
+                                <textarea class="textarea-custom textarea-custom-danger" rows="2" cols="7" type="text" id="NOMBRECAMPAÑA_@usuario.IdUsuario">@usuario.NOMBRECAMPAÑA</textarea>
                             </td>
                             <td class="table-row-custom">
-                                <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text" id="IdRol_@usuario.IdUsuario">@usuario.IdRol</textarea>
+                                <textarea class="textarea-custom textarea-custom-danger" rows="2" cols="4" type="text" id="IdRol_@usuario.IdUsuario">@usuario.IdRol</textarea>
                             </td>
                             <td class="table-row-custom">
-                                <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text" id="Rol_@usuario.IdUsuario">@usuario.Rol</textarea>
+                                <textarea class="textarea-custom textarea-custom-danger" rows="2" cols="10" type="text" id="Rol_@usuario.IdUsuario">@usuario.Rol</textarea>
                             </td>
-                            <td class="table-row-custom" class="text-center align-middle">
-                                <div class="d-flex justify-content-center gap-2">
-                                    <a href="javascript:void(0)" class="btn btn-success btn-sm"
-                                        onclick="CambiarEstadoUsuario(1, '@usuario.IdUsuario');">
-                                        <i class="bi bi-toggle-on"></i>
-                                    </a>
-                                    <a href="javascript:void(0)" class="btn btn-danger btn-sm">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
-                                </div>
+                            <td class="table-row-custom">
+                                @usuario.FechaActualizacion
                             </td>
                         </tr>
                     }

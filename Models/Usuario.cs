@@ -52,4 +52,6 @@ public partial class Usuario
     public string? NOMBRECAMPAÑA { get; set; }
     [Column("id_rol")]
     public int? IdRol { get; set; }
+    [Column("fecha_actualizacion")]
+    public DateTime? FechaActualizacion { get; set; }
 }

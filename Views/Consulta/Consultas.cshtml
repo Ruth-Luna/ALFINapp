@@ -8,39 +8,42 @@
     <link rel="stylesheet" href="~/css/main_page.css">
 }
 
-<div id="dni-section">
-    <h3>Busqueda de Clientes</h3>
-    <div class="form-group">
-        <label for="DNI"> Ingresa DNI o Numero de Telefono</label>
-        <input type="text" id="dnicliente" class="form-control" placeholder="Ingrese DNI">
-        <br>
-        <button id="consultar-dni" class="btn btn-primary" onclick="validarDNI()"><i class="bi bi-search"></i> Consultar DNI</button>
-        <a href="javascript:void(0)" id="consultar-telefono" class="btn btn-primary" onclick="validarTelefono()"><i class="bi bi-search"></i> Consultar Telefono</a>
+
+<div class="container-fluid mt-4">
+    <div id="dni-section mb-3">
+        <h3>Busqueda de Clientes</h3>
+        <div class="form-group">
+            <label for="DNI"> Ingresa DNI o Numero de Telefono</label>
+            <input type="text" id="dnicliente" class="form-control" placeholder="Ingrese DNI">
+            <br>
+            <button id="consultar-dni" class="btn btn-primary" onclick="validarDNI()"><i class="bi bi-search"></i>
+                Consultar DNI</button>
+            <a href="javascript:void(0)" id="consultar-telefono" class="btn btn-primary" onclick="validarTelefono()"><i
+                    class="bi bi-search"></i> Consultar Telefono</a>
+        </div>
     </div>
-</div>
 
-<div class="spacing"></div>
+    <div id="datos-cliente-existente" style="display: none;">
+    </div>
 
-<div id="datos-cliente-existente" style="display: none;">
-</div>
-
-<div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="GeneralTemplateTitleModalLabel"></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="modalContentGeneralTemplate">
-                    @*Model Template General*@
+    <div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="GeneralTemplateTitleModalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="modalContentGeneralTemplate">
+                        @*Model Template General*@
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<div id="error-message" class="alert alert-danger" style="display: none;">
+    <div id="error-message" class="alert alert-danger" style="display: none;">
+    </div>
 </div>
 
 @section Scripts {

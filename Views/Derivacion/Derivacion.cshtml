@@ -8,65 +8,65 @@
     <link rel="stylesheet" href="~/css/main_page.css">
 }
 
-<div class="container">
-    <h3> Derivaciones de sus Asesores </h3>
+<div class="container-fluid mt-4">
+    <div class="container">
+        <h3> Derivaciones de sus Asesores </h3>
 
-    <div class="alert alert-primary" role="alert">
-        <span> En esta seccion puede ver las Derivaciones de sus asesores </span>
-    </div>
+        <div class="alert alert-primary" role="alert">
+            <span> En esta seccion puede ver las Derivaciones de sus asesores </span>
+        </div>
 
-    <label for="IdAsesoresDerivacion">Asesor</label>
-    <select class="form-select" name="IdAsesoresDerivacion" id="IdAsesoresDerivacion"
-        onchange="cargarDerivacionesXAsesor(this.value)">
-        <option value="">Seleccione un Asesor</option>
-        @if (Asesores != null)
-        {
-            foreach (var asesor in Asesores)
+        <label for="IdAsesoresDerivacion">Asesor</label>
+        <select class="form-select" name="IdAsesoresDerivacion" id="IdAsesoresDerivacion"
+            onchange="cargarDerivacionesXAsesor(this.value)">
+            <option value="">Seleccione un Asesor</option>
+            @if (Asesores != null)
             {
-                <option value="@asesor.Dni">@asesor.Dni - @asesor.NombresCompletos</option>
+                foreach (var asesor in Asesores)
+                {
+                    <option value="@asesor.Dni">@asesor.Dni - @asesor.NombresCompletos</option>
+                }
             }
-        }
-    </select>
-</div>
-
-
-<div class="container" id="DerivacionXAsesor" style="display: none;">
-</div>
-
-<div class="container mt-4" id="DerivacionesSupervisorGeneral" style="display: block;">
-    <div class="form-group mb-3">
-        <label for="numeroClientesDerivacion">Numero de Clientes</label>
-        <input type="text" class="form-control" id="numeroClientesDerivacion" name="numeroClientesDerivacion"
-            value="@Model.Count" readonly>
+        </select>
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>DNI Cliente</th>
-                    <th>Telefono</th>
-                    <th>DNI Asesor</th>
-                    <th>Origen del Telefono</th>
-                    <th>Fecha de Derivacion</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model != null)
-                {
-                    foreach (var derivacionAsesor in Model)
+    <div class="container" id="DerivacionXAsesor" style="display: none;">
+    </div>
+
+    <div class="container mt-4" id="DerivacionesSupervisorGeneral" style="display: block;">
+        <div class="form-group mb-3">
+            <label for="numeroClientesDerivacion">Numero de Clientes</label>
+            <input type="text" class="form-control" id="numeroClientesDerivacion" name="numeroClientesDerivacion"
+                value="@Model.Count" readonly>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>DNI Cliente</th>
+                        <th>Telefono</th>
+                        <th>DNI Asesor</th>
+                        <th>Origen del Telefono</th>
+                        <th>Fecha de Derivacion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
                     {
-                        <tr>
-                            <td>@derivacionAsesor.DNI</td>
-                            <td>@derivacionAsesor.TELEFONO</td>
-                            <td>@derivacionAsesor.DNI_ASESOR</td>
-                            <td>@derivacionAsesor.ORIGEN_TELEFONO</td>
-                            <td>@derivacionAsesor.FECHA_ENVIO</td>
-                        </tr>
+                        foreach (var derivacionAsesor in Model)
+                        {
+                            <tr>
+                                <td>@derivacionAsesor.DNI</td>
+                                <td>@derivacionAsesor.TELEFONO</td>
+                                <td>@derivacionAsesor.DNI_ASESOR</td>
+                                <td>@derivacionAsesor.ORIGEN_TELEFONO</td>
+                                <td>@derivacionAsesor.FECHA_ENVIO</td>
+                            </tr>
+                        }
                     }
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 

@@ -38,12 +38,12 @@ namespace ALFINapp.Controllers
         public async Task<IActionResult> Asignacion()
         {
             var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId == null)
+            if (usuarioId == null )
             {
                 TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
                 return RedirectToAction("Index", "Home");
             }
-            var GetVendedoresAsignados = await _dbServicesConsultasSupervisores.GetAsesorsFromSupervisor(usuarioId);
+            var GetVendedoresAsignados = await _dbServicesConsultasSupervisores.GetAsesorsFromSupervisor(usuarioId.Value);
 
             if (GetVendedoresAsignados.IsSuccess == false)
             {
