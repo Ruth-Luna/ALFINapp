@@ -1,0 +1,37 @@
+@model List<VendedorConClientesDTO>
+@{
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/main_page.css">
+}
+
+<div class="container mb-3 mt-4">
+    <h3>Seccion Modificar Asignaciones del Asesor</h3>
+    <div class="row">
+        <div>
+            <label for="selectAsesor" class="form-label">Seleccione un Asesor</label>
+            <select class="form-select" id="selectAsesor" name="selectAsesor"
+                onchange="cargarActualizacionDeAsignacionXAsesor(this.value)">
+                <option value="">Seleccione un Asesor</option>
+                @foreach (var AsesorAsignados in Model)
+                {
+                    if (AsesorAsignados.estaActivado == true)
+                    {
+                        <option value="@AsesorAsignados.IdUsuario">@AsesorAsignados.NombresCompletos</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="spacing"></div>
+
+        <div id="cargarActualizacionDeAsignacionXAsesor" class="row mt-10" style="display: none;">
+            <!-- Aqui se cargara la vista parcial del asesor seleccionado -->
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+}

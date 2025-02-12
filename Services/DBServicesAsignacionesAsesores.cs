@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ALFINapp.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -204,6 +205,27 @@ namespace ALFINapp.Services
             catch (Exception ex)
             {
                 return (false, ex.Message);
+            }
+        }
+        public async Task<(bool IsSuccess, string message, List<ClientesAsignado>? data)>ObtenerClientesDisponibles(
+            int IdUsuario, 
+            string selectAsesorBase, 
+            int nClientes)
+        {
+            try
+            {
+                var clientesDisponibles = await _context.clientes_asignados
+                    .FromSqlRaw("EXEC sp_asesores_clientes_disponibles_asignar @idSupervisorActual, @selectAsesorBase, @nClientes",
+                    new SqlParameter("@idSupervisorActual", IdUsuario),
+                    new SqlParameter("@selectAsesorBase", selectAsesorBase),
+                    new SqlParameter("@nClientes", nClientes))
+                    .ToListAsync();
+                
+                return (true, "Clientes disponibles obtenidos correctamente", clientesDisponibles);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message, null);
             }
         }
     }

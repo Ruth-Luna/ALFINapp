@@ -1,6 +1,8 @@
 using System.Security;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using ALFINapp.Models;
+using ALFINapp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
@@ -10,12 +12,14 @@ namespace ALFINapp.Controllers
     public class AsesorController : Controller
     {
         private readonly MDbContext _context;
+        private readonly List<int> rolesPermitidos = new List<int> { 1, 2, 3 };
+        private readonly DBServicesAsignacionesAsesores _dbServicesAsignacionesAsesores;
 
-        public AsesorController(MDbContext context)
+        public AsesorController(MDbContext context, DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores)
         {
             _context = context;
+            _dbServicesAsignacionesAsesores = dbServicesAsignacionesAsesores;
         }
-
         [HttpPost]
         public IActionResult ActivarAsesor(string DNI, int idUsuario)
         {
@@ -359,11 +363,15 @@ namespace ALFINapp.Controllers
         }
 
         [HttpPost]
-        public IActionResult AsignarAsesoresPrincipales(List<AsignarAsesorDTO> asignacionasesor, string selectAsesorBase)
+        public async Task<IActionResult> AsignarClientesAAsesores(List<AsignarAsesorDTO> asignacionasesor, string selectAsesorBase)
         {
             try
             {
                 int? idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
+                if (idSupervisorActual == null)
+                {
+                    return Json(new { success = false, message = "No se pudo obtener el ID del supervisor actual recuerde Iniciar Sesion." });
+                }
 
                 string mensajesError = " ";
                 if (asignacionasesor == null)
@@ -392,14 +400,15 @@ namespace ALFINapp.Controllers
 
                     int nClientes = asignacion.NumClientes;
                     contadorClientesAsignados = contadorClientesAsignados + nClientes;
-                    var clientesDisponibles = _context.clientes_asignados
-                                            .Where(ca => ca.IdUsuarioS == idSupervisorActual && ca.IdUsuarioV == null
-                                                    && ca.FechaAsignacionSup.HasValue && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                                                    && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
-                                                    && ca.Destino == selectAsesorBase)
-                                            .Take(nClientes)
-                                            .ToList();
+                    var getClientesDisponibles = await _dbServicesAsignacionesAsesores.ObtenerClientesDisponibles(idSupervisorActual.Value, selectAsesorBase, nClientes);
+                    if (!getClientesDisponibles.IsSuccess || getClientesDisponibles.data == null)
+                    {
+                        mensajesError = mensajesError + $"Ha ocurrido un error al obtener los clientes disponibles. {getClientesDisponibles.message}";
+                        continue;
+                    }
 
+                    var clientesDisponibles = getClientesDisponibles.data;
+                    
                     if (clientesDisponibles.Count < nClientes)
                     {
                         mensajesError = mensajesError + $"En la base '{selectAsesorBase}', solo hay {clientesDisponibles.Count} clientes disponibles para la asignación. La entrada ha sido obviada.";
@@ -419,7 +428,6 @@ namespace ALFINapp.Controllers
                 }
                 else
                 {
-
                     return Json(new { success = true, message = $"Se han modificado {contadorClientesAsignados} asignaciones correctamente." });
                 }
             }
