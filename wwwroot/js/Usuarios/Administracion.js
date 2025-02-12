@@ -1,5 +1,4 @@
 function cambiarDatos(idUsuario) {
-
     var datosUsuario = {
         IdUsuario: parseInt(idUsuario),
         Dni: document.getElementById('DNI_' + idUsuario).value.trim(),
@@ -16,9 +15,6 @@ function cambiarDatos(idUsuario) {
         NOMBRECAMPAÑA: document.getElementById('NOMBRECAMPAÑA_' + idUsuario).value.trim(),
         IdRol: parseInt(document.getElementById('IdRol_' + idUsuario).value),
     };
-
-    console.log("Datos enviados:", datosUsuario);
-
     $.ajax({
         url: "/Usuarios/ModificarUsuario",
         type: "POST",
@@ -53,13 +49,6 @@ function cambiarDatos(idUsuario) {
 }
 
 function CambiarEstadoUsuario(accion, idUsuario) {
-    var datosUsuario = {
-        IdUsuario: parseInt(idUsuario),
-        Accion: accion
-    };
-
-    console.log("Datos enviados:", datosUsuario);
-
     $.ajax({
         url: "/Usuarios/CambiarEstadoUsuario",
         type: "POST",
@@ -75,6 +64,9 @@ function CambiarEstadoUsuario(accion, idUsuario) {
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
             } else {
                 Swal.fire({
                     title: 'Datos actualizados correctamente',
@@ -82,6 +74,9 @@ function CambiarEstadoUsuario(accion, idUsuario) {
                     icon: 'success',
                     confirmButtonText: 'OK'
                 });
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
             }
         },
         error: function (error) {
@@ -91,7 +86,9 @@ function CambiarEstadoUsuario(accion, idUsuario) {
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
+            setTimeout(function() {
+                location.reload();
+            }, 2000);
         }
     });
-    
 }

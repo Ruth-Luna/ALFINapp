@@ -1,11 +1,8 @@
-
+@model IEnumerable<ALFINapp.Models.SupervisorDTO>
 @{
     ViewData["Title"] = "Ventas del Usuario";
     var usuarioNombre = ViewData["UsuarioNombre"];
 
-    var currentPage = (int)(ViewData["CurrentPage"] ?? 10);
-    var totalPages = (int)(ViewData["TotalPages"] ?? 10);
-    var pageSize = (int)(ViewData["PageSize"] ?? 10);
     var clientesPendientesSupervisor = (int)(ViewData["ClientesPendientesSupervisor"] ?? 0);
 }
 
@@ -103,9 +100,9 @@
                                 contr++;
                             }
                             <td>@SupervisorDTO.Dni</td>
-                            <td>@SupervisorDTO.XNombre.ToUpper() @SupervisorDTO.XAppaterno.ToUpper()
-                                @SupervisorDTO.XApmaterno.ToUpper()</td>
-                            <td>@SupervisorDTO.NombresCompletos.ToUpper()</td>
+                            <td>@(SupervisorDTO.XNombre?.ToUpper() ?? "DESCONOCIDO") @(SupervisorDTO.XAppaterno?.ToUpper() ?? string.Empty)
+                                @(SupervisorDTO.XApmaterno?.ToUpper() ?? "DESCONOCIDO")</td>
+                            <td>@(SupervisorDTO.NombresCompletos?.ToUpper() ?? "DESCONOCIDO")</td>
                             <td>@SupervisorDTO.DniVendedor</td>
                             <td>@SupervisorDTO.FechaAsignacionV</td>
                         </tr>
@@ -120,19 +117,6 @@
             </tbody>
         </table>
     </div>
-    <div class="pagination">
-        @if (currentPage > 1)
-        {
-            <a href="?page=@(currentPage - 1)&pageSize=@pageSize"><i class="fa-solid fa-arrow-left"></i></a>
-        }
-        <span>&nbsp; Página @currentPage de @totalPages &nbsp;</span>
-        @if (currentPage < totalPages)
-        {
-            <a href="?page=@(currentPage + 1)&pageSize=@pageSize"> <i class="fa-solid fa-arrow-right"></i></a>
-        }
-    </div>
-    <div class="spacing"></div>
-    <div class="spacing"></div>
 </div>
 
 <div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">

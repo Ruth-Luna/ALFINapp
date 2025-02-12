@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using ALFINapp.Filters;
 using ALFINapp.Models;
 using ALFINapp.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ALFINapp.Controllers
 {
+    [RequireSession]
     public class UsuariosController : Controller
     {
         private readonly DBServicesConsultasAdministrador _DBServicesConsultasAdministrador;
@@ -60,7 +62,7 @@ namespace ALFINapp.Controllers
                 {
                     return Json(new { success = false, message = "No se ha podido cambiar el estado del usuario" });
                 }
-                return Json(new { success = false, message = "Todo correcto" });
+                return Json(new { success = true, message = "Los datos se han actualizado correctamente" });
             }
             catch (System.Exception ex)
             {

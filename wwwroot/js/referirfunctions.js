@@ -130,7 +130,7 @@ function ReferirDNI(dni, fuenteBase) {
             celular: CelularUsuario.value,
             correo: CorreoUsuario.value,
             cci: CCIUsuario.value,
-            departamento: DepartamentoUsuario.value,
+            departamento: DepartamentoUsuario.value.toUpperCase(),
             ubigeo: UbigeoUsuario.value,
             banco: BancoUsuario.value
         },

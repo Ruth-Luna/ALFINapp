@@ -11,17 +11,26 @@ namespace ALFINapp.Controllers
 {
     public class AsesorController : Controller
     {
-        private readonly MDbContext _context;
         private readonly List<int> rolesPermitidos = new List<int> { 1, 2, 3 };
         private readonly DBServicesAsignacionesAsesores _dbServicesAsignacionesAsesores;
+        private readonly DBServicesGeneral _dbServicesGeneral;
+        private readonly DBServicesEstadoAsesores _dbServicesEstadoAsesores;
+        private readonly MDbContext _context;
 
-        public AsesorController(MDbContext context, DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores)
+        public AsesorController(
+            DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores, 
+            DBServicesGeneral dbServicesGeneral, 
+            DBServicesEstadoAsesores dbServicesEstadoAsesores,
+            MDbContext context)
         {
-            _context = context;
             _dbServicesAsignacionesAsesores = dbServicesAsignacionesAsesores;
+            _dbServicesGeneral = dbServicesGeneral;
+            _dbServicesEstadoAsesores = dbServicesEstadoAsesores;
+            _context = context;
         }
+        
         [HttpPost]
-        public IActionResult ActivarAsesor(string DNI, int idUsuario)
+        public async Task<IActionResult> ActivarAsesor(string DNI, int idUsuario)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)
@@ -41,7 +50,12 @@ namespace ALFINapp.Controllers
                     return Json(new { success = false, message = "Debe ingresar el Id del asesor" });
                 }
 
-                var asesorParaActivar = _context.usuarios.FirstOrDefault(u => u.Dni == DNI && u.IdUsuario == idUsuario);
+                var GetAsesorParaActivar = await _dbServicesGeneral.GetUserInformation(idUsuario);
+                if (!GetAsesorParaActivar.IsSuccess)
+                {
+                    return Json(new { success = false, message = GetAsesorParaActivar.Message });
+                }
+                var asesorParaActivar = GetAsesorParaActivar.Data;
                 if (asesorParaActivar == null)
                 {
                     return Json(new { success = false, message = "No se encontró el asesor" });
@@ -50,8 +64,11 @@ namespace ALFINapp.Controllers
                 {
                     return Json(new { success = false, message = "El asesor ya se encuentra activo" });
                 }
-                asesorParaActivar.Estado = "ACTIVO";
-                _context.SaveChanges();
+                var estadoActivacion = await _dbServicesEstadoAsesores.ActivarAsesor(asesorParaActivar);
+                if (!estadoActivacion.IsSuccess)
+                {
+                    return Json(new { success = false, message = estadoActivacion.message });
+                }
                 return Json(new { success = true, message = "Asesor activado correctamente" });
             }
             catch (System.Exception)
@@ -62,7 +79,7 @@ namespace ALFINapp.Controllers
         }
 
         [HttpPost]
-        public IActionResult DesactivarAsesor(string DNI, int idUsuario)
+        public async Task<IActionResult> DesactivarAsesorAsync(string DNI, int idUsuario)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)
@@ -82,7 +99,12 @@ namespace ALFINapp.Controllers
                     return Json(new { success = false, message = "Debe ingresar el Id del asesor" });
                 }
 
-                var asesorParaDesactivar = _context.usuarios.FirstOrDefault(u => u.Dni == DNI && u.IdUsuario == idUsuario);
+                var getAsesorParaDesactivar = await _dbServicesGeneral.GetUserInformation(idUsuario);
+                if (!getAsesorParaDesactivar.IsSuccess)
+                {
+                    return Json(new { success = false, message = getAsesorParaDesactivar.Message });
+                }
+                var asesorParaDesactivar = getAsesorParaDesactivar.Data;
 
                 if (asesorParaDesactivar == null)
                 {
@@ -93,8 +115,11 @@ namespace ALFINapp.Controllers
                     return Json(new { success = false, message = "El asesor ya se encuentra inactivo" });
                 }
 
-                asesorParaDesactivar.Estado = "INACTIVO";
-                _context.SaveChanges();
+                var estadoDeactivacion = await _dbServicesEstadoAsesores.DesactivarAsesor(asesorParaDesactivar);
+                if (!estadoDeactivacion.IsSuccess)
+                {
+                    return Json(new { success = false, message = estadoDeactivacion.message });
+                }
                 return Json(new { success = true, message = "Asesor desactivado correctamente" });
             }
             catch (System.Exception)
