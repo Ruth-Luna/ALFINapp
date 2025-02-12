@@ -64,11 +64,11 @@ function ReferirDNI(dni, fuenteBase) {
     const CorreoUsuario = document.getElementById('CorreoUsuario');
     const CCIUsuario = document.getElementById('CCIUsuario');
     const DepartamentoUsuario = document.getElementById('DepartamentoUsuario');
-    const UbigeoUsuario = document.getElementById('UbigeoUsuario');
+    const UbigeoUsuario = 'NO DEFINIDO';
     const BancoUsuario = document.getElementById('BancoUsuario');
 
-    const dniRegex = /^\d{8}$/;
-    const celularRegex = /^\d{9}$/;
+    const dniRegex = /^\d{8,11}$/;
+    const celularRegex = /^9\d{8}$/;
 
     if (!dniRegex.test(DNIUsuario.value)) {
         Swal.fire({
@@ -131,7 +131,7 @@ function ReferirDNI(dni, fuenteBase) {
             correo: CorreoUsuario.value,
             cci: CCIUsuario.value,
             departamento: DepartamentoUsuario.value.toUpperCase(),
-            ubigeo: UbigeoUsuario.value,
+            ubigeo: UbigeoUsuario,
             banco: BancoUsuario.value
         },
         success: function (response) {
