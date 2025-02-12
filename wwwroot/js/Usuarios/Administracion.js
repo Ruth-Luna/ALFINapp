@@ -28,6 +28,9 @@ function cambiarDatos(idUsuario) {
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });
+                setTimeout(function () {
+                    location.reload();
+                }, 2000);
             } else {
                 Swal.fire({
                     title: 'Datos actualizados correctamente',
@@ -35,6 +38,9 @@ function cambiarDatos(idUsuario) {
                     icon: 'success',
                     confirmButtonText: 'OK'
                 });
+                setTimeout(function () {
+                    location.reload();
+                }, 2000);
             }
         },
         error: function (error) {
@@ -44,6 +50,9 @@ function cambiarDatos(idUsuario) {
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
+            setTimeout(function () {
+                location.reload();
+            }, 2000);
         }
     });
 }
@@ -64,7 +73,7 @@ function CambiarEstadoUsuario(accion, idUsuario) {
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });
-                setTimeout(function() {
+                setTimeout(function () {
                     location.reload();
                 }, 2000);
             } else {
@@ -74,7 +83,7 @@ function CambiarEstadoUsuario(accion, idUsuario) {
                     icon: 'success',
                     confirmButtonText: 'OK'
                 });
-                setTimeout(function() {
+                setTimeout(function () {
                     location.reload();
                 }, 2000);
             }
@@ -86,7 +95,7 @@ function CambiarEstadoUsuario(accion, idUsuario) {
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
-            setTimeout(function() {
+            setTimeout(function () {
                 location.reload();
             }, 2000);
         }

@@ -129,7 +129,7 @@ namespace ALFINapp.Controllers
             </table>";
 
             var enviarCorreo = await _dbServicesReferido.EnviarCorreoReferido(
-                                                                        /*"rperaltam@grupoa365.com.pe"*/"santiagovl0308@gmail.com",
+                                                                        "rperaltam@grupoa365.com.pe",
                                                                         mensaje,
                                                                         $"REFERIDOS - SISTEMA ALFIN {DateTime.Now.ToString("dd/MM/yyyy")}");
 
