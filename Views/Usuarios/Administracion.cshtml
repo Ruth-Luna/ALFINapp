@@ -23,6 +23,10 @@
                     <th>Accion</th>
                     <th>Dni</th>
                     <th>Nombres Completos</th>
+                    @*<th>Departamento</th>
+                    <th>Provincia</th>
+                    <th>Distrito</th>
+                    <th>Telefono</th>*@
                     <th>Estado</th>
                     <th>Supervisor Asignado</th>
                     <th>Region</th>
@@ -59,7 +63,7 @@
                                 <textarea class="textarea-custom" rows="2" type="text"
                                     id="NombresCompletos_@usuario.IdUsuario">@usuario.NombresCompletos</textarea>
                             </td>
-                            <td class="table-row-custom">
+                            @*<td class="table-row-custom">
                                 <textarea class="textarea-custom" rows="2" cols="6" type="text" id="Departamento_@usuario.IdUsuario">@usuario.Departamento</textarea>
                             </td>
                             <td class="table-row-custom">
@@ -70,7 +74,7 @@
                             </td>
                             <td class="table-row-custom">
                                 <textarea class="textarea-custom" rows="2" cols="6" type="text" id="Telefono_@usuario.IdUsuario">@usuario.Telefono</textarea>
-                            </td>
+                            </td>*@
                             <td class="table-row-custom">
                                 <textarea class="textarea-custom" rows="2" cols="5" type="text" id="Estado_@usuario.IdUsuario">@usuario.Estado</textarea>
                             </td>
@@ -81,7 +85,7 @@
                                         <option value="@usuario.IDUSUARIOSUP">@usuario.IDUSUARIOSUP - @usuario.RESPONSABLESUP</option>
                                         @foreach (var supervisor in Model)
                                         {
-                                            if (supervisor.IdRol == 2)
+                                            if (supervisor.IdRol == 2 && supervisor.Estado == "ACTIVO")
                                             {
                                                 <option value="@supervisor.IdUsuario">@supervisor.IdUsuario - @supervisor.NombresCompletos</option>
                                             }
@@ -141,7 +145,7 @@
                                 <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text"
                                     id="NombresCompletos_@usuario.IdUsuario">@usuario.NombresCompletos</textarea>
                             </td>
-                            <td class="table-row-custom">
+                            @*<td class="table-row-custom">
                                 <textarea class="textarea-custom textarea-custom-danger" rows="2" cols="6" type="text" id="Departamento_@usuario.IdUsuario">@usuario.Departamento</textarea>
                             </td>
                             <td class="table-row-custom">
@@ -152,7 +156,7 @@
                             </td>
                             <td class="table-row-custom">
                                 <textarea class="textarea-custom textarea-custom-danger" rows="2" cols="6" type="text" id="Telefono_@usuario.IdUsuario">@usuario.Telefono</textarea>
-                            </td>
+                            </td>*@
                             <td class="table-row-custom">
                                 <textarea class="textarea-custom textarea-custom-danger" rows="2" cols="5" type="text" id="Estado_@usuario.IdUsuario">@usuario.Estado</textarea>
                             </td>
@@ -163,7 +167,7 @@
                                         <option value="@usuario.IDUSUARIOSUP">@usuario.IDUSUARIOSUP - @usuario.RESPONSABLESUP</option>
                                         @foreach (var supervisor in Model)
                                         {
-                                            if (supervisor.IdRol == 2)
+                                            if (supervisor.IdRol == 2 && supervisor.Estado == "ACTIVO")
                                             {
                                                 <option value="@supervisor.IdUsuario">@supervisor.IdUsuario - @supervisor.NombresCompletos</option>
                                             }
