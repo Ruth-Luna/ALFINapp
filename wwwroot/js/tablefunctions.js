@@ -101,6 +101,30 @@ function filterByDate() {
     });
 }
 
+function filtrarPorRol(rol) {
+    const table = document.getElementById('clientesTable');
+    const rows = table.tBodies[0].rows;
+
+    Array.from(rows).slice(1).forEach(row => {
+        let cell = row.cells[7]; // Obtiene la celda de la columna 6
+        if (!cell) return; // Si no existe la celda, saltar
+
+        let select = cell.querySelector('select');
+        let cellValue = select ? select.value : cell.textContent.trim(); // Usa <select> o texto directo
+
+        console.log(`Comparando ${cellValue} con ${rol}`);
+
+        // Mostrar todas las filas si se selecciona "Seleccione un Rol"
+        if (rol === "") {
+            row.style.display = ''; // Muestra todas las filas
+            return;
+        }
+
+        // Comparación estricta para filtrar correctamente
+        let match = cellValue === rol;
+        row.style.display = match ? '' : 'none'; // Muestra u oculta la fila
+    });
+}
 
 document.getElementById('searchInput').addEventListener('input', function () {
     const searchField = document.getElementById('searchField').value;
@@ -123,13 +147,14 @@ document.getElementById('searchInput').addEventListener('input', function () {
         }
     }
 
-    Array.from(rows).forEach(row => {
+    Array.from(rows).slice(1).forEach(row => {
         let cellValue = '';
         let rowDate = '';
 
         switch (searchField) {
             case 'apellidoPaterno':
                 cellValue = row.cells[2].textContent.toLowerCase(); // Apellido Paterno
+                console.log(row.cells[2]);
                 break;
             /*case 'apellidoMaterno':
                 cellValue = row.cells[3].textContent.toLowerCase(); // Columna de Apellido Materno
@@ -155,6 +180,13 @@ document.getElementById('searchInput').addEventListener('input', function () {
             case 'fechaAsignacion':
                 rowDate = row.cells[5].textContent.trim(); // Fecha de Asignación
                 break;
+            case 'nombres':
+                //cellValue = row.cells[1].textContent.toLowerCase(); // Nombres
+                cellValue = row.cells[3].querySelector('textarea').value.toLowerCase(); // Nombres
+                break;
+            case 'dniadm':
+                cellValue = row.cells[2].querySelector('textarea').value.toLowerCase(); // Nombres
+                break;
             default:
                 cellValue = ''; // En caso de no coincidir con ninguna opción
                 break;
@@ -167,9 +199,7 @@ document.getElementById('searchInput').addEventListener('input', function () {
             const rowDateObj = parseDate(rowDate);
             const startDateObj = startDate ? parseDate(startDate) : null;
             const endDateObj = endDate ? parseDate(endDate) : null;
-
             console.log(rowDateObj, startDateObj, endDateObj);
-
             // Verificar si la fecha de la fila está dentro del rango seleccionado
             if (startDateObj && rowDateObj < startDateObj) {
                 match = false;
@@ -195,17 +225,24 @@ document.getElementById('searchField').addEventListener('change', function () {
     const startDateInput = document.getElementById('startDate');
     const endDateInput = document.getElementById('endDate');
     const searchInput = document.getElementById('searchInput');
-
+    const rolFiltro = document.getElementById('rolFiltro');
 
     // Mostrar u ocultar los campos de fecha según la opción seleccionada
     if (searchField === 'fechaAsignacion') {
         startDateInput.style.display = 'block';
         endDateInput.style.display = 'block';
         searchInput.style.display = 'none';
-
-    } else {
+        rolFiltro.style.display = 'none';
+    } if (searchField === 'rol') {
+        startDateInput.style.display = 'none';
+        endDateInput.style.display = 'none';
+        searchInput.style.display = 'none';
+        rolFiltro.style.display = 'block';
+    }
+    else {
         startDateInput.style.display = 'none';
         endDateInput.style.display = 'none';
         searchInput.style.display = 'block';
+        rolFiltro.style.display = 'none';
     }
 });

@@ -101,3 +101,7 @@ function CambiarEstadoUsuario(accion, idUsuario) {
         }
     });
 }
+
+function habilitarEdicion(campo) {
+    
+}
