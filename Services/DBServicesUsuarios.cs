@@ -122,7 +122,7 @@ namespace ALFINapp.Services
                     new SqlParameter("@Telefono", usuario.Telefono != null ? usuario.Telefono : (object)DBNull.Value),
                     new SqlParameter("@Estado", usuario.Estado != null ? usuario.Estado : "ACTIVO"),
                     new SqlParameter("@IDUSUARIOSUP", usuario.IDUSUARIOSUP != null ? usuario.IDUSUARIOSUP : (object)DBNull.Value),
-                    new SqlParameter("@RESPONSABLESUP", getUsuario != null ? getUsuario.NombresCompletos : (object)DBNull.Value),
+                    new SqlParameter("@RESPONSABLESUP", getUsuario?.NombresCompletos ?? (object)DBNull.Value),
                     new SqlParameter("@REGION", usuario.REGION != null ? usuario.REGION : (object)DBNull.Value),
                     new SqlParameter("@NOMBRECAMPAÑA", usuario.NOMBRECAMPAÑA != null ? usuario.NOMBRECAMPAÑA : (object)DBNull.Value),
                     new SqlParameter("@IdRol", usuario.IdRol)
@@ -176,8 +176,6 @@ namespace ALFINapp.Services
                 {
                     return (false, "Campo enviado no valido");
                 }
-                _context.usuarios.Update(usuario);
-                await _context.SaveChangesAsync();
                 return (true, "Campo actualizado correctamente");
             }
             catch (Exception ex)

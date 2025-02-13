@@ -22,14 +22,14 @@ namespace ALFINapp.Services
                 if (clienteExistenteBD != null)
                 {
                     var detalleclienteExistenteBD = _context.detalle_base
-                        .FromSqlRaw("EXEC SP_Consulta_Obtener_detalle_cliente_por_idbase @IdBase",
-                            new SqlParameter("@IdBase", clienteExistenteBD.IdBase))
+                        .FromSqlRaw("EXEC SP_Consulta_Obtener_detalle_cliente_por_DNI_A365 @DNI",
+                            new SqlParameter("@DNI", DNIBusqueda))
                         .AsEnumerable()
                         .FirstOrDefault();
 
                     if (detalleclienteExistenteBD == null)
                     {
-                        return (false, "El cliente no tiene Detalle Base en la Base de Datos de A365, este dato fue eliminado manualmente, o es previo a la fecha correspondiente", null);
+                        return (false, "El cliente no tiene Detalle Base en la Base de Datos de A365, este dato fue eliminado manualmente, o es previo a la fecha correspondiente, o el cliente ha sido desembolsado o retirado", null);
                     }
 
                     // Consulta a la base de datos del A365
@@ -96,20 +96,9 @@ namespace ALFINapp.Services
         {
             try
             {
-                var clienteExistenteBD = await _context.clientes_enriquecidos.FirstOrDefaultAsync(c => c.Telefono1 == telefono
-                    || c.Telefono2 == telefono
-                    || c.Telefono3 == telefono
-                    || c.Telefono4 == telefono
-                    || c.Telefono5 == telefono);
-
-                if (clienteExistenteBD == null)
-                {
-                    return (false, "El cliente no tiene Detalles en la Base de Datos de A365, este TELEFONO no se encuentra en ninguna de nuestras bases de datos conocidas", null);
-                }
-
                 var detalleclienteExistenteBD = _context.detalle_base
-                    .FromSqlRaw("EXEC SP_Consulta_Obtener_detalle_cliente_por_id_enriquecido @idEnriquecido",
-                        new SqlParameter("@idEnriquecido", clienteExistenteBD.IdCliente))
+                    .FromSqlRaw("EXEC SP_Consulta_Obtener_detalle_cliente_por_telefono @Telefono",
+                        new SqlParameter("@Telefono", telefono))
                     .AsEnumerable()
                     .FirstOrDefault();
 
@@ -118,7 +107,7 @@ namespace ALFINapp.Services
                     return (false, "El cliente no tiene Detalle Base en la Base de Datos de A365, este dato fue eliminado manualmente", null);
                 }
 
-                var baseClienteExistenteBD = await _context.base_clientes.FirstOrDefaultAsync(c => c.IdBase == clienteExistenteBD.IdBase);
+                var baseClienteExistenteBD = await _context.base_clientes.FirstOrDefaultAsync(c => c.IdBase == detalleclienteExistenteBD.IdBase);
 
                 if (baseClienteExistenteBD == null)
                 {

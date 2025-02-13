@@ -18,7 +18,7 @@ function guardarNuevoUsuario() {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'El campo "' + campo + '" solo puede tener letras.'
+                text: 'El campo "' + campo + '" solo puede tener letras. Y no puede estar vaco'
             });
             valid = false;
             return;
@@ -49,16 +49,16 @@ function guardarNuevoUsuario() {
 
     // Prepare the data to be sent in the AJAX request
     var dataToSend = {
-        Dni: dni,
-        Departamento: document.getElementById('Nuevo_departamento').value.trim(),
-        Provincia: document.getElementById('Nuevo_provincia').value.trim(),
-        Distrito: document.getElementById('Nuevo_distrito').value.trim(),
-        REGION: document.getElementById('Nuevo_region').value.trim(),
-        NombresCompletos: document.getElementById('Nuevo_nombres').value.trim()
-            + ' ' + document.getElementById('Nuevo_apellido_paterno').value.trim()
-            + ' ' + document.getElementById('Nuevo_apellido_materno').value.trim(),
+        Dni: dni.toUpperCase(),
+        Departamento: document.getElementById('Nuevo_departamento').value.trim().toUpperCase(),
+        Provincia: document.getElementById('Nuevo_provincia').value.trim().toUpperCase(),
+        Distrito: document.getElementById('Nuevo_distrito').value.trim().toUpperCase(),
+        REGION: document.getElementById('Nuevo_region').value.trim().toUpperCase(),
+        NombresCompletos: (document.getElementById('Nuevo_nombres').value.trim() + ' ' 
+            + document.getElementById('Nuevo_apellido_paterno').value.trim() + ' ' 
+            + document.getElementById('Nuevo_apellido_materno').value.trim()).toUpperCase(),
         Telefono: telefono,
-        IdRol: document.getElementById('Nuevo_rol').value.trim(),
+        IdRol: document.getElementById('Nuevo_rol').value.trim().toUpperCase(),
         IDUSUARIOSUP: parseInt(document.getElementById('Nuevo_Supervisor').value)
     };
 
@@ -66,7 +66,7 @@ function guardarNuevoUsuario() {
 
     // Send an AJAX request to the server
     $.ajax({
-        url: "/Usuario/CrearUsuario",
+        url: "/Usuarios/CrearUsuario",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(dataToSend),

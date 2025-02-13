@@ -129,7 +129,10 @@
                     <option value="">Seleccione un supervisor</option>
                     @foreach (var supervisor in Model)
                     {
-                        <option value="@supervisor.IdUsuario">@supervisor.Dni - @supervisor.NombresCompletos</option>
+                        if (supervisor.Estado == "ACTIVO")
+                        {
+                            <option value="@supervisor.IdUsuario">@supervisor.Dni - @supervisor.NombresCompletos</option>
+                        }
                     }
                 </select>
             </div>
