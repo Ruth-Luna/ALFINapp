@@ -95,7 +95,7 @@ namespace ALFINapp.Services
                             FechaAsignacionSup = DateTime.Now,
                             ClienteDesembolso = false,
                             ClienteRetirado = false,
-                            Destino = "ALFIN_AGREGADO_MANUALMENTE",
+                            Destino = "A365_AGREGADO_MANUALMENTE",
                         };
                         _context.clientes_asignados.Add(nuevoClienteAsignado);
                         await _context.SaveChangesAsync();

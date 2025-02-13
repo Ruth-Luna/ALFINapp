@@ -136,5 +136,54 @@ namespace ALFINapp.Services
                 return (false, ex.Message);
             }
         }
+
+        public async Task<(bool IsSuccess, string Message)> UpdateUsuarioXCampo(int usuarioId, string campo, string nuevoValor)
+        {
+            try
+            {
+                var usuario = await _context.usuarios.FirstOrDefaultAsync(x => x.IdUsuario == usuarioId);
+                if (usuario == null)
+                {
+                    return (false, "El usuario no existe");
+                }
+
+                if (campo == "Departamento")
+                {
+                    await _context.Database.ExecuteSqlRawAsync(
+                    "UPDATE usuarios SET departamento = {0} WHERE id_usuario = {1}",
+                    nuevoValor, usuarioId);
+
+                }
+                else if (campo == "Provincia")
+                {
+                    await _context.Database.ExecuteSqlRawAsync(
+                    "UPDATE usuarios SET provincia = {0} WHERE id_usuario = {1}",
+                    nuevoValor, usuarioId);
+                }
+                else if (campo == "Distrito")
+                {
+                    await _context.Database.ExecuteSqlRawAsync(
+                    "UPDATE usuarios SET distrito = {0} WHERE id_usuario = {1}",
+                    nuevoValor, usuarioId);
+                }
+                else if (campo == "Telefono")
+                {
+                    await _context.Database.ExecuteSqlRawAsync(
+                    "UPDATE usuarios SET telefono = {0} WHERE id_usuario = {1}",
+                    nuevoValor, usuarioId);
+                }
+                else
+                {
+                    return (false, "Campo enviado no valido");
+                }
+                _context.usuarios.Update(usuario);
+                await _context.SaveChangesAsync();
+                return (true, "Campo actualizado correctamente");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
     }
 }

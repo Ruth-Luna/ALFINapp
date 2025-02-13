@@ -32,7 +32,7 @@ namespace ALFINapp.Services
                                                                                 string dniUsuario,
                                                                                 string telefono,
                                                                                 string agencia,
-                                                                                DateTime fechaVisita, 
+                                                                                DateTime fechaVisita,
                                                                                 string nombresCliente,
                                                                                 decimal OfertaEnviada,
                                                                                 string celular,
@@ -170,12 +170,22 @@ namespace ALFINapp.Services
 
                 if (clientebc != null)
                 {
+                    var detallecliente = await _context.detalle_base
+                    .Where(db => db.IdBase == clientebc.IdBase)
+                    .OrderByDescending(db => db.FechaCarga)
+                    .FirstOrDefaultAsync();
+                    if (detallecliente == null)
+                    {
+                        return (false, "No se ha encontrado el detalle del cliente en la base de datos. La entrada fue eliminada manualmente", null);
+                    }
+                    
                     var dataclientebc = new DniReferidoData
                     {
                         DNI = clientebc.Dni,
                         NombresCompletos = clientebc.XNombre + " " + clientebc.XAppaterno + " " + clientebc.XApmaterno,
                         IdBaseCliente = clientebc.IdBase,
-                        TraidoDe = "DBA365"
+                        TraidoDe = "DBA365",
+                        OfertaMaxima = detallecliente.OfertaMax
                     };
                     return (true, "El Usuario se ha encontrado en la Base de Datos de A365", dataclientebc);
                 }
@@ -189,7 +199,9 @@ namespace ALFINapp.Services
                     {
                         DNI = clientebcb.Dni,
                         IdBaseCliente = clientebcb.IdBaseBanco,
-                        TraidoDe = "DBALFIN"
+                        TraidoDe = "DBALFIN",
+                        NombresCompletos = clientebcb.NOMBRES,
+                        OfertaMaxima = clientebcb.OfertaMax * 100
                     };
 
                     return (true, "El Usuario se ha encontrado en la Base de Datos de ALFIN", dataclientebcb);

@@ -14,12 +14,14 @@ namespace ALFINapp.Controllers
     public class PerfilController : Controller
     {
         private readonly DBServicesGeneral _dbservicesgeneral; // Add this line
+        private readonly DBServicesUsuarios _dbservicesusuarios; // Add this line
 
-        public PerfilController(DBServicesGeneral dbservicesgeneral)
+        public PerfilController(DBServicesGeneral dbservicesgeneral, DBServicesUsuarios dbservicesusuarios) // Add this parameter
         {
             _dbservicesgeneral = dbservicesgeneral;
+            _dbservicesusuarios = dbservicesusuarios; // Add this line
         }
-
+        
         [HttpGet]
         public async Task<IActionResult> Perfil()
         {
@@ -82,6 +84,29 @@ namespace ALFINapp.Controllers
                 }
                 var changePasswordResult = await _dbservicesgeneral.UpdatePasswordGeneralFunction(usuarioId.Value, newPassword);
                 return Json(new { success = true, message = "Contraseña cambiada con exito" });
+            }
+            catch (System.Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EnviarEdicion(string campo, string nuevoValor)
+        {
+            try
+            {
+                int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+                if (usuarioId == null)
+                {
+                    return Json(new { success = false, message = "Usted no ha iniciado sesion" });
+                }
+                var changePasswordResult = await _dbservicesusuarios.UpdateUsuarioXCampo(usuarioId.Value, campo, nuevoValor);
+                if (changePasswordResult.IsSuccess == false)
+                {
+                    return Json(new { success = false, message = changePasswordResult.Message });
+                }
+                return Json(new { success = true, message = "Campo actualizado con exito" });
             }
             catch (System.Exception ex)
             {

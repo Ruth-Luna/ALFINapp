@@ -11,5 +11,6 @@ namespace ALFINapp.Models
         public string? NombresCompletos { get; set; }
         public int? IdBaseCliente { get; set; }
         public string? TraidoDe { get; set; }
+        public decimal? OfertaMaxima { get; set; }
     }
 }

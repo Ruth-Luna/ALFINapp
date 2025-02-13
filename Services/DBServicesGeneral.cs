@@ -71,9 +71,10 @@ namespace ALFINapp.Services
                     return (false, "El usuario a modificar no se encuentra registrado");
                 }
 
-                user.contraseña = password;  // Asegúrate de cifrarla si es necesario
-                // Guarda los cambios en la base de datos
-                await _context.SaveChangesAsync();
+                await _context.Database.ExecuteSqlRawAsync(
+                    "UPDATE usuarios SET contraseña = {0} WHERE id_usuario = {1}",
+                    password, IdUsuario);
+
                 return (true, "La Modificación se realizo con exito");
             }
             catch (System.Exception ex)
@@ -183,7 +184,7 @@ namespace ALFINapp.Services
                 return (false, ex.Message, null);
             }
         }
-        
+
         public async Task<(bool IsSuccess, string Message, List<StringDTO>? data)> GetUClienteEstado()
         {
             try
@@ -204,7 +205,7 @@ namespace ALFINapp.Services
                 return (false, ex.Message, null);
             }
         }
-        
+
         public async Task<(bool IsSuccess, string Message, List<StringDTO>? data)> GetUColor()
         {
             try
@@ -225,7 +226,7 @@ namespace ALFINapp.Services
                 return (false, ex.Message, null);
             }
         }
-        
+
         public async Task<(bool IsSuccess, string Message, List<StringDTO>? data)> GetUColorFinal()
         {
             try
@@ -246,25 +247,25 @@ namespace ALFINapp.Services
                 return (false, ex.Message, null);
             }
         }
-        
+
         public async Task<(bool IsSuccess, string Message, List<NumerosEnterosDTO>? data)> GetUFlgDeudaPlus()
         {
             try
             {
-            var flgDeudaPlus = await _context.numeros_enteros_dto
-            .FromSqlRaw("EXEC SP_U_flg_deuda_plus")
-            .ToListAsync();
+                var flgDeudaPlus = await _context.numeros_enteros_dto
+                .FromSqlRaw("EXEC SP_U_flg_deuda_plus")
+                .ToListAsync();
 
-            if (flgDeudaPlus == null || !flgDeudaPlus.Any())
-            {
-                return (false, "No se encontraron flag deuda plus disponibles", null);
-            }
+                if (flgDeudaPlus == null || !flgDeudaPlus.Any())
+                {
+                    return (false, "No se encontraron flag deuda plus disponibles", null);
+                }
 
-            return (true, "Flag deuda plus encontrados", flgDeudaPlus);
+                return (true, "Flag deuda plus encontrados", flgDeudaPlus);
             }
             catch (System.Exception ex)
             {
-            return (false, ex.Message, null);
+                return (false, ex.Message, null);
             }
         }
 
@@ -272,20 +273,20 @@ namespace ALFINapp.Services
         {
             try
             {
-            var frescura = await _context.numeros_enteros_dto
-            .FromSqlRaw("EXEC SP_U_frescura")
-            .ToListAsync();
+                var frescura = await _context.numeros_enteros_dto
+                .FromSqlRaw("EXEC SP_U_frescura")
+                .ToListAsync();
 
-            if (frescura == null || !frescura.Any())
-            {
-                return (false, "No se encontraron frescura disponibles", null);
-            }
+                if (frescura == null || !frescura.Any())
+                {
+                    return (false, "No se encontraron frescura disponibles", null);
+                }
 
-            return (true, "Frescura encontrados", frescura);
+                return (true, "Frescura encontrados", frescura);
             }
             catch (System.Exception ex)
             {
-            return (false, ex.Message, null);
+                return (false, ex.Message, null);
             }
         }
 
@@ -293,40 +294,40 @@ namespace ALFINapp.Services
         {
             try
             {
-            var grupoMonto = await _context.string_dto
-                .FromSqlRaw("EXEC SP_U_grupo_monto")
-                .ToListAsync();
+                var grupoMonto = await _context.string_dto
+                    .FromSqlRaw("EXEC SP_U_grupo_monto")
+                    .ToListAsync();
 
-            if (grupoMonto == null || !grupoMonto.Any())
-            {
-                return (false, "No se encontraron grupos de monto disponibles", null);
-            }
+                if (grupoMonto == null || !grupoMonto.Any())
+                {
+                    return (false, "No se encontraron grupos de monto disponibles", null);
+                }
 
-            return (true, "Grupos de monto encontrados", grupoMonto);
+                return (true, "Grupos de monto encontrados", grupoMonto);
             }
             catch (System.Exception ex)
             {
-            return (false, ex.Message, null);
+                return (false, ex.Message, null);
             }
         }
         public async Task<(bool IsSuccess, string Message, List<StringDTO>? data)> GetUGrupoTasa()
         {
             try
             {
-            var grupoTasa = await _context.string_dto
-                .FromSqlRaw("EXEC SP_U_grupo_tasa")
-                .ToListAsync();
+                var grupoTasa = await _context.string_dto
+                    .FromSqlRaw("EXEC SP_U_grupo_tasa")
+                    .ToListAsync();
 
-            if (grupoTasa == null || !grupoTasa.Any())
-            {
-                return (false, "No se encontraron grupos de tasa disponibles", null);
-            }
+                if (grupoTasa == null || !grupoTasa.Any())
+                {
+                    return (false, "No se encontraron grupos de tasa disponibles", null);
+                }
 
-            return (true, "Grupos de tasa encontrados", grupoTasa);
+                return (true, "Grupos de tasa encontrados", grupoTasa);
             }
             catch (System.Exception ex)
             {
-            return (false, ex.Message, null);
+                return (false, ex.Message, null);
             }
         }
 
@@ -334,20 +335,20 @@ namespace ALFINapp.Services
         {
             try
             {
-            var propension = await _context.numeros_enteros_dto
-                .FromSqlRaw("EXEC SP_U_propension")
-                .ToListAsync();
+                var propension = await _context.numeros_enteros_dto
+                    .FromSqlRaw("EXEC SP_U_propension")
+                    .ToListAsync();
 
-            if (propension == null || !propension.Any())
-            {
-                return (false, "No se encontraron propensiones disponibles", null);
-            }
+                if (propension == null || !propension.Any())
+                {
+                    return (false, "No se encontraron propensiones disponibles", null);
+                }
 
-            return (true, "Propensiones encontradas", propension);
+                return (true, "Propensiones encontradas", propension);
             }
             catch (System.Exception ex)
             {
-            return (false, ex.Message, null);
+                return (false, ex.Message, null);
             }
         }
 
@@ -355,20 +356,20 @@ namespace ALFINapp.Services
         {
             try
             {
-            var rangoEdad = await _context.string_dto
-                .FromSqlRaw("EXEC SP_U_rango_edad")
-                .ToListAsync();
+                var rangoEdad = await _context.string_dto
+                    .FromSqlRaw("EXEC SP_U_rango_edad")
+                    .ToListAsync();
 
-            if (rangoEdad == null || !rangoEdad.Any())
-            {
-                return (false, "No se encontraron rangos de edad disponibles", null);
-            }
+                if (rangoEdad == null || !rangoEdad.Any())
+                {
+                    return (false, "No se encontraron rangos de edad disponibles", null);
+                }
 
-            return (true, "Rangos de edad encontrados", rangoEdad);
+                return (true, "Rangos de edad encontrados", rangoEdad);
             }
             catch (System.Exception ex)
             {
-            return (false, ex.Message, null);
+                return (false, ex.Message, null);
             }
         }
         public async Task<(bool IsSuccess, string Message, List<StringDTO>? data)> GetURangoOferta()
@@ -395,20 +396,20 @@ namespace ALFINapp.Services
         {
             try
             {
-            var rangoSueldo = await _context.string_dto
-                .FromSqlRaw("EXEC SP_U_rango_sueldo")
-                .ToListAsync();
+                var rangoSueldo = await _context.string_dto
+                    .FromSqlRaw("EXEC SP_U_rango_sueldo")
+                    .ToListAsync();
 
-            if (rangoSueldo == null || !rangoSueldo.Any())
-            {
-                return (false, "No se encontraron rangos de sueldo disponibles", null);
-            }
+                if (rangoSueldo == null || !rangoSueldo.Any())
+                {
+                    return (false, "No se encontraron rangos de sueldo disponibles", null);
+                }
 
-            return (true, "Rangos de sueldo encontrados", rangoSueldo);
+                return (true, "Rangos de sueldo encontrados", rangoSueldo);
             }
             catch (System.Exception ex)
             {
-            return (false, ex.Message, null);
+                return (false, ex.Message, null);
             }
         }
 
@@ -416,20 +417,20 @@ namespace ALFINapp.Services
         {
             try
             {
-            var rangoTasas = await _context.string_dto
-                .FromSqlRaw("EXEC SP_U_rango_tasas")
-                .ToListAsync();
+                var rangoTasas = await _context.string_dto
+                    .FromSqlRaw("EXEC SP_U_rango_tasas")
+                    .ToListAsync();
 
-            if (rangoTasas == null || !rangoTasas.Any())
-            {
-                return (false, "No se encontraron rangos de tasas disponibles", null);
-            }
+                if (rangoTasas == null || !rangoTasas.Any())
+                {
+                    return (false, "No se encontraron rangos de tasas disponibles", null);
+                }
 
-            return (true, "Rangos de tasas encontrados", rangoTasas);
+                return (true, "Rangos de tasas encontrados", rangoTasas);
             }
             catch (System.Exception ex)
             {
-            return (false, ex.Message, null);
+                return (false, ex.Message, null);
             }
         }
 
@@ -437,20 +438,20 @@ namespace ALFINapp.Services
         {
             try
             {
-            var supervisores = await _context.u_supervisores_dto
-                .FromSqlRaw("EXEC SP_U_Supervisores")
-                .ToListAsync();
+                var supervisores = await _context.u_supervisores_dto
+                    .FromSqlRaw("EXEC SP_U_Supervisores")
+                    .ToListAsync();
 
-            if (supervisores == null || !supervisores.Any())
-            {
-                return (false, "No se encontraron supervisores disponibles", null);
-            }
+                if (supervisores == null || !supervisores.Any())
+                {
+                    return (false, "No se encontraron supervisores disponibles", null);
+                }
 
-            return (true, "Supervisores encontrados", supervisores);
+                return (true, "Supervisores encontrados", supervisores);
             }
             catch (System.Exception ex)
             {
-            return (false, ex.Message, null);
+                return (false, ex.Message, null);
             }
         }
 
@@ -458,20 +459,20 @@ namespace ALFINapp.Services
         {
             try
             {
-            var tipoBase = await _context.string_dto
-                .FromSqlRaw("EXEC SP_U_tipo_base")
-                .ToListAsync();
+                var tipoBase = await _context.string_dto
+                    .FromSqlRaw("EXEC SP_U_tipo_base")
+                    .ToListAsync();
 
-            if (tipoBase == null || !tipoBase.Any())
-            {
-                return (false, "No se encontraron tipos de base disponibles", null);
-            }
+                if (tipoBase == null || !tipoBase.Any())
+                {
+                    return (false, "No se encontraron tipos de base disponibles", null);
+                }
 
-            return (true, "Tipos de base encontrados", tipoBase);
+                return (true, "Tipos de base encontrados", tipoBase);
             }
             catch (System.Exception ex)
             {
-            return (false, ex.Message, null);
+                return (false, ex.Message, null);
             }
         }
 
@@ -479,20 +480,20 @@ namespace ALFINapp.Services
         {
             try
             {
-            var tipoCliente = await _context.string_dto
-                .FromSqlRaw("EXEC SP_U_tipo_cliente")
-                .ToListAsync();
+                var tipoCliente = await _context.string_dto
+                    .FromSqlRaw("EXEC SP_U_tipo_cliente")
+                    .ToListAsync();
 
-            if (tipoCliente == null || !tipoCliente.Any())
-            {
-                return (false, "No se encontraron tipos de cliente disponibles", null);
-            }
+                if (tipoCliente == null || !tipoCliente.Any())
+                {
+                    return (false, "No se encontraron tipos de cliente disponibles", null);
+                }
 
-            return (true, "Tipos de cliente encontrados", tipoCliente);
+                return (true, "Tipos de cliente encontrados", tipoCliente);
             }
             catch (System.Exception ex)
             {
-            return (false, ex.Message, null);
+                return (false, ex.Message, null);
             }
         }
 
@@ -500,20 +501,20 @@ namespace ALFINapp.Services
         {
             try
             {
-            var usuario = await _context.string_dto
-                .FromSqlRaw("EXEC SP_U_usuario")
-                .ToListAsync();
+                var usuario = await _context.string_dto
+                    .FromSqlRaw("EXEC SP_U_usuario")
+                    .ToListAsync();
 
-            if (usuario == null || !usuario.Any())
-            {
-                return (false, "No se encontraron usuarios disponibles", null);
-            }
+                if (usuario == null || !usuario.Any())
+                {
+                    return (false, "No se encontraron usuarios disponibles", null);
+                }
 
-            return (true, "Usuarios encontrados", usuario);
+                return (true, "Usuarios encontrados", usuario);
             }
             catch (System.Exception ex)
             {
-            return (false, ex.Message, null);
+                return (false, ex.Message, null);
             }
         }
         // Other DB services can be added here

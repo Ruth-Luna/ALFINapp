@@ -281,35 +281,37 @@ namespace ALFINapp.Controllers
                     worksheet.Cells[1, 13].Value = "AGENCIA_COMERCIAL";
                     worksheet.Cells[1, 14].Value = "PLAZO";
                     worksheet.Cells[1, 15].Value = "CUOTA";
-                    worksheet.Cells[1, 16].Value = "USUARIO";
-                    worksheet.Cells[1, 17].Value = "USUARIO V3";
-                    worksheet.Cells[1, 18].Value = "FLAG DEUDA V OFERTA";
                     
-                    worksheet.Cells[1, 19].Value = "OFERTA12M";
-                    worksheet.Cells[1, 20].Value = "TASA12M";
-                    worksheet.Cells[1, 21].Value = "CUOTA12M";
-                    worksheet.Cells[1, 22].Value = "OFERTA18M";
-                    worksheet.Cells[1, 23].Value = "TASA18M";
-                    worksheet.Cells[1, 24].Value = "CUOTA18M";
-                    worksheet.Cells[1, 25].Value = "OFERTA24M";
-                    worksheet.Cells[1, 26].Value = "TASA24M";
-                    worksheet.Cells[1, 27].Value = "CUOTA24M";
-                    worksheet.Cells[1, 28].Value = "OFERTA36M";
-                    worksheet.Cells[1, 29].Value = "TASA36M";
-                    worksheet.Cells[1, 30].Value = "CUOTA36M";
+                    worksheet.Cells[1, 16].Value = "OFERTA12M";
+                    worksheet.Cells[1, 17].Value = "TASA12M";
+                    worksheet.Cells[1, 18].Value = "CUOTA12M";
+                    worksheet.Cells[1, 19].Value = "OFERTA18M";
+                    worksheet.Cells[1, 20].Value = "TASA18M";
+                    worksheet.Cells[1, 21].Value = "CUOTA18M";
+                    worksheet.Cells[1, 22].Value = "OFERTA24M";
+                    worksheet.Cells[1, 23].Value = "TASA24M";
+                    worksheet.Cells[1, 24].Value = "CUOTA24M";
+                    worksheet.Cells[1, 25].Value = "OFERTA36M";
+                    worksheet.Cells[1, 26].Value = "TASA36M";
+                    worksheet.Cells[1, 27].Value = "CUOTA36M";
 
-                    worksheet.Cells[1, 31].Value = "GRUPO_TASA";
-                    worksheet.Cells[1, 32].Value = "GRUPO_MONTO";
-                    worksheet.Cells[1, 33].Value = "PROPENSION";
-                    worksheet.Cells[1, 34].Value = "TIPO_CLIENTE";
-                    worksheet.Cells[1, 35].Value = "CLIENTE_NUEVO";
-                    worksheet.Cells[1, 36].Value = "COLOR";
-                    worksheet.Cells[1, 37].Value = "COLOR_FINAL";
-                    worksheet.Cells[1, 38].Value = "TELEFONO1";
-                    worksheet.Cells[1, 39].Value = "TELEFONO2";
-                    worksheet.Cells[1, 40].Value = "TELEFONO3";
-                    worksheet.Cells[1, 41].Value = "TELEFONO4";
-                    worksheet.Cells[1, 42].Value = "TELEFONO5";
+                    worksheet.Cells[1, 28].Value = "GRUPO_TASA";
+                    worksheet.Cells[1, 29].Value = "GRUPO_MONTO";
+                    worksheet.Cells[1, 30].Value = "PROPENSION";
+                    worksheet.Cells[1, 31].Value = "TIPO_CLIENTE";
+                    worksheet.Cells[1, 32].Value = "CLIENTE_NUEVO";
+                    worksheet.Cells[1, 33].Value = "COLOR";
+                    worksheet.Cells[1, 34].Value = "COLOR_FINAL";
+                    worksheet.Cells[1, 35].Value = "TELEFONO1";
+                    worksheet.Cells[1, 36].Value = "TELEFONO2";
+                    worksheet.Cells[1, 37].Value = "TELEFONO3";
+                    worksheet.Cells[1, 38].Value = "TELEFONO4";
+                    worksheet.Cells[1, 39].Value = "TELEFONO5";
+
+                    worksheet.Cells[1, 40].Value = "USUARIO";
+                    worksheet.Cells[1, 41].Value = "USUARIO V3";
+                    worksheet.Cells[1, 42].Value = "FLAG DEUDA V OFERTA";
+                    
 
                     // Llena los datos
                     int row = 2;
@@ -330,36 +332,36 @@ namespace ALFINapp.Controllers
                         worksheet.Cells[row, 13].Value = data.AGENCIA_COMERCIAL;
                         worksheet.Cells[row, 14].Value = data.PLAZO;
                         worksheet.Cells[row, 15].Value = data.CUOTA;
-                        worksheet.Cells[row, 16].Value = data.USUARIO;
-                        worksheet.Cells[row, 17].Value = data.USERV3;
-                        worksheet.Cells[row, 18].Value = data.FLAG_DEUDA_V_OFERTA;
+                        
+                        worksheet.Cells[row, 16].Value = data.OFERTA12M;
+                        worksheet.Cells[row, 17].Value = data.TASA12M;
+                        worksheet.Cells[row, 18].Value = data.CUOTA12M;
+                        worksheet.Cells[row, 19].Value = data.OFERTA18M;
+                        worksheet.Cells[row, 20].Value = data.TASA18M;
+                        worksheet.Cells[row, 21].Value = data.CUOTA18M;
+                        worksheet.Cells[row, 22].Value = data.OFERTA24M;
+                        worksheet.Cells[row, 23].Value = data.TASA24M;
+                        worksheet.Cells[row, 24].Value = data.CUOTA24M;
+                        worksheet.Cells[row, 25].Value = data.OFERTA36M;
+                        worksheet.Cells[row, 26].Value = data.TASA36M;
+                        worksheet.Cells[row, 27].Value = data.CUOTA36M;
 
-                        worksheet.Cells[row, 19].Value = data.OFERTA12M;
-                        worksheet.Cells[row, 20].Value = data.TASA12M;
-                        worksheet.Cells[row, 21].Value = data.CUOTA12M;
-                        worksheet.Cells[row, 22].Value = data.OFERTA18M;
-                        worksheet.Cells[row, 23].Value = data.TASA18M;
-                        worksheet.Cells[row, 24].Value = data.CUOTA18M;
-                        worksheet.Cells[row, 25].Value = data.OFERTA24M;
-                        worksheet.Cells[row, 26].Value = data.TASA24M;
-                        worksheet.Cells[row, 27].Value = data.CUOTA24M;
-                        worksheet.Cells[row, 28].Value = data.OFERTA36M;
-                        worksheet.Cells[row, 29].Value = data.TASA36M;
-                        worksheet.Cells[row, 30].Value = data.CUOTA36M;
+                        worksheet.Cells[row, 28].Value = data.GRUPO_TASA;
+                        worksheet.Cells[row, 29].Value = data.GRUPO_MONTO;
+                        worksheet.Cells[row, 30].Value = data.PROPENSION;
+                        worksheet.Cells[row, 31].Value = data.TIPO_CLIENTE;
+                        worksheet.Cells[row, 32].Value = data.CLIENTE_NUEVO;
+                        worksheet.Cells[row, 33].Value = data.COLOR;
+                        worksheet.Cells[row, 34].Value = data.COLOR_FINAL;
+                        worksheet.Cells[row, 35].Value = data.TELEFONO1;
+                        worksheet.Cells[row, 36].Value = data.TELEFONO2;
+                        worksheet.Cells[row, 37].Value = data.TELEFONO3;
+                        worksheet.Cells[row, 38].Value = data.TELEFONO4;
+                        worksheet.Cells[row, 39].Value = data.TELEFONO5;
 
-                        worksheet.Cells[row, 31].Value = data.GRUPO_TASA;
-                        worksheet.Cells[row, 32].Value = data.GRUPO_MONTO;
-                        worksheet.Cells[row, 33].Value = data.PROPENSION;
-                        worksheet.Cells[row, 34].Value = data.TIPO_CLIENTE;
-                        worksheet.Cells[row, 35].Value = data.CLIENTE_NUEVO;
-                        worksheet.Cells[row, 36].Value = data.COLOR;
-                        worksheet.Cells[row, 37].Value = data.COLOR_FINAL;
-                        worksheet.Cells[row, 38].Value = data.TELEFONO1;
-                        worksheet.Cells[row, 39].Value = data.TELEFONO2;
-                        worksheet.Cells[row, 40].Value = data.TELEFONO3;
-                        worksheet.Cells[row, 41].Value = data.TELEFONO4;
-                        worksheet.Cells[row, 42].Value = data.TELEFONO5;
-
+                        worksheet.Cells[row, 40].Value = data.USUARIO;
+                        worksheet.Cells[row, 41].Value = data.USERV3;
+                        worksheet.Cells[row, 42].Value = data.FLAG_DEUDA_V_OFERTA;
                         row++;
                     }
 

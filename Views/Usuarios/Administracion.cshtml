@@ -63,18 +63,10 @@
                                 <textarea class="textarea-custom" rows="2" type="text"
                                     id="NombresCompletos_@usuario.IdUsuario">@usuario.NombresCompletos</textarea>
                             </td>
-                            @*<td class="table-row-custom">
-                                <textarea class="textarea-custom" rows="2" cols="6" type="text" id="Departamento_@usuario.IdUsuario">@usuario.Departamento</textarea>
-                            </td>
-                            <td class="table-row-custom">
-                                <textarea class="textarea-custom" rows="2" cols="5" type="text" id="Provincia_@usuario.IdUsuario">@usuario.Provincia</textarea>
-                            </td>
-                            <td class="table-row-custom">
-                                <textarea class="textarea-custom" rows="2" cols="5" type="text" id="Distrito_@usuario.IdUsuario">@usuario.Distrito</textarea>
-                            </td>
-                            <td class="table-row-custom">
-                                <textarea class="textarea-custom" rows="2" cols="6" type="text" id="Telefono_@usuario.IdUsuario">@usuario.Telefono</textarea>
-                            </td>*@
+                            <textarea class="textarea-custom" rows="2" cols="6" type="text" id="Departamento_@usuario.IdUsuario" style="display: none;">@usuario.Departamento</textarea>
+                            <textarea class="textarea-custom" rows="2" cols="5" type="text" id="Provincia_@usuario.IdUsuario" style="display: none;">@usuario.Provincia</textarea>
+                            <textarea class="textarea-custom" rows="2" cols="5" type="text" id="Distrito_@usuario.IdUsuario" style="display: none;">@usuario.Distrito</textarea>
+                            <textarea class="textarea-custom" rows="2" cols="6" type="text" id="Telefono_@usuario.IdUsuario" style="display: none;">@usuario.Telefono</textarea>
                             <td class="table-row-custom">
                                 <textarea class="textarea-custom" rows="2" cols="5" type="text" id="Estado_@usuario.IdUsuario">@usuario.Estado</textarea>
                             </td>
@@ -85,7 +77,7 @@
                                         <option value="@usuario.IDUSUARIOSUP">@usuario.IDUSUARIOSUP - @usuario.RESPONSABLESUP</option>
                                         @foreach (var supervisor in Model)
                                         {
-                                            if (supervisor.IdRol == 2 && supervisor.Estado == "ACTIVO")
+                                            if (supervisor.IdRol == 2 && supervisor.Estado == "ACTIVO" && supervisor.IdUsuario != usuario.IDUSUARIOSUP)
                                             {
                                                 <option value="@supervisor.IdUsuario">@supervisor.IdUsuario - @supervisor.NombresCompletos</option>
                                             }
@@ -113,7 +105,13 @@
                                 <textarea class="textarea-custom" rows="2" cols="7" type="text" id="NOMBRECAMPAÑA_@usuario.IdUsuario">@usuario.NOMBRECAMPAÑA</textarea>
                             </td>
                             <td class="table-row-custom">
-                                <textarea class="textarea-custom" rows="2" cols="4" type="text" id="IdRol_@usuario.IdUsuario">@usuario.IdRol</textarea>
+                                <select class="select-custom" name="IdRol_@usuario.IdUsuario" id="IdRol_@usuario.IdUsuario">
+                                        <option value="@usuario.IdRol">@usuario.IdRol - @usuario.Rol</option>
+                                        <option value="1">1 - ADMINISTRADOR</option>
+                                        <option value="2">2 - SUPERVISOR</option>
+                                        <option value="3">3 - ASESOR DE CREDITOS</option>
+                                        <option value="4">4 - JEFE DE ZONA</option>
+                                </select>
                             </td>
                             <td class="table-row-custom">
                                 <textarea class="textarea-custom" rows="2" cols="10" type="text" id="Rol_@usuario.IdUsuario">@usuario.Rol</textarea>
@@ -145,18 +143,12 @@
                                 <textarea class="textarea-custom textarea-custom-danger" rows="2" type="text"
                                     id="NombresCompletos_@usuario.IdUsuario">@usuario.NombresCompletos</textarea>
                             </td>
-                            @*<td class="table-row-custom">
-                                <textarea class="textarea-custom textarea-custom-danger" rows="2" cols="6" type="text" id="Departamento_@usuario.IdUsuario">@usuario.Departamento</textarea>
-                            </td>
-                            <td class="table-row-custom">
-                                <textarea class="textarea-custom textarea-custom-danger" rows="2" cols="5" type="text" id="Provincia_@usuario.IdUsuario">@usuario.Provincia</textarea>
-                            </td>
-                            <td class="table-row-custom">
-                                <textarea class="textarea-custom textarea-custom-danger" rows="2" cols="5" type="text" id="Distrito_@usuario.IdUsuario">@usuario.Distrito</textarea>
-                            </td>
-                            <td class="table-row-custom">
-                                <textarea class="textarea-custom textarea-custom-danger" rows="2" cols="6" type="text" id="Telefono_@usuario.IdUsuario">@usuario.Telefono</textarea>
-                            </td>*@
+
+                            <textarea class="textarea-custom" rows="2" cols="6" type="text" id="Departamento_@usuario.IdUsuario" style="display: none;">@usuario.Departamento</textarea>
+                            <textarea class="textarea-custom" rows="2" cols="5" type="text" id="Provincia_@usuario.IdUsuario" style="display: none;">@usuario.Provincia</textarea>
+                            <textarea class="textarea-custom" rows="2" cols="5" type="text" id="Distrito_@usuario.IdUsuario" style="display: none;">@usuario.Distrito</textarea>
+                            <textarea class="textarea-custom" rows="2" cols="6" type="text" id="Telefono_@usuario.IdUsuario" style="display: none;">@usuario.Telefono</textarea>
+                            
                             <td class="table-row-custom">
                                 <textarea class="textarea-custom textarea-custom-danger" rows="2" cols="5" type="text" id="Estado_@usuario.IdUsuario">@usuario.Estado</textarea>
                             </td>
@@ -167,9 +159,9 @@
                                         <option value="@usuario.IDUSUARIOSUP">@usuario.IDUSUARIOSUP - @usuario.RESPONSABLESUP</option>
                                         @foreach (var supervisor in Model)
                                         {
-                                            if (supervisor.IdRol == 2 && supervisor.Estado == "ACTIVO")
+                                            if (supervisor.IdRol == 2 && supervisor.Estado == "ACTIVO" && supervisor.IdUsuario != usuario.IDUSUARIOSUP)
                                             {
-                                                <option value="@supervisor.IdUsuario">@supervisor.IdUsuario - @supervisor.NombresCompletos</option>
+                                                <option value="@supervisor.IdUsuario" style="color: black;">@supervisor.IdUsuario - @supervisor.NombresCompletos</option>
                                             }
                                         }
                                     </select>
@@ -195,7 +187,13 @@
                                 <textarea class="textarea-custom textarea-custom-danger" rows="2" cols="7" type="text" id="NOMBRECAMPAÑA_@usuario.IdUsuario">@usuario.NOMBRECAMPAÑA</textarea>
                             </td>
                             <td class="table-row-custom">
-                                <textarea class="textarea-custom textarea-custom-danger" rows="2" cols="4" type="text" id="IdRol_@usuario.IdUsuario">@usuario.IdRol</textarea>
+                                <select class="select-custom-danger" name="IdRol_@usuario.IdUsuario" id="IdRol_@usuario.IdUsuario">
+                                        <option value="@usuario.IdRol">@usuario.IdRol - @usuario.Rol</option>
+                                        <option value="1" style="color: black;">1 - ADMINISTRADOR</option>
+                                        <option value="2" style="color: black;">2 - SUPERVISOR</option>
+                                        <option value="3" style="color: black;">3 - ASESOR DE CREDITOS</option>
+                                        <option value="4" style="color: black;">4 - JEFE DE ZONA</option>
+                                </select>
                             </td>
                             <td class="table-row-custom">
                                 <textarea class="textarea-custom textarea-custom-danger" rows="2" cols="10" type="text" id="Rol_@usuario.IdUsuario">@usuario.Rol</textarea>

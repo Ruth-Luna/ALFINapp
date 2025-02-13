@@ -68,7 +68,7 @@ function CambiarEstadoUsuario(accion, idUsuario) {
         success: function (response) {
             if (response.success === false) {
                 Swal.fire({
-                    title: 'Error al actualizar los datos',
+                    title: 'Error al cambiar el estado del Usuario',
                     text: response.message,
                     icon: 'error',
                     confirmButtonText: 'OK'
@@ -78,7 +78,7 @@ function CambiarEstadoUsuario(accion, idUsuario) {
                 }, 2000);
             } else {
                 Swal.fire({
-                    title: 'Datos actualizados correctamente',
+                    title: 'El Estado del asesor fue cambiado correctamente',
                     text: response.message,
                     icon: 'success',
                     confirmButtonText: 'OK'
