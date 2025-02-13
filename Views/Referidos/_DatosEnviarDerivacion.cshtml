@@ -17,22 +17,22 @@
             <div class="form-group mb-2">
                 <label for="DniClienteDerivacion">DNI del Cliente a enviar</label>
                 <input type="text" class="form-control" placeholder="DNI Cliente" id="DniClienteDerivacion"
-                    value="@Model.DNIClienteDerivacion">
+                    value="@Model.DNIClienteDerivacion" readonly>
             </div>
             <div class="form-group mb-2">
                 <label for="NombreClienteReferido">Nombre del Referido</label>
                 <input type="text" class="form-control" placeholder="Nombre del Referido" id="NombreClienteReferido"
-                    value="@Model.NombreClienteDerivacion">
+                    value="@Model.NombreClienteDerivacion" readonly>
             </div>
             <div class="form-group mb-2">
                 <label for="TelefonoClienteReferido">Telefono del Referido</label>
                 <input type="text" class="form-control" placeholder="Telefono del Referido" id="TelefonoClienteReferido"
-                    value="@Model.TelefonoDerivacion">
+                    value="@Model.TelefonoDerivacion" readonly>
             </div>
             <div class="form-group mb-2">
                 <label for="AgenciaDerivacion">Agencia de Derivacion</label>
                 <input type="text" class="form-control" placeholder="Agencia de Derivacion" id="AgenciaDerivacion"
-                    value="@Model.AgenciaDerivacion">
+                    value="@Model.AgenciaDerivacion" readonly>
             </div>
         </div>
         <div class="col">
@@ -40,22 +40,27 @@
             <div class="form-group mb-2">
                 <label for="DniAsesorDerivacion">DNI del Asesor</label>
                 <input type="text" class="form-control" placeholder="DNI Asesor" id="DniAsesorDerivacion"
-                    value="@Model.DNIAsesorDerivacion">
+                    value="@Model.DNIAsesorDerivacion" readonly>
             </div>
             <div class="form-group mb-2">
                 <label for="NombreAsesorDerivacion">Nombre del Asesor</label>
                 <input type="text" class="form-control" placeholder="Nombre del Asesor" id="NombreAsesorDerivacion"
-                    value="@Model.NombreAsesorDerivacion">
+                    value="@Model.NombreAsesorDerivacion" readonly>
             </div>
             <div class="form-group mb-2">
                 <label for="OfertaDerivacion">Oferta Enviada</label>
                 <input type="text" class="form-control" placeholder="Oferta Enviada" id="OfertaDerivacion"
-                    value="@Model.OfertaEnviadaDerivacion">
+                    value="@Model.OfertaEnviadaDerivacion" readonly>
             </div>
             <div class="form-group mb-2">
                 <label for="FechaVisitaDerivacion">Fecha de Visita</label>
+                <input type="text" class="form-control" placeholder="Fecha de Visita" id="FechaVisitaDerivacion"
+                    value="@(Model.FechaVisitaDerivacion.HasValue ? Model.FechaVisitaDerivacion.Value.Year + "/" + Model.FechaVisitaDerivacion.Value.Month.ToString("D2") + "/" + Model.FechaVisitaDerivacion.Value.Day.ToString("D2") : "")" readonly>
+            </div>
+            <div class="form-group mb-2" hidden>
+                <label for="FechaVisitaDerivacion">Fecha de Visita</label>
                 <input type="date" class="form-control" placeholder="Fecha de Visita" id="FechaVisitaDerivacion"
-                    value="@Model.FechaVisitaDerivacion">
+                    value="@Model.FechaVisitaDerivacion" readonly>
             </div>
         </div>
         <div class="btn-group mt-4" role="group" aria-label="Basic example">

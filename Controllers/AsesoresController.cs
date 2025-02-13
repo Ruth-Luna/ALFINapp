@@ -89,7 +89,6 @@ namespace ALFINapp.Controllers
                                     .Where(cndb => cndb.TipificacionMayorPeso == tipificacion)
                                     .ToList();
 
-
             var viewModel = new ResultadoTipificacionViewModelDTO
             {
                 DetalleTipificacion = tipificacion,
@@ -97,7 +96,7 @@ namespace ALFINapp.Controllers
             };
 
             var AsesoresDelSupervisor = (from u in _context.usuarios
-                                         where u.Rol == "VENDEDOR" && u.IDUSUARIOSUP == idSupervisorActual
+                                         where u.IdRol == 3 && u.IDUSUARIOSUP == idSupervisorActual
                                          join ca in _context.clientes_asignados on u.IdUsuario equals ca.IdUsuarioV into caGroup
                                          from ca in caGroup.DefaultIfEmpty()  // Realizamos un left join
                                          group new { u, ca }

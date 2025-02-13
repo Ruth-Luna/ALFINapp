@@ -210,12 +210,14 @@ namespace ALFINapp.Services
                         return (false, "El cliente no tiene Detalles en la Base de Datos del Banco Alfin, este DNI no se encuentra en ninguna de nuestras bases de datos conocidas", null);
                     }
 
+                    var clientebcbDatos = await _context.base_clientes_banco.Where(bcb => bcb.Dni == DNI).FirstOrDefaultAsync();
+
                     var dataclientebcb = new DniReferidoData
                     {
                         DNI = clientebcb.Dni,
                         IdBaseCliente = clientebcb.IdBase,
                         TraidoDe = "DBALFIN",
-                        NombresCompletos = clientebcb.Nombres,
+                        NombresCompletos = clientebcb.Nombres + " " + clientebcb.ApellidoPaterno + " " + clientebcb.ApellidoMaterno,
                         OfertaMaxima = clientebcb.OfertaMax
                     };
 

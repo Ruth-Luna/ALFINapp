@@ -84,7 +84,7 @@ namespace ALFINapp.Controllers
                 return Json(new { success = false, message = mandarReferido.Item2 }); // Segundo valor de la tupla (string Message)
             }
             var mensaje = $@"
-            <h2>Referido</h2>
+            <h2>REFERIDOS</h2>
             <table>
                 <tr>
                     <td>CANAL TELECAMPO</td>
