@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ALFINapp.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace ALFINapp.Services
@@ -165,52 +166,65 @@ namespace ALFINapp.Services
         {
             try
             {
-                var clientebc = await _context.base_clientes.Where(bc => bc.Dni == DNI && bc.IdBaseBanco == null)
-                                    .FirstOrDefaultAsync();
+                var detalleClienteList = await _context.detalle_base
+                            .FromSqlRaw("EXEC SP_Consulta_Obtener_detalle_cliente_por_DNI_A365 @DNI", 
+                                new SqlParameter("@DNI", DNI)) 
+                            .ToListAsync();
 
-                if (clientebc != null)
+                if (detalleClienteList.Count != 0)
                 {
-                    var detallecliente = await _context.detalle_base
-                    .Where(db => db.IdBase == clientebc.IdBase)
-                    .OrderByDescending(db => db.FechaCarga)
-                    .FirstOrDefaultAsync();
-                    if (detallecliente == null)
+                    var detalleCliente = detalleClienteList.FirstOrDefault();
+
+                    var clientebc = await _context.base_clientes.Where(bc => bc.Dni == DNI).FirstOrDefaultAsync();
+
+                    if (clientebc == null)
                     {
-                        return (false, "No se ha encontrado el detalle del cliente en la base de datos. La entrada fue eliminada manualmente", null);
+                        return (false, "El cliente no tiene Detalles en la Base de Datos de A365, este DNI no se encuentra en ninguna de nuestras bases de datos conocidas", null);
                     }
-                    
+
                     var dataclientebc = new DniReferidoData
                     {
                         DNI = clientebc.Dni,
                         NombresCompletos = clientebc.XNombre + " " + clientebc.XAppaterno + " " + clientebc.XApmaterno,
                         IdBaseCliente = clientebc.IdBase,
                         TraidoDe = "DBA365",
-                        OfertaMaxima = detallecliente.OfertaMax
+                        OfertaMaxima = detalleCliente?.OfertaMax ?? 0
                     };
                     return (true, "El Usuario se ha encontrado en la Base de Datos de A365", dataclientebc);
                 }
 
-                var clientebcb = await _context.base_clientes_banco.Where(bcb => bcb.Dni == DNI && bcb.FechaSubida.HasValue && bcb.FechaSubida.Value.Month == DateTime.Now.Month && bcb.FechaSubida.Value.Year == DateTime.Now.Year)
-                                    .FirstOrDefaultAsync();
+                var clientebcbList = await _context.detalles_clientes_dto.FromSqlRaw("SP_Consulta_Obtener_Cliente_Banco_Alfin @DNIBusqueda", new SqlParameter("@DNIBusqueda", DNI))
+                                                                    .ToListAsync();
 
-                if (clientebcb != null)
+                if (clientebcbList.Count == 0)
                 {
+                    return (false, "No se ha encontrado el detalle del cliente en la base de datos. La entrada fue eliminada manualmente, o el usuario esta en retiros o desembolsos en ALFIN", null);
+                }
+
+                else
+                {
+                    var clientebcb = clientebcbList.FirstOrDefault();
+
+                    if (clientebcb == null)
+                    {
+                        return (false, "El cliente no tiene Detalles en la Base de Datos del Banco Alfin, este DNI no se encuentra en ninguna de nuestras bases de datos conocidas", null);
+                    }
+
                     var dataclientebcb = new DniReferidoData
                     {
                         DNI = clientebcb.Dni,
-                        IdBaseCliente = clientebcb.IdBaseBanco,
+                        IdBaseCliente = clientebcb.IdBase,
                         TraidoDe = "DBALFIN",
-                        NombresCompletos = clientebcb.NOMBRES,
-                        OfertaMaxima = clientebcb.OfertaMax * 100
+                        NombresCompletos = clientebcb.Nombres,
+                        OfertaMaxima = clientebcb.OfertaMax
                     };
 
                     return (true, "El Usuario se ha encontrado en la Base de Datos de ALFIN", dataclientebcb);
                 }
-                return (false, "El Usuario no se encuentra registrado en ninguna de las bases de datos, o su entrada no corresponde a este mes", null);
             }
             catch (System.Exception ex)
             {
-                return (true, ex.Message, null);
+                return (false, ex.Message, null);
             }
         }
 

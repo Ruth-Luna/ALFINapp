@@ -104,7 +104,7 @@ function validarDNI() {
                 } else if (data.existe === false && data.error === true) {
                     Swal.fire({
                         title: 'Error',
-                        text: 'Hubo un error al verificar el DNI.',
+                        text: data.message,
                         icon: 'error',
                         confirmButtonText: 'Aceptar'
                     });

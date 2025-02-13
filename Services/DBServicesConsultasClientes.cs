@@ -18,18 +18,18 @@ namespace ALFINapp.Services
         {
             try
             {
-                var clienteExistenteBD = await _context.base_clientes.FirstOrDefaultAsync(c => c.Dni == DNIBusqueda && c.IdBaseBanco == null);
-                if (clienteExistenteBD != null)
-                {
-                    var detalleclienteExistenteBD = _context.detalle_base
+                var detalleclienteExistenteBD = _context.detalle_base
                         .FromSqlRaw("EXEC SP_Consulta_Obtener_detalle_cliente_por_DNI_A365 @DNI",
                             new SqlParameter("@DNI", DNIBusqueda))
                         .AsEnumerable()
                         .FirstOrDefault();
+                if (detalleclienteExistenteBD != null)
+                {
+                    var clienteExistenteBD = await _context.base_clientes.FirstOrDefaultAsync(c => c.Dni == DNIBusqueda && c.IdBaseBanco == null);
 
-                    if (detalleclienteExistenteBD == null)
+                    if (clienteExistenteBD == null)
                     {
-                        return (false, "El cliente no tiene Detalle Base en la Base de Datos de A365, este dato fue eliminado manualmente, o es previo a la fecha correspondiente, o el cliente ha sido desembolsado o retirado", null);
+                        return (false, "El cliente no tiene Detalles en la Base de Datos de A365, este DNI fue eliminado manualmente durante la consulta", null);
                     }
 
                     // Consulta a la base de datos del A365
@@ -69,11 +69,6 @@ namespace ALFINapp.Services
                 }
 
                 // Consulta a la base de datos del banco de clientes
-                var testingDBBank = await _context.base_clientes_banco.FirstOrDefaultAsync(c => c.Dni == DNIBusqueda);
-                if (testingDBBank == null)
-                {
-                    return (false, "El cliente no tiene Detalles en la Base de Datos del Banco Alfin, este DNI no se encuentra en ninguna de nuestras bases de datos conocidas", null);
-                }
                 var clienteExistenteBank = _context.detalles_clientes_dto
                     .FromSqlRaw("EXEC SP_Consulta_Obtener_Cliente_Banco_Alfin @DNIBusqueda",
                         new SqlParameter("@DNIBusqueda", DNIBusqueda))
