@@ -1,15 +1,14 @@
 @model ALFINapp.Models.DetalleTipificarClienteDTO
 
 @{
-    var agenciasDisponibles = ViewData["AgenciasDisponibles"] as IEnumerable<AgenciasDisponiblesDTO>;
-    var numerosCreadosPorElUsuario = ViewData["numerosCreadosPorElUsuario"] as List<TelefonosAgregadosDTO>;
+    var agenciasDisponibles = ViewData["AgenciasDisponibles"] as IEnumerable<dynamic>;
+    var numerosCreadosPorElUsuario = ViewData["numerosCreadosPorElUsuario"];
     var dni = ViewData["DNIcliente"];
     var id_asignacion = ViewData["ID_asignacion"];
     var id_base = Model.IdBase;
     var id_cliente = ViewData["ID_cliente"];
     var base_DB = ViewData["Fuente_BD"];
     bool isEditable = base_DB?.ToString() == "BASE_ASESORES";
-    var tipificaciones = ViewData["Tipificaciones"] as IEnumerable<Tipificaciones>;
 }
 
 @section Styles {
@@ -43,7 +42,7 @@
     }
 }
 
-<div class="container mb-4">
+<div class="container">
     @if (isEditable)
     {
         <div class="alert alert-info" role="alert">
@@ -247,7 +246,7 @@
             <div class="form-group">
                 <label for="COLOR">Color Principal</label>
                 <div class="d-flex align-items-center">
-                    <input class="form-control ml-2" style="background-color: @GetColorCode(Model.Color!=null ? Model.Color : ""); width: 10%;"
+                    <input class="form-control ml-2" style="background-color: @GetColorCode(Model.Color); width: 10%;"
                         readonly>
                     <input class="form-control ml-2" id="COLOR" type="text" value="@Model.Color" readonly>
                 </div>
@@ -256,7 +255,7 @@
                 <label for="COLOR_FINAL">Color Final</label>
                 <div class="d-flex align-items-center">
                     <input class="form-control ml-2"
-                        style="background-color: @GetColorCode(Model.ColorFinal!=null ? Model.ColorFinal : ""); width: 10%;" readonly>
+                        style="background-color: @GetColorCode(Model.ColorFinal); width: 10%;" readonly>
                     <input class="form-control ml-2" id="COLOR_FINAL" type="text" value="@Model.ColorFinal" readonly>
                 </div>
             </div>
@@ -282,13 +281,16 @@
             </div>
         </div>
     }
+
 </div>
 
+<div class="spacing"></div>
+
 <!-- SECCION TELEFONOS AGREGADOS Por El Usuario -->
-<div class="row mb-4">
+<div class="row">
     <h3 class="label-fortip">Contactos Creados por el Usuario:</h3>
 
-    @if (numerosCreadosPorElUsuario is IEnumerable<TelefonosAgregadosDTO> numCreatedByUser && numCreatedByUser.Any())
+    @if (numerosCreadosPorElUsuario is IEnumerable<dynamic> numCreatedByUser && numCreatedByUser.Any())
     {
         int contadorNumeros = 0;
         <form asp-action="GuardarTipificacionesNumPersonales" asp-controller="Vendedor" method="post">
@@ -332,13 +334,10 @@
 
                         <datalist id="tipificacionesList_@contadorNumeros">
                             <option value="">Seleccione la descripción de Tipificación</option>
-                            @if (tipificaciones != null)
+                            @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
                             {
-                                @foreach (var tipificacion in tipificaciones)
-                                {
-                                    <option value="@tipificacion.DescripcionTipificacion" data-id="@tipificacion.IdTipificacion">
-                                        @tipificacion.DescripcionTipificacion</option>
-                                }
+                                <option value="@tipificacion.DescripcionTipificacion" data-id="@tipificacion.IdTipificacion">
+                                    @tipificacion.DescripcionTipificacion</option>
                             }
                         </datalist>
 
@@ -356,14 +355,15 @@
                                     <select class="form-select" name="tipificaciones[@contadorNumeros].AgenciaAsignada"
                                         id="tipificaciones[@contadorNumeros].AgenciaAsignada">
                                         <option value="">Seleccione la Agencia</option>
-                                        @if (agenciasDisponibles != null)
+                                        @foreach (var agenciasAsignadas in agenciasDisponibles)
                                         {
-                                            @foreach (var agenciasAsignadas in agenciasDisponibles)
-                                            {
-                                                <option value="@agenciasAsignadas.sucursal_comercial - @agenciasAsignadas.agencia_comercial">
-                                                    @agenciasAsignadas.sucursal_comercial - @agenciasAsignadas.agencia_comercial
-                                                </option>
-                                            }
+                                            string numSucursalConCeros = agenciasAsignadas.numSucursal.Length == 3
+                                            ? "0" + agenciasAsignadas.numSucursal
+                                            : agenciasAsignadas.numSucursal;
+
+                                            <option value="@numSucursalConCeros - @agenciasAsignadas.agenciaComercial">
+                                                @numSucursalConCeros - @agenciasAsignadas.agenciaComercial
+                                            </option>
                                         }
                                     </select>
                                 </div>
@@ -436,8 +436,9 @@
 
 <!-- SECCION TELEFONOS AGREGADOS Por LA DB -->
 
+<div class="spacing"></div>
 <form asp-action="TipificarMotivo" asp-controller="Vendedor" method="post">
-    <div class="row mb-4">
+    <div class="row">
         <h3 class="label-fortip">Contacto con Cliente - Y Tipificaciones Asignadas:</h3>
         <input type="hidden" name="IdAsignacion" value="@ViewData["ID_asignacion"]">
 
@@ -445,7 +446,7 @@
         {
             int j = i + 1;
             <!-- Teléfono @i -->
-            <div class="form-group row align-items-center mb-4">
+            <div class="form-group row align-items-center mb-3">
                 <div class="col-12 col-md-4">
                     <label for="Telefono_@j" class="form-label">Telefono @j</label>
                     <input class="form-control" name="Telefono_@j" id="Telefono_db_@j" type="text"
@@ -475,13 +476,10 @@
                             oninput="actualizarIdTipificacion('db_@j'); verificarTipificacion('db_@j')" type="text">
                         <datalist id="tipificacionesList_db_@j">
                             <option value="">Seleccione la descripción de Tipificacion</option>
-                            @if (tipificaciones != null)
+                            @foreach (var tipificacion in (IEnumerable<dynamic>)ViewData["Tipificaciones"])
                             {
-                                @foreach (var tipificacion in tipificaciones)
-                                {
-                                    <option value="@tipificacion.DescripcionTipificacion" data-id="@tipificacion.IdTipificacion">
-                                        @tipificacion.DescripcionTipificacion</option>
-                                }
+                                <option value="@tipificacion.DescripcionTipificacion" data-id="@tipificacion.IdTipificacion">
+                                    @tipificacion.DescripcionTipificacion</option>
                             }
                         </datalist>
                         <div class="form-group mt-3" id="fechaVisitaContainer_db_@j" style="display: none;">
@@ -494,14 +492,15 @@
                                     <label for="AgenciaComercialDb_@j" class="form-label">Agencia Comercial:</label>
                                     <select class="form-select" name="AgenciaComercialDb_@j" id="AgenciaComercialDb_@j">
                                         <option value="">Seleccione la Agencia</option>
-                                        @if (agenciasDisponibles != null)
+                                        @foreach (var agenciasAsignadas in agenciasDisponibles)
                                         {
-                                            @foreach (var agenciasAsignadas in agenciasDisponibles)
-                                            {
-                                                <option value="@agenciasAsignadas.sucursal_comercial - @agenciasAsignadas.agencia_comercial">
-                                                    @agenciasAsignadas.sucursal_comercial - @agenciasAsignadas.agencia_comercial
-                                                </option>
-                                            }
+                                            string numSucursalConCeros = agenciasAsignadas.numSucursal.Length == 3
+                                            ? "0" + agenciasAsignadas.numSucursal
+                                            : agenciasAsignadas.numSucursal;
+
+                                            <option value="@numSucursalConCeros - @agenciasAsignadas.agenciaComercial">
+                                                @numSucursalConCeros - @agenciasAsignadas.agenciaComercial
+                                            </option>
                                         }
                                     </select>
                                 </div>
