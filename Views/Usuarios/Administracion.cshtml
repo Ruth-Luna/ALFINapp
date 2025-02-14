@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="~/css/Usuarios/Administracion.css">
 }
 
-
 <div>
     <div class="mb-2">
         <h3> Administracion de Usuarios </h3>
@@ -42,138 +41,156 @@
         </div>
     </div>
     <div class="table-responsive">
-        <table class="table table-bordered" id="clientesTable">
+
+        <table class="table table-bordered text-nowrap" id="clientesTable">
             <thead>
                 <tr>
-                    <th>Accion</th>
-                    <th>
-                        <span> Estado </span>
+                    <th>Acción</th>
+                    <th onclick="sortTable('clientesTable', 1, 'string')" style="cursor: pointer">
+                        <span class="d-flex justify-content-center gap-2 ">
+                            Estado
+                            <i class="bi bi-filter"></i>
+                        </span>
                     </th>
-                    <th>
-                        <span> Dni </span>
-                    </th>
-                    <th>
-                        <span> Nombres Completos </span>
-                    </th>
-                    @*<th>Departamento</th>
-                    <th>Provincia</th>
-                    <th>Distrito</th>
-                    <th>Telefono</th>*@
-                    <th>
-                        <span> Supervisor Asignado </span>
-                    </th>
-                    <th>Region</th>
+                    <th>Dni</th>
+                    <th>Nombres Completos</th>
+                    <th>Supervisor Asignado</th>
+                    <th>Región</th>
                     <th>Nombre Campaña</th>
                     <th>Id Rol</th>
                     <th>Rol</th>
-                    <th>Ultima Actualizacion</th>
+                    <th>Última actualización</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td></td>
-                    <td>
-                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 1, 'string')"
-                            data-sort-ignore>
-                            <i class="bi bi-caret-down-square"></i>
-                        </button>
-                    </td>
-                </tr>
+
                 @foreach (var usuario in Model)
                 {
-                   
-                        <tr class="table-row-custom">
-                            <td class="table-row-custom" class="text-center align-middle">
-                                <div class="d-flex flex-column align-items-center">
-                                    <div class="d-flex justify-content-center gap-2 mb-2">
-                                        <a href="javascript:void(0)" class="btn btn-warning btn-sm"
-                                            onclick="CambiarEstadoUsuario(0, '@usuario.IdUsuario');">
-                                            <i class="bi bi-toggle-off"></i>
-                                        </a>
-                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm"
-                                            onclick="cambiarDatos('@usuario.IdUsuario')">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                    </div>
+                    <tr class="align-middle">
+                        <td>
+                            <div class="d-flex flex-column align-items-center">
+                                <div class="d-flex justify-content-center gap-2 mb-2">
+                                    <a href="javascript:void(0)" class="btn btn-warning btn-sm"
+                                       onclick="CambiarEstadoUsuario(0, '@usuario.IdUsuario');">
+                                        <i class="bi bi-toggle-off"></i>
+                                    </a>
+                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
                                 </div>
-                            </td>
-                            <td class="table-row-custom">
-                                @if (usuario.Estado == "ACTIVO")
-                                {
-                                    <span class="badge bg-success">@usuario.Estado</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-danger">@usuario.Estado</span>
-                                }
-                            </td>
-                            <td class="table-row-custom">
-                                <textarea class="textarea-custom" rows="2" cols="7" type="text" id="DNI_@usuario.IdUsuario" readonly>@usuario.Dni</textarea>
-                            </td>
-                            <td class="table-row-custom">
-                                <textarea class="textarea-custom" rows="2" type="text"
-                                    id="NombresCompletos_@usuario.IdUsuario" readonly>@usuario.NombresCompletos</textarea>
-                            </td>
-                            <textarea class="textarea-custom" rows="2" cols="6" type="text" id="Departamento_@usuario.IdUsuario" style="display: none;">@usuario.Departamento</textarea>
-                            <textarea class="textarea-custom" rows="2" cols="5" type="text" id="Provincia_@usuario.IdUsuario" style="display: none;">@usuario.Provincia</textarea>
-                            <textarea class="textarea-custom" rows="2" cols="5" type="text" id="Distrito_@usuario.IdUsuario" style="display: none;">@usuario.Distrito</textarea>
-                            <textarea class="textarea-custom" rows="2" cols="6" type="text" id="Telefono_@usuario.IdUsuario" style="display: none;">@usuario.Telefono</textarea>
-                            <td class="table-row-custom">
-                                @if (usuario.IdRol == 3)
-                                {
-                                    <select class="select-custom" name="NAMEUSUARIOSUP_@usuario.IdUsuario" id="IDUSUARIOSUP_@usuario.IdUsuario">
-                                        <option value="@usuario.IDUSUARIOSUP">@usuario.IDUSUARIOSUP - @usuario.RESPONSABLESUP</option>
-                                        @foreach (var supervisor in Model)
-                                        {
-                                            if (supervisor.IdRol == 2 && supervisor.Estado == "ACTIVO" && supervisor.IdUsuario != usuario.IDUSUARIOSUP)
-                                            {
-                                                <option value="@supervisor.IdUsuario">@supervisor.IdUsuario - @supervisor.NombresCompletos</option>
-                                            }
-                                        }
-                                    </select>
-                                }
-                                else if(usuario.IdRol == 2)
-                                {
-                                    <select class="select-custom" name="NAMEUSUARIOSUP_@usuario.IdUsuario" id="IDUSUARIOSUP_@usuario.IdUsuario">
-                                        <option value="@usuario.IDUSUARIOSUP">EL USUARIO ES SUPERVISOR</option>
-                                    </select>
-                                }
-                                else
-                                {
-                                    <select class="select-custom" name="NAMEUSUARIOSUP_@usuario.IdUsuario" id="IDUSUARIOSUP_@usuario.IdUsuario">
-                                        <option value="@usuario.IDUSUARIOSUP">NO SE ENCONTRO NINGUN SUPERVISOR</option>
-                                    </select>
-                                }
-                                <textarea class="textarea-custom" rows="2" type="text" id="RESPONSABLESUP_@usuario.IdUsuario" readonly hidden>@usuario.RESPONSABLESUP</textarea>
-                            </td>
-                            <td class="table-row-custom">
-                                <textarea class="textarea-custom" rows="2" cols="4" type="text" id="REGION_@usuario.IdUsuario">@usuario.REGION</textarea>
-                            </td>
-                            <td class="table-row-custom">
-                                <textarea class="textarea-custom" rows="2" cols="7" type="text" id="NOMBRECAMPAÑA_@usuario.IdUsuario">@usuario.NOMBRECAMPAÑA</textarea>
-                            </td>
-                            <td class="table-row-custom">
-                                <select class="select-custom" name="IdRol_@usuario.IdUsuario" id="IdRol_@usuario.IdUsuario">
-                                        <option value="@usuario.IdRol">@usuario.IdRol - @usuario.Rol</option>
-                                        <option value="1">1 - ADMINISTRADOR</option>
-                                        <option value="2">2 - SUPERVISOR</option>
-                                        <option value="3">3 - ASESOR DE CREDITOS</option>
-                                        <option value="4">4 - JEFE DE ZONA</option>
-                                </select>
-                            </td>
-                            <td class="table-row-custom">
-                                <textarea class="textarea-custom" rows="2" cols="10" type="text" id="Rol_@usuario.IdUsuario">@usuario.Rol</textarea>
-                            </td>
-                            <td class="table-row-custom">
-                                @usuario.FechaActualizacion
-                            </td>
-                        </tr>
-                    
+                            </div>
+                        </td>
+                        <td>
+                            @if (usuario.Estado == "ACTIVO")
+                            {
+                                <span class="badge bg-success">@usuario.Estado</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">@usuario.Estado</span>
+                            }
+                        </td>
+                        <td>
+                            @usuario.Dni
+                        </td>
+                        <td>
+                            @usuario.NombresCompletos
+                        </td>
+                        <td>
+                            -
+                        </td>
+                        <td>
+                            @usuario.REGION
+                        </td>
+                        <td>
+                            @usuario.NOMBRECAMPAÑA
+                        </td>
+                        <td>
+                            @usuario.IdRol - @usuario.Rol
+                        </td>
+                        <td>
+                            @usuario.Rol
+                        </td>
+                        <td>
+                            @usuario.FechaActualizacion
+                        </td>
+                    </tr>
                 }
+
+
             </tbody>
+
         </table>
+
     </div>
 </div>
+
+
+<!-- Modal :: Editar Usuario -->
+<div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <label for="inputEmail3" class="col-5 col-form-label">Estado</label>
+                    <div class="col-7">
+                        <select class="form-select" id="selectEstado_EU">
+                            <option value="activo">ACTIVO</option>
+                            <option value="inactivo">INACTIVO</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="inputEmail3" class="col-5 col-form-label">DNI</label>
+                    <div class="col-7">
+                        <input type="email" class="form-control" id="txtDNI_EU" />
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="inputEmail3" class="col-5 col-form-label">Nombre Completo</label>
+                    <div class="col-7">
+                        <input type="email" class="form-control" id="txtNombreCompleto_EU" />
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="inputEmail3" class="col-5 col-form-label">Supervisor Asignado</label>
+                    <div class="col-7">
+                        <input type="email" class="form-control" id="txtSupervisorAsignado_EU" />
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="inputEmail3" class="col-5 col-form-label">Región</label>
+                    <div class="col-7">
+                        <input type="email" class="form-control" id="txtRegion_EU" />
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="inputEmail3" class="col-5 col-form-label">Nombre Campaña</label>
+                    <div class="col-7">
+                        <input type="email" class="form-control" id="txtNombreCampania_EU" />
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="inputEmail3" class="col-5 col-form-label">Id Rol</label>
+                    <div class="col-7">
+                        <input type="email" class="form-control" id="txtIdRol_EU" />
+                    </div>
+                </div>
+                <div class="row">
+                    <label for="inputEmail3" class="col-5 col-form-label">Rol</label>
+                    <div class="col-7">
+                        <input type="email" class="form-control" id="txtRol_EU" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 @section Scripts {
     <script src="~/js/Usuarios/Administracion.js"></script>
