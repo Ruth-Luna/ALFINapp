@@ -83,7 +83,6 @@ namespace ALFINapp.Controllers
                 var enviarDerivacion = await _dBServicesDerivacion.GenerarDerivacion(
                     FechaVisitaDerivacion, 
                     AgenciaDerivacion, 
-                    AsesorDerivacion, 
                     DNIAsesorDerivacion, 
                     TelefonoDerivacion, 
                     DNIClienteDerivacion, 

@@ -14,7 +14,6 @@ namespace ALFINapp.Services
         }
         public async Task<(bool IsSuccess, string Message)> GenerarDerivacion(DateTime FechaVisitaDerivacion,
                                                     string AgenciaDerivacion,
-                                                    string AsesorDerivacion,
                                                     string DNIAsesorDerivacion,
                                                     string TelefonoDerivacion,
                                                     string DNIClienteDerivacion,
@@ -104,6 +103,23 @@ namespace ALFINapp.Services
             catch (System.Exception ex)
             {
                 return (false, ex.Message, null);
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message)> VerificarDerivacionEnviada(string dni)
+        {
+            try
+            {
+                var verificarDerivacionEnviada = await _context.bool_dto.FromSqlRaw("EXEC sp_Derivacion_verificar_derivacion_enviada {0}", dni).FirstOrDefaultAsync();
+                if (verificarDerivacionEnviada   == null)
+                {
+                    return (false, "No se encontraron entradas en BSDIAL");
+                }
+                return (true, "Se encontraron las siguientes entradas en BSDIAL");
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message);
             }
         }
     }

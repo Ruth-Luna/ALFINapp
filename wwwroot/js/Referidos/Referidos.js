@@ -77,7 +77,8 @@ function cargarDerivacionManual(NombreCompletoAsesor, DniCliente, NombreCliente,
     });
 }
 
-function enviarDerivacionPorReferencia(AgenciaDerivacion,
+function enviarDerivacionPorReferencia(
+    AgenciaDerivacion,
     AsesorDerivacion,
     DNIAsesorDerivacion,
     DNIClienteDerivacion,

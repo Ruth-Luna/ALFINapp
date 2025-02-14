@@ -96,7 +96,6 @@ namespace ALFINapp.Controllers
                 var enviarDerivacion = await _dBServicesDerivacion.GenerarDerivacion(
                     FechaVisitaDerivacion, 
                     AgenciaDerivacion, 
-                    AsesorDerivacion, 
                     DNIAsesorDerivacion, 
                     TelefonoDerivacion, 
                     DNIClienteDerivacion, 
@@ -112,6 +111,7 @@ namespace ALFINapp.Controllers
                 {
                     return Json(new { success = false, message = modificarEstadoReferido.Message });
                 }
+
                 return Json(new { success = true, message = "Derivacion enviada correctamente" });
             }
             catch (System.Exception ex)
