@@ -110,12 +110,31 @@ namespace ALFINapp.Services
         {
             try
             {
-                var verificarDerivacionEnviada = await _context.bool_dto.FromSqlRaw("EXEC sp_Derivacion_verificar_derivacion_enviada {0}", dni).FirstOrDefaultAsync();
-                if (verificarDerivacionEnviada   == null)
+                int tiempoMaximoEspera = 30000; // 30 segundos
+                int intervaloEspera = 3000; // 3 segundos
+                int tiempoTranscurrido = 0;
+
+                while (tiempoTranscurrido < tiempoMaximoEspera)
                 {
-                    return (false, "No se encontraron entradas en BSDIAL");
+                    var verificarDerivacionEnviada = await _context.derivaciones_asesores
+                        .FromSqlRaw("EXEC sp_Derivacion_verificar_derivacion_enviada {0}", dni)
+                        .FirstOrDefaultAsync();
+
+                    if (verificarDerivacionEnviada == null)
+                    {
+                        return (false, "No se mando la derivación, esta no fue guardada en la base de datos");
+                    }
+
+                    if (verificarDerivacionEnviada != null && verificarDerivacionEnviada.FueProcesado == true)
+                    {
+                        return (true, "Entrada correctamente procesada");
+                    }
+
+                    await Task.Delay(intervaloEspera);
+                    tiempoTranscurrido += intervaloEspera;
                 }
-                return (true, "Se encontraron las siguientes entradas en BSDIAL");
+
+                return (false, "Tiempo de espera agotado. La entrada no fue procesada.");
             }
             catch (System.Exception ex)
             {

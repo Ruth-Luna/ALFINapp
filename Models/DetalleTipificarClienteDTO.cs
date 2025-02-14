@@ -32,6 +32,7 @@ public class DetalleTipificarClienteDTO
 
     //Propiedades de la Tabla ClientsEnriquecido
     public List<TelefonoDTO> Telefonos { get; set; }
+    public int? IdCliente { get; set; }
     
     //Propiedas de Tasa
     public decimal? OfertaMax { get; set; }
@@ -49,6 +50,9 @@ public class DetalleTipificarClienteDTO
     public decimal? Tasa36m { get; set; }
     public decimal? Cuota36m { get; set; }
 
+    //Propiedades de la tabla ClientesAsignados
+    public int? IdAsignacion { get; set; }
+    public string? FuenteBase { get; set; }
     public DetalleTipificarClienteDTO()
     {
         Telefonos = new List<TelefonoDTO>(); // Inicializa la lista

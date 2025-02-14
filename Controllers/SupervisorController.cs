@@ -66,11 +66,6 @@ namespace ALFINapp.Controllers
             // Contar los clientes asignados (idUsuarioV no es null o 0)
             int clientesAsignadosSupervisor = supervisorData.Count(cliente => cliente.idUsuarioV != 0);
 
-            var paginatedData = supervisorData
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
             var usuario = await _context.usuarios.FirstOrDefaultAsync(u => u.IdUsuario == usuarioId);
 
             var DestinoBases = await _context.clientes_asignados
@@ -80,16 +75,14 @@ namespace ALFINapp.Controllers
                                                             .ToListAsync();                          // Convertir a lista
 
             // Filtrado de las bases
+            var supervisorList = supervisorData.Take(200).ToList();
             ViewData["UsuarioNombre"] = usuario != null ? usuario.NombresCompletos : "Usuario No Encontrado";
             ViewData["ClientesPendientesSupervisor"] = clientesPendientesSupervisor;
             //ColumnasDestino
             ViewData["DestinoBases"] = DestinoBases;
             ViewData["clientesAsignadosSupervisor"] = clientesAsignadosSupervisor;
             ViewData["totalClientes"] = totalClientes;
-            ViewData["CurrentPage"] = page;
-            ViewData["PageSize"] = pageSize;
-            ViewData["TotalPages"] = (int)Math.Ceiling(totalClientes / (double)pageSize);
-            return View("Inicio", supervisorData);
+            return View("Inicio", supervisorList);
         }
 
         [HttpPost]

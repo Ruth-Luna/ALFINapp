@@ -7,6 +7,7 @@ using Microsoft.Playwright;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using ALFINapp.Services;
+using System.Threading.Tasks;
 
 namespace ALFINapp.Controllers
 {
@@ -16,12 +17,14 @@ namespace ALFINapp.Controllers
         private readonly MDbContext _context;
         private readonly DBServicesGeneral _dbServicesGeneral;
         private readonly DBServicesConsultasAsesores _dbServicesAsesores;
+        private readonly DBServicesTipificaciones _dBServicesTipificaciones;
 
-        public VendedorController(MDbContext context, DBServicesConsultasAsesores dbServicesAsesores, DBServicesGeneral dbServicesGeneral)
+        public VendedorController(MDbContext context, DBServicesConsultasAsesores dbServicesAsesores, DBServicesGeneral dbServicesGeneral, DBServicesTipificaciones dBServicesTipificaciones)
         {
             _context = context;
             _dbServicesAsesores = dbServicesAsesores;
             _dbServicesGeneral = dbServicesGeneral;
+            _dBServicesTipificaciones = dBServicesTipificaciones;
         }
 
         [HttpPost]
@@ -77,26 +80,26 @@ namespace ALFINapp.Controllers
 
             // Clientes aún no tipificados (su campo 'TipificacionDeMayorPeso' es null o vacío)
             int clientesPendientes = detallesClientes.Count(dc =>
-                (dc.FechaTipificacionDeMayorPeso.HasValue 
-                && dc.FechaTipificacionDeMayorPeso.Value.Year != DateTime.Now.Year 
-                && dc.FechaTipificacionDeMayorPeso.Value.Month != DateTime.Now.Month) 
+                (dc.FechaTipificacionDeMayorPeso.HasValue
+                && dc.FechaTipificacionDeMayorPeso.Value.Year != DateTime.Now.Year
+                && dc.FechaTipificacionDeMayorPeso.Value.Month != DateTime.Now.Month)
                 || (!dc.FechaTipificacionDeMayorPeso.HasValue)) +
                 (ClientesTraidosDBALFIN.Data == null ? 0 :
                 ClientesTraidosDBALFIN.Data.Count(da =>
-                (da.FechaTipificacionDeMayorPeso.HasValue 
-                 && da.FechaTipificacionDeMayorPeso.Value.Year != DateTime.Now.Year 
-                 && da.FechaTipificacionDeMayorPeso.Value.Month != DateTime.Now.Month) 
+                (da.FechaTipificacionDeMayorPeso.HasValue
+                 && da.FechaTipificacionDeMayorPeso.Value.Year != DateTime.Now.Year
+                 && da.FechaTipificacionDeMayorPeso.Value.Month != DateTime.Now.Month)
                  || (!da.FechaTipificacionDeMayorPeso.HasValue)));
 
             // Clientes ya tipificados (su campo 'TipificacionDeMayorPeso' no es null ni vacío)
             int clientesTipificados = detallesClientes.Count(dc =>
-                dc.FechaTipificacionDeMayorPeso.HasValue 
-                && dc.FechaTipificacionDeMayorPeso.Value.Year == DateTime.Now.Year 
+                dc.FechaTipificacionDeMayorPeso.HasValue
+                && dc.FechaTipificacionDeMayorPeso.Value.Year == DateTime.Now.Year
                 && dc.FechaTipificacionDeMayorPeso.Value.Month == DateTime.Now.Month) +
                 (ClientesTraidosDBALFIN.Data == null ? 0 :
                 ClientesTraidosDBALFIN.Data.Count(da =>
-                da.FechaTipificacionDeMayorPeso.HasValue 
-                && da.FechaTipificacionDeMayorPeso.Value.Year == DateTime.Now.Year 
+                da.FechaTipificacionDeMayorPeso.HasValue
+                && da.FechaTipificacionDeMayorPeso.Value.Year == DateTime.Now.Year
                 && da.FechaTipificacionDeMayorPeso.Value.Month == DateTime.Now.Month));
 
             // Total de clientes
@@ -282,7 +285,7 @@ namespace ALFINapp.Controllers
         }
 
         [HttpGet]
-        public IActionResult TipificarClienteView(int id_base)
+        public async Task<IActionResult> TipificarClienteView(int id_base)
         {
             try
             {
@@ -298,131 +301,115 @@ namespace ALFINapp.Controllers
 
                                         where bc.IdBase == id_base && db.TipoBase == ca.FuenteBase &&
                                               ca.IdUsuarioV == HttpContext.Session.GetInt32("UsuarioId")
-                                        select new
+                                        select new DetalleTipificarClienteDTO
                                         {
-                                            bc,
-                                            db,
-                                            ce,
-                                            ca
+                                            // Propiedades de BaseCliente
+                                            Dni = bc.Dni,
+                                            XAppaterno = bc.XAppaterno,
+                                            XApmaterno = bc.XApmaterno,
+                                            XNombre = bc.XNombre,
+                                            Edad = bc.Edad,
+                                            Departamento = bc.Departamento,
+                                            Provincia = bc.Provincia,
+                                            Distrito = bc.Distrito,
+                                            IdBase = bc.IdBase,
+
+                                            // Propiedades de DetalleBase
+                                            Campaña = db.Campaña,
+                                            OfertaMax = db.OfertaMax,
+                                            TasaMinima = db.TasaMinima,
+                                            Sucursal = db.Sucursal,
+                                            AgenciaComercial = db.AgenciaComercial,
+                                            Plazo = db.Plazo,
+                                            Cuota = db.Cuota,
+                                            GrupoTasa = db.GrupoTasa,
+                                            GrupoMonto = db.GrupoMonto,
+                                            Propension = db.Propension,
+                                            TipoCliente = db.TipoCliente,
+                                            ClienteNuevo = db.ClienteNuevo,
+                                            Color = db.Color,
+                                            ColorFinal = db.ColorFinal,
+
+                                            // Propiedades de ClientesEnriquecido
+                                            Telefonos = new List<TelefonoDTO>
+                                            {
+                                                new TelefonoDTO { Numero = ce.Telefono1,
+                                                    Comentario = ce.ComentarioTelefono1,
+                                                    DescripcionTipificacion = ce.UltimaTipificacionTelefono1,
+                                                    FechaTipificacion = ce.FechaUltimaTipificacionTelefono1 },
+                                                new TelefonoDTO { Numero = ce.Telefono2,
+                                                    Comentario = ce.ComentarioTelefono2,
+                                                    DescripcionTipificacion = ce.UltimaTipificacionTelefono2,
+                                                    FechaTipificacion = ce.FechaUltimaTipificacionTelefono2 },
+                                                new TelefonoDTO { Numero = ce.Telefono3,
+                                                    Comentario = ce.ComentarioTelefono3,
+                                                    DescripcionTipificacion = ce.UltimaTipificacionTelefono3,
+                                                    FechaTipificacion = ce.FechaUltimaTipificacionTelefono3 },
+                                                new TelefonoDTO { Numero = ce.Telefono4,
+                                                    Comentario = ce.ComentarioTelefono4,
+                                                    DescripcionTipificacion = ce.UltimaTipificacionTelefono4,
+                                                    FechaTipificacion = ce.FechaUltimaTipificacionTelefono4 },
+                                                new TelefonoDTO { Numero = ce.Telefono5,
+                                                    Comentario = ce.ComentarioTelefono5,
+                                                    DescripcionTipificacion = ce.UltimaTipificacionTelefono5,
+                                                    FechaTipificacion = ce.FechaUltimaTipificacionTelefono5 },
+                                            },
+                                            IdCliente = ce.IdCliente,
+
+                                            //Propiedades Tasas y Detalles
+                                            Oferta12m = db.Oferta12m,
+                                            Tasa12m = db.Tasa12m,
+                                            Cuota12m = db.Cuota12m,
+                                            Oferta18m = db.Oferta18m,
+                                            Tasa18m = db.Tasa18m,
+                                            Cuota18m = db.Cuota18m,
+                                            Oferta24m = db.Oferta24m,
+                                            Tasa24m = db.Tasa24m,
+                                            Cuota24m = db.Cuota24m,
+                                            Oferta36m = db.Oferta36m,
+                                            Tasa36m = db.Tasa36m,
+                                            Cuota36m = db.Cuota36m,
+                                            Usuario = db.Usuario,
+                                            SegmentoUser = db.SegmentoUser,
+
+                                            //Propiedades de ClientesAsignados
+                                            IdAsignacion = ca.IdAsignacion,
+                                            FuenteBase = ca.FuenteBase
                                         }).FirstOrDefault();
+
                 if (detallesClientes == null)
                 {
                     return Json(new { success = false, message = "No se encontró el cliente en la base de datos." });
                 }
 
-                var detalleTipificarCliente = detallesClientes != null
-                    ? new DetalleTipificarClienteDTO
-                    {
-                        // Propiedades de BaseCliente
-                        Dni = detallesClientes.bc.Dni,
-                        XAppaterno = detallesClientes.bc.XAppaterno,
-                        XApmaterno = detallesClientes.bc.XApmaterno,
-                        XNombre = detallesClientes.bc.XNombre,
-                        Edad = detallesClientes.bc.Edad,
-                        Departamento = detallesClientes.bc.Departamento,
-                        Provincia = detallesClientes.bc.Provincia,
-                        Distrito = detallesClientes.bc.Distrito,
-                        IdBase = detallesClientes.bc.IdBase,
-
-                        // Propiedades de DetalleBase
-                        Campaña = detallesClientes.db.Campaña,
-                        OfertaMax = detallesClientes.db.OfertaMax,
-                        TasaMinima = detallesClientes.db.TasaMinima,
-                        Sucursal = detallesClientes.db.Sucursal,
-                        AgenciaComercial = detallesClientes.db.AgenciaComercial,
-                        Plazo = detallesClientes.db.Plazo,
-                        Cuota = detallesClientes.db.Cuota,
-                        GrupoTasa = detallesClientes.db.GrupoTasa,
-                        GrupoMonto = detallesClientes.db.GrupoMonto,
-                        Propension = detallesClientes.db.Propension,
-                        TipoCliente = detallesClientes.db.TipoCliente,
-                        ClienteNuevo = detallesClientes.db.ClienteNuevo,
-                        Color = detallesClientes.db.Color,
-                        ColorFinal = detallesClientes.db.ColorFinal,
-
-                        // Propiedades de ClientesEnriquecido
-                        Telefonos = new List<TelefonoDTO>
-                        {
-                        new TelefonoDTO { Numero = detallesClientes.ce.Telefono1,
-                                        Comentario = detallesClientes.ce.ComentarioTelefono1,
-                                        DescripcionTipificacion = detallesClientes.ce.UltimaTipificacionTelefono1,
-                                        FechaTipificacion = detallesClientes.ce.FechaUltimaTipificacionTelefono1 },
-                        new TelefonoDTO { Numero = detallesClientes.ce.Telefono2,
-                                        Comentario = detallesClientes.ce.ComentarioTelefono2,
-                                        DescripcionTipificacion = detallesClientes.ce.UltimaTipificacionTelefono2,
-                                        FechaTipificacion = detallesClientes.ce.FechaUltimaTipificacionTelefono2  },
-                        new TelefonoDTO { Numero = detallesClientes.ce.Telefono3,
-                                        Comentario = detallesClientes.ce.ComentarioTelefono3,
-                                        DescripcionTipificacion = detallesClientes.ce.UltimaTipificacionTelefono3,
-                                        FechaTipificacion = detallesClientes.ce.FechaUltimaTipificacionTelefono3 },
-                        new TelefonoDTO { Numero = detallesClientes.ce.Telefono4,
-                                        Comentario = detallesClientes.ce.ComentarioTelefono4,
-                                        DescripcionTipificacion = detallesClientes.ce.UltimaTipificacionTelefono4,
-                                        FechaTipificacion = detallesClientes.ce.FechaUltimaTipificacionTelefono4 },
-                        new TelefonoDTO { Numero = detallesClientes.ce.Telefono5,
-                                        Comentario = detallesClientes.ce.ComentarioTelefono5,
-                                        DescripcionTipificacion = detallesClientes.ce.UltimaTipificacionTelefono5,
-                                        FechaTipificacion = detallesClientes.ce.FechaUltimaTipificacionTelefono5 }
-                        },
-
-                        //Propiedades Tasas y Detalles
-                        Oferta12m = detallesClientes.db.Oferta12m,
-                        Tasa12m = detallesClientes.db.Tasa12m,
-                        Cuota12m = detallesClientes.db.Cuota12m,
-                        Oferta18m = detallesClientes.db.Oferta18m,
-                        Tasa18m = detallesClientes.db.Tasa18m,
-                        Cuota18m = detallesClientes.db.Cuota18m,
-                        Oferta24m = detallesClientes.db.Oferta24m,
-                        Tasa24m = detallesClientes.db.Tasa24m,
-                        Cuota24m = detallesClientes.db.Cuota24m,
-                        Oferta36m = detallesClientes.db.Oferta36m,
-                        Tasa36m = detallesClientes.db.Tasa36m,
-                        Cuota36m = detallesClientes.db.Cuota36m,
-                        Usuario = detallesClientes.db.Usuario,
-                        SegmentoUser = detallesClientes.db.SegmentoUser,
-                    }
-                    : null;
-
-                if (detalleTipificarCliente == null)
-                {
-                    return Json(new { success = false, message = "No se encontró el cliente en la base de datos." });
-                }
-
-                var tipificaciones = _context.tipificaciones.Select(t => new { t.IdTipificacion, t.DescripcionTipificacion }).ToList();
-                ViewData["Tipificaciones"] = tipificaciones;
+                var tipificaciones = _context.tipificaciones.Select(t => new { t }).ToList();
 
                 var resultados_telefonos_tipificados_vendedor = (from ta in _context.telefonos_agregados
-                                                                 where detallesClientes != null && ta.IdCliente == detallesClientes.ca.IdCliente
-                                                                 select new
+                                                                 where ta.IdCliente == detallesClientes.IdCliente
+                                                                 select new TelefonosAgregadosDTO
                                                                  {
                                                                      TelefonoTipificado = ta.Telefono,
                                                                      ComentarioTelefono = ta.Comentario,
                                                                      DescripcionTipificacion = ta.UltimaTipificacion,
                                                                      FechaTipificacionSup = ta.FechaUltimaTipificacion
                                                                  }).ToList();
-                var agenciasDisponibles = (from db in _context.detalle_base
-                                           where !string.IsNullOrEmpty(db.SucursalComercial)
-                                                   && !string.IsNullOrEmpty(db.AgenciaComercial)
-                                                   && db.AgenciaComercial != "None"
-                                                   && db.AgenciaComercial != "NULL"
-                                                   && db.AgenciaComercial != ""
-                                           select new
-                                           {
-                                               numSucursal = db.SucursalComercial,
-                                               agenciaComercial = db.AgenciaComercial
-                                           })
-                                                    .Distinct()
-                                                    .ToList();
+
+                var getAgenciasDisponibles = await _dbServicesGeneral.GetUAgenciasConNumeros();
+                if (getAgenciasDisponibles.IsSuccess == false )
+                {
+                    return Json(new { success = false, message = getAgenciasDisponibles.Message });
+                }
+                var agenciasDisponibles = getAgenciasDisponibles.data;
 
                 var dni = _context.base_clientes.FirstOrDefault(bc => bc.IdBase == id_base);
+                ViewData["Tipificaciones"] = tipificaciones;
                 ViewData["AgenciasDisponibles"] = agenciasDisponibles;
                 ViewData["numerosCreadosPorElUsuario"] = resultados_telefonos_tipificados_vendedor;
                 ViewData["DNIcliente"] = dni != null ? dni.Dni : "El usuario No tiene DNI Registrado";
-                ViewData["ID_asignacion"] = detallesClientes?.ca?.IdAsignacion ?? 0;
-                ViewData["Fuente_BD"] = detallesClientes?.ca?.FuenteBase ?? "Fuente no disponible";
-                ViewData["ID_cliente"] = detallesClientes?.ca?.IdCliente ?? 0;
-
-                return PartialView("_Tipificarcliente", detalleTipificarCliente);
+                ViewData["ID_asignacion"] = detallesClientes?.IdAsignacion ?? 0;
+                ViewData["Fuente_BD"] = detallesClientes?.FuenteBase ?? "Fuente no disponible";
+                ViewData["ID_cliente"] = detallesClientes?.IdCliente ?? 0;
+                return PartialView("_Tipificarcliente", detallesClientes);
             }
             catch (System.Exception ex)
             {
@@ -573,10 +560,10 @@ namespace ALFINapp.Controllers
                                                && db.AgenciaComercial != "None"
                                                && db.AgenciaComercial != "NULL"
                                                && db.AgenciaComercial != ""
-                                           select new
+                                           select new AgenciasDisponiblesDTO
                                            {
-                                               numSucursal = db.SucursalComercial,
-                                               agenciaComercial = db.AgenciaComercial
+                                               sucursal_comercial = db.SucursalComercial,
+                                               agencia_comercial = db.AgenciaComercial
                                            })
                                             .Distinct()
                                             .ToList();

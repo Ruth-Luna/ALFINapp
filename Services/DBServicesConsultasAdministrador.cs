@@ -101,8 +101,7 @@ namespace ALFINapp.Services
         {
             try
             {
-                var TodosLosUsuarios = await (from u in _context.usuarios
-                                              select u ).ToListAsync();
+                var TodosLosUsuarios = await _context.usuarios.FromSqlRaw("EXEC sp_usuario_conseguir_todos").ToListAsync();
 
                 if (TodosLosUsuarios == null)
                 {

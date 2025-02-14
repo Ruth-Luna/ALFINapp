@@ -94,7 +94,7 @@ namespace ALFINapp.Controllers
             try
             {
                 var enviarDerivacion = await _dBServicesDerivacion.GenerarDerivacion(
-                    FechaVisitaDerivacion, 
+                    DateTime.Now, 
                     AgenciaDerivacion, 
                     DNIAsesorDerivacion, 
                     TelefonoDerivacion, 
@@ -110,6 +110,13 @@ namespace ALFINapp.Controllers
                 if (modificarEstadoReferido.IsSuccess == false)
                 {
                     return Json(new { success = false, message = modificarEstadoReferido.Message });
+                }
+
+                var verificarDerivacion = await _dBServicesDerivacion.VerificarDerivacionEnviada(DNIClienteDerivacion);
+
+                if (verificarDerivacion.IsSuccess == false)
+                {
+                    return Json(new { success = false, message = verificarDerivacion.Message });
                 }
 
                 return Json(new { success = true, message = "Derivacion enviada correctamente" });
