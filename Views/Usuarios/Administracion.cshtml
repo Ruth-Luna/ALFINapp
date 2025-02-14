@@ -64,7 +64,6 @@
                     </th>
                     <th>Region</th>
                     <th>Nombre Campaña</th>
-                    <th>Id Rol</th>
                     <th>Rol</th>
                     <th>Ultima Actualizacion</th>
                 </tr>
@@ -178,11 +177,9 @@
                                         <option value="3">ASESOR DE CREDITOS</option>
                                         <option value="4">JEFE DE ZONA</option>
                                 </select>
-                                <textarea class="textarea-custom" rows="2" cols="10" type="text" id="VISUALIZACIONROL_@usuario.IdUsuario" style="display: block;">@usuario.IdRol - @usuario.Rol</textarea>
+                                <textarea class="textarea-custom" rows="2" cols="10" type="text" id="VISUALIZACIONROL_@usuario.IdUsuario" style="display: block;">@usuario.Rol</textarea>
                             </td>
-                            <td class="table-row-custom">
-                                <textarea class="textarea-custom" rows="2" cols="10" type="text" id="Rol_@usuario.IdUsuario">@usuario.Rol</textarea>
-                            </td>
+                            
                             <td class="table-row-custom">
                                 @usuario.FechaActualizacion
                             </td>
