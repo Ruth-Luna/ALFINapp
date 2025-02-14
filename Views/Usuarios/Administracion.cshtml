@@ -101,8 +101,12 @@
                                             </a>
                                         }
                                         <a href="javascript:void(0)" class="btn btn-primary btn-sm"
-                                            onclick="cambiarDatos('@usuario.IdUsuario')">
+                                            onclick="activarEdicion('@usuario.IdUsuario')" id="ActivarEdicionBtn_@usuario.IdUsuario" style="display: block;">
                                             <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="javascript:void(0)" class="btn btn-success btn-sm"
+                                            onclick="cambiarDatos('@usuario.IdUsuario')" id="ModificarDatosBtn_@usuario.IdUsuario" style="display: none;">
+                                            <i class="bi bi-check"></i>
                                         </a>
                                     </div>
                                 </div>
@@ -132,7 +136,7 @@
                             <td class="table-row-custom">
                                 @if (usuario.IdRol == 3)
                                 {
-                                    <select class="select-custom" name="NAMEUSUARIOSUP_@usuario.IdUsuario" id="IDUSUARIOSUP_@usuario.IdUsuario">
+                                    <select class="select-custom" name="NAMEUSUARIOSUP_@usuario.IdUsuario" id="IDUSUARIOSUP_@usuario.IdUsuario" style="display: none;">
                                         <option value="@usuario.IDUSUARIOSUP">@usuario.IDUSUARIOSUP - @usuario.RESPONSABLESUP</option>
                                         @foreach (var supervisor in Model)
                                         {
@@ -142,18 +146,21 @@
                                             }
                                         }
                                     </select>
+                                    <textarea class="textarea-custom" rows="2" cols="20" type="text" id="visualizacionIDUSUARIOSUP_@usuario.IdUsuario" style="display: block;">@usuario.IDUSUARIOSUP - @usuario.RESPONSABLESUP</textarea>
                                 }
                                 else if(usuario.IdRol == 2)
                                 {
-                                    <select class="select-custom" name="NAMEUSUARIOSUP_@usuario.IdUsuario" id="IDUSUARIOSUP_@usuario.IdUsuario">
-                                        <option value="@usuario.IDUSUARIOSUP">EL USUARIO ES SUPERVISOR</option>
+                                    <select class="select-custom" name="NAMEUSUARIOSUP_@usuario.IdUsuario" id="IDUSUARIOSUP_@usuario.IdUsuario" style="display: none;">
+                                        <option value="@usuario.IDUSUARIOSUP">PRIMERO MODIFIQUE EL ROL</option>
                                     </select>
+                                    <textarea class="textarea-custom" rows="2" cols="20" type="text" id="visualizacionIDUSUARIOSUP_@usuario.IdUsuario" style="display: block;">EL USUARIO ES SUPERVISOR</textarea>
                                 }
                                 else
                                 {
-                                    <select class="select-custom" name="NAMEUSUARIOSUP_@usuario.IdUsuario" id="IDUSUARIOSUP_@usuario.IdUsuario">
+                                    <select class="select-custom" name="NAMEUSUARIOSUP_@usuario.IdUsuario" id="IDUSUARIOSUP_@usuario.IdUsuario" style="display: none;">
                                         <option value="@usuario.IDUSUARIOSUP">NO SE ENCONTRO NINGUN SUPERVISOR</option>
                                     </select>
+                                    <textarea class="textarea-custom" rows="2" cols="20" type="text" >EL USUARIO NO TIENE SUPERVISOR ASIGNADO</textarea>
                                 }
                                 <textarea class="textarea-custom" rows="2" type="text" id="RESPONSABLESUP_@usuario.IdUsuario" readonly hidden>@usuario.RESPONSABLESUP</textarea>
                             </td>
@@ -164,13 +171,14 @@
                                 <textarea class="textarea-custom" rows="2" cols="7" type="text" id="NOMBRECAMPAÑA_@usuario.IdUsuario">@usuario.NOMBRECAMPAÑA</textarea>
                             </td>
                             <td class="table-row-custom">
-                                <select class="select-custom" name="IdRol_@usuario.IdUsuario" id="IdRol_@usuario.IdUsuario">
+                                <select class="select-custom" name="IdRol_@usuario.IdUsuario" id="IdRol_@usuario.IdUsuario" style="display: none;">
                                         <option value="@usuario.IdRol">@usuario.IdRol - @usuario.Rol</option>
                                         <option value="1">1 - ADMINISTRADOR</option>
                                         <option value="2">2 - SUPERVISOR</option>
                                         <option value="3">3 - ASESOR DE CREDITOS</option>
                                         <option value="4">4 - JEFE DE ZONA</option>
                                 </select>
+                                <textarea class="textarea-custom" rows="2" cols="10" type="text" id="VISUALIZACIONROL_@usuario.IdUsuario" style="display: block;">@usuario.IdRol - @usuario.Rol</textarea>
                             </td>
                             <td class="table-row-custom">
                                 <textarea class="textarea-custom" rows="2" cols="10" type="text" id="Rol_@usuario.IdUsuario">@usuario.Rol</textarea>

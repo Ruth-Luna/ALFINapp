@@ -4,6 +4,7 @@
     outline: none;            /* Evita el borde de enfoque */
     justify-content: center;  /* Asegurar que el texto esté en el centro */
     padding: 5px;             /* Espaciado interno para buena legibilidad */
+    resize: none;            /* Evita el redimensionamiento */
 }
 
 /* Asegurar que tome la altura de la celda de los botones */

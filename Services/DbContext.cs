@@ -29,6 +29,7 @@ public class MDbContext : DbContext
     public DbSet<ClientesReferidos> clientes_referidos { get; set; }
     public DbSet<FeedGReportes> feed_G_REPORTES { get; set; }
     public DbSet<VistaRutas> Vista_Rutas { get; set; }
+    public DbSet<Roles> roles { get; set; }
     
     //DTOS Y PROCEDIMIENTOS ALMACENADOS
     public DbSet<StringDTO> string_dto { get; set; }

@@ -111,11 +111,12 @@ namespace ALFINapp.Services
                         return (false, "El usuario supervisor no existe");
                     }
                 }
+                var rolConseguir = await _context.roles.FirstOrDefaultAsync(x => x.IdRol == usuario.IdRol);
                 var parameters = new[]
                 {
                     new SqlParameter("@Dni", usuario.Dni),
                     new SqlParameter("@NombresCompletos", usuario.NombresCompletos),
-                    new SqlParameter("@Rol", usuario.Rol != null ? usuario.Rol : (object)DBNull.Value),
+                    new SqlParameter("@Rol", rolConseguir != null ? rolConseguir.Rol : "ASESOR"),
                     new SqlParameter("@Departamento", usuario.Departamento != null ? usuario.Departamento : (object)DBNull.Value),
                     new SqlParameter("@Provincia", usuario.Provincia != null ? usuario.Provincia : (object)DBNull.Value),
                     new SqlParameter("@Distrito", usuario.Distrito != null ? usuario.Distrito : (object)DBNull.Value),
