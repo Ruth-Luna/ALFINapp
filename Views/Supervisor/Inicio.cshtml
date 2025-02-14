@@ -3,9 +3,6 @@
 @{
     var usuarioNombre = ViewData["UsuarioNombre"];
 
-    var currentPage = (int)(ViewData["CurrentPage"] ?? 10);
-    var totalPages = (int)(ViewData["TotalPages"] ?? 10);
-    var pageSize = (int)(ViewData["PageSize"] ?? 10);
     var clientesPendientesSupervisor = (int)(ViewData["ClientesPendientesSupervisor"] ?? 0);
     var destinoBases = ViewData["DestinoBases"] as List<string>;
 }
@@ -118,18 +115,9 @@
             </tbody>
         </table>
     </div>
-    <div class="pagination">
-        @if (currentPage > 1)
-        {
-            <a href="?page=@(currentPage - 1)&pageSize=@pageSize"><i class="fa-solid fa-arrow-left"></i></a>
-        }
-        <span>&nbsp; Página @currentPage de @totalPages &nbsp;</span>
-        @if (currentPage < totalPages)
-        {
-            <a href="?page=@(currentPage + 1)&pageSize=@pageSize"> <i class="fa-solid fa-arrow-right"></i></a>
-        }
+    <div class="alert alert-info mt-3" role="alert">
+        <strong>Nota:</strong> Las demas entradas han sido truncadas.
     </div>
-    <div class="spacing"></div>
 </div>
 
 <div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">

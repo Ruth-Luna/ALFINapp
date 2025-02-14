@@ -302,17 +302,19 @@ namespace ALFINapp.Controllers
                     worksheet.Cells[1, 32].Value = "CLIENTE_NUEVO";
                     worksheet.Cells[1, 33].Value = "COLOR";
                     worksheet.Cells[1, 34].Value = "COLOR_FINAL";
-                    worksheet.Cells[1, 35].Value = "TELEFONO1";
-                    worksheet.Cells[1, 36].Value = "TELEFONO2";
-                    worksheet.Cells[1, 37].Value = "TELEFONO3";
-                    worksheet.Cells[1, 38].Value = "TELEFONO4";
-                    worksheet.Cells[1, 39].Value = "TELEFONO5";
 
-                    worksheet.Cells[1, 40].Value = "USUARIO";
-                    worksheet.Cells[1, 41].Value = "USUARIO V3";
-                    worksheet.Cells[1, 42].Value = "FLAG DEUDA V OFERTA";
+                    worksheet.Cells[1, 35].Value = "USUARIO";
+                    worksheet.Cells[1, 36].Value = "USUARIO V3";
+                    worksheet.Cells[1, 37].Value = "FLAG DEUDA V OFERTA";
                     
 
+                    worksheet.Cells[1, 38].Value = "TELEFONO1";
+                    worksheet.Cells[1, 39].Value = "TELEFONO2";
+                    worksheet.Cells[1, 40].Value = "TELEFONO3";
+                    worksheet.Cells[1, 41].Value = "TELEFONO4";
+                    worksheet.Cells[1, 42].Value = "TELEFONO5";
+
+                    
                     // Llena los datos
                     int row = 2;
                     foreach (var data in detallesClientesSupervisor)
@@ -353,15 +355,17 @@ namespace ALFINapp.Controllers
                         worksheet.Cells[row, 32].Value = data.CLIENTE_NUEVO;
                         worksheet.Cells[row, 33].Value = data.COLOR;
                         worksheet.Cells[row, 34].Value = data.COLOR_FINAL;
-                        worksheet.Cells[row, 35].Value = data.TELEFONO1;
-                        worksheet.Cells[row, 36].Value = data.TELEFONO2;
-                        worksheet.Cells[row, 37].Value = data.TELEFONO3;
-                        worksheet.Cells[row, 38].Value = data.TELEFONO4;
-                        worksheet.Cells[row, 39].Value = data.TELEFONO5;
 
-                        worksheet.Cells[row, 40].Value = data.USUARIO;
-                        worksheet.Cells[row, 41].Value = data.USERV3;
-                        worksheet.Cells[row, 42].Value = data.FLAG_DEUDA_V_OFERTA;
+                        worksheet.Cells[row, 35].Value = data.USUARIO;
+                        worksheet.Cells[row, 36].Value = data.USERV3;
+                        worksheet.Cells[row, 37].Value = data.FLAG_DEUDA_V_OFERTA;
+
+                        worksheet.Cells[row, 38].Value = data.TELEFONO1;
+                        worksheet.Cells[row, 39].Value = data.TELEFONO2;
+                        worksheet.Cells[row, 40].Value = data.TELEFONO3;
+                        worksheet.Cells[row, 41].Value = data.TELEFONO4;
+                        worksheet.Cells[row, 42].Value = data.TELEFONO5;
+
                         row++;
                     }
 

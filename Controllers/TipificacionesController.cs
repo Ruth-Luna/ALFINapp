@@ -15,12 +15,14 @@ namespace ALFINapp.Controllers
         
         private readonly DBServicesGeneral _dbServicesGeneral;
         private readonly DBServicesTipificaciones _dbServicesTipificaciones;
-        public TipificacionesController(DBServicesGeneral dbServicesGeneral, DBServicesTipificaciones dbServicesTipificaciones)
+        private readonly DBServicesDerivacion _dBServicesDerivacion;
+        public TipificacionesController(DBServicesGeneral dbServicesGeneral, DBServicesTipificaciones dbServicesTipificaciones, DBServicesDerivacion dBServicesDerivacion)
         {
             _dbServicesGeneral = dbServicesGeneral;
             _dbServicesTipificaciones = dbServicesTipificaciones;
+            _dBServicesDerivacion = dBServicesDerivacion;
         }
-
+        
         [HttpPost]
         public async Task<IActionResult> GenerarDerivacion(string agenciaComercial, DateTime FechaVisita, string Telefono, int idBase)
         {
@@ -58,7 +60,17 @@ namespace ALFINapp.Controllers
                 NombreAgencia = "73"+agenciaComercial,
                 FueProcesado = false,
             };
-            var enviarFomularioAsignacion = await _dbServicesTipificaciones.EnviarFomularioDerivacion(enviarDerivacion);
+            var enviarFomularioAsignacion = await _dBServicesDerivacion.GenerarDerivacion
+                (enviarDerivacion.FechaDerivacion, 
+                enviarDerivacion.NombreAgencia, 
+                enviarDerivacion.DniAsesor, 
+                enviarDerivacion.TelefonoCliente, 
+                enviarDerivacion.DniCliente, 
+                enviarDerivacion.NombreCliente);
+            if (enviarFomularioAsignacion.IsSuccess == false)
+            {
+                return Json(new { success = false, message = enviarFomularioAsignacion.Message });
+            }
             return Json(new { success = true, message = "La Derivacion se ha enviado correctamente, pero para guardar los cambios debe darle al boton Guardar Tipificaciones" });;
         }
     }

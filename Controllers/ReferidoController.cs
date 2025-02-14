@@ -20,7 +20,7 @@ namespace ALFINapp.Controllers
             _dbServicesReferido = dbServicesReferido;
 
         }
-        public async Task<IActionResult> Referido()
+        public IActionResult Referido()
         {
             return View("Referido");
         }

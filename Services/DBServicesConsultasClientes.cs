@@ -99,7 +99,7 @@ namespace ALFINapp.Services
 
                 if (detalleclienteExistenteBD == null)
                 {
-                    return (false, "El cliente no tiene Detalle Base en la Base de Datos de A365, este dato fue eliminado manualmente", null);
+                    return (false, "El cliente no tiene Detalle Base en la Base de Datos de A365, o ha sido retirado o reembolsado recientemente", null);
                 }
 
                 var baseClienteExistenteBD = await _context.base_clientes.FirstOrDefaultAsync(c => c.IdBase == detalleclienteExistenteBD.IdBase);

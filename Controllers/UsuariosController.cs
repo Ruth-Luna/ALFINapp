@@ -31,7 +31,12 @@ namespace ALFINapp.Controllers
         {
             try
             {
-                var result = await _DBServicesUsuarios.ModificarUsuario(usuario);
+                var idUsuario = HttpContext.Session.GetInt32("UsuarioId");
+                if (idUsuario == null)
+                {
+                    return Json(new { success = false, message = "No se ha podido modificar el usuario" });
+                }
+                var result = await _DBServicesUsuarios.ModificarUsuario(usuario, idUsuario.Value);
                 if (result.IsSuccess)
                 {
                     return Json(new { success = true, message = "Datos actualizados correctamente" });
@@ -49,20 +54,39 @@ namespace ALFINapp.Controllers
         {
             try
             {
-                
+                var UsuarioIdJefe = HttpContext.Session.GetInt32("UsuarioId");
+                if (UsuarioIdJefe == null)
+                {
+                    return Json(new { success = false, message = "No se ha podido cambiar el estado del usuario" });
+                }
                 if (accion == 0)
                 {
-                    var result = await _DBServicesUsuarios.DesactivarUsuario(IdUsuario);
+                    var result = await _DBServicesUsuarios.DesactivarUsuario(IdUsuario, UsuarioIdJefe.Value);
+                    if (result.IsSuccess)
+                    {
+                        return Json(new { success = true, message = "Los datos se han actualizado correctamente" });
+                    }
+                    else
+                    {
+                        return Json(new { success = false, message = result.Message });
+                    }
                 }
                 else if (accion == 1)
                 {
-                    var result = await _DBServicesUsuarios.ActivarUsuario(IdUsuario);
+                    var result = await _DBServicesUsuarios.ActivarUsuario(IdUsuario, UsuarioIdJefe.Value);
+                    if (result.IsSuccess)
+                    {
+                        return Json(new { success = true, message = "Los datos se han actualizado correctamente" });
+                    }
+                    else
+                    {
+                        return Json(new { success = false, message = result.Message });
+                    }
                 }
                 else
                 {
                     return Json(new { success = false, message = "No se ha podido cambiar el estado del usuario" });
                 }
-                return Json(new { success = true, message = "Los datos se han actualizado correctamente" });
             }
             catch (System.Exception ex)
             {
@@ -80,7 +104,12 @@ namespace ALFINapp.Controllers
         {
             try
             {
-                var result = await _DBServicesUsuarios.CrearUsuario(usuario);
+                var UsuarioIdJefe = HttpContext.Session.GetInt32("UsuarioId");
+                if (UsuarioIdJefe == null)
+                {
+                    return Json(new { success = false, message = "No se ha podido crear el usuario" });
+                }
+                var result = await _DBServicesUsuarios.CrearUsuario(usuario, UsuarioIdJefe.Value);
                 if (result.IsSuccess)
                 {
                     return Json(new { success = true, message = "Usuario creado correctamente" });

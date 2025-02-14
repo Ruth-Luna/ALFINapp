@@ -9,7 +9,7 @@ function guardarNuevoUsuario() {
         return;
     }
 
-    var soloLetrasCampos = ['Nuevo_region', 'Nuevo_apellido_paterno', 'Nuevo_apellido_materno', 'Nuevo_nombres'];
+    var soloLetrasCampos = ['Nuevo_apellido_paterno', 'Nuevo_apellido_materno', 'Nuevo_nombres'];
     var valid = true;
     soloLetrasCampos.forEach(function (campo) {
         var valor = document.getElementById(campo).value.trim();

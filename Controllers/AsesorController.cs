@@ -64,7 +64,7 @@ namespace ALFINapp.Controllers
                 {
                     return Json(new { success = false, message = "El asesor ya se encuentra activo" });
                 }
-                var estadoActivacion = await _dbServicesEstadoAsesores.ActivarAsesor(asesorParaActivar);
+                var estadoActivacion = await _dbServicesEstadoAsesores.ActivarAsesor(asesorParaActivar, usuarioId.Value);
                 if (!estadoActivacion.IsSuccess)
                 {
                     return Json(new { success = false, message = estadoActivacion.message });
@@ -115,7 +115,7 @@ namespace ALFINapp.Controllers
                     return Json(new { success = false, message = "El asesor ya se encuentra inactivo" });
                 }
 
-                var estadoDeactivacion = await _dbServicesEstadoAsesores.DesactivarAsesor(asesorParaDesactivar);
+                var estadoDeactivacion = await _dbServicesEstadoAsesores.DesactivarAsesor(asesorParaDesactivar, usuarioId.Value);
                 if (!estadoDeactivacion.IsSuccess)
                 {
                     return Json(new { success = false, message = estadoDeactivacion.message });

@@ -101,6 +101,7 @@ namespace ALFINapp.Controllers
                 {
                     return Json(new { success = false, message = "Usted no ha iniciado sesion" });
                 }
+                campo = campo.ToLower();
                 var changePasswordResult = await _dbservicesusuarios.UpdateUsuarioXCampo(usuarioId.Value, campo, nuevoValor);
                 if (changePasswordResult.IsSuccess == false)
                 {

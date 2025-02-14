@@ -16,15 +16,15 @@ namespace ALFINapp.Services
             _context = context;
         }
 
-        public async Task<(bool IsSuccess, string Message)> ModificarUsuario(Usuario usuario)
+        public async Task<(bool IsSuccess, string Message)> ModificarUsuario(Usuario usuario, int IdUsuarioAccion)
         {
             try
             {
                 var parameters = new[]
                 {
                     new SqlParameter("@IdUsuario", usuario.IdUsuario),
-                    new SqlParameter("@Dni", usuario.Dni),
-                    new SqlParameter("@NombresCompletos", usuario.NombresCompletos),
+                    new SqlParameter("@Dni", usuario.Dni != null ? usuario.Dni : (object)DBNull.Value),
+                    new SqlParameter("@NombresCompletos", usuario.NombresCompletos != null ? usuario.NombresCompletos : (object)DBNull.Value),
                     new SqlParameter("@Rol", usuario.Rol != null ? usuario.Rol : (object)DBNull.Value),
                     new SqlParameter("@Departamento", usuario.Departamento != null ? usuario.Departamento : (object)DBNull.Value),
                     new SqlParameter("@Provincia", usuario.Provincia != null ? usuario.Provincia : (object)DBNull.Value),
@@ -35,10 +35,12 @@ namespace ALFINapp.Services
                     new SqlParameter("@RESPONSABLESUP", usuario.RESPONSABLESUP != null ? usuario.RESPONSABLESUP : (object)DBNull.Value),
                     new SqlParameter("@REGION", usuario.REGION != null ? usuario.REGION : (object)DBNull.Value),
                     new SqlParameter("@NOMBRECAMPAÑA", usuario.NOMBRECAMPAÑA != null ? usuario.NOMBRECAMPAÑA : (object)DBNull.Value),
-                    new SqlParameter("@IdRol", usuario.IdRol)
+                    new SqlParameter("@IdRol", usuario.IdRol != null ? usuario.IdRol : (object)DBNull.Value),
+                    new SqlParameter("@id_usuario_accion", IdUsuarioAccion)
                 };
- 
-                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_modificacion_existente @IdUsuario, @Dni, @NombresCompletos, @Rol, @Departamento, @Provincia, @Distrito, @Telefono, @Estado, @IDUSUARIOSUP, @RESPONSABLESUP, @REGION, @NOMBRECAMPAÑA, @IdRol", parameters);
+
+                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_modificacion_existente @IdUsuario, @Dni, @NombresCompletos, @Rol, @Departamento, @Provincia, @Distrito, @Telefono, @Estado, @IDUSUARIOSUP, @RESPONSABLESUP, @REGION, @NOMBRECAMPAÑA, @IdRol, @id_usuario_accion", 
+                    parameters);
 
                 return (true, "Datos actualizados correctamente");
             }
@@ -48,17 +50,16 @@ namespace ALFINapp.Services
             }
         }
 
-        public async Task<(bool IsSuccess, string Message)> DesactivarUsuario(int usuarioId)
+        public async Task<(bool IsSuccess, string Message)> DesactivarUsuario(int usuarioId, int idAccion)
         {
             try
             {
                 var parameters = new[]
                 {
-                    new SqlParameter("@IdUsuario", usuarioId)
+                    new SqlParameter("@IdUsuario", usuarioId),
+                    new SqlParameter("@id_usuario_accion", idAccion)
                 };
-
-                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_desactivar @IdUsuario", parameters);
-
+                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_desactivar @IdUsuario, @id_usuario_accion", parameters);
                 return (true, "Usuario desactivado correctamente");
             }
             catch (Exception ex)
@@ -67,17 +68,16 @@ namespace ALFINapp.Services
             }
         }
 
-        public async Task<(bool IsSuccess, string Message)> ActivarUsuario(int usuarioId)
+        public async Task<(bool IsSuccess, string Message)> ActivarUsuario(int usuarioId, int idAccion)
         {
             try
             {
                 var parameters = new[]
                 {
-                    new SqlParameter("@IdUsuario", usuarioId)
+                    new SqlParameter("@IdUsuario", usuarioId),
+                    new SqlParameter("@id_usuario_accion", idAccion)
                 };
-
-                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_activar @IdUsuario", parameters);
-
+                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_activar @IdUsuario, @id_usuario_accion", parameters);
                 return (true, "Usuario activado correctamente");
             }
             catch (Exception ex)
@@ -86,7 +86,7 @@ namespace ALFINapp.Services
             }
         }
 
-        public async Task<(bool IsSuccess, string Message)> CrearUsuario(Usuario usuario)
+        public async Task<(bool IsSuccess, string Message)> CrearUsuario(Usuario usuario, int IdUsuarioAccion)
         {
             try
             {
@@ -111,11 +111,12 @@ namespace ALFINapp.Services
                         return (false, "El usuario supervisor no existe");
                     }
                 }
+                var rolConseguir = await _context.roles.FirstOrDefaultAsync(x => x.IdRol == usuario.IdRol);
                 var parameters = new[]
                 {
                     new SqlParameter("@Dni", usuario.Dni),
                     new SqlParameter("@NombresCompletos", usuario.NombresCompletos),
-                    new SqlParameter("@Rol", usuario.Rol != null ? usuario.Rol : (object)DBNull.Value),
+                    new SqlParameter("@Rol", rolConseguir != null ? rolConseguir.Rol : "ASESOR"),
                     new SqlParameter("@Departamento", usuario.Departamento != null ? usuario.Departamento : (object)DBNull.Value),
                     new SqlParameter("@Provincia", usuario.Provincia != null ? usuario.Provincia : (object)DBNull.Value),
                     new SqlParameter("@Distrito", usuario.Distrito != null ? usuario.Distrito : (object)DBNull.Value),
@@ -125,9 +126,10 @@ namespace ALFINapp.Services
                     new SqlParameter("@RESPONSABLESUP", getUsuario?.NombresCompletos ?? (object)DBNull.Value),
                     new SqlParameter("@REGION", usuario.REGION != null ? usuario.REGION : (object)DBNull.Value),
                     new SqlParameter("@NOMBRECAMPAÑA", usuario.NOMBRECAMPAÑA != null ? usuario.NOMBRECAMPAÑA : (object)DBNull.Value),
-                    new SqlParameter("@IdRol", usuario.IdRol)
+                    new SqlParameter("@IdRol", usuario.IdRol),
+                    new SqlParameter("@id_usuario_accion", IdUsuarioAccion)
                 };
-                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_crear_nuevo @Dni, @NombresCompletos, @Rol, @Departamento, @Provincia, @Distrito, @Telefono, @Estado, @IDUSUARIOSUP, @RESPONSABLESUP, @REGION, @NOMBRECAMPAÑA, @IdRol", 
+                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_crear_nuevo @Dni, @NombresCompletos, @Rol, @Departamento, @Provincia, @Distrito, @Telefono, @Estado, @IDUSUARIOSUP, @RESPONSABLESUP, @REGION, @NOMBRECAMPAÑA, @IdRol, @id_usuario_accion",
                     parameters);
                 return (true, "Usuario creado correctamente");
             }
@@ -146,36 +148,13 @@ namespace ALFINapp.Services
                 {
                     return (false, "El usuario no existe");
                 }
-
-                if (campo == "Departamento")
+                var parameters = new[]
                 {
-                    await _context.Database.ExecuteSqlRawAsync(
-                    "UPDATE usuarios SET departamento = {0} WHERE id_usuario = {1}",
-                    nuevoValor, usuarioId);
-
-                }
-                else if (campo == "Provincia")
-                {
-                    await _context.Database.ExecuteSqlRawAsync(
-                    "UPDATE usuarios SET provincia = {0} WHERE id_usuario = {1}",
-                    nuevoValor, usuarioId);
-                }
-                else if (campo == "Distrito")
-                {
-                    await _context.Database.ExecuteSqlRawAsync(
-                    "UPDATE usuarios SET distrito = {0} WHERE id_usuario = {1}",
-                    nuevoValor, usuarioId);
-                }
-                else if (campo == "Telefono")
-                {
-                    await _context.Database.ExecuteSqlRawAsync(
-                    "UPDATE usuarios SET telefono = {0} WHERE id_usuario = {1}",
-                    nuevoValor, usuarioId);
-                }
-                else
-                {
-                    return (false, "Campo enviado no valido");
-                }
+                    new SqlParameter("@IdUsuario", usuarioId),
+                    new SqlParameter("@Campo", campo),
+                    new SqlParameter("@NuevoValor", nuevoValor ?? (object)DBNull.Value) // Si es null, lo manda como NULL a SQL
+                };
+                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_actualizar_campo @IdUsuario, @Campo, @NuevoValor", parameters);
                 return (true, "Campo actualizado correctamente");
             }
             catch (Exception ex)

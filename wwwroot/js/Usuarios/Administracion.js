@@ -57,6 +57,42 @@ function cambiarDatos(idUsuario) {
     });
 }
 
+function activarEdicion(idUsuario) {
+    const DNI = document.getElementById('DNI_' + idUsuario);
+    const NombresCompletos = document.getElementById('NombresCompletos_' + idUsuario);
+    const REGION = document.getElementById('REGION_' + idUsuario);
+    const NOMBRECAMPAÑA = document.getElementById('NOMBRECAMPAÑA_' + idUsuario);
+    const ModificarDatosBtn = document.getElementById('ModificarDatosBtn_' + idUsuario);
+    const ActivarEdicionBtn = document.getElementById('ActivarEdicionBtn_' + idUsuario);
+    const IDUSUARIOSUP = document.getElementById('IDUSUARIOSUP_' + idUsuario);
+    const visualizacionIDUSUARIOSUP = document.getElementById('visualizacionIDUSUARIOSUP_' + idUsuario);
+    const IdRol = document.getElementById('IdRol_' + idUsuario);
+    const VISUALIZACIONROL = document.getElementById('VISUALIZACIONROL_' + idUsuario);
+    Swal.fire({
+        title: '¿Desea editar los datos del Usuario?',
+        showDenyButton: true,
+        confirmButtonText: `Editar`,
+        denyButtonText: `Cancelar`,
+    }).then((result) => {
+        if (result.isConfirmed) {
+            DNI.readOnly = false;
+            DNI.style.backgroundColor = 'lightblue';
+            NombresCompletos.readOnly = false;
+            NombresCompletos.style.backgroundColor = 'lightblue';
+            REGION.readOnly = false;
+            REGION.style.backgroundColor = 'lightblue';
+            NOMBRECAMPAÑA.readOnly = false;
+            NOMBRECAMPAÑA.style.backgroundColor = 'lightblue';
+            ModificarDatosBtn.style.display = 'block';
+            ActivarEdicionBtn.style.display = 'none';
+            IDUSUARIOSUP.style.display = 'block';
+            visualizacionIDUSUARIOSUP.style.display = 'none';
+            IdRol.style.display = 'block';
+            VISUALIZACIONROL.style.display = 'none';
+        }
+    });
+}
+
 function CambiarEstadoUsuario(accion, idUsuario) {
     $.ajax({
         url: "/Usuarios/CambiarEstadoUsuario",
