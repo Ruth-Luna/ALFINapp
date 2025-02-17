@@ -63,7 +63,7 @@ function guardarNuevoAsesor() {
             + ' ' + document.getElementById('apellido_paterno').value.trim()
             + ' ' + document.getElementById('apellido_materno').value.trim(),
         Telefono: telefono,
-        IdRol: document.getElementById('rol').value.trim()
+        IdRol: 3
     };
 
     console.log(dataToSend);

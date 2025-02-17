@@ -16,17 +16,20 @@ namespace ALFINapp.Controllers
         private readonly DBServicesGeneral _dbServicesGeneral;
         private readonly DBServicesEstadoAsesores _dbServicesEstadoAsesores;
         private readonly MDbContext _context;
+        private readonly DBServicesUsuarios _dBServicesUsuarios;
 
         public AsesorController(
             DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores, 
             DBServicesGeneral dbServicesGeneral, 
             DBServicesEstadoAsesores dbServicesEstadoAsesores,
-            MDbContext context)
+            MDbContext context,
+            DBServicesUsuarios dBServicesUsuarios)
         {
             _dbServicesAsignacionesAsesores = dbServicesAsignacionesAsesores;
             _dbServicesGeneral = dbServicesGeneral;
             _dbServicesEstadoAsesores = dbServicesEstadoAsesores;
             _context = context;
+            _dBServicesUsuarios = dBServicesUsuarios;
         }
         
         [HttpPost]
@@ -188,7 +191,7 @@ namespace ALFINapp.Controllers
         }
 
         [HttpPost]
-        public IActionResult AgregarNuevoAsesor([FromBody] Usuario nuevoUsuario)
+        public async Task<IActionResult> AgregarNuevoAsesor([FromBody] Usuario nuevoUsuario)
         {
             if (nuevoUsuario == null)
             {
@@ -245,7 +248,7 @@ namespace ALFINapp.Controllers
                 }
                 else if (nuevoUsuario.IdRol == 3)
                 {
-                    nuevoUsuario.Rol = "VENDEDOR";
+                    nuevoUsuario.Rol = "ASESOR";
                 }
                 else
                 {
@@ -259,8 +262,15 @@ namespace ALFINapp.Controllers
                 nuevoUsuario.FechaRegistro = DateTime.Now;
                 nuevoUsuario.Estado = "ACTIVO";
                 nuevoUsuario.contraseña = $"{nuevoUsuario.Dni}$clave123";
-                _context.usuarios.Add(nuevoUsuario);
-                _context.SaveChanges();
+                if (idsupervisoractual == null)
+                {
+                    return Json(new { success = false, message = "El ID Supervisor a asignar automaticamente es invalido. Comunicarse con Soporte Tecnico." });
+                }
+                var EnviarNuevoUsuario = await _dBServicesUsuarios.CrearUsuario(nuevoUsuario, idsupervisoractual.Value);
+                if (!EnviarNuevoUsuario.IsSuccess)
+                {
+                    return Json(new { success = false, message = EnviarNuevoUsuario.Message });
+                }
                 return Json(new { success = true, message = $"Se ha agregado al nuevo Usuario {nuevoUsuario.NombresCompletos} con el Rol {nuevoUsuario.Rol}" });
             }
             catch (System.Exception ex)

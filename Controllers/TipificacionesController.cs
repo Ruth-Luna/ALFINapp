@@ -71,6 +71,11 @@ namespace ALFINapp.Controllers
             {
                 return Json(new { success = false, message = enviarFomularioAsignacion.Message });
             }
+            var derivacionEnviada = await _dBServicesDerivacion.VerificarDerivacionEnviada(enviarDerivacion.DniCliente);
+            if (derivacionEnviada.IsSuccess == false)
+            {
+                return Json(new { success = false, message = derivacionEnviada.Message });
+            }
             return Json(new { success = true, message = "La Derivacion se ha enviado correctamente, pero para guardar los cambios debe darle al boton Guardar Tipificaciones" });;
         }
     }

@@ -99,7 +99,16 @@ namespace ALFINapp.Services
 
                 if (detalleclienteExistenteBD == null)
                 {
-                    return (false, "El cliente no tiene Detalle Base en la Base de Datos de A365, o ha sido retirado o reembolsado recientemente", null);
+                    var detalleclienteExistenteBDALFIN = _context.detalles_clientes_dto
+                    .FromSqlRaw("EXEC SP_Consulta_Obtener_detalle_cliente_por_telefono_ALFIN_banco @Telefono",
+                        new SqlParameter("@Telefono", telefono))
+                    .AsEnumerable()
+                    .FirstOrDefault();
+                    if (detalleclienteExistenteBDALFIN == null)
+                    {
+                        return (false, "El cliente no tiene Detalles en la Base de Datos de A365, este TELEFONO no se encuentra en ninguna de nuestras bases de datos conocidas", null);
+                    }
+                    return (true, "El cliente fue encontrado en la base de Datos de ALFIN", detalleclienteExistenteBDALFIN); // Se devuelve la entrada correspondiente
                 }
 
                 var baseClienteExistenteBD = await _context.base_clientes.FirstOrDefaultAsync(c => c.IdBase == detalleclienteExistenteBD.IdBase);

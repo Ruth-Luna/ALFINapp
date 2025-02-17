@@ -24,7 +24,14 @@
             {
                 foreach (var asesor in Asesores)
                 {
-                    <option value="@asesor.Dni">@asesor.Dni - @asesor.NombresCompletos</option>
+                    if (asesor.Estado == "ACTIVO")
+                    {
+                        <option value="@asesor.Dni">@asesor.Dni - @asesor.NombresCompletos</option>
+                    }
+                    else if (asesor.Estado == "INACTIVO")
+                    {
+                        <option style="background-color: rgb(255, 93, 93);" value="@asesor.Dni">@asesor.Dni - @asesor.NombresCompletos <i class="fa fa-circle-exclamation"></i> <span> -- Asesor DESACTIVADO</span></option>
+                    }
                 }
             }
         </select>

@@ -50,8 +50,6 @@
                 </div>
             </div>
 
-            <!-- Campo de búsqueda -->
-
             <div class="col-12 col-md-6">
                 <div class="d-flex flex-column flex-md-row align-items-md-center">
                     <label for="searchField" class="form-label mb-2 mb-md-0 me-md-2">
@@ -59,8 +57,6 @@
                     </label>
                     <select id="searchField" class="form-control me-md-2">
                         <option value="apellidoPaterno">Apellidos y Nombres</option>
-                        <!--<option value="apellidoMaterno">Apellido Materno</option>
-                        <option value="nombre">Nombre</option>-->
                         <option value="campaña">Campaña</option>
                         <option value="ofertaMax">Oferta Max</option>
                         <option value="comentarioPrincipal">Comentario Principal</option>
@@ -68,10 +64,7 @@
                         <option value="dni">DNI</option>
                         <option value="fechaAsignacion">Fecha de Asignacion</option>
                     </select>
-
                     <input type="text" class="form-control" id="searchInput" placeholder="Ingrese valor de búsqueda">
-
-                    <!-- Campos de fecha (inicial y final), ocultos por defecto -->
                     <input type="date" class="form-control mt-2" id="startDate" style="display: none;"
                         placeholder="Fecha Inicial">
                     <input type="date" class="form-control mt-2" id="endDate" style="display: none;"
@@ -82,7 +75,6 @@
     </div>
 
     <div class="table-responsive">
-        <!-- Tabla para mostrar los DetalleBases/ventas -->
         <table class="table table-bordered" id="clientesTable">
             <thead>
                 <tr>
@@ -118,6 +110,12 @@
                 <tr>
                     <td></td>
                     <td>
+                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 1, 'number')"
+                            data-sort-ignore>
+                            &#x25BC;
+                        </button>
+                    </td>
+                    <td>
                         <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 2, 'string')"
                             data-sort-ignore>
                             &#x25BC;
@@ -135,21 +133,15 @@
                             &#x25BC;
                         </button>
                     </td>
-                    <td>
-                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 5, 'date')"
-                            data-sort-ignore>
-                            &#x25BC;
-                        </button>
-                    </td>
                     <td></td>
                     <td>
-                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 7, 'string')"
+                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 6, 'string')"
                             data-sort-ignore>
                             &#x25BC;
                         </button>
                     </td>
                     <td>
-                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 8, 'date')"
+                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 7, 'string')"
                             data-sort-ignore>
                             &#x25BC;
                         </button>

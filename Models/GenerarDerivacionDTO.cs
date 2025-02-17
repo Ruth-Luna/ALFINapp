@@ -15,5 +15,6 @@ namespace ALFINapp.Models
         public string? TelefonoDerivacion { get; set; }
         public string? DNIClienteDerivacion { get; set; }
         public string? NombreClienteDerivacion { get; set; }
+        public int IdReferido { get; set; }
     }
 }

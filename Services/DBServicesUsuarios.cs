@@ -36,10 +36,12 @@ namespace ALFINapp.Services
                     new SqlParameter("@REGION", usuario.REGION != null ? usuario.REGION : (object)DBNull.Value),
                     new SqlParameter("@NOMBRECAMPAÑA", usuario.NOMBRECAMPAÑA != null ? usuario.NOMBRECAMPAÑA : (object)DBNull.Value),
                     new SqlParameter("@IdRol", usuario.IdRol != null ? usuario.IdRol : (object)DBNull.Value),
-                    new SqlParameter("@id_usuario_accion", IdUsuarioAccion)
+                    new SqlParameter("@id_usuario_accion", IdUsuarioAccion),
+                    new SqlParameter("@FechaInicio", usuario.FechaInicio != null ? usuario.FechaInicio : (object)DBNull.Value),
+                    new SqlParameter("@FechaCese", usuario.FechaCese != null ? usuario.FechaCese : (object)DBNull.Value)
                 };
 
-                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_modificacion_existente @IdUsuario, @Dni, @NombresCompletos, @Rol, @Departamento, @Provincia, @Distrito, @Telefono, @Estado, @IDUSUARIOSUP, @RESPONSABLESUP, @REGION, @NOMBRECAMPAÑA, @IdRol, @id_usuario_accion", 
+                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_modificacion_existente @IdUsuario, @Dni, @NombresCompletos, @Rol, @Departamento, @Provincia, @Distrito, @Telefono, @Estado, @IDUSUARIOSUP, @RESPONSABLESUP, @REGION, @NOMBRECAMPAÑA, @IdRol, @id_usuario_accion, @FechaInicio, @FechaCese", 
                     parameters);
 
                 return (true, "Datos actualizados correctamente");

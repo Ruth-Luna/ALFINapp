@@ -19,15 +19,18 @@
             {
                 foreach (var vendedores in supervisores)
                 {
-                    <tr>
-                        <td>
-                            <input class="form-control" id="NombresCompletos_@vendedores.IdUsuario" type="text" value="@vendedores.NombresCompletos"
-                                readonly>
-                        </td>
-                        <td>
-                            <input class="form-control" id="NumeroClientesAsignados_@vendedores.IdUsuario" type="number">
-                        </td>
-                    </tr>
+                    if (vendedores.Estado == "ACTIVO")
+                    {
+                        <tr>
+                            <td>
+                                <input class="form-control" id="NombresCompletos_@vendedores.IdUsuario" type="text"
+                                    value="@vendedores.NombresCompletos" readonly>
+                            </td>
+                            <td>
+                                <input class="form-control" id="NumeroClientesAsignados_@vendedores.IdUsuario" type="number">
+                            </td>
+                        </tr>
+                    }
                 }
             }
         </tbody>

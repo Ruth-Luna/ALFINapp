@@ -76,4 +76,14 @@ public partial class BaseClientesBanco
     public string? NOMBRES { get; set; }
     [Column("MATERNO")]
     public string? MATERNO { get; set; }
+    [Column("Numero1")]
+    public string? Numero1 { get; set; }
+    [Column("Numero2")]
+    public string? Numero2 { get; set; }
+    [Column("Numero3")]
+    public string? Numero3 { get; set; }
+    [Column("Numero4")]
+    public string? Numero4 { get; set; }
+    [Column("Numero5")]
+    public string? Numero5 { get; set; }
 }

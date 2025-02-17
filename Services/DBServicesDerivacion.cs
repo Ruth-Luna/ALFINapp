@@ -26,7 +26,6 @@ namespace ALFINapp.Services
                                    where bc.Dni == DNIClienteDerivacion
                                    select (int?)ce.IdCliente).FirstOrDefaultAsync();
 
-                // Definir los parámetros con nombre
                 var parametros = new[]
                 {
                     new SqlParameter("@fecha_visita_derivacion", FechaVisitaDerivacion) { SqlDbType = SqlDbType.DateTime },
@@ -36,10 +35,9 @@ namespace ALFINapp.Services
                     new SqlParameter("@nombre_cliente_derivacion", NombreClienteDerivacion),
                     new SqlParameter("@telefono_derivacion", TelefonoDerivacion),
                     new SqlParameter("@agencia_derivacion", AgenciaDerivacion),
-                    new SqlParameter("@num_agencia", DBNull.Value) // Si necesitas pasar un valor nulo
+                    new SqlParameter("@num_agencia", DBNull.Value)
                 };
 
-                // Ejecutar el procedimiento almacenado con parámetros con nombre
                 var generarDerivacion = _context.Database.ExecuteSqlRaw(
                     "EXEC SP_derivacion_insertar_derivacion @fecha_visita_derivacion, @dni_asesor_derivacion, @DNI_cliente_derivacion, @id_cliente, @nombre_cliente_derivacion, @telefono_derivacion, @agencia_derivacion, @num_agencia",
                     parametros);
@@ -118,14 +116,15 @@ namespace ALFINapp.Services
                 {
                     var verificarDerivacionEnviada = await _context.derivaciones_asesores
                         .FromSqlRaw("EXEC sp_Derivacion_verificar_derivacion_enviada {0}", dni)
-                        .FirstOrDefaultAsync();
-
-                    if (verificarDerivacionEnviada == null)
+                        .AsNoTracking()
+                        .ToListAsync();
+                    if (verificarDerivacionEnviada.Count == 0)
                     {
                         return (false, "No se mando la derivación, esta no fue guardada en la base de datos");
                     }
 
-                    if (verificarDerivacionEnviada != null && verificarDerivacionEnviada.FueProcesado == true)
+                    var derivacionEnviada = verificarDerivacionEnviada.FirstOrDefault();
+                    if (derivacionEnviada.FueProcesado == true)
                     {
                         return (true, "Entrada correctamente procesada");
                     }
@@ -141,5 +140,6 @@ namespace ALFINapp.Services
                 return (false, ex.Message);
             }
         }
+        
     }
 }

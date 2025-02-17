@@ -95,5 +95,23 @@ namespace ALFINapp.Services
                 return (false, ex.Message, null);
             }
         }
+
+        public async Task<(bool IsSuccess, string Message, List<Roles>? Data)> getRoles()
+        {
+            try
+            {
+                var roles = await (from r in _context.roles
+                                   select r).ToListAsync();
+                if (roles.Count > 0)
+                {
+                    return (true, "Roles encontrados", roles);
+                }
+                return (false, "No se encontraron roles", null);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message, null);
+            }
+        }
     }
 }

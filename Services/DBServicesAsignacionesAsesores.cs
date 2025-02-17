@@ -132,7 +132,10 @@ namespace ALFINapp.Services
                 }
                 else if (BaseTipo == "BDALFIN")
                 {
-                    var ClienteDBAlfinBanco = await _context.base_clientes_banco.FirstOrDefaultAsync(c => c.Dni == DNIBusqueda);
+                    var ClienteDBAlfinBanco = await _context.base_clientes_banco
+                        .Where(c => c.Dni == DNIBusqueda)
+                        .OrderByDescending(c => c.FechaSubida)
+                        .FirstOrDefaultAsync();
                     if (ClienteDBAlfinBanco == null)
                     {
                         return (false, "El cliente no tiene entrada en la Base de Datos de ALFIN, si el cliente tiene Datos en la base de Datos del banco A365 puede hacer la consulta con los datos correspondientes");
@@ -148,9 +151,9 @@ namespace ALFINapp.Services
                         {
                             IdBaseBanco = ClienteDBAlfinBanco.IdBaseBanco,
                             Dni = ClienteDBAlfinBanco.Dni,
-                            XNombre = "DESCONIDO",
-                            XAppaterno = "DESCONIDO",
-                            XApmaterno = "DESCONIDO",
+                            XNombre = ClienteDBAlfinBanco.NOMBRES,
+                            XAppaterno = ClienteDBAlfinBanco.PATERNO,
+                            XApmaterno = ClienteDBAlfinBanco.MATERNO,
                         };
                         _context.base_clientes.Add(nuevoBaseClienteDelBanco);
                         await _context.SaveChangesAsync();
@@ -171,6 +174,11 @@ namespace ALFINapp.Services
                         {
                             IdBase = nuevoBaseClienteDelBanco.IdBase,
                             FechaEnriquecimiento = DateTime.Now,
+                            Telefono1 = ClienteDBAlfinBanco.Numero1,
+                            Telefono2 = ClienteDBAlfinBanco.Numero2,
+                            Telefono3 = ClienteDBAlfinBanco.Numero3,
+                            Telefono4 = ClienteDBAlfinBanco.Numero4,
+                            Telefono5 = ClienteDBAlfinBanco.Numero5,
                         };
                         _context.clientes_enriquecidos.Add(nuevoClienteEnriquecidos);
                         await _context.SaveChangesAsync();

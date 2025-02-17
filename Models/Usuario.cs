@@ -54,4 +54,12 @@ public partial class Usuario
     public int? IdRol { get; set; }
     [Column("fecha_actualizacion")]
     public DateTime? FechaActualizacion { get; set; }
+    [Column("tipo_documento")]
+    public string? TipoDocumento { get; set; }
+    [Column("id_usuario_accion")]
+    public int? IdUsuarioAccion { get; set; }
+    [Column("fecha_inicio")]
+    public DateTime? FechaInicio { get; set; }
+    [Column("fecha_cese")]
+    public DateTime? FechaCese { get; set; }
 }

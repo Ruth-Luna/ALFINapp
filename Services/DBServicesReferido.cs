@@ -361,11 +361,11 @@ namespace ALFINapp.Services
             }
         }
 
-        public async Task<(bool IsSuccess, string Message)> ModificarEstadoReferido(string DNIAsesorDerivacion, string DNIClienteDerivacion, string AgenciaDerivacion, string TelefonoDerivacion, DateTime FechaVisitaDerivacion)
+        public async Task<(bool IsSuccess, string Message)> ModificarEstadoReferido(int idReferido)
         {
             try
             {
-                var referido = await _context.clientes_referidos.Where(cr => cr.DniAsesor == DNIAsesorDerivacion && cr.DniCliente == DNIClienteDerivacion && cr.Agencia == AgenciaDerivacion && cr.Telefono == TelefonoDerivacion && cr.FechaVisita == FechaVisitaDerivacion).FirstOrDefaultAsync();
+                var referido = await _context.clientes_referidos.Where(cr => cr.IdReferido == idReferido ).FirstOrDefaultAsync();
                 if (referido == null)
                 {
                     return (false, "No se ha encontrado el referido");
@@ -379,6 +379,24 @@ namespace ALFINapp.Services
             catch (System.Exception ex)
             {
                 return (false, ex.Message);
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message, ClientesReferidos? Data)> GetClienteReferidoPorId(int IdReferido)
+        {
+            try
+            {
+                var referido = await _context.clientes_referidos.Where(cr => cr.IdReferido == IdReferido).FirstOrDefaultAsync();
+                if (referido == null)
+                {
+                    return (false, "No se ha encontrado el referido", null);
+                }
+
+                return (true, "Se encontro el siguiente referido", referido);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message, null);
             }
         }
     }

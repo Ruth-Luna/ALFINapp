@@ -12,7 +12,8 @@
     <div class="mb-2">
         <h3> Administracion de Usuarios </h3>
         <div class="alert alert-primary" role="alert">
-            <p>En esta sección podra administrar los usuarios de la plataforma A365. Aca podra <strong>editar, desactivar y eliminar</strong> usuarios.</p>
+            <p>En esta sección podra administrar los usuarios de la plataforma A365. Aca podra <strong>editar,
+                    desactivar y eliminar</strong> usuarios.</p>
         </div>
         <div class="d-flex flex-column flex-md-row align-items-md-center">
             <label for="searchField" class="form-label mb-2 mb-md-0 me-md-2">
@@ -26,18 +27,18 @@
                 <option value="rol">Rol</option>
             </select>
             <input type="text" class="form-control" id="searchInput" placeholder="Ingrese valor de búsqueda">
-            <select class="form-control" name="rolFiltro" id="rolFiltro" style="display: none;" onchange="filtrarPorRol(this.value);">
+            <select class="form-control" name="rolFiltro" id="rolFiltro" style="display: none;"
+                onchange="filtrarPorRol(this.value);">
                 <option value="">Seleccione un Rol</option>
-                <option value="1">1 - ADMINISTRADOR</option>
-                <option value="2">2 - SUPERVISOR</option>
-                <option value="3">3 - ASESOR DE CREDITOS</option>
-                <option value="4">4 - JEFE DE ZONA</option>
+                <option value="ADMINISTRADOR">1 - ADMINISTRADOR</option>
+                <option value="SUPERVISOR">2 - SUPERVISOR</option>
+                <option value="ASESOR">3 - ASESOR DE CREDITOS</option>
+                <option value="GERENTE ZONAL">4 - GERENTE ZONAL</option>
             </select>
             <!-- Campos de fecha (inicial y final), ocultos por defecto -->
             <input type="date" class="form-control mt-2" id="startDate" style="display: none;"
                 placeholder="Fecha Inicial">
-            <input type="date" class="form-control mt-2" id="endDate" style="display: none;"
-                placeholder="Fecha Final">
+            <input type="date" class="form-control mt-2" id="endDate" style="display: none;" placeholder="Fecha Final">
         </div>
     </div>
     <div class="table-responsive">
@@ -46,22 +47,31 @@
             <thead>
                 <tr>
                     <th>Acción</th>
-                    <th onclick="sortTable('clientesTable', 1, 'string')" style="cursor: pointer">
-                        <span class="d-flex justify-content-center gap-2 ">
+                    <th>
+                        <span>
                             Estado
-                            <i class="bi bi-filter"></i>
                         </span>
                     </th>
                     <th>Dni</th>
                     <th>Nombres Completos</th>
                     <th>Supervisor Asignado</th>
-                    <th>Región</th>
                     <th>Nombre Campaña</th>
                     <th>Rol</th>
                     <th>Última actualización</th>
+                    <th>Fecha Inicio</th>
+                    <th>Fecha Cese</th>
                 </tr>
             </thead>
             <tbody>
+                <tr>
+                    <td></td>
+                    <td>
+                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 1, 'string')"
+                            data-sort-ignore>
+                            <i class="bi bi-filter"></i>
+                        </button>
+                    </td>
+                </tr>
 
                 @foreach (var usuario in Model)
                 {
@@ -69,11 +79,23 @@
                         <td>
                             <div class="d-flex flex-column align-items-center">
                                 <div class="d-flex justify-content-center gap-2 mb-2">
-                                    <a href="javascript:void(0)" class="btn btn-warning btn-sm"
-                                       onclick="CambiarEstadoUsuario(0, '@usuario.IdUsuario');">
-                                        <i class="bi bi-toggle-off"></i>
-                                    </a>
-                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario">
+                                    @if (usuario.Estado == "ACTIVO")
+                                    {
+                                        <a href="javascript:void(0)" class="btn btn-warning btn-sm"
+                                            onclick="CambiarEstadoUsuario(0, '@usuario.IdUsuario');">
+                                            <i class="bi bi-toggle-off"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a href="javascript:void(0)" class="btn btn-success btn-sm"
+                                            onclick="CambiarEstadoUsuario(1, '@usuario.IdUsuario');">
+                                            <i class="bi bi-toggle-on"></i>
+                                        </a>
+                                    }
+
+                                    <button class="btn btn-primary btn-sm"
+                                        onclick="CargarModalModificarUsuario('@usuario.IdUsuario')">
                                         <i class="bi bi-pencil"></i>
                                     </button>
                                 </div>
@@ -96,16 +118,19 @@
                             @usuario.NombresCompletos
                         </td>
                         <td>
-                            -
-                        </td>
-                        <td>
-                            @usuario.REGION
+                            @if (usuario.IdRol == 3)
+                            {
+                                <span>@usuario.RESPONSABLESUP</span>
+                            }
+                            else
+                            {
+                                <span>
+                                    El usuario no tiene un supervisor asignado
+                                </span>
+                            }
                         </td>
                         <td>
                             @usuario.NOMBRECAMPAÑA
-                        </td>
-                        <td>
-                            @usuario.IdRol - @usuario.Rol
                         </td>
                         <td>
                             @usuario.Rol
@@ -113,75 +138,31 @@
                         <td>
                             @usuario.FechaActualizacion
                         </td>
+                        <td>
+                            @usuario.FechaInicio
+                        </td>
+                        <td>
+                            @usuario.FechaCese
+                        </td>
                     </tr>
                 }
             </tbody>
-
         </table>
-
     </div>
 </div>
 
 
-<!-- Modal :: Editar Usuario -->
-<div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
         <div class="modal-content">
-            <div class="modal-body">
-                <div class="row mb-3">
-                    <label for="inputEmail3" class="col-5 col-form-label">Estado</label>
-                    <div class="col-7">
-                        <select class="form-select" id="selectEstado_EU">
-                            <option value="activo">ACTIVO</option>
-                            <option value="inactivo">INACTIVO</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <label for="inputEmail3" class="col-5 col-form-label">DNI</label>
-                    <div class="col-7">
-                        <input type="email" class="form-control" id="txtDNI_EU" />
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <label for="inputEmail3" class="col-5 col-form-label">Nombre Completo</label>
-                    <div class="col-7">
-                        <input type="email" class="form-control" id="txtNombreCompleto_EU" />
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <label for="inputEmail3" class="col-5 col-form-label">Supervisor Asignado</label>
-                    <div class="col-7">
-                        <input type="email" class="form-control" id="txtSupervisorAsignado_EU" />
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <label for="inputEmail3" class="col-5 col-form-label">Región</label>
-                    <div class="col-7">
-                        <input type="email" class="form-control" id="txtRegion_EU" />
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <label for="inputEmail3" class="col-5 col-form-label">Nombre Campaña</label>
-                    <div class="col-7">
-                        <input type="email" class="form-control" id="txtNombreCampania_EU" />
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <label for="inputEmail3" class="col-5 col-form-label">Id Rol</label>
-                    <div class="col-7">
-                        <input type="email" class="form-control" id="txtIdRol_EU" />
-                    </div>
-                </div>
-                <div class="row">
-                    <label for="inputEmail3" class="col-5 col-form-label">Rol</label>
-                    <div class="col-7">
-                        <input type="email" class="form-control" id="txtRol_EU" />
-                    </div>
-                </div>
+            <div class="modal-header">
+                <h5 class="modal-title" id="GeneralTemplateTitleModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <div class="modal-body">
+                <div id="modalContentGeneralTemplate">
+                    <!-- Aquí se cargará el formulario de modificar cliente y demas detalles-->
+                </div>
             </div>
         </div>
     </div>

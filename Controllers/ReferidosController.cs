@@ -51,74 +51,54 @@ namespace ALFINapp.Controllers
             }
         }
 
-        public IActionResult DatosEnviarDerivacion(
-            DateTime FechaVisitaDerivacion,
-            string AgenciaDerivacion,
-            string NombreAsesorDerivacion,
-            string DNIAsesorDerivacion,
-            string TelefonoDerivacion,
-            string DNIClienteDerivacion,
-            string NombreClienteDerivacion,
-            decimal OfertaEnviadaDerivacion
-        )
+        public async Task<IActionResult> DatosEnviarDerivacion(int IdReferido)
         {
             try
             {
-                var generarDerivacion = new GenerarDerivacionDTO
+                var referido = await _dbServicesReferido.GetClienteReferidoPorId(IdReferido);
+                if (referido.IsSuccess == false || referido.Data == null)
                 {
-                    FechaVisitaDerivacion = FechaVisitaDerivacion,
-                    AgenciaDerivacion = AgenciaDerivacion,
-                    NombreAsesorDerivacion = NombreAsesorDerivacion,
-                    DNIAsesorDerivacion = DNIAsesorDerivacion,
-                    TelefonoDerivacion = TelefonoDerivacion,
-                    DNIClienteDerivacion = DNIClienteDerivacion,
-                    NombreClienteDerivacion = NombreClienteDerivacion,
-                    OfertaEnviadaDerivacion = OfertaEnviadaDerivacion
-                };
-                return PartialView("_DatosEnviarDerivacion", generarDerivacion);
+                    return Json(new { success = false, message = referido.Message });
+                }
+                return PartialView("_DatosEnviarDerivacion", referido.Data);
             }
             catch (System.Exception ex)
             {
                 return Json(new { success = false, message = ex.Message });
             }
         }
-        public async Task<IActionResult> EnviarDerivacionPorReferencia (
-            string AgenciaDerivacion,
-            string AsesorDerivacion,
-            string DNIAsesorDerivacion,
-            string DNIClienteDerivacion,
-            DateTime FechaVisitaDerivacion,
-            string NombreClienteDerivacion,
-            string TelefonoDerivacion)
+        public async Task<IActionResult> EnviarDerivacionPorReferencia ( int IdReferido )
         {
             try
             {
+                var getReferido = await _dbServicesReferido.GetClienteReferidoPorId(IdReferido);
+                if (getReferido.IsSuccess == false || getReferido.Data == null)
+                {
+                    return Json(new { success = false, message = getReferido.Message });
+                }
+
                 var enviarDerivacion = await _dBServicesDerivacion.GenerarDerivacion(
-                    DateTime.Now, 
-                    AgenciaDerivacion, 
-                    DNIAsesorDerivacion, 
-                    TelefonoDerivacion, 
-                    DNIClienteDerivacion, 
-                    NombreClienteDerivacion);
+                    getReferido.Data.FechaVisita ?? DateTime.Now, 
+                    getReferido.Data.Agencia ?? throw new ArgumentNullException(nameof(getReferido.Data.Agencia) + "no puede ser nulo"),
+                    getReferido.Data.DniAsesor ?? throw new ArgumentNullException(nameof(getReferido.Data.DniAsesor) + "no puede ser nulo"),
+                    getReferido.Data.Telefono ?? throw new ArgumentNullException(nameof(getReferido.Data.Telefono) + "no puede ser nulo"),
+                    getReferido.Data.DniCliente ?? throw new ArgumentNullException(nameof(getReferido.Data.DniCliente) + "no puede ser nulo"),
+                    getReferido.Data.NombreCompletoCliente ?? throw new ArgumentNullException(nameof(getReferido.Data.NombreCompletoCliente) + "no puede ser nulo"));
 
                 if (enviarDerivacion.IsSuccess == false)
                 {
                     return Json(new { success = false, message = enviarDerivacion.Message });
                 }
-                FechaVisitaDerivacion = FechaVisitaDerivacion.AddHours(-10);
-                var modificarEstadoReferido = await _dbServicesReferido.ModificarEstadoReferido(DNIAsesorDerivacion, DNIClienteDerivacion, AgenciaDerivacion, TelefonoDerivacion, FechaVisitaDerivacion);
-                if (modificarEstadoReferido.IsSuccess == false)
-                {
-                    return Json(new { success = false, message = modificarEstadoReferido.Message });
-                }
-
-                var verificarDerivacion = await _dBServicesDerivacion.VerificarDerivacionEnviada(DNIClienteDerivacion);
-
+                var verificarDerivacion = await _dBServicesDerivacion.VerificarDerivacionEnviada(getReferido.Data.DniCliente);
                 if (verificarDerivacion.IsSuccess == false)
                 {
                     return Json(new { success = false, message = verificarDerivacion.Message });
                 }
-
+                var modificarEstadoReferido = await _dbServicesReferido.ModificarEstadoReferido(IdReferido);
+                if (modificarEstadoReferido.IsSuccess == false)
+                {
+                    return Json(new { success = false, message = modificarEstadoReferido.Message });
+                }
                 return Json(new { success = true, message = "Derivacion enviada correctamente" });
             }
             catch (System.Exception ex)

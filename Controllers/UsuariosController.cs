@@ -16,10 +16,18 @@ namespace ALFINapp.Controllers
     {
         private readonly DBServicesConsultasAdministrador _DBServicesConsultasAdministrador;
         private readonly DBServicesUsuarios _DBServicesUsuarios;
-        public UsuariosController(DBServicesConsultasAdministrador DBServicesConsultasAdministrador, DBServicesUsuarios DBServicesUsuarios)
+        private readonly DBServicesGeneral _DBServicesGeneral;
+        private readonly DBServicesRoles _DBServicesRoles;
+        public UsuariosController(
+            DBServicesConsultasAdministrador DBServicesConsultasAdministrador, 
+            DBServicesUsuarios DBServicesUsuarios, 
+            DBServicesGeneral DBServicesGeneral,
+            DBServicesRoles DBServicesRoles)
         {
             _DBServicesConsultasAdministrador = DBServicesConsultasAdministrador;
             _DBServicesUsuarios = DBServicesUsuarios;
+            _DBServicesGeneral = DBServicesGeneral;
+            _DBServicesRoles = DBServicesRoles;
         }
         public async Task<IActionResult> Administracion()
         {
@@ -120,6 +128,36 @@ namespace ALFINapp.Controllers
             {
                 return Json(new { success = false, message = ex.Message });
             }
+        }
+        [HttpGet]
+        public async Task<IActionResult> ModificarUsuarioVista(int IdUsuario)
+        {
+            try
+            {
+                var getUsuario = await _DBServicesGeneral.GetUserInformation(IdUsuario);
+                if (!getUsuario.IsSuccess || getUsuario.Data == null)
+                {
+                    return Json (new { success = false, message = getUsuario.Message });
+                }
+                var getSupervisores = await _DBServicesConsultasAdministrador.ConseguirTodosLosSupervisores();
+                if (!getSupervisores.IsSuccess || getSupervisores.Data == null)
+                {
+                    return Json (new { success = false, message = getSupervisores.Message });
+                }
+                var getRoles = await _DBServicesRoles.getRoles();
+                if (!getRoles.IsSuccess || getRoles.Data == null)
+                {
+                    return Json (new { success = false, message = getRoles.Message });
+                }
+                ViewData ["Roles"] = getRoles.Data;
+                ViewData ["Supervisores"] = getSupervisores.Data;
+                return PartialView("ModificarUsuario", getUsuario.Data);
+            }
+            catch (System.Exception)
+            {
+                return RedirectToAction("Administracion");
+            }
+            
         }
     }
 }
