@@ -69,7 +69,7 @@ namespace ALFINapp.Services
                         DniCliente = datosClienteReferido.bc.Dni,
                         FechaReferido = DateTime.Now,
                         TraidoDe = "DBA365",
-                        FueProcesado = 0,
+                        FueProcesado = false,
                         Telefono = telefono,
                         Agencia = agencia,
                         OfertaEnviada = OfertaEnviada,
@@ -110,7 +110,7 @@ namespace ALFINapp.Services
                         DniCliente = datosClienteReferido.bcb.Dni,
                         FechaReferido = DateTime.Now,
                         TraidoDe = "DBALFIN",
-                        FueProcesado = 0,
+                        FueProcesado = false,
                         Telefono = telefono,
                         Agencia = agencia,
                         FechaVisita = fechaVisita,
@@ -371,7 +371,7 @@ namespace ALFINapp.Services
                     return (false, "No se ha encontrado el referido");
                 }
 
-                referido.FueProcesado = 3;
+                referido.FueProcesado = true;
                 _context.Update(referido);
                 await _context.SaveChangesAsync();
                 return (true, "Referido procesado exitosamente");

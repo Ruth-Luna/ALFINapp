@@ -58,7 +58,7 @@ namespace ALFINapp.Controllers
                 NombreCliente = getClienteBase.data.XNombre + " " + getClienteBase.data.XAppaterno + " " + getClienteBase.data.XApmaterno,
                 TelefonoCliente = Telefono,
                 NombreAgencia = "73"+agenciaComercial,
-                FueProcesado = 0,
+                FueProcesado = false,
             };
             var enviarFomularioAsignacion = await _dBServicesDerivacion.GenerarDerivacion
                 (enviarDerivacion.FechaDerivacion, 

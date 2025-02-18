@@ -1,4 +1,4 @@
-@model List<ALFINapp.Models.FeedGReportes>
+@model List<ALFINapp.Models.GESTIONDETALLE>
 
 @{
     var Asesores = ViewData["Asesores"] as List<Usuario>;
@@ -63,11 +63,11 @@
                         foreach (var derivacionAsesor in Model)
                         {
                             <tr>
-                                <td>@derivacionAsesor.DNI</td>
-                                <td>@derivacionAsesor.TELEFONO</td>
-                                <td>@derivacionAsesor.DNI_ASESOR</td>
-                                <td>@derivacionAsesor.ORIGEN_TELEFONO</td>
-                                <td>@derivacionAsesor.FECHA_ENVIO</td>
+                                <td>@derivacionAsesor.DocCliente</td>
+                                <td>@derivacionAsesor.Telefono</td>
+                                <td>@derivacionAsesor.DocAsesor</td>
+                                <td>@derivacionAsesor.OrigenTelefono</td>
+                                <td>@derivacionAsesor.FechaEnvio</td>
                             </tr>
                         }
                     }

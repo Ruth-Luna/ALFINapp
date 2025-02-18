@@ -7,7 +7,6 @@ public class MDbContext : DbContext
         : base(options)
     {
     }
-
     public DbSet<Usuario> usuarios { get; set; }
     public DbSet<ClientesAsignado> clientes_asignados { get; set; }
     public DbSet<BaseCliente> base_clientes { get; set; }
@@ -30,7 +29,8 @@ public class MDbContext : DbContext
     public DbSet<FeedGReportes> feed_G_REPORTES { get; set; }
     public DbSet<VistaRutas> Vista_Rutas { get; set; }
     public DbSet<Roles> roles { get; set; }
-    
+    public DbSet<GESTIONDETALLE> GESTION_DETALLE { get; set; }
+
     //DTOS Y PROCEDIMIENTOS ALMACENADOS
     public DbSet<StringDTO> string_dto { get; set; }
     public DbSet<NumerosEnterosDTO> numeros_enteros_dto { get; set; }

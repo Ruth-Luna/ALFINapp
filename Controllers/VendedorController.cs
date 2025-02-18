@@ -16,12 +16,18 @@ namespace ALFINapp.Controllers
         private readonly MDbContext _context;
         private readonly DBServicesGeneral _dbServicesGeneral;
         private readonly DBServicesConsultasAsesores _dbServicesAsesores;
+        private readonly DBServicesTipificaciones _dbServicesTipificaciones;
 
-        public VendedorController(MDbContext context, DBServicesConsultasAsesores dbServicesAsesores, DBServicesGeneral dbServicesGeneral)
+        public VendedorController(
+            MDbContext context,
+            DBServicesConsultasAsesores dbServicesAsesores,
+            DBServicesGeneral dbServicesGeneral,
+            DBServicesTipificaciones dbServicesTipificaciones)
         {
             _context = context;
             _dbServicesAsesores = dbServicesAsesores;
             _dbServicesGeneral = dbServicesGeneral;
+            _dbServicesTipificaciones = dbServicesTipificaciones;
         }
 
         [HttpPost]
@@ -77,26 +83,26 @@ namespace ALFINapp.Controllers
 
             // Clientes aún no tipificados (su campo 'TipificacionDeMayorPeso' es null o vacío)
             int clientesPendientes = detallesClientes.Count(dc =>
-                (dc.FechaTipificacionDeMayorPeso.HasValue 
-                && dc.FechaTipificacionDeMayorPeso.Value.Year != DateTime.Now.Year 
-                && dc.FechaTipificacionDeMayorPeso.Value.Month != DateTime.Now.Month) 
+                (dc.FechaTipificacionDeMayorPeso.HasValue
+                && dc.FechaTipificacionDeMayorPeso.Value.Year != DateTime.Now.Year
+                && dc.FechaTipificacionDeMayorPeso.Value.Month != DateTime.Now.Month)
                 || (!dc.FechaTipificacionDeMayorPeso.HasValue)) +
                 (ClientesTraidosDBALFIN.Data == null ? 0 :
                 ClientesTraidosDBALFIN.Data.Count(da =>
-                (da.FechaTipificacionDeMayorPeso.HasValue 
-                 && da.FechaTipificacionDeMayorPeso.Value.Year != DateTime.Now.Year 
-                 && da.FechaTipificacionDeMayorPeso.Value.Month != DateTime.Now.Month) 
+                (da.FechaTipificacionDeMayorPeso.HasValue
+                 && da.FechaTipificacionDeMayorPeso.Value.Year != DateTime.Now.Year
+                 && da.FechaTipificacionDeMayorPeso.Value.Month != DateTime.Now.Month)
                  || (!da.FechaTipificacionDeMayorPeso.HasValue)));
 
             // Clientes ya tipificados (su campo 'TipificacionDeMayorPeso' no es null ni vacío)
             int clientesTipificados = detallesClientes.Count(dc =>
-                dc.FechaTipificacionDeMayorPeso.HasValue 
-                && dc.FechaTipificacionDeMayorPeso.Value.Year == DateTime.Now.Year 
+                dc.FechaTipificacionDeMayorPeso.HasValue
+                && dc.FechaTipificacionDeMayorPeso.Value.Year == DateTime.Now.Year
                 && dc.FechaTipificacionDeMayorPeso.Value.Month == DateTime.Now.Month) +
                 (ClientesTraidosDBALFIN.Data == null ? 0 :
                 ClientesTraidosDBALFIN.Data.Count(da =>
-                da.FechaTipificacionDeMayorPeso.HasValue 
-                && da.FechaTipificacionDeMayorPeso.Value.Year == DateTime.Now.Year 
+                da.FechaTipificacionDeMayorPeso.HasValue
+                && da.FechaTipificacionDeMayorPeso.Value.Year == DateTime.Now.Year
                 && da.FechaTipificacionDeMayorPeso.Value.Month == DateTime.Now.Month));
 
             // Total de clientes
@@ -232,52 +238,6 @@ namespace ALFINapp.Controllers
                 return RedirectToAction("Inicio");
             }
             TempData["MessageError"] = "El modelo enviado no es valido Comunicarse con servicio tecnico.";
-            return RedirectToAction("Inicio");
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> TipificarCliente(ClientesEnriquecido model)
-        {
-            if (HttpContext.Session.GetInt32("UsuarioId") == null)
-            {
-                TempData["MessageError"] = "No ha iniciado sesion, por favor inicie sesion.";
-                return RedirectToAction("Index", "Home");
-            }
-
-            var ClientesAsignado = _context.clientes_asignados.
-                                        FirstOrDefault(ca => ca.IdCliente == model.IdCliente &&
-                                                        ca.IdUsuarioV == HttpContext.Session.GetInt32("UsuarioId"));
-            if (ClientesAsignado == null)
-            {
-                TempData["MessageError"] = "No tiene permiso para tipificar este cliente (se ha hecho el envio de datos manualmente, esta accion sera notificada).";
-                return RedirectToAction("Inicio");
-            }
-            if (ModelState.IsValid)
-            {
-                var clienteEnriquecido = await _context.clientes_enriquecidos
-                    .FirstOrDefaultAsync(c => c.IdBase == model.IdBase);
-                if (clienteEnriquecido != null)
-                {
-                    clienteEnriquecido.Telefono1 = model.Telefono1;
-                    clienteEnriquecido.Telefono2 = model.Telefono2;
-                    clienteEnriquecido.Telefono3 = model.Telefono3;
-                    clienteEnriquecido.Telefono4 = model.Telefono4;
-                    clienteEnriquecido.Telefono5 = model.Telefono5;
-                    clienteEnriquecido.Email1 = model.Email1;
-                    clienteEnriquecido.Email2 = model.Email2;
-                    clienteEnriquecido.FechaEnriquecimiento = model.FechaEnriquecimiento;
-
-                    await _context.SaveChangesAsync();
-                }
-                else
-                {
-                    TempData["MessageError"] = "El cliente enriquecido no se ha encontrado.";
-                    return RedirectToAction("Inicio");
-                }
-                TempData["Message"] = "Cliente actualizado con exito!";
-                return RedirectToAction("Inicio");
-            }
             return RedirectToAction("Inicio");
         }
 
@@ -804,29 +764,50 @@ namespace ALFINapp.Controllers
 
                 // Actualizar última tipificación en clientes_enriquecidos
                 var tipificacion_guardada = _context.tipificaciones.FirstOrDefault(t => t.IdTipificacion == tipificacion.Value);
+                if (tipificacion_guardada == null)
+                {
+                    TempData["MessageError"] = "No se ha encontrado la tipificación en la base de datos.";
+                    return RedirectToAction("Inicio");
+                }
                 switch (i + 1)
                 {
                     case 1:
                         ClientesEnriquecido.UltimaTipificacionTelefono1 = tipificacion_guardada.DescripcionTipificacion;
                         ClientesEnriquecido.FechaUltimaTipificacionTelefono1 = DateTime.Now;
+                        ClientesEnriquecido.IdClientetipTelefono1 = nuevoClienteTipificado.IdClientetip;
                         break;
                     case 2:
                         ClientesEnriquecido.UltimaTipificacionTelefono2 = tipificacion_guardada.DescripcionTipificacion;
                         ClientesEnriquecido.FechaUltimaTipificacionTelefono2 = DateTime.Now;
+                        ClientesEnriquecido.IdClientetipTelefono1 = nuevoClienteTipificado.IdClientetip;
                         break;
                     case 3:
                         ClientesEnriquecido.UltimaTipificacionTelefono3 = tipificacion_guardada.DescripcionTipificacion;
                         ClientesEnriquecido.FechaUltimaTipificacionTelefono3 = DateTime.Now;
+                        ClientesEnriquecido.IdClientetipTelefono1 = nuevoClienteTipificado.IdClientetip;
                         break;
                     case 4:
                         ClientesEnriquecido.UltimaTipificacionTelefono4 = tipificacion_guardada.DescripcionTipificacion;
                         ClientesEnriquecido.FechaUltimaTipificacionTelefono4 = DateTime.Now;
+                        ClientesEnriquecido.IdClientetipTelefono1 = nuevoClienteTipificado.IdClientetip;
                         break;
                     case 5:
                         ClientesEnriquecido.UltimaTipificacionTelefono5 = tipificacion_guardada.DescripcionTipificacion;
                         ClientesEnriquecido.FechaUltimaTipificacionTelefono5 = DateTime.Now;
+                        ClientesEnriquecido.IdClientetipTelefono1 = nuevoClienteTipificado.IdClientetip;
                         break;
                 }
+                // Guardar cambios en la base de datos
+                _context.clientes_enriquecidos.Update(ClientesEnriquecido);
+
+                /*var guardarGestionDetalle = await _dbServicesTipificaciones.GuardarGestionDetalle(ClienteAsignado, nuevoClienteTipificado, ClientesEnriquecido);
+
+                if (!guardarGestionDetalle.IsSuccess)
+                {
+                    TempData["MessageError"] = guardarGestionDetalle.Message;
+                    return RedirectToAction("Inicio");
+                }*/
+                await _context.SaveChangesAsync();
             }
 
             if (agregado == false)
@@ -841,6 +822,7 @@ namespace ALFINapp.Controllers
                 ClienteAsignado.PesoTipificacionMayor = pesoMayor; // Almacena el peso
                 ClienteAsignado.FechaTipificacionMayorPeso = fechaTipificacion; // Almacena la fecha
                 _context.clientes_asignados.Update(ClienteAsignado);
+                await _context.SaveChangesAsync();
             }
             string message = "No se han encontrado tipificaciones de Derivacion";
             if (countNonNull >= 1)
@@ -848,73 +830,8 @@ namespace ALFINapp.Controllers
                 message = "Hay una Tipificacion de Derivacion enviada, el formulario fue enviado correctamente.";
             }
 
-            // Guardar cambios en la base de datos
-            _context.clientes_enriquecidos.Update(ClientesEnriquecido);
-            _context.SaveChanges();
-
-            TempData["Message"] = "Las tipificaciones se han guardado correctamente (Se han Obviado los campos Vacios y los campos que fueron llenados con datos incorrectos)" + message;
+            TempData["Message"] = "Las tipificaciones se han guardado correctamente (Se han Obviado los campos Vacios y los campos que fueron llenados con datos incorrectos)." + message;
             return RedirectToAction("Inicio");
-
-            /*if (countNonNull == 1)
-            {
-                var client = _httpClientFactory.CreateClient();
-                var dniAsesor = (from u in _context.usuarios
-                                 where u.IdUsuario == usuarioId
-                                 select u.Dni // Cambiado para seleccionar directamente el string
-                                ).FirstOrDefault();
-
-                var clienteDatos = (from bc in _context.base_clientes
-                                    join ce in _context.clientes_enriquecidos on bc.IdBase equals ce.IdBase
-                                    join ca in _context.clientes_asignados on ce.IdCliente equals ca.IdCliente
-                                    where ca.IdAsignacion == IdAsignacion
-                                    select new { bc.Dni, bc.XNombre, bc.XAppaterno, bc.XApmaterno }
-                                ).FirstOrDefault();
-
-                var telefonoDerivacion = string.Empty;
-                var agenciaDerivacion = string.Empty;
-
-                // Buscar la primera coincidencia de un teléfono con su respectiva tipificación y agencia
-                for (int i = 0; i < tipificaciones.Count; i++)
-                {
-                    if (tipificaciones[i] == 2) // Verifica si la tipificación es 2
-                    {
-                        telefonoDerivacion = telefonos[i]; // Asigna el teléfono correspondiente
-                        agenciaDerivacion = agenciasComerciales[i]; // Asigna la agencia correspondiente
-                        break; // Salir del bucle después de encontrar la primera coincidencia
-                    }
-                }
-
-                // Validar que se haya encontrado un teléfono y una agencia antes de proceder
-                if (string.IsNullOrEmpty(telefonoDerivacion) || string.IsNullOrEmpty(agenciaDerivacion))
-                {
-                    TempData["MessageError"] = "No se encontró un teléfono válido con la tipificación requerida.";
-                    return RedirectToAction("Inicio");
-                }
-
-                var response = await EnviarFormularioRemoto(
-                    dniAsesor,
-                    clienteDatos?.Dni,
-                    $"{clienteDatos?.XNombre} {clienteDatos?.XAppaterno} {clienteDatos?.XApmaterno}",
-                    telefonoDerivacion,
-                    $"73{agenciaDerivacion}"
-                );
-
-                if (response.success)
-                {
-                    TempData["Message"] = response.errorMessage;  // Mensaje exitoso
-                    return RedirectToAction("Inicio");
-                }
-                else
-                {
-                    TempData["MessageError"] = response.errorMessage?.Replace("\n", "\\n")
-                                        ?.Replace("\r", "")
-                                        ?.Replace("\"", "\\\"")
-                                        ?.Replace("'", "\\'");
-                    return RedirectToAction("Inicio");
-                }
-            }*/
-
-
         }
 
         /*[HttpPost]

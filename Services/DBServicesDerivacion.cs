@@ -86,14 +86,14 @@ namespace ALFINapp.Services
                 return (false, ex.Message, null);
             }
         }
-        public async Task<(bool IsSuccess, string Message, List<FeedGReportes>? Data)> GetEntradasBSDialXSupervisor(List<Usuario> asesores)
+        public async Task<(bool IsSuccess, string Message, List<GESTIONDETALLE>? Data)> GetEntradasBSDialXSupervisor(List<Usuario> asesores)
         {
             try
             {
-                var getEntradasBSDial = new List<FeedGReportes>();
+                var getEntradasBSDial = new List<GESTIONDETALLE>();
                 foreach (var asesor in asesores)
                 {
-                    var entradas = await _context.feed_G_REPORTES.FromSqlRaw("EXEC sp_Derivacion_consulta_derivaciones_x_asesor_BS_dial {0}", asesor.Dni).ToListAsync();
+                    var entradas = await _context.GESTION_DETALLE.FromSqlRaw("EXEC sp_Derivacion_consulta_derivaciones_x_asesor_BS_dial_ACTUALIZADO {0}", asesor.Dni).ToListAsync();
                     getEntradasBSDial.AddRange(entradas);
                 }
                 return (true, "Se encontraron las siguientes entradas en BSDIAL", getEntradasBSDial);
@@ -124,7 +124,7 @@ namespace ALFINapp.Services
                     }
 
                     var derivacionEnviada = verificarDerivacionEnviada.FirstOrDefault();
-                    if ( derivacionEnviada != null && derivacionEnviada.FueProcesado == 3 )
+                    if (derivacionEnviada != null && derivacionEnviada.FueProcesado == true)
                     {
                         return (true, "Entrada correctamente procesada");
                     }

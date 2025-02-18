@@ -29,6 +29,6 @@ namespace ALFINapp.Models
         [Column("num_agencia")]
         public string? NumAgencia { get; set; }
         [Column("fue_procesado")]
-        public int? FueProcesado { get; set; }
+        public bool? FueProcesado { get; set; }
     }
 }

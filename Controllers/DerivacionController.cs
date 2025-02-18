@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using ALFINapp.Models;
 using ALFINapp.Services;
-using ALFINapp.Views.Derivacion;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -15,12 +14,18 @@ namespace ALFINapp.Controllers
     {
         private readonly DBServicesDerivacion _dBServicesDerivacion;
         private readonly DBServicesConsultasSupervisores _dBServicesConsultasSupervisores;
+        private readonly DBServicesConsultasAdministrador _dBServicesConsultasAdministrador;
         private readonly DBServicesGeneral _dBServicesGeneral;
-        public DerivacionController(DBServicesDerivacion dBServicesDerivacion, DBServicesConsultasSupervisores dBServicesConsultasSupervisores, DBServicesGeneral dBServicesGeneral)
+        public DerivacionController(
+            DBServicesDerivacion dBServicesDerivacion, 
+            DBServicesConsultasSupervisores dBServicesConsultasSupervisores, 
+            DBServicesGeneral dBServicesGeneral,
+            DBServicesConsultasAdministrador dBServicesConsultasAdministrador)
         {
             _dBServicesDerivacion = dBServicesDerivacion;
             _dBServicesConsultasSupervisores = dBServicesConsultasSupervisores;
             _dBServicesGeneral = dBServicesGeneral;
+            _dBServicesConsultasAdministrador = dBServicesConsultasAdministrador;
         }
 
         [HttpGet]
@@ -32,8 +37,7 @@ namespace ALFINapp.Controllers
                 TempData["MessageError"] = "No se ha iniciado sesión.";
                 return RedirectToAction("Index", "Home");
             }
-
-            if (rolUsuario == 2 || rolUsuario == 1 || rolUsuario == 4)
+            if (rolUsuario == 2 || rolUsuario == 1)
             {
                 var UsuarioIdSupervisor = HttpContext.Session.GetInt32("UsuarioId");
                 if (UsuarioIdSupervisor == null)
@@ -62,17 +66,17 @@ namespace ALFINapp.Controllers
                 var getClientesDatosDTO = getclientesDerivadosBSDial.Data;
                 foreach (var item in getClientesDerivadosGenerales.Data)
                 {
-                    var newItem = new FeedGReportes
+                    var newItem = new GESTIONDETALLE
                     {
-                        DNI = item.DniCliente ?? string.Empty,
-                        COD_CANAL = "DESCONOCIDO",
-                        CANAL = "A365",
-                        FECHA_ENVIO = item.FechaDerivacion,
-                        TELEFONO = item.TelefonoCliente,
-                        ORIGEN_TELEFONO = "A365",
-                        COD_CAMPAÑA = item.NombreAgencia,
-                        COD_TIP = 2,
-                        DNI_ASESOR = item.DniAsesor,
+                        DocCliente = item.DniCliente ?? string.Empty,
+                        CodCanal = "DESCONOCIDO",
+                        Canal = "A365",
+                        FechaEnvio = item.FechaDerivacion,
+                        Telefono = item.TelefonoCliente,
+                        OrigenTelefono = "A365",
+                        CodCampaña = item.NombreAgencia,
+                        CodTip = 2,
+                        DocAsesor = item.DniAsesor,
                     };
                     getClientesDatosDTO.Add(newItem);
                 }
@@ -109,21 +113,68 @@ namespace ALFINapp.Controllers
                 var getClientesDatosDTO = getDerivaciones.Data;
                 foreach (var item in getClientesDerivadosGenerales.Data)
                 {
-                    var newItem = new FeedGReportes
+                    var newItem = new GESTIONDETALLE
                     {
-                        DNI = item.DniCliente ?? string.Empty,
-                        COD_CANAL = "DESCONOCIDO",
-                        CANAL = "CANAL DESCONOCIDO",
-                        FECHA_ENVIO = item.FechaDerivacion,
-                        TELEFONO = item.TelefonoCliente,
-                        ORIGEN_TELEFONO = "CLIENTES ENRIQUECIDOS",
-                        COD_CAMPAÑA = item.NombreAgencia,
-                        COD_TIP = 2,
-                        DNI_ASESOR = item.DniAsesor,
+                        DocCliente = item.DniCliente ?? string.Empty,
+                        CodCanal = "DESCONOCIDO",
+                        Canal = "A365",
+                        FechaEnvio = item.FechaDerivacion,
+                        Telefono = item.TelefonoCliente,
+                        OrigenTelefono = "A365",
+                        CodCampaña = item.NombreAgencia,
+                        CodTip = 2,
+                        DocAsesor = item.DniAsesor,
                     };
                     getClientesDatosDTO.Add(newItem);
                 }
                 ViewData["Derivaciones"] = getClientesDatosDTO;
+                return View("Derivacion", getClientesDatosDTO);
+            }
+            if (rolUsuario == 4)
+            {
+                var UsuarioIdSupervisor = HttpContext.Session.GetInt32("UsuarioId");
+                if (UsuarioIdSupervisor == null)
+                {
+                    TempData["MessageError"] = "No se ha iniciado sesión.";
+                    return RedirectToAction("Index", "Home");
+                }
+                var getAsesoresAsignados = await _dBServicesConsultasAdministrador.ConseguirTodosLosUsuarios();
+                if (!getAsesoresAsignados.IsSuccess || getAsesoresAsignados.Data == null)
+                {
+                    TempData["MessageError"] = getAsesoresAsignados.Message;
+                    return RedirectToAction("Index", "Home");
+                }
+                var todosAsesores = getAsesoresAsignados.Data.Where(a => a.IdRol == 3).ToList();
+                var getclientesDerivadosBSDial = await _dBServicesDerivacion.GetEntradasBSDialXSupervisor(todosAsesores);
+                if (!getclientesDerivadosBSDial.IsSuccess || getclientesDerivadosBSDial.Data == null)
+                {
+                    TempData["MessageError"] = getclientesDerivadosBSDial.Message;
+                    return RedirectToAction("Index", "Home");
+                }
+                var getClientesDerivadosGenerales = await _dBServicesDerivacion.GetClientesDerivadosGenerales(todosAsesores);
+                if (!getClientesDerivadosGenerales.IsSuccess || getClientesDerivadosGenerales.Data == null)
+                {
+                    TempData["MessageError"] = getClientesDerivadosGenerales.Message;
+                    return RedirectToAction("Index", "Home");
+                }
+                var getClientesDatosDTO = getclientesDerivadosBSDial.Data;
+                foreach (var item in getClientesDerivadosGenerales.Data)
+                {
+                    var newItem = new GESTIONDETALLE
+                    {
+                        DocCliente = item.DniCliente ?? string.Empty,
+                        CodCanal = "DESCONOCIDO",
+                        Canal = "A365",
+                        FechaEnvio = item.FechaDerivacion,
+                        Telefono = item.TelefonoCliente,
+                        OrigenTelefono = "A365",
+                        CodCampaña = item.NombreAgencia,
+                        CodTip = 2,
+                        DocAsesor = item.DniAsesor,
+                    };
+                    getClientesDatosDTO.Add(newItem);
+                }
+                ViewData["Asesores"] = todosAsesores;
                 return View("Derivacion", getClientesDatosDTO);
             }
             else
@@ -192,17 +243,17 @@ namespace ALFINapp.Controllers
                 var getClientesDatosDTO = getDerivaciones.Data;
                 foreach (var item in getClientesDerivadosGenerales.Data)
                 {
-                    var newItem = new FeedGReportes
+                    var newItem = new GESTIONDETALLE
                     {
-                        DNI = item.DniCliente ?? string.Empty,
-                        COD_CANAL = "DESCONOCIDO",
-                        CANAL = "CANAL DESCONOCIDO",
-                        FECHA_ENVIO = item.FechaDerivacion,
-                        TELEFONO = item.TelefonoCliente,
-                        ORIGEN_TELEFONO = "CLIENTES ENRIQUECIDOS",
-                        COD_CAMPAÑA = item.NombreAgencia,
-                        COD_TIP = 2,
-                        DNI_ASESOR = item.DniAsesor,
+                        DocCliente = item.DniCliente ?? string.Empty,
+                        CodCanal = "DESCONOCIDO",
+                        Canal = "CANAL DESCONOCIDO",
+                        FechaEnvio = item.FechaDerivacion,
+                        Telefono = item.TelefonoCliente,
+                        OrigenTelefono = "CLIENTES ENRIQUECIDOS",
+                        CodCampaña = item.NombreAgencia,
+                        CodTip = 2,
+                        DocAsesor = item.DniAsesor,
                     };
                     getClientesDatosDTO.Add(newItem);
                 }
