@@ -124,7 +124,7 @@ namespace ALFINapp.Services
                     }
 
                     var derivacionEnviada = verificarDerivacionEnviada.FirstOrDefault();
-                    if (derivacionEnviada.FueProcesado == true)
+                    if ( derivacionEnviada != null && derivacionEnviada.FueProcesado == 3 )
                     {
                         return (true, "Entrada correctamente procesada");
                     }

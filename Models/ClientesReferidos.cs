@@ -39,7 +39,7 @@ namespace ALFINapp.Models
         [Column("oferta_enviada")]
         public decimal? OfertaEnviada { get; set; }
         [Column("fue_procesado")]
-        public bool? FueProcesado { get; set; }
+        public int? FueProcesado { get; set; }
         [Column("celular_asesor")]
         public string? CelularAsesor { get; set; }
         [Column("correo_asesor")]

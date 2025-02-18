@@ -52,13 +52,13 @@ namespace ALFINapp.Controllers
             var enviarDerivacion = new DerivacionesAsesores
             {
                 FechaDerivacion = DateTime.Now,
-                DniAsesor = getAsesor.Data.Dni,
-                DniCliente = getClienteBase.data.Dni,
+                DniAsesor = getAsesor.Data?.Dni ?? throw new ArgumentNullException("DniAsesor", "DniAsesor cannot be null"),
+                DniCliente = getClienteBase.data?.Dni ?? throw new ArgumentNullException("DniCliente", "DniCliente cannot be null"),
                 IdCliente = getClienteEnriquecido.data.IdCliente,
                 NombreCliente = getClienteBase.data.XNombre + " " + getClienteBase.data.XAppaterno + " " + getClienteBase.data.XApmaterno,
                 TelefonoCliente = Telefono,
                 NombreAgencia = "73"+agenciaComercial,
-                FueProcesado = false,
+                FueProcesado = 0,
             };
             var enviarFomularioAsignacion = await _dBServicesDerivacion.GenerarDerivacion
                 (enviarDerivacion.FechaDerivacion, 
