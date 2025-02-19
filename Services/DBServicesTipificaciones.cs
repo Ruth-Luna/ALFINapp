@@ -120,7 +120,7 @@ namespace ALFINapp.Services
                     new SqlParameter("@CodTip", Tipificacion.IdTipificacion),
                     new SqlParameter("@Oferta", detalle_base.OfertaMax),
                     new SqlParameter("@DocAsesor", asesorDatos.Dni),
-                    new SqlParameter("@Origen", "SISTEMA A365"),
+                    new SqlParameter("@Origen", Tipificacion.Origen),
                     new SqlParameter("@ArchivoOrigen", "BD PROPIA"),
                     new SqlParameter("@FechaCarga", DateTime.Now),
                     new SqlParameter("@IdDerivacion", derivacionBusqueda.DniCliente != null ? (int)derivacionBusqueda.IdDerivacion : DBNull.Value),
@@ -135,6 +135,62 @@ namespace ALFINapp.Services
                     return (false, "No se pudo guardar la gestion en la base de datos");
                 }
                 return (true, "La Gestion se ha guardado correctamente");
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message, Tipificaciones? Data)> ObtenerTipificacion(int idTipificacion)
+        {
+            try
+            {
+                var tipificacion = await _context.tipificaciones
+                    .Where(t => t.IdTipificacion == idTipificacion)
+                    .FirstOrDefaultAsync();
+                if (tipificacion == null)
+                {
+                    return (false, "No se encontro la tipificacion en la base de datos", null);
+                }
+                return (true, "Se encontro la tipificacion en la base de datos", tipificacion);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message, null);
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message)> GuardarNuevaTipificacion(ClientesTipificado clienteTipificado)
+        {
+            try
+            {
+                var parameters = new[]
+                {
+                    new SqlParameter("@id_asignacion", clienteTipificado.IdAsignacion),
+                    new SqlParameter("@id_tipificacion", clienteTipificado.IdTipificacion),
+                    new SqlParameter("@fecha_tipificacion", clienteTipificado.FechaTipificacion ?? (object)DBNull.Value)
+                    { 
+                        SqlDbType = SqlDbType.DateTime 
+                    },
+                    new SqlParameter("@origen", clienteTipificado.Origen!=null ? clienteTipificado.Origen.Trim(): "nuevo")
+                    {
+                        SqlDbType = SqlDbType.VarChar,
+                        Size = 40
+                    },
+                    new SqlParameter("@telefono_tipificado", clienteTipificado.TelefonoTipificado),
+                    new SqlParameter("@derivacion_fecha", clienteTipificado.DerivacionFecha ?? (object)DBNull.Value)
+                    { 
+                        SqlDbType = SqlDbType.DateTime 
+                    },
+                };
+                var result = await _context.Database.ExecuteSqlRawAsync("EXECUTE SP_tipificacion_insertar_nueva_tipificacion @id_asignacion, @id_tipificacion, @fecha_tipificacion, @origen, @telefono_tipificado, @derivacion_fecha"
+                ,parameters);
+                if (result == 0)
+                {
+                    return (false, "No se pudo guardar la tipificacion en la base de datos");
+                }
+                return (true, "La tipificacion se ha guardado correctamente");
             }
             catch (System.Exception ex)
             {

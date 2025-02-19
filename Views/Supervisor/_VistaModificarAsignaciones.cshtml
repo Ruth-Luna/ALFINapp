@@ -1,15 +1,18 @@
 @model List<ALFINapp.Models.UsuarioAsesorDTO>
 
 @{
-    var AsesoraModificar = (ALFINapp.Models.UsuarioAsesorDTO)ViewData["AsesorAModificar"];
+    var AsesoraModificar = ViewData["AsesorAModificar"] as ALFINapp.Models.UsuarioAsesorDTO;
 }
 
 <div class="mt-3">
     <h4>Modificar Clientes Asignados</h4>
+    <div class="alert alert-secondary" role="alert">
+        Seleccione un numero de Clientes de parte de los otros asesores para asignar a @AsesoraModificar.NombresCompletos
+    </div>
     <div class="mb-3">
         <label for="totalClientesAsignados" class="form-label">Total Clientes Asignados</label>
         <input type="number" class="form-control" id="totalClientesAsignados"
-            value="@AsesoraModificar.TotalClientesAsignados" readonly>
+            value="@(AsesoraModificar?.TotalClientesAsignados ?? 0)" readonly>
     </div>
 
     @foreach (var AsesorAsignado in Model)

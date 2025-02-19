@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ALFINapp.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -157,6 +158,46 @@ namespace ALFINapp.Services
                 }).ToList();
 
                 return (true,"Datos conseguidos exitosamente de la Base de datos ALFIN",detallesClientes);
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message, null);
+            }
+        }
+        public async Task<(bool IsSuccess, string Message, ClientesAsignado? Data)> ObtenerAsignacion(int IdUsuarioVendedor, int IdAsignacion)
+        {
+            try
+            {
+                var parameters = new object[] { 
+                    new SqlParameter("@IdAsignacion", IdAsignacion),
+                    new SqlParameter("@IdUsuario", IdUsuarioVendedor),
+                };
+                var asignacion = await _context.clientes_asignados.FromSqlRaw("EXEC sp_vendedor_get_asignacion @IdAsignacion, @IdUsuario", parameters ).ToListAsync();
+
+                if (asignacion.Count == 0)
+                {
+                    return (false, "No se encontró la asignación", null);
+                }
+
+                return (true, "Asignación encontrada", asignacion.FirstOrDefault());
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message, null);
+            }
+        }
+        public async Task<(bool IsSuccess, string Message, ClientesEnriquecido? Data)> ObtenerEnriquecido(int idCliente)
+        {
+            try
+            {
+                var enriquecido = await _context.clientes_enriquecidos.FromSqlRaw("EXEC sp_cliente_get_enriquecido @IdCliente", new SqlParameter("@IdCliente", idCliente)).ToListAsync();
+
+                if (enriquecido.Count == 0)
+                {
+                    return (false, "No se encontró el cliente enriquecido", null);
+                }
+
+                return (true, "Cliente enriquecido encontrado", enriquecido.FirstOrDefault());
             }
             catch (Exception ex)
             {

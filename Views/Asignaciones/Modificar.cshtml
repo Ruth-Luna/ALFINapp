@@ -8,8 +8,12 @@
 
 <div class="container mb-3 mt-4">
     <h3>Seccion Modificar Asignaciones del Asesor</h3>
+    <div class="alert alert-info" role="alert">
+        En esta Sección podrá modificar las asignaciones de clientes de un <strong>asesor</strong>. 
+        Seleccione un <strong>asesor</strong> para modificar sus asignaciones.
+    </div>
     <div class="row">
-        <div>
+        <div class="mb-4">
             <label for="selectAsesor" class="form-label">Seleccione un Asesor</label>
             <select class="form-select" id="selectAsesor" name="selectAsesor"
                 onchange="cargarActualizacionDeAsignacionXAsesor(this.value)">
@@ -23,8 +27,6 @@
                 }
             </select>
         </div>
-
-        <div class="spacing"></div>
 
         <div id="cargarActualizacionDeAsignacionXAsesor" class="row mt-10" style="display: none;">
             <!-- Aqui se cargara la vista parcial del asesor seleccionado -->
