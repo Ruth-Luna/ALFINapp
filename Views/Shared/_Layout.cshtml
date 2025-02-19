@@ -194,6 +194,7 @@
             });
         });
     </script>
+    
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
@@ -211,3 +212,30 @@
 <script src="~/js/reagregacionesfunctions.js"></script>
 <script src="~/js/accountfunctions.js"></script>
 <script src="~/js/generalfunctions.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let observer = new MutationObserver(function (mutations, observer) {
+            let menuItems = document.querySelectorAll(".sidebar-links .nav-link");
+
+            if (menuItems.length > 0) {
+                let path = window.location.pathname.toLowerCase();
+
+                menuItems.forEach(link => {
+                    let href = link.getAttribute("href").toLowerCase();
+                    if (path.includes(href)) {
+                        link.style.backgroundColor = "rgb(3, 40, 75)";
+                        link.classList.add("w-100");
+                    }
+                });
+
+                observer.disconnect();
+            }
+        });
+
+        let sidebar = document.querySelector(".sidebar-links");
+        if (sidebar) {
+            observer.observe(sidebar, { childList: true, subtree: true });
+        }
+    });
+</script>
