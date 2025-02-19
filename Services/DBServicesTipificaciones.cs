@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ALFINapp.Models;
 using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace ALFINapp.Services
 {
@@ -108,7 +109,11 @@ namespace ALFINapp.Services
                     new SqlParameter("@DocCliente", clienteDatos.Dni),
                     new SqlParameter("@FechaEnvio", DateTime.Now),
                     new SqlParameter("@FechaGestion", Tipificacion.FechaTipificacion),
-                    new SqlParameter("@HoraGestion", Tipificacion.FechaTipificacion != null ? Tipificacion.FechaTipificacion.Value.Date : DBNull.Value),
+                    new SqlParameter("@HoraGestion", Tipificacion.FechaTipificacion != null ? 
+                        (object)Tipificacion.FechaTipificacion.Value.TimeOfDay : DBNull.Value) 
+                    { 
+                        SqlDbType = SqlDbType.Time 
+                    },
                     new SqlParameter("@Telefono", Tipificacion.TelefonoTipificado),
                     new SqlParameter("@OrigenTelefono", "E"),
                     new SqlParameter("@CodCampaña", detalle_base.Campaña),
@@ -116,12 +121,14 @@ namespace ALFINapp.Services
                     new SqlParameter("@Oferta", detalle_base.OfertaMax),
                     new SqlParameter("@DocAsesor", asesorDatos.Dni),
                     new SqlParameter("@Origen", "SISTEMA A365"),
+                    new SqlParameter("@ArchivoOrigen", "BD PROPIA"),
                     new SqlParameter("@FechaCarga", DateTime.Now),
-                    new SqlParameter("@IdDerivacion", derivacionBusqueda!=null?derivacionBusqueda.IdDerivacion:null),
-                    new SqlParameter("@IdSupervisor", asesorDatos.IDUSUARIOSUP),
+                    new SqlParameter("@IdDerivacion", DBNull.Value),
+                    new SqlParameter("@IdSupervisor", asesorDatos.IDUSUARIOSUP.HasValue ? (object)asesorDatos.IDUSUARIOSUP.Value : DBNull.Value),
                     new SqlParameter("@Supervisor", asesorDatos.RESPONSABLESUP),
+                    new SqlParameter("@IdDesembolso", DBNull.Value),
                 };
-                var result = await _context.Database.ExecuteSqlRawAsync("EXECUTE SP_Tipificaciones_guardar_gestion_detalle  @IdTipificacion,@IdAsignacion,@CodCanal,@Canal,@DocCliente,@FechaEnvio,@FechaGestion,@HoraGestion,@Telefono,@OrigenTelefono,@CodCampaña,@CodTip,@Oferta,@DocAsesor,@Origen,@FechaCarga,@IdDerivacion,@IdSupervisor,@Supervisor"
+                var result = await _context.Database.ExecuteSqlRawAsync("EXECUTE SP_Tipificaciones_guardar_gestion_detalle  @IdTipificacion,@IdAsignacion,@CodCanal,@Canal,@DocCliente,@FechaEnvio,@FechaGestion,@HoraGestion,@Telefono,@OrigenTelefono,@CodCampaña,@CodTip,@Oferta,@DocAsesor,@Origen,@ArchivoOrigen,@FechaCarga,@IdDerivacion,@IdSupervisor,@Supervisor,@IdDesembolso"
                     ,parameters);
                 if (result == 0)
                 {

@@ -800,13 +800,13 @@ namespace ALFINapp.Controllers
                 // Guardar cambios en la base de datos
                 _context.clientes_enriquecidos.Update(ClientesEnriquecido);
 
-                /*var guardarGestionDetalle = await _dbServicesTipificaciones.GuardarGestionDetalle(ClienteAsignado, nuevoClienteTipificado, ClientesEnriquecido);
+                var guardarGestionDetalle = await _dbServicesTipificaciones.GuardarGestionDetalle(ClienteAsignado, nuevoClienteTipificado, ClientesEnriquecido);
 
                 if (!guardarGestionDetalle.IsSuccess)
                 {
                     TempData["MessageError"] = guardarGestionDetalle.Message;
                     return RedirectToAction("Inicio");
-                }*/
+                }
                 await _context.SaveChangesAsync();
             }
 
