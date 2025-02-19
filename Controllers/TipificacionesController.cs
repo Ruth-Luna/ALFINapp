@@ -59,6 +59,7 @@ namespace ALFINapp.Controllers
                 TelefonoCliente = Telefono,
                 NombreAgencia = "73"+agenciaComercial,
                 FueProcesado = false,
+                EstadoDerivacion = "DERIVACION PENDIENTE"
             };
             var enviarFomularioAsignacion = await _dBServicesDerivacion.GenerarDerivacion
                 (enviarDerivacion.FechaDerivacion, 

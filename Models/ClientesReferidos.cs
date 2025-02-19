@@ -52,5 +52,7 @@ namespace ALFINapp.Models
         public string? UbigeoAsesor { get; set; }
         [Column("banco_asesor")]
         public string? BancoAsesor { get; set; }
+        [Column("estado_referencia")]
+        public string? EstadoReferencia { get; set; }
     }
 }

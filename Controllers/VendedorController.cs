@@ -799,15 +799,13 @@ namespace ALFINapp.Controllers
                 }
                 // Guardar cambios en la base de datos
                 _context.clientes_enriquecidos.Update(ClientesEnriquecido);
-
+                await _context.SaveChangesAsync();
                 var guardarGestionDetalle = await _dbServicesTipificaciones.GuardarGestionDetalle(ClienteAsignado, nuevoClienteTipificado, ClientesEnriquecido);
-
                 if (!guardarGestionDetalle.IsSuccess)
                 {
                     TempData["MessageError"] = guardarGestionDetalle.Message;
                     return RedirectToAction("Inicio");
                 }
-                await _context.SaveChangesAsync();
             }
 
             if (agregado == false)
@@ -833,82 +831,7 @@ namespace ALFINapp.Controllers
             TempData["Message"] = "Las tipificaciones se han guardado correctamente (Se han Obviado los campos Vacios y los campos que fueron llenados con datos incorrectos)." + message;
             return RedirectToAction("Inicio");
         }
-
-        /*[HttpPost]
-        public IActionResult AgregarTelefono(int IdAsignacion, string NuevoTelefono, string NumTelefonoEdicion)
-        {
-            Console.WriteLine($"ID Asignacion: {IdAsignacion}, Telefono Nuevo {NuevoTelefono}, Edicion de Telefono {NumTelefonoEdicion}");
-            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId == null)
-            {
-                TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
-                return RedirectToAction("Index", "Home");
-            }
-
-            var clienteAsignadoConsulta = _context.clientes_asignados.FirstOrDefault(ca => ca.IdAsignacion == IdAsignacion && ca.IdUsuarioV == HttpContext.Session.GetInt32("UsuarioId"));
-            if (clienteAsignadoConsulta == null)
-            {
-                TempData["MessageError"] = "Usted no tiene acceso a este Usuario.";
-                return RedirectToAction("Inicio");
-            }
-            var ClientesEnriquecido = _context.clientes_enriquecidos.FirstOrDefault(ce => ce.IdCliente == clienteAsignadoConsulta.IdCliente);
-            if (ClientesEnriquecido == null)
-            {
-                TempData["MessageError"] = "No se encuentra un Cliente enriquecido con los datos proporcionados.";
-                return RedirectToAction("Inicio");
-            }
-
-            if (NumTelefonoEdicion == "NuevoTelefono1")
-            {
-                ClientesEnriquecido.Telefono1 = NuevoTelefono;
-            }
-
-            if (NumTelefonoEdicion == "NuevoTelefono2")
-            {
-                ClientesEnriquecido.Telefono2 = NuevoTelefono;
-            }
-
-            if (NumTelefonoEdicion == "NuevoTelefono3")
-            {
-                ClientesEnriquecido.Telefono3 = NuevoTelefono;
-            }
-
-            if (NumTelefonoEdicion == "NuevoTelefono4")
-            {
-                ClientesEnriquecido.Telefono4 = NuevoTelefono;
-            }
-
-            if (NumTelefonoEdicion == "NuevoTelefono5")
-            {
-                ClientesEnriquecido.Telefono5 = NuevoTelefono;
-            }
-
-            _context.SaveChanges();
-            return Json(new { success = true });
-        }*/
-
-        /*[HttpPost]
-        public IActionResult culminarCliente(int IdAsignacion)
-        {
-            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId == null)
-            {
-                TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
-                return RedirectToAction("Index", "Home");
-            }
-            var ClienteAsignado = _context.clientes_asignados.FirstOrDefault(ca => ca.IdAsignacion == IdAsignacion && ca.IdUsuarioV == HttpContext.Session.GetInt32("UsuarioId"));
-            if (ClienteAsignado == null)
-            {
-                TempData["MessageError"] = "Usted no tiene acceso a este Usuario para su modificacion";
-                return RedirectToAction("Index", "Home");
-            }
-            ClienteAsignado.FinalizarTipificacion = true;
-            _context.SaveChanges();
-
-            TempData["Message"] = "Usted a Finalizado con las tipificaciones del Usuario";
-            return RedirectToAction("Inicio");
-        }*/
-
+        
         [HttpGet]
         public IActionResult AgregarTelefonoView(int idCliente)
         {
@@ -925,7 +848,7 @@ namespace ALFINapp.Controllers
         }
 
         [HttpPost]
-        public IActionResult GuardarTipificacionesNumPersonales(List<TipificarClienteDTO> tipificaciones, int IdAsignacionCliente)
+        public async Task<IActionResult> GuardarTipificacionesNumPersonales(List<TipificarClienteDTO> tipificaciones, int IdAsignacionCliente)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
 
@@ -946,7 +869,7 @@ namespace ALFINapp.Controllers
 
             int? tipificacionMayorPeso = null;
             int? pesoMayor = 0;
-            string descripcionTipificacionMayorPeso = null;
+            string? descripcionTipificacionMayorPeso = null;
             var agregado = false;
 
             foreach (var tipificacion in tipificaciones)
@@ -1006,11 +929,30 @@ namespace ALFINapp.Controllers
                 else
                 {
                     var tipificacionUltima = _context.tipificaciones.FirstOrDefault(t => t.IdTipificacion == tipificacion.TipificacionId);
+                    if (tipificacionUltima == null)
+                    {
+                        TempData["MessageError"] = "La tipificacion no ha sido encontrada.";
+                        return RedirectToAction("Inicio");
+                    }
                     telefonoTipificado.UltimaTipificacion = tipificacionUltima.DescripcionTipificacion;
                     telefonoTipificado.FechaUltimaTipificacion = DateTime.Now;
                     telefonoTipificado.IdClienteTip = nuevaTipificacion.IdClientetip;
                     _context.telefonos_agregados.Update(telefonoTipificado);
                 }
+                
+                var clienteEnriquecido = _context.clientes_enriquecidos.FirstOrDefault(ce => ce.IdCliente == ClienteAsignado.IdCliente);
+                if (clienteEnriquecido == null)
+                {
+                    TempData["MessageError"] = "El cliente enriquecido no ha sido encontrado.";
+                    return RedirectToAction("Inicio");
+                }
+                var guardarGestionDetalle = await _dbServicesTipificaciones.GuardarGestionDetalle(ClienteAsignado, nuevaTipificacion, clienteEnriquecido);
+                if (!guardarGestionDetalle.IsSuccess)
+                {
+                    TempData["MessageError"] = guardarGestionDetalle.Message;
+                    return RedirectToAction("Inicio");
+                }
+                await _context.SaveChangesAsync();
             }
 
             if (agregado == false)

@@ -79,7 +79,8 @@ namespace ALFINapp.Services
                         CciAsesor = cci,
                         DepartamentoAsesor = departamento,
                         UbigeoAsesor = ubigeo,
-                        BancoAsesor = banco
+                        BancoAsesor = banco,
+                        EstadoReferencia = "DERIVACION PENDIENTE"
                     };
                     _context.Add(clienteReferido);
                     await _context.SaveChangesAsync();
@@ -120,7 +121,8 @@ namespace ALFINapp.Services
                         CciAsesor = cci,
                         DepartamentoAsesor = departamento,
                         UbigeoAsesor = ubigeo,
-                        BancoAsesor = banco
+                        BancoAsesor = banco,
+                        EstadoReferencia = "DERIVACION PENDIENTE"
                     };
                     _context.Add(clienteReferido);
                     await _context.SaveChangesAsync();
@@ -372,6 +374,7 @@ namespace ALFINapp.Services
                 }
 
                 referido.FueProcesado = true;
+                referido.EstadoReferencia = "DERIVACION COMPLETADA";
                 _context.Update(referido);
                 await _context.SaveChangesAsync();
                 return (true, "Referido procesado exitosamente");

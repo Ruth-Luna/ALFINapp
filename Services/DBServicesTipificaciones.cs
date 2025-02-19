@@ -96,7 +96,7 @@ namespace ALFINapp.Services
                                         .FirstOrDefaultAsync();
                     if (derivacionBusqueda == null)
                     {
-                        return (false, "No se encontro la derivacion del cliente");
+                        return (false, "No se encontro la derivacion del cliente, recuerde que debe mandar la derivacion antes de guardar la tipificacion");
                     }
                 }
 
@@ -123,7 +123,7 @@ namespace ALFINapp.Services
                     new SqlParameter("@Origen", "SISTEMA A365"),
                     new SqlParameter("@ArchivoOrigen", "BD PROPIA"),
                     new SqlParameter("@FechaCarga", DateTime.Now),
-                    new SqlParameter("@IdDerivacion", DBNull.Value),
+                    new SqlParameter("@IdDerivacion", derivacionBusqueda.DniCliente != null ? (int)derivacionBusqueda.IdDerivacion : DBNull.Value),
                     new SqlParameter("@IdSupervisor", asesorDatos.IDUSUARIOSUP.HasValue ? (object)asesorDatos.IDUSUARIOSUP.Value : DBNull.Value),
                     new SqlParameter("@Supervisor", asesorDatos.RESPONSABLESUP),
                     new SqlParameter("@IdDesembolso", DBNull.Value),

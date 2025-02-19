@@ -79,11 +79,15 @@
                             </td>
                             @if (referido.FueProcesado == true)
                             {
-                                <td><span class="badge bg-success">Procesado</span></td>
+                                <td><span class="badge bg-success">@referido.EstadoReferencia</span></td>
+                            }
+                            else if (referido.EstadoReferencia == "ERROR")
+                            {
+                                <td><span class="badge bg-danger">@referido.EstadoReferencia</span></td>
                             }
                             else
                             {
-                                <td><span class="badge bg-danger">Pendiente</span></td>
+                                <td><span class="badge bg-warning">@referido.EstadoReferencia</span></td>
                             }
                             <td>@(referido.NombreCompletoAsesor?.ToUpper() ?? "No Especificado")</td>
                             <td>@referido.DniCliente</td>
