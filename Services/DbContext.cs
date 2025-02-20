@@ -41,6 +41,8 @@ public class MDbContext : DbContext
     public DbSet<VistasPorRolDTO> vistas_por_rol_dto { get; set; }
     public DbSet<DerivacionesBSDIALDTO> derivaciones_bsdial_dto { get; set; }
     public DbSet<DetallesClienteDTO> detalles_clientes_dto { get; set; }
+    public DbSet<DetalleTipificarClienteDTO> detalle_tipificar_cliente_dto { get; set; }
+    public DbSet<DetalleClienteA365TipificarDTO> detalle_cliente_a365_tipificar_dto { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -70,6 +72,14 @@ public class MDbContext : DbContext
             .ToView(null);
 
         modelBuilder.Entity<BoolDTO>()
+            .HasNoKey()
+            .ToView(null);
+        
+        modelBuilder.Entity<DetalleTipificarClienteDTO>()
+            .HasNoKey()
+            .ToView(null);
+        
+        modelBuilder.Entity<DetalleClienteA365TipificarDTO>()
             .HasNoKey()
             .ToView(null);
     }
