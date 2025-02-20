@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using ALFINapp.Filters;
 using ALFINapp.Models;
 using ALFINapp.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ALFINapp.Controllers
 {
+    [RequireSession]
     public class AsignacionesController : Controller
     {
         private readonly DBServicesGeneral _dbServicesGeneral;
@@ -24,6 +26,7 @@ namespace ALFINapp.Controllers
             _context = context;
             _dbServicesConsultasSupervisores = dbServicesConsultasSupervisores;
         }
+        [HttpGet]
         public IActionResult CargarActualizarAsignacion(int idUsuario)
         {
             int? idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
@@ -78,6 +81,7 @@ namespace ALFINapp.Controllers
             return PartialView("ActualizarAsignacion", asesorBusqueda); // Retorna una vista parcial
         }
         [HttpGet]
+        [PermissionAuthorization("Asignaciones", "Modificar")]
         public async Task<IActionResult> Modificar()
         {
             var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
@@ -110,7 +114,9 @@ namespace ALFINapp.Controllers
             }
             return View("Modificar", vendedoresConClientes);
         }
+
         [HttpGet]
+        [PermissionAuthorization("Asignaciones", "Tipificar")]
         public IActionResult Tipificar()
         {
             var usuarioId = HttpContext.Session.GetInt32("UsuarioId");

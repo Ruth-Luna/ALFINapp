@@ -35,6 +35,7 @@ namespace ALFINapp.Controllers
         }
 
         [HttpGet]
+        [PermissionAuthorization("Asignacion", "Asignacion")]
         public async Task<IActionResult> Asignacion()
         {
             var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
@@ -45,7 +46,7 @@ namespace ALFINapp.Controllers
             }
             var GetVendedoresAsignados = await _dbServicesConsultasSupervisores.GetAsesorsFromSupervisor(usuarioId.Value);
 
-            if (GetVendedoresAsignados.IsSuccess == false)
+            if (GetVendedoresAsignados.IsSuccess == false || GetVendedoresAsignados.Data == null)
             {
                 TempData["MessageError"] = GetVendedoresAsignados.Message;
                 return RedirectToAction("Index", "Home");
@@ -92,6 +93,8 @@ namespace ALFINapp.Controllers
             return View("Asignacion", vendedoresConClientes);
         }
 
+        [HttpGet]
+        [PermissionAuthorization("Asignacion", "Supervisores")]
         public async Task<IActionResult> Supervisores()
         {
             try
@@ -278,7 +281,7 @@ namespace ALFINapp.Controllers
                 return RedirectToAction("Inicio", "Administrador");
             }
         }
-
+        [HttpGet]
         public async Task<IActionResult> BuscarAsignacionFiltrarBases(
                                 string? base_busqueda = null,
                                 string? rango_edad = null,
@@ -331,9 +334,10 @@ namespace ALFINapp.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+
         [HttpPost]
         public async Task<IActionResult> InsertarAsignacionASupervisores(
-    [FromBody] InsertarAsignacionRequest request) // Recibe los datos desde el cuerpo de la solicitud
+            [FromBody] InsertarAsignacionRequest request) // Recibe los datos desde el cuerpo de la solicitud
         {
             try
             {
@@ -398,6 +402,7 @@ namespace ALFINapp.Controllers
             }
         }
 
+        [HttpGet]
         public async Task<IActionResult> BuscarSupervisoresYDestinos()
         {
             try

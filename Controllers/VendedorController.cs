@@ -44,13 +44,11 @@ namespace ALFINapp.Controllers
             {
                 var usuarioExistente = await _context.usuarios
                     .FirstOrDefaultAsync(usuario => usuario.Dni == model.Dni);
-
                 if (usuarioExistente != null)
                 {
                     ModelState.AddModelError("dni", "El DNI ya está registrado.");
                     return View(model); // Devuelve el modelo con errores
                 }
-
                 model.NombresCompletos = model.NombresCompletos;
                 _context.usuarios.Add(model);
                 TempData["Message"] = "Usuario agregado con exito";
@@ -65,6 +63,7 @@ namespace ALFINapp.Controllers
 
         // Acción para mostrar la página de Inicio
         [HttpGet]
+        [PermissionAuthorization("Vendedor", "Inicio")]
         public async Task<IActionResult> Inicio()
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
@@ -290,6 +289,7 @@ namespace ALFINapp.Controllers
             }
         }
 
+        [HttpGet]
         public async Task<IActionResult> TipificarClienteDBALFINView(int id_base)
         {
             try
@@ -420,8 +420,6 @@ namespace ALFINapp.Controllers
                 return (false, ex.Message); // Retorna el mensaje de error
             }
         }*/
-
-
         [HttpPost]
         public async Task<IActionResult> TipificarMotivo(int IdAsignacion, int? Tipificacion_1, int? Tipificacion_2,
                                                 int? Tipificacion_3, int? Tipificacion_4, int? Tipificacion_5,

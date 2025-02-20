@@ -29,6 +29,8 @@ namespace ALFINapp.Controllers
             _DBServicesGeneral = DBServicesGeneral;
             _DBServicesRoles = DBServicesRoles;
         }
+        [HttpGet]
+        [PermissionAuthorization("Usuarios", "Administracion")]
         public async Task<IActionResult> Administracion()
         {
             var getUsuarios = await _DBServicesConsultasAdministrador.ConseguirTodosLosUsuarios();
@@ -101,6 +103,9 @@ namespace ALFINapp.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+
+        [HttpGet]
+        [PermissionAuthorization("Usuarios", "Nuevo")]
         public async Task<IActionResult> Nuevo()
         {
             var getSupervisores = await _DBServicesConsultasAdministrador.ConseguirTodosLosSupervisores();

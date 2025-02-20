@@ -10,6 +10,7 @@ using ALFINapp.Models; // Replace with the correct namespace where DBServicesGen
 
 namespace ALFINapp.Controllers
 {
+    [RequireSession]
     public class TipificacionesController : Controller
     {
         

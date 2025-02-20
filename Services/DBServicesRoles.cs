@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ALFINapp.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace ALFINapp.Services
@@ -41,9 +42,15 @@ namespace ALFINapp.Services
         {
             try
             {
-                var vista = await _context.vistas_por_rol_dto.FromSqlRaw("EXEC sp_Roles_Vista_por_defecto {0}", idRol).FirstOrDefaultAsync();
-                if (vista != null)
+                var GetVista = await _context.vistas_por_rol_dto.FromSqlRaw("EXEC sp_Roles_Vista_por_defecto @idRol", new SqlParameter("@idRol", idRol)).ToListAsync();
+
+                if (GetVista.Count() != 0)
                 {
+                    var vista = GetVista.FirstOrDefault();
+                    if (vista == null)
+                    {
+                        return (false, "No se encontró la vista correspondiente", null);
+                    }
                     return (true, "Vista encontrada", vista);
                 }
                 else
@@ -55,14 +62,13 @@ namespace ALFINapp.Services
             {
                 return (false, ex.Message, null);
             }
-
         }
 
-        public async Task<(bool IsSuccess, string Message, bool? Data)> tienePermiso(int idRol, string vista, string ruta)
+        public async Task<(bool IsSuccess, string Message, bool? Data)> tienePermiso(int idRol, string controlador, string vista)
         {
             try
             {
-                var permiso = await _context.numeros_enteros_dto.FromSqlRaw("EXEC sp_Roles_tiene_permisos {0}, {1}, {2}", idRol, vista, ruta).ToListAsync();
+                var permiso = await _context.numeros_enteros_dto.FromSqlRaw("EXEC sp_Roles_tiene_permisos {0}, {1}, {2}", idRol, controlador, vista).ToListAsync();
                 if (permiso.Count > 0)
                 {
                     return (true, "Permiso encontrado", true);

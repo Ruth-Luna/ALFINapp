@@ -47,7 +47,7 @@ namespace ALFINapp.Services
             try
             {
                 var asesores = await _context.usuarios.FromSqlRaw("EXEC SP_asesores_conseguir_asesores_asignados_no_contador @IdSupervisor = {0}", IdSupervisor).ToListAsync();
-                                    
+
                 if (asesores.Count == 0)
                 {
                     return (false, "No hay asesores registrados para este supervisor", null);
@@ -190,6 +190,68 @@ namespace ALFINapp.Services
                 return (false, $"Ocurrió un error al obtener los supervisores: {ex.Message}", null);
             }
         }
+
+        public async Task<(bool IsSuccess, string Message, List<UsuarioAsesorDTO>? Data)> ConsultaAsesoresDelSupervisor(int idSupervisorActual)
+        {
+            try
+            {
+                var asesores = await (from u in _context.usuarios
+                                             where u.IdRol == 3 && u.IDUSUARIOSUP == idSupervisorActual
+                                             join ca in _context.clientes_asignados on u.IdUsuario equals ca.IdUsuarioV into caGroup
+                                             from ca in caGroup.DefaultIfEmpty()  // Realizamos un left join
+                                             group new { u, ca }
+                                             by new
+                                             {
+                                                 u.IdUsuario,
+                                                 u.NombresCompletos,
+                                                 u.Dni,
+                                                 u.Telefono,
+                                                 u.Departamento,
+                                                 u.Provincia,
+                                                 u.Distrito,
+                                                 u.Estado,
+                                                 u.Rol
+                                             } into grouped
+                                             select new UsuarioAsesorDTO
+                                             {
+                                                 IdUsuario = grouped.Key.IdUsuario,
+                                                 Dni = grouped.Key.Dni,
+                                                 NombresCompletos = grouped.Key.NombresCompletos,
+                                                 Telefono = grouped.Key.Telefono,
+                                                 Departamento = grouped.Key.Departamento,
+                                                 Provincia = grouped.Key.Provincia,
+                                                 Distrito = grouped.Key.Distrito,
+                                                 Estado = grouped.Key.Estado,
+                                                 Rol = grouped.Key.Rol,
+                                                 TotalClientesAsignados = grouped.Count(g => g.ca != null
+                                                                                         && g.ca.IdUsuarioV == grouped.Key.IdUsuario
+                                                                                         && g.ca.IdUsuarioS == idSupervisorActual
+                                                                                         && g.ca.FechaAsignacionVendedor != null
+                                                                                         && g.ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
+                                                                                         && g.ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month), // Clientes asignados
+                                                 ClientesTrabajando = grouped.Count(g => g.ca != null
+                                                                                         && g.ca.TipificacionMayorPeso != null
+                                                                                         && g.ca.IdUsuarioV == grouped.Key.IdUsuario
+                                                                                         && g.ca.IdUsuarioS == idSupervisorActual
+                                                                                         && g.ca.FechaAsignacionVendedor != null
+                                                                                         && g.ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
+                                                                                         && g.ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month), // Clientes trabajados
+                                                 ClientesSinTrabajar = grouped.Count(g => g.ca != null
+                                                                                         && g.ca.IdUsuarioV == grouped.Key.IdUsuario
+                                                                                         && g.ca.IdUsuarioS == idSupervisorActual)
+                                                                                          - grouped.Count(g => g.ca != null
+                                                                                         && g.ca.TipificacionMayorPeso != null
+                                                                                         && g.ca.IdUsuarioV == grouped.Key.IdUsuario
+                                                                                         && g.ca.IdUsuarioS == idSupervisorActual)
+                                             }).ToListAsync();
+                return (true, $"La Consulta se produjo con exito", asesores);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, $"Ocurrió un error al obtener los asesores: {ex.Message}", null);
+            }
+        }
+
         //... other methods...
     }
 }

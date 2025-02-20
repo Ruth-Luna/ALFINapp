@@ -1,6 +1,7 @@
 using System.Security;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ALFINapp.Filters;
 using ALFINapp.Models;
 using ALFINapp.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,8 @@ using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace ALFINapp.Controllers
 {
+    [RequireSession]
+
     public class AsesorController : Controller
     {
         private readonly List<int> rolesPermitidos = new List<int> { 1, 2, 3 };
@@ -19,8 +22,8 @@ namespace ALFINapp.Controllers
         private readonly DBServicesUsuarios _dBServicesUsuarios;
 
         public AsesorController(
-            DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores, 
-            DBServicesGeneral dbServicesGeneral, 
+            DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores,
+            DBServicesGeneral dbServicesGeneral,
             DBServicesEstadoAsesores dbServicesEstadoAsesores,
             MDbContext context,
             DBServicesUsuarios dBServicesUsuarios)
@@ -31,7 +34,7 @@ namespace ALFINapp.Controllers
             _context = context;
             _dBServicesUsuarios = dBServicesUsuarios;
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> ActivarAsesor(string DNI, int idUsuario)
         {
@@ -82,7 +85,7 @@ namespace ALFINapp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DesactivarAsesorAsync(string DNI, int idUsuario)
+        public async Task<IActionResult> DesactivarAsesor(string DNI, int idUsuario)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)
@@ -158,6 +161,7 @@ namespace ALFINapp.Controllers
                     var clientesAModificar = _context.clientes_asignados
                         .Where(ca => ca.IdUsuarioV == asignacion.IdUsuario
                                 && ca.TipificacionMayorPeso == null
+                                && ca.FechaAsignacionVendedor != null
                                 && ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
                                 && ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month)
                         .Take(asignacion.Modificaciones)
@@ -190,6 +194,48 @@ namespace ALFINapp.Controllers
             }
         }
 
+        /// <summary>
+        /// Agrega un nuevo usuario al sistema con rol de asesor u otros roles permitidos.
+        /// </summary>
+        /// <param name="nuevoUsuario">Objeto Usuario que contiene la información del nuevo usuario a crear.
+        /// Debe incluir DNI, nombres completos, rol y datos de ubicación.</param>
+        /// <returns>
+        /// IActionResult que contiene un objeto JSON con:
+        /// - success: true si la operación fue exitosa, false si hubo errores
+        /// - message: Mensaje descriptivo del resultado de la operación
+        /// </returns>
+        /// <remarks>
+        /// El método realiza las siguientes validaciones:
+        /// - Verifica que el usuario no sea nulo
+        /// - Comprueba que el DNI no esté ya registrado
+        /// - Valida que el DNI tenga al menos 8 dígitos
+        /// - Verifica que haya un supervisor activo en la sesión
+        /// - Asigna automáticamente el supervisor actual como responsable
+        /// - Convierte los datos de texto a mayúsculas
+        /// - Asigna el rol correspondiente según el IdRol proporcionado
+        /// 
+        /// La contraseña se genera automáticamente usando el formato: DNI$clave123
+        /// </remarks>
+        /// <example>
+        /// Ejemplo de uso:
+        /// <code>
+        /// var nuevoUsuario = new Usuario
+        /// {
+        ///     Dni = "12345678",
+        ///     NombresCompletos = "Juan Pérez",
+        ///     IdRol = 3,
+        ///     Departamento = "Lima",
+        ///     Provincia = "Lima",
+        ///     Distrito = "San Isidro",
+        ///     REGION = "Costa"
+        /// };
+        /// var resultado = await AgregarNuevoAsesor(nuevoUsuario);
+        /// </code>
+        /// </example>
+        /// <exception cref="System.Exception">
+        /// Captura y maneja excepciones generales durante el proceso de creación del usuario.
+        /// Los mensajes de error se devuelven en la respuesta JSON.
+        /// </exception>
         [HttpPost]
         public async Task<IActionResult> AgregarNuevoAsesor([FromBody] Usuario nuevoUsuario)
         {
@@ -276,127 +322,34 @@ namespace ALFINapp.Controllers
             catch (System.Exception ex)
             {
                 Console.WriteLine("Error: " + ex.Message);
-                return Json(new { success = false, message = ex.Message});
+                return Json(new { success = false, message = ex.Message });
             }
         }
 
         /// <summary>
-        /// Obtiene el número de clientes asignados a un asesor específico que coinciden con una tipificación detallada.
+        /// Activates an advisor based on the provided DNI and user ID.
         /// </summary>
-        /// <param name="tipificacionDetalle">La tipificación detallada para filtrar los clientes.</param>
-        /// <param name="idAsesorBuscar">El ID del asesor para el cual se buscan los clientes asignados.</param>
-        /// <returns>
-        /// Un IActionResult que contiene un objeto JSON con:
-        /// - success: true si la operación fue exitosa, false en caso contrario.
-        /// - numClientes: El número de clientes que coinciden con la tipificación especificada.
-        /// - message: Un mensaje de error en caso de que ocurra una excepción.
-        /// </returns>
-        [HttpGet]
-        public IActionResult ObtenerNumDeClientesPorTipificacion(string tipificacionDetalle, int idAsesorBuscar)
-        {
-            try
-            {
-                int? idsupervisoractual = HttpContext.Session.GetInt32("UsuarioId");
-                if (idsupervisoractual == null)
-                {
-                    return Json(new { success = false, message = "El ID Supervisor a asignar automaticamente es invalido. Comunicarse con Soporte Tecnico." });
-                }
-
-                var NumClientesAsignados = _context.clientes_asignados
-                    .Where(ca => ca.IdUsuarioV == idAsesorBuscar
-                        && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                        && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
-                        && ca.TipificacionMayorPeso == tipificacionDetalle
-                        && ca.IdUsuarioS == idsupervisoractual
-                        )
-                    .Count();
-                return Json(new { success = true, numClientes = NumClientesAsignados });
-            }
-            catch (System.Exception ex)
-            {
-                Console.WriteLine("Error: " + ex.Message);
-                return Json(new { success = false, message = "Ha ocurrido un error inesperado" });
-            }
-        }
-
-
-        /// <summary>
-        /// Modifica las asignaciones de clientes basándose en una tipificación específica y las reasigna a un asesor determinado.
-        /// </summary>
-        /// <param name="TipificacionModificar">La tipificación de los clientes que se desean reasignar.</param>
-        /// <param name="idAsesorAsignar">El ID del asesor al que se asignarán los clientes.</param>
-        /// <param name="numDeModificaciones">El número de asignaciones que se desean modificar.</param>
-        /// <returns>
-        /// Un IActionResult que contiene un objeto JSON con:
-        /// - success: true si la operación fue exitosa, false en caso contrario.
-        /// - message: Un mensaje describiendo el resultado de la operación.
-        /// </returns>
-        [HttpPost]
-        public IActionResult ModificarAsignacionesPorTipificaciones(string TipificacionModificar, int idAsesorAsignar, int numDeModificaciones)
-        {
-            try
-            {
-                int? idsupervisoractual = HttpContext.Session.GetInt32("UsuarioId");
-                if (idsupervisoractual == null)
-                {
-                    return Json(new { success = false, message = "El ID Supervisor es invalido. Comunicarse con Soporte Tecnico." });
-                }
-                // Verificar si los parámetros son nulos o inválidos
-                if (string.IsNullOrEmpty(TipificacionModificar))
-                {
-                    return Json(new { success = false, message = "La tipificación a modificar no puede estar vacía." });
-                }
-
-                if (numDeModificaciones <= 0)
-                {
-                    return Json(new { success = false, message = "El número de modificaciones debe ser mayor que cero." });
-                }
-
-                if (idAsesorAsignar <= 0)
-                {
-                    return Json(new { success = false, message = "El ID del asesor a asignar es inválido." });
-                }
-
-                // Obtener el ID del supervisor actual
-                int? idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
-                if (idSupervisorActual == null)
-                {
-                    return Json(new { success = false, message = "No se pudo obtener el ID del supervisor actual." });
-                }
-
-                // Buscar y actualizar las asignaciones
-                var asignacionesDisponibles = _context.clientes_asignados
-                        .Where(ca => ca.IdUsuarioS == idSupervisorActual &&
-                                    ca.TipificacionMayorPeso == TipificacionModificar &&
-                                    ca.IdUsuarioV != idAsesorAsignar
-                                     && ca.IdUsuarioS == idsupervisoractual
-                                     && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                                     && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month)
-                        .ToList();
-
-                if (asignacionesDisponibles.Count < numDeModificaciones)
-                {
-                    return Json(new { success = false, message = $"No hay suficientes asignaciones para modificar. Se solicitaron {numDeModificaciones}, pero solo hay {asignacionesDisponibles.Count} disponibles." });
-                }
-
-                var asignacionesAModificar = asignacionesDisponibles.Take(numDeModificaciones).ToList();
-
-                foreach (var asignacion in asignacionesAModificar)
-                {
-                    asignacion.IdUsuarioV = idAsesorAsignar;
-                    asignacion.FechaAsignacionVendedor = DateTime.Now;
-                }
-
-                _context.SaveChanges();
-                return Json(new { success = true, message = $"Se han modificado {asignacionesAModificar.Count} asignaciones correctamente." });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                return Json(new { success = false, message = "Ha ocurrido un error inesperado al modificar las asignaciones." });
-            }
-        }
-
+        /// <param name="DNI">The DNI of the advisor to be activated.</param>
+        /// <param name="idUsuario">The ID of the user performing the activation.</param>
+        /// <returns>A JSON result indicating the success or failure of the activation process.</returns>
+        /// <remarks>
+        /// This method checks if the user is authenticated and verifies the provided DNI and user ID.
+        /// If the advisor is already active, it returns a message indicating so.
+        /// Otherwise, it attempts to activate the advisor and returns the result.
+        /// </remarks>
+        /// <exception cref="System.Exception">
+        /// Se capturan todas las excepciones y se devuelven como un mensaje de error en el JSON de respuesta.
+        /// </exception>
+        /// <example>
+        /// Ejemplo de uso:
+        /// <code>
+        /// var asignaciones = new List<AsignarAsesorDTO> {
+        ///     new AsignarAsesorDTO { IdVendedor = 1, NumClientes = 5 },
+        ///     new AsignarAsesorDTO { IdVendedor = 2, NumClientes = 3 }
+        /// };
+        /// var resultado = await AsignarClientesAAsesores(asignaciones, "BaseClientes2024");
+        /// </code>
+        /// </example>
         [HttpPost]
         public async Task<IActionResult> AsignarClientesAAsesores(List<AsignarAsesorDTO> asignacionasesor, string selectAsesorBase)
         {
@@ -441,21 +394,22 @@ namespace ALFINapp.Controllers
                         mensajesError = mensajesError + $"Ha ocurrido un error al obtener los clientes disponibles. {getClientesDisponibles.message}";
                         continue;
                     }
-
                     var clientesDisponibles = getClientesDisponibles.data;
-                    
                     if (clientesDisponibles.Count < nClientes)
                     {
                         mensajesError = mensajesError + $"En la base '{selectAsesorBase}', solo hay {clientesDisponibles.Count} clientes disponibles para la asignación. La entrada ha sido obviada.";
                         continue;
                     }
-
                     foreach (var cliente in clientesDisponibles)
                     {
                         cliente.IdUsuarioV = asignacion.IdVendedor;
                         cliente.FechaAsignacionVendedor = DateTime.Now;
+                        var result = await _dbServicesAsignacionesAsesores.ActualizarClienteAsignado(cliente);
+                        if (!result.IsSuccess)
+                        {
+                            mensajesError = mensajesError + $"Ha ocurrido un error al asignar el cliente {cliente.IdCliente}. {result.message}";
+                        }
                     }
-                    _context.SaveChanges();
                 }
                 if (mensajesError != " ")
                 {
@@ -466,12 +420,10 @@ namespace ALFINapp.Controllers
                     return Json(new { success = true, message = $"Se han modificado {contadorClientesAsignados} asignaciones correctamente." });
                 }
             }
-
             catch (System.Exception ex)
             {
                 return Json(new { success = false, message = $"Ha ocurrido un error inesperado al modificar las asignaciones. {ex.Message}" });
             }
         }
-
     }
 }

@@ -23,6 +23,7 @@ namespace ALFINapp.Controllers
             _dbServicesGeneral = dbServicesGeneral;
         }
         [HttpGet]
+        [PermissionAuthorization("Supervisor", "Inicio")]
         public async Task<IActionResult> Inicio (int page = 1, int pageSize = 20)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
@@ -178,74 +179,9 @@ namespace ALFINapp.Controllers
             return RedirectToAction("Inicio");
         }
 
-        /*[HttpPost]
-        public IActionResult GuardarAsesoresAsignados(List<AsignarAsesorDTO> asignacionasesor, string selectAsesorBase)
-        {
-            int? idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
-
-            string mensajesError = " ";
-            if (asignacionasesor == null)
-            {
-                TempData["MessageError"] = "No se han enviado datos para asignar asesores.";
-                return RedirectToAction("Inicio");
-            }
-
-            if (string.IsNullOrEmpty(selectAsesorBase))
-            {
-                TempData["MessageError"] = "Debe seleccionar una Fuente Base.";
-                return RedirectToAction("Inicio");
-            }
-
-            // Comprobación adicional para verificar si todas las entradas tienen NumClientes igual a 0
-            if (asignacionasesor.All(a => a.NumClientes == 0))
-            {
-                TempData["MessageError"] = "No se ha llenado ninguna entrada. Los campos no pueden estar vacíos.";
-                return RedirectToAction("Inicio");
-            }
-            foreach (var asignacion in asignacionasesor)
-            {
-                Console.WriteLine($"IdVendedor: {asignacion.IdVendedor}, NumClientes: {asignacion.NumClientes}");
-                if (asignacion.NumClientes == 0)
-                {
-                    continue;
-                }
-
-                int nClientes = asignacion.NumClientes;
-                var clientesDisponibles = _context.clientes_asignados
-                                        .Where(ca => ca.IdUsuarioS == idSupervisorActual && ca.IdUsuarioV == null
-                                                && ca.FechaAsignacionSup.HasValue && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                                                && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
-                                                && ca.FuenteBase == selectAsesorBase)
-                                        .Take(nClientes)
-                                        .ToList();
-
-                if (clientesDisponibles.Count < nClientes)
-                {
-                    mensajesError = mensajesError + $"En la base '{selectAsesorBase}', solo hay {clientesDisponibles.Count} clientes disponibles para la asignación. La entrada ha sido obviada.";
-                    continue;
-                }
-
-                foreach (var cliente in clientesDisponibles)
-                {
-                    cliente.IdUsuarioV = asignacion.IdVendedor;
-                    cliente.FechaAsignacionVendedor = DateTime.Now;
-                }
-                _context.SaveChanges();
-            }
-            if (mensajesError != " ")
-            {
-                TempData["MessageError"] = mensajesError;
-            }
-            else
-            {
-                TempData["Message"] = "Las Asignaciones se culminaron con exito";
-            }
-            return RedirectToAction("Inicio");
-        }*/
         [HttpGet]
         public IActionResult ObtenerVistaModificarAsignaciones(string IdUsuario, string dni)
         {
-
             try
             {
                 int? idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
@@ -253,7 +189,6 @@ namespace ALFINapp.Controllers
                 {
                     return Json(new { success = false, message = "IdUsuario inválido" });
                 }
-
                 var clientesAsignadosAsesorPrincipal = (from u in _context.usuarios
                                                         where u.IdUsuario == idUsuario
                                                         join ca in _context.clientes_asignados on u.IdUsuario equals ca.IdUsuarioV into caGroup
@@ -305,7 +240,6 @@ namespace ALFINapp.Controllers
                                                                                                 && g.ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
                                                                                                 && g.ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month) // Diferencia entre asignados y trabajados
                                                         }).FirstOrDefault();
-
                 var asesoresAsignadosaSupervisor = (from u in _context.usuarios
                                                     where u.Rol == "VENDEDOR" && u.IDUSUARIOSUP == idSupervisorActual && u.IdUsuario != idUsuario
                                                     join ca in _context.clientes_asignados on u.IdUsuario equals ca.IdUsuarioV into caGroup

@@ -10,8 +10,12 @@ namespace ALFINapp.Filters
             var session = context.HttpContext.Session;
             if (session.GetInt32("UsuarioId") == null)
             {
+                var controller = context.Controller as Controller;
+                if (controller != null)
+                {
+                    controller.TempData["MessageError"] = "No ha iniciado sesión, por favor inicie sesión.";
+                }
                 context.Result = new RedirectToActionResult("Index", "Home", null);
-                context.HttpContext.Items["MessageError"] = "No ha iniciado sesión, por favor inicie sesión.";
             }
             base.OnActionExecuting(context);
         }

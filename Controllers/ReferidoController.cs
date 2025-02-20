@@ -20,11 +20,12 @@ namespace ALFINapp.Controllers
             _dbServicesReferido = dbServicesReferido;
 
         }
+        [HttpGet]
         public IActionResult Referido()
         {
             return View("Referido");
         }
-
+        [HttpGet]
         public async Task<IActionResult> BuscarDNIReferido(string dniBusqueda)
         {
             var getDNIReferido = await _dbServicesReferido.GetDataFromDNI(dniBusqueda);
@@ -139,31 +140,6 @@ namespace ALFINapp.Controllers
             }
 
             return Json(new { success = true, message = getReferido.Message + ". " + enviarCorreo.Message });
-        }
-        public async Task<IActionResult> Referidos()
-        {
-            try
-            {
-                var idUsuarioSupervisor = HttpContext.Session.GetInt32("idUsuarioSupervisor");
-                if (idUsuarioSupervisor == null)
-                {
-                    TempData["MessageError"] = "No se ha podido obtener el id del usuario supervisor";
-                    return RedirectToAction("Inicio", "Supervisor");
-                }
-
-                var getReferidos = await _dbServicesReferido.GetReferidosGeneral();
-                if (getReferidos.IsSuccess == false || getReferidos.Data == null)
-                {
-                    TempData["MessageError"] = getReferidos.Message;
-                    return View("Inicio", "Supervisor");
-                }
-                return View("Referidos", getReferidos.Data);
-            }
-            catch (System.Exception ex)
-            {
-                TempData["MessageError"] = ex.Message;
-                return View("Inicio", "Supervisor");
-            }
         }
     }
 }

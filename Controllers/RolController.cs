@@ -21,6 +21,9 @@ namespace ALFINapp.Controllers
             _dbServicesGeneral = dbServicesGeneral;
             _dbServicesRoles = dbServicesRoles;
         }
+        [HttpGet]
+        [PermissionAuthorization("Rol", "Roles")]
+
         public async Task<IActionResult> Roles()
         {
             var rol = HttpContext.Session.GetInt32("RolUser");
@@ -59,6 +62,7 @@ namespace ALFINapp.Controllers
             ViewData["Vistas"] = getTodasLasVistasRutas.Data;
             return View("Roles", rolesConVistas);
         }
+        [HttpGet]
         public async Task<IActionResult> Sidebar()
         {
             int? RolUser = HttpContext.Session.GetInt32("RolUser");

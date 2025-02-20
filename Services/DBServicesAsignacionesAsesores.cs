@@ -236,5 +236,27 @@ namespace ALFINapp.Services
                 return (false, ex.Message, null);
             }
         }
+
+        public async Task<(bool IsSuccess, string message)> ActualizarClienteAsignado(
+            ClientesAsignado cliente)
+        {
+            try
+            {
+                var result = await _context.Database.ExecuteSqlRawAsync("EXEC sp_asesores_actualizar_clientes_asignados @IdAsignacion, @IdUsuarioV",
+                    new SqlParameter("@IdAsignacion", cliente.IdAsignacion),
+                    new SqlParameter("@IdUsuarioV", cliente.IdUsuarioV));
+
+                if (result == 0)
+                {
+                    return (false, "No se pudo actualizar el cliente asignado");
+                }
+                
+                return (true, "Clientes asignados correctamente");
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
     }
 }

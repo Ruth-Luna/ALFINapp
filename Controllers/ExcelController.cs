@@ -48,66 +48,6 @@ namespace ALFINapp.Controllers
                     TempData["Message"] = "Error en la autenticación. Intente iniciar sesión nuevamente.";
                     return RedirectToAction("Index", "Home");
                 }
-                /*
-                    Aca debemos descargar los datos en formato xlsx de excel te mostrare las tablas y demas
-                    Todos los valores de clientes_tipificados, todos las entradas de base_cliente, todas las
-                    entradas de clientes_enriquecidos, etc. 
-
-                    Te mostrare una consulta que maso debe ser asi
-
-                    var supervisorData = from ca in _context.clientes_asignados
-                                 join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
-                                 join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
-                                 join u in _context.usuarios on ca.IdUsuarioV equals u.IdUsuario into usuarioJoin
-                                 from u in usuarioJoin.DefaultIfEmpty()
-                                 where ca.IdUsuarioS == usuarioId
-                                 select new SupervisorDTO
-                                 {
-                                     IdAsignacion = ca.IdAsignacion,
-                                     IdCliente = ca.IdCliente,
-                                     idUsuarioV = ca.IdUsuarioV.HasValue ? ca.IdUsuarioV.Value : 0,
-                                     FechaAsignacionV = ca.FechaAsignacionVendedor,
-
-                                     Dni = bc.Dni,
-                                     XAppaterno = bc.XAppaterno,
-                                     XApmaterno = bc.XApmaterno,
-                                     XNombre = bc.XNombre,
-
-                                     NombresCompletos = u != null ? u.NombresCompletos : "Vendedor no Asignado",
-                                     ApellidoPaterno = u != null ? u.ApellidoPaterno : "No disponible", // Manejo de null para ApellidoPaterno
-                                     DniVendedor = u != null ? u.Dni : " ",
-                                 };
-
-                    lUEGO POR CADA CLIENTE DEBES DE PODER MOSTRAR SUS TIPIFICACIONES ALGO COMO ESTO
-
-                    var resultados_telefonos_tipificados_vendedor = (from ta in _context.telefonos_agregados
-                                                             join ce in _context.clientes_enriquecidos on ta.IdCliente equals ce.IdCliente
-                                                             where ce.IdBase == id_base
-                                                             join ct in (
-                                                                 from ct_sub in _context.clientes_tipificados
-                                                                 join ultimas in (
-                                                                     from sub_ct in _context.clientes_tipificados
-                                                                     group sub_ct by sub_ct.TelefonoTipificado into g
-                                                                     select new { TelefonoTipificado = g.Key, UltimaFecha = g.Max(x => x.FechaTipificacion) }
-                                                                 ) on ct_sub.TelefonoTipificado equals ultimas.TelefonoTipificado
-                                                                 where ct_sub.FechaTipificacion == ultimas.UltimaFecha
-                                                                 select new { ct_sub.TelefonoTipificado, ct_sub.IdTipificacion }
-                                                             ) on ta.Telefono equals ct.TelefonoTipificado into ctJoin
-                                                             from ct in ctJoin.DefaultIfEmpty()
-                                                             join t in _context.tipificaciones on ct.IdTipificacion equals t.IdTipificacion into tJoin
-                                                             from t in tJoin.DefaultIfEmpty()
-                                                             select new
-                                                             {
-                                                                 TelefonoTipificado = ta.Telefono,
-                                                                 DescripcionTipificacion = t.DescripcionTipificacion,
-                                                                 ComentarioTelefono = ta.Comentario
-                                                             }).ToList();
-
-                    PERO ACA SOLO CONSIGUE LAS TIPIFICACIONES DE 1 USUARIO, ACA DEBE ENCONTRAR TODAS LAS TIPIFICACIONES DE 
-                    TODOS LOS USUARIOS ASIGNADOS A AQUEL SUPERVISOR, COMO TAL ESTA PARTE DE SER POSIBLE ASIGNALA EN OTRO
-                    csvFile DE EXCEL
-                 */
-
                 // Obtén los datos necesarios (simplificado para mostrar la idea)
                 if (fechaFin.HasValue)
                 {
@@ -383,6 +323,7 @@ namespace ALFINapp.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
+        /*[HttpGet]
         public IActionResult SubircsvFile(IFormFile csvFile)
         {
             if (csvFile == null || csvFile.Length == 0)
@@ -506,6 +447,6 @@ namespace ALFINapp.Controllers
                 TempData["Message"] = "Ocurrió un error al procesar el csvFile. Verifique su formato y vuelva a intentarlo.";
                 return RedirectToAction("Inicio", "Supervisor");
             }
-        }
+        }*/
     }
 }

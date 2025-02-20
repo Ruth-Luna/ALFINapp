@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using ALFINapp.Filters;
 using ALFINapp.Models;
 using ALFINapp.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ALFINapp.Controllers
 {
+    [RequireSession]
     public class DerivacionController : Controller
     {
         private readonly DBServicesDerivacion _dBServicesDerivacion;
@@ -29,6 +31,7 @@ namespace ALFINapp.Controllers
         }
 
         [HttpGet]
+        [PermissionAuthorization("Derivacion", "Derivacion")]
         public async Task<IActionResult> Derivacion()
         {
             var rolUsuario = HttpContext.Session.GetInt32("RolUser");

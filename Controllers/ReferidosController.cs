@@ -11,6 +11,7 @@ using ALFINapp.Models;
 
 namespace ALFINapp.Controllers
 {
+    [RequireSession]
     public class ReferidosController : Controller
     {
         public DBServicesGeneral _dbServicesGeneral;
@@ -25,6 +26,8 @@ namespace ALFINapp.Controllers
             _dbServicesReferido = dbServicesReferido;
             _dBServicesDerivacion = dBServicesDerivacion;
         }
+        [HttpGet]
+        [PermissionAuthorization("Referidos", "Referidos")]
         public async Task<IActionResult> Referidos()
         { 
             try
@@ -51,6 +54,7 @@ namespace ALFINapp.Controllers
             }
         }
 
+        [HttpGet]
         public async Task<IActionResult> DatosEnviarDerivacion(int IdReferido)
         {
             try
@@ -67,6 +71,7 @@ namespace ALFINapp.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+        [HttpPost]
         public async Task<IActionResult> EnviarDerivacionPorReferencia ( int IdReferido )
         {
             try

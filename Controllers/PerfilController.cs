@@ -23,6 +23,7 @@ namespace ALFINapp.Controllers
         }
         
         [HttpGet]
+        [PermissionAuthorization("Perfil", "Perfil")]        
         public async Task<IActionResult> Perfil()
         {
             int? RolUser = HttpContext.Session.GetInt32("RolUser");
@@ -57,18 +58,7 @@ namespace ALFINapp.Controllers
             catch (System.Exception ex)
             {
                 TempData["MessageError"] = ex.Message;
-                if (RolUser == 1)
-                {
-                    return RedirectToAction("Inicio", "Vendedor");
-                }
-                else if (RolUser == 2)
-                {
-                    return RedirectToAction("Inicio", "Supervisor");
-                }
-                else
-                {
-                    return RedirectToAction("Index", "Home");
-                }
+                return RedirectToAction("Index", "Home");
             }
         }
 

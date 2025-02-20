@@ -16,19 +16,25 @@ namespace ALFINapp.Controllers
     public class AdministradorController : Controller
     {
         private readonly DBServicesGeneral _dbServicesGeneral;
-        public AdministradorController(DBServicesGeneral dbServicesGeneral)
+        private readonly DBServicesRoles _dBServicesRoles;
+        public AdministradorController(DBServicesGeneral dbServicesGeneral, DBServicesRoles dBServicesRoles)
         {
             _dbServicesGeneral = dbServicesGeneral;
+            _dBServicesRoles = dBServicesRoles;
         }
+
         [HttpGet]
+        [PermissionAuthorization("Administrador", "Inicio")]        
         public async Task<IActionResult> Inicio()
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId == null)
+            int? IdRol = HttpContext.Session.GetInt32("RolUser");
+            if (IdRol == null || usuarioId == null)
             {
-                TempData["ErrorMessage"] = "No se ha iniciado sesión";
+                TempData["MessageError"] = "No se ha iniciado sesión";
                 return RedirectToAction("Index", "Home");
             }
+            
             var supervisorData = new List<SupervisorDTO>
             {
                 new SupervisorDTO
