@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ALFINapp.Services;
-using ALFINapp.Models; // Replace with the correct namespace where DBServicesGeneral is defined
+using ALFINapp.Models;
+using ALFINapp.Filters; // Replace with the correct namespace where DBServicesGeneral is defined
 
 namespace ALFINapp.Controllers
 {
@@ -58,7 +59,7 @@ namespace ALFINapp.Controllers
                 IdCliente = getClienteEnriquecido.data.IdCliente,
                 NombreCliente = getClienteBase.data.XNombre + " " + getClienteBase.data.XAppaterno + " " + getClienteBase.data.XApmaterno,
                 TelefonoCliente = Telefono,
-                NombreAgencia = "73"+agenciaComercial,
+                NombreAgencia = agenciaComercial,
                 FueProcesado = false,
                 EstadoDerivacion = "DERIVACION PENDIENTE"
             };
