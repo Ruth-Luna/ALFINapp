@@ -88,7 +88,20 @@ namespace ALFINapp.Controllers
                 TempData["MessageError"] = "No hay bases de destino disponibles para asignar.";
                 return RedirectToAction("Index", "Home");
             }
+            var supervisorData = await _dbServicesConsultasSupervisores.ConsultaLeadsDelSupervisor(usuarioId.Value);
 
+            if (supervisorData.IsSuccess == false)
+            {
+                TempData["MessageError"] = supervisorData.Message;
+                return RedirectToAction("Inicio", "Supervisor");
+            }
+
+            int totalClientes = supervisorData.Data != null ? supervisorData.Data.Count() : 0;
+            int clientesPendientesSupervisor = supervisorData.Data != null ? supervisorData.Data.Count(cliente => cliente.idUsuarioV == 0) : 0;
+            int clientesAsignadosSupervisor = supervisorData.Data != null ? supervisorData.Data.Count(cliente => cliente.idUsuarioV != 0) : 0;
+
+            var NumLeads = new List<int> { totalClientes, clientesPendientesSupervisor, clientesAsignadosSupervisor };
+            ViewData["NumLeads"] = NumLeads;
             ViewData["DestinoBases"] = DestinoBases;
             return View("Asignacion", vendedoresConClientes);
         }
@@ -105,49 +118,6 @@ namespace ALFINapp.Controllers
                     TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
                     return RedirectToAction("Index", "Home");
                 }
-
-                /*var stringTasks = new List<Task<(bool IsSuccess, string Message, List<StringDTO>? data)>>()
-                {
-                    _dbServicesGeneral.GetUCampanas(),
-                    _dbServicesGeneral.GetUClienteEstado(),
-                    _dbServicesGeneral.GetUColor(),
-                    _dbServicesGeneral.GetUColorFinal(),
-                    _dbServicesGeneral.GetUGrupoMonto(),
-                    _dbServicesGeneral.GetUGrupoTasa(),
-                    _dbServicesGeneral.GetURangoEdad(),
-                    _dbServicesGeneral.GetURangoOferta(),
-                    _dbServicesGeneral.GetURangoTasas(),
-                    _dbServicesGeneral.GetUTipoCliente(),
-                    _dbServicesGeneral.GetUUsuario(),
-                    _dbServicesGeneral.GetUTipoBase()
-                };
-
-                var numberTasks = new List<Task<(bool IsSuccess, string Message, List<NumerosEnterosDTO>? data)>>()
-                {
-                    _dbServicesGeneral.GetUFrescura(),
-                    _dbServicesGeneral.GetUPropension()
-                };
-
-                var stringResults = await Task.WhenAll(stringTasks);
-                var numberResults = await Task.WhenAll(numberTasks);
-
-
-                // Asignar resultados a variables individuales
-                var GetUCampanas = stringTasks[0];
-                var GetUClienteEstado = stringTasks[1];
-                var GetUColor = stringTasks[2];
-                var GetUColorFinal = stringTasks[3];
-                var GetUGrupoMonto = stringTasks[4];
-                var GetUGrupoTasa = stringTasks[5];
-                var GetURangoEdad = stringTasks[6];
-                var GetURangoOferta = stringTasks[7];
-                var GetURangoTasas = stringTasks[8];
-                var GetUTipoCliente = stringTasks[9];
-                var GetUUsuario = stringTasks[10];
-                var GetUTipoBase = stringTasks[11];
-
-                var GetUFrescura = numberTasks[0];
-                var GetUPropension = numberTasks[1];*/
 
                 var GetUCampanas = await _dbServicesGeneral.GetUCampanas();
                 var GetUClienteEstado = await _dbServicesGeneral.GetUClienteEstado();
@@ -434,6 +404,30 @@ namespace ALFINapp.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
-
+        [HttpGet]
+        public async Task<IActionResult> ObtenerBaseDisponibleDelDestino(string destino)
+        {
+            try
+            {
+                var idSupervisor = HttpContext.Session.GetInt32("UsuarioId");
+                if (idSupervisor == null)
+                {
+                    return Json(new { success = false, message = "No se ha iniciado sesión" });
+                }
+                var supervisorData = await _dbServicesConsultasSupervisores.ConsultaLeadsDelSupervisorDestino(idSupervisor.Value, destino);
+                if (!supervisorData.IsSuccess)
+                {
+                    return Json(new { success = false, message = supervisorData.Message });
+                }
+                int clientesPendientesSupervisor = supervisorData.Data != null ? supervisorData.Data.Count(cliente => cliente.IdUsuarioV == 0) : 0;
+                int totalClientes = supervisorData.Data != null ? supervisorData.Data.Count() : 0;
+                int clientesAsignadosSupervisor = supervisorData.Data != null ? supervisorData.Data.Count(cliente => cliente.IdUsuarioV != 0) : 0;
+                return Json(new { success = true, message = "Busqueda de datos por base con exito", data = new { clientesPendientesSupervisor, totalClientes, clientesAsignadosSupervisor } });
+            }
+            catch (System.Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
     }
 }

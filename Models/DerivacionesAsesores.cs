@@ -32,5 +32,7 @@ namespace ALFINapp.Models
         public bool? FueProcesado { get; set; }
         [Column("estado_derivacion")]
         public string? EstadoDerivacion { get; set; }
+        [Column("id_asignacion")]
+        public int? IdAsignacion { get; set; }
     }
 }

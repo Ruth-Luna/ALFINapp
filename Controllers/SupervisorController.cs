@@ -22,64 +22,76 @@ namespace ALFINapp.Controllers
             _dbServicesConsultasSupervisores = dbServicesConsultasSupervisores;
             _dbServicesGeneral = dbServicesGeneral;
         }
+        /// <summary>
+        /// Obtiene y muestra la página de inicio del supervisor con información sobre los leads y clientes asignados.
+        /// </summary>
+        /// <param name="page">Número de página actual para la paginación. Valor predeterminado: 1</param>
+        /// <param name="pageSize">Cantidad de elementos por página. Valor predeterminado: 20</param>
+        /// <returns>
+        /// Vista "Inicio" con la lista de supervisores y datos estadísticos en ViewData:
+        /// - UsuarioNombre: Nombre completo del supervisor actual
+        /// - ClientesPendientesSupervisor: Número de clientes sin asesor asignado
+        /// - DestinoBases: Lista de bases de datos disponibles
+        /// - clientesAsignadosSupervisor: Número de clientes con asesor asignado
+        /// - totalClientes: Número total de clientes
+        /// </returns>
+        /// <remarks>
+        /// El método realiza las siguientes operaciones:
+        /// - Verifica la autenticación del usuario
+        /// - Consulta los leads asignados al supervisor
+        /// - Calcula estadísticas de asignación de clientes
+        /// - Obtiene las bases de datos disponibles para el supervisor
+        /// - Limita la lista de supervisores a 200 registros
+        /// 
+        /// Los datos se almacenan en ViewData para su uso en la vista.
+        /// </remarks>
+        /// <example>
+        /// Uso típico desde una vista:
+        /// <code>
+        /// @{
+        ///     var nombreSupervisor = ViewData["UsuarioNombre"] as string;
+        ///     var clientesPendientes = (int)ViewData["ClientesPendientesSupervisor"];
+        ///     var totalClientes = (int)ViewData["totalClientes"];
+        /// }
+        /// </code>
+        /// </example>
+        /// <exception cref="Exception">
+        /// Pueden ocurrir excepciones durante:
+        /// - La consulta a la base de datos
+        /// - La obtención de datos de sesión
+        /// - El procesamiento de los datos del supervisor
+        /// </exception>
         [HttpGet]
         [PermissionAuthorization("Supervisor", "Inicio")]
-        public async Task<IActionResult> Inicio (int page = 1, int pageSize = 20)
+        public async Task<IActionResult> Inicio(int page = 1, int pageSize = 20)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-
-            var supervisorData = from ca in _context.clientes_asignados
-                                 join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
-                                 join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
-                                 join db in _context.detalle_base on bc.IdBase equals db.IdBase
-                                 join u in _context.usuarios on ca.IdUsuarioV equals u.IdUsuario into usuarioJoin
-                                 from u in usuarioJoin.DefaultIfEmpty()
-                                 where ca.IdUsuarioS == usuarioId
-                                        && ca.ClienteDesembolso != true
-                                        && ca.ClienteRetirado != true
-                                        && ca.FechaAsignacionSup.HasValue
-                                        && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                                        && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
-                                        && db.TipoBase == ca.FuenteBase
-                                 select new SupervisorDTO
-                                 {
-                                     IdAsignacion = ca.IdAsignacion,
-                                     IdCliente = ca.IdCliente,
-                                     idUsuarioV = ca.IdUsuarioV.HasValue ? ca.IdUsuarioV.Value : 0,
-                                     FechaAsignacionV = ca.FechaAsignacionVendedor,
-
-                                     Dni = bc.Dni,
-                                     XAppaterno = bc.XAppaterno,
-                                     XApmaterno = bc.XApmaterno,
-                                     XNombre = bc.XNombre,
-
-                                     NombresCompletos = u != null ? u.NombresCompletos : "Asesor no Asignado",
-                                     DniVendedor = u != null ? u.Dni : " ",
-                                 };
-            if (supervisorData == null)
+            int? IdRol = HttpContext.Session.GetInt32("RolUser");
+            if (IdRol == null || usuarioId == null)
             {
-                return NotFound("El presente Usuario Supervisor no tiene clientes Asignados");
+                TempData["MessageError"] = "No se ha iniciado sesión";
+                return RedirectToAction("Index", "Home");
             }
-            // Contar los clientes pendientes (idUsuarioV es null)
-            int clientesPendientesSupervisor = supervisorData.Count(cliente => cliente.idUsuarioV == 0);
-            // Contar todos los clientes
-            int totalClientes = supervisorData.Count();
-            // Contar los clientes asignados (idUsuarioV no es null o 0)
-            int clientesAsignadosSupervisor = supervisorData.Count(cliente => cliente.idUsuarioV != 0);
 
+            var supervisorData = await _dbServicesConsultasSupervisores.ConsultaLeadsDelSupervisor(usuarioId.Value);
+            if (supervisorData.IsSuccess == false)
+            {
+                TempData["MessageError"] = supervisorData.Message;
+                return RedirectToAction("Index", "Home");
+            }
+            int clientesPendientesSupervisor = supervisorData.Data != null ? supervisorData.Data.Count(cliente => cliente.idUsuarioV == 0) : 0;
+            int totalClientes = supervisorData.Data != null ? supervisorData.Data.Count() : 0;
+            int clientesAsignadosSupervisor = supervisorData.Data != null ? supervisorData.Data.Count(cliente => cliente.idUsuarioV != 0) : 0;
             var usuario = await _context.usuarios.FirstOrDefaultAsync(u => u.IdUsuario == usuarioId);
-
             var DestinoBases = await _context.clientes_asignados
-                                                            .Where(ca => ca.IdUsuarioS == usuarioId && ca.Destino != null) // Filtrar por usuarioId
-                                                            .Select(ca => ca.Destino)                        // Seleccionar solo la columna destino
-                                                            .Distinct()                              // Obtener solo valores distintos
-                                                            .ToListAsync();                          // Convertir a lista
+                                    .Where(ca => ca.IdUsuarioS == usuarioId && ca.Destino != null)
+                                    .Select(ca => ca.Destino)
+                                    .Distinct()
+                                    .ToListAsync();
 
-            // Filtrado de las bases
-            var supervisorList = supervisorData.Take(200).ToList();
+            var supervisorList = supervisorData.Data != null ? supervisorData.Data.Take(200).ToList() : new List<SupervisorDTO>();
             ViewData["UsuarioNombre"] = usuario != null ? usuario.NombresCompletos : "Usuario No Encontrado";
             ViewData["ClientesPendientesSupervisor"] = clientesPendientesSupervisor;
-            //ColumnasDestino
             ViewData["DestinoBases"] = DestinoBases;
             ViewData["clientesAsignadosSupervisor"] = clientesAsignadosSupervisor;
             ViewData["totalClientes"] = totalClientes;
@@ -95,9 +107,14 @@ namespace ALFINapp.Controllers
                 return RedirectToAction("Inicio");
             }
 
-            var idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId").Value;
+            var idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
+            if (idSupervisorActual == null)
+            {
+                TempData["MessageError"] = "No se ha iniciado sesion.";
+                return RedirectToAction("Inicio");
+            }
             var clientesDisponibles = _context.clientes_asignados
-                                            .Where(ca => ca.IdUsuarioS == idSupervisorActual && ca.IdUsuarioV == null && ca.FechaAsignacionSup.HasValue && ca.FechaAsignacionSup.Value.Year == 2025
+                                            .Where(ca => ca.IdUsuarioS == idSupervisorActual.Value && ca.IdUsuarioV == null && ca.FechaAsignacionSup.HasValue && ca.FechaAsignacionSup.Value.Year == 2025
                                             && ca.FechaAsignacionSup.Value.Month == 1)
                                             .Take(nclientes)
                                             .ToList();
@@ -125,10 +142,15 @@ namespace ALFINapp.Controllers
         [HttpGet]
         public IActionResult ModificarAsignacionVendedorView(int id_asignacion)
         {
-            var idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId").Value;
+            var idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
+            if (idSupervisorActual == null)
+            {
+                TempData["MessageError"] = "No se ha iniciado sesión";
+                return RedirectToAction("Inicio", "Supervisor");
+            }
 
             var vendedoresAsignados = (from u in _context.usuarios
-                                       where u.IDUSUARIOSUP == idSupervisorActual && u.Rol == "VENDEDOR"
+                                       where u.IDUSUARIOSUP == idSupervisorActual.Value && u.Rol == "VENDEDOR"
                                        join ca in _context.clientes_asignados
                                        on u.IdUsuario equals ca.IdUsuarioV into clientes
                                        from ca in clientes.DefaultIfEmpty()
@@ -156,7 +178,12 @@ namespace ALFINapp.Controllers
         public IActionResult ModificarAsignacionVendedor(int idasignado, int idVendedor)
         {
             var asignacion = _context.clientes_asignados.FirstOrDefault(c => c.IdAsignacion == idasignado);
-
+            if (asignacion == null)
+            {
+                TempData["MessageError"] = "El id de Asignacion mandado es incorrecto";
+                return RedirectToAction("Inicio");
+            }
+            
             if (asignacion.IdUsuarioV == idVendedor)
             {
                 TempData["MessageError"] = "Debe seleccionar un Asesor diferente, ya que el Asesor actual es el mismo.";

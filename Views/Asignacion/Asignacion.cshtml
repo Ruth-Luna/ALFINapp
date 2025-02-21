@@ -2,6 +2,7 @@
 
 @{
     var destinoBases = ViewData["DestinoBases"] as List<string>;
+    var NumLeads = ViewData["NumLeads"] as List<int>;
 }
 
 @section Styles {
@@ -12,14 +13,37 @@
     <div class="container mb-3">
         <h3>Seccion Asignaciones del Asesor de Creditos</h3>
         <div class="form-group mb-3">
-            <label for="BaseDestino">Destino</label>
-            <select class="form-control" name="BaseDestino" id="BaseDestino">
-                <option value="">Seleccione una Base de Destino</option>
-                @foreach (var destinoBase in destinoBases)
+            <div class="row">
+                @if (NumLeads != null && NumLeads.Count > 0)
                 {
-                    @if (@destinoBase != "A365_AGREGADO_MANUALMENTE" || @destinoBase != "ALFIN_AGREGADO_MANUALMENTE_2")
+                    <div class="col-md-4">
+                        <label for="NumTotalLeads">Numero Total de Leads</label>
+                        <input type="text" class="form-control" id="NumTotalLeads" name="NumTotalLeads" value="@NumLeads[0]"
+                            readonly>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="NumLeadsDisponible">Numero de Leads Disponibles</label>
+                        <input type="text" class="form-control" id="NumLeadsDisponible" name="NumLeadsDisponible"
+                            value="@NumLeads[1]" readonly>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="NumLeadsAsignados">Numero de Leads Asignados</label>
+                        <input type="text" class="form-control" id="NumLeadsAsignados" name="NumLeadsAsignados"
+                            value="@NumLeads[2]" readonly>
+                    </div>
+                }
+            </div>
+            <label for="BaseDestino">Destino</label>
+            <select class="form-control" name="BaseDestino" id="BaseDestino" onchange="cargarBaseDisponible(this.value)">
+                <option value="">Seleccione una Base de Destino</option>
+                @if (destinoBases != null)
+                {
+                    @foreach (var destinoBase in destinoBases)
                     {
-                        <option value="@destinoBase">@destinoBase</option>
+                        @if (@destinoBase != "A365_AGREGADO_MANUALMENTE" || @destinoBase != "ALFIN_AGREGADO_MANUALMENTE_2")
+                        {
+                            <option value="@destinoBase">@destinoBase</option>
+                        }
                     }
                 }
             </select>
@@ -140,4 +164,5 @@
             });
         }
     </script>
+    <script src="~/js/Asignacion/Asignacion.js"></script>
 }

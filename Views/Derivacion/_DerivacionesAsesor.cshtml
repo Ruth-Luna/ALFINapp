@@ -1,5 +1,5 @@
 @{
-    var DerivacionesAsesores = ViewData["Derivaciones"] as List<GESTIONDETALLE>;
+    var DerivacionesAsesores = ViewData["Derivaciones"] as List<GestionDetalleDTO>;
 }
 
 <div class="container mt-4">
@@ -26,7 +26,7 @@
                         <td>@derivacionAsesor.DocCliente</td>
                         <td>@derivacionAsesor.Telefono</td>
                         <td>@derivacionAsesor.DocAsesor</td>
-                        <td>@derivacionAsesor.OrigenTelefono</td>
+                        <td><span class="badge bg-success">@derivacionAsesor.OrigenTelefono</span></td>
                     </tr>
                 }
             }
