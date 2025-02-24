@@ -44,6 +44,7 @@ public class MDbContext : DbContext
     public DbSet<DetallesClienteDTO> detalles_clientes_dto { get; set; }
     public DbSet<DetalleTipificarClienteDTO> detalle_tipificar_cliente_dto { get; set; }
     public DbSet<DetalleClienteA365TipificarDTO> detalle_cliente_a365_tipificar_dto { get; set; }
+    public DbSet<DerivacionesAsesoresDTO> derivaciones_asesores_dto { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -75,12 +76,16 @@ public class MDbContext : DbContext
         modelBuilder.Entity<BoolDTO>()
             .HasNoKey()
             .ToView(null);
-        
+
         modelBuilder.Entity<DetalleTipificarClienteDTO>()
             .HasNoKey()
             .ToView(null);
-        
+
         modelBuilder.Entity<DetalleClienteA365TipificarDTO>()
+            .HasNoKey()
+            .ToView(null);
+
+        modelBuilder.Entity<DerivacionesAsesoresDTO>()
             .HasNoKey()
             .ToView(null);
     }

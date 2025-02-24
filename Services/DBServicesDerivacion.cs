@@ -109,7 +109,7 @@ namespace ALFINapp.Services
             try
             {
                 int tiempoMaximoEspera = 30000; // 30 segundos
-                int intervaloEspera = 3000; // 3 segundos
+                int intervaloEspera = 1000; // 1 segundo
                 int tiempoTranscurrido = 0;
 
                 while (tiempoTranscurrido < tiempoMaximoEspera)

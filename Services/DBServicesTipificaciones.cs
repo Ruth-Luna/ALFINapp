@@ -91,7 +91,7 @@ namespace ALFINapp.Services
                 if (Tipificacion.IdTipificacion == 2)
                 {
                     derivacionBusqueda = await (from da in _context.derivaciones_asesores
-                                        where da.IdCliente == clienteDatos.IdBase
+                                        where da.IdCliente == Enriquecido.IdCliente
                                         select da)
                                         .FirstOrDefaultAsync();
                     if (derivacionBusqueda == null)

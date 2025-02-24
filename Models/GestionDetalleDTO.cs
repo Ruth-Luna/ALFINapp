@@ -35,5 +35,7 @@ namespace ALFINapp.Models
         public string? TipoDerivacion { get; set; }
         public DateTime? FechaDerivacion { get; set; }
         public string? Observacion { get; set; }
+        public bool? FueProcesadaLaDerivacion { get; set; }
+        public string? NombreCompletoCliente { get; set; }
     }
 }

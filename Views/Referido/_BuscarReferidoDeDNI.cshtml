@@ -1,0 +1,53 @@
+@model List<ALFINapp.Models.ClientesReferidosDTO>
+
+@{
+}
+
+<div class="container mb-4">
+    <h3>Consulta de Cliente</h3>
+    <div class="alert alert-info mt-4" role="alert">
+        <strong>Consulta:</strong> Estado de los clientes referidos por el Asesor (las entradas solo son las realizadas de este mes)
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="alert alert-secondary mt-4" role="alert">
+            Usted no tiene clientes referidos en este mes
+        </div>
+    }
+    
+    <div class="table-responsive">
+        <table class="table table-white text-nowrap" id="clientesTable">
+            <thead>
+                <tr>
+                    <th scope="col">Estado</th>
+                    <th scope="col">DNI</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Desembolso</th>
+                    <th scope="col">Fecha Desembolso</th>
+                </tr>
+            </thead>
+            <tbody id="referidosDeDNI">
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @if(item.FueProcesado == false)
+                            {
+                                <span class="badge bg-secondary">@item.EstadoReferencia</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-primary">@item.EstadoReferencia</span>
+                            }
+                        </td>
+                        <td>@item.DniCliente</td>
+                        <td>@item.NombreCompletoCliente</td>
+                        <td>@item.EstadoDesembolso</td>
+                        <td>@item.FechaDesembolso</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -40,6 +40,7 @@ namespace ALFINapp.Controllers
                 TempData["MessageError"] = "No se ha iniciado sesión.";
                 return RedirectToAction("Index", "Home");
             }
+            ViewData["RolUsuario"] = rolUsuario;
             if (rolUsuario == 2 || rolUsuario == 1)
             {
                 var UsuarioIdSupervisor = HttpContext.Session.GetInt32("UsuarioId");
@@ -55,87 +56,96 @@ namespace ALFINapp.Controllers
                     return RedirectToAction("Index", "Home");
                 }
                 var getclientesDerivadosBSDial = await _dBServicesDerivacion.GetEntradasBSDialXSupervisor(getAsesoresAsignados.Data);
-                if (!getclientesDerivadosBSDial.IsSuccess || getclientesDerivadosBSDial.Data == null)
+                if (!getclientesDerivadosBSDial.IsSuccess)
                 {
                     TempData["MessageError"] = getclientesDerivadosBSDial.Message;
                     return RedirectToAction("Index", "Home");
                 }
                 var getClientesDerivadosGenerales = await _dBServicesDerivacion.GetClientesDerivadosGenerales(getAsesoresAsignados.Data);
-                if (!getClientesDerivadosGenerales.IsSuccess || getClientesDerivadosGenerales.Data == null)
+                if (!getClientesDerivadosGenerales.IsSuccess)
                 {
                     TempData["MessageError"] = getClientesDerivadosGenerales.Message;
                     return RedirectToAction("Index", "Home");
                 }
                 var getClientesDatosDTO = new List<GestionDetalleDTO>();
-                foreach (var item in getClientesDerivadosGenerales.Data)
+                if (getClientesDerivadosGenerales.Data != null)
                 {
-                    var getInformation = await _dBServicesDerivacion.GetDerivacionInformation(item);
-                    if (!getInformation.IsSuccess)
+                    foreach (var item in getClientesDerivadosGenerales.Data)
                     {
-                        TempData["MessageError"] = getInformation.Message;
-                        return RedirectToAction("Index", "Home");
+                        var getInformation = await _dBServicesDerivacion.GetDerivacionInformation(item);
+                        if (!getInformation.IsSuccess)
+                        {
+                            TempData["MessageError"] = getInformation.Message;
+                            return RedirectToAction("Index", "Home");
+                        }
+                        var newItem = new GestionDetalleDTO
+                        {
+                            IdAsignacion = item.IdDerivacion,
+                            DocCliente = item.DniCliente ?? string.Empty,
+                            Canal = "A365",
+                            FechaEnvio = item.FechaDerivacion,
+                            FechaGestion = item.FechaDerivacion,
+                            Telefono = item.TelefonoCliente,
+                            OrigenTelefono = "A365",
+                            CodTip = 2,
+                            DocAsesor = item.DniAsesor,
+                            Origen = "A365",
+                            ArchivoOrigen = "SISTEMA INTERNO",
+                            IdDerivacion = item.IdDerivacion,
+                            TraidoDe = "SISTEMA INTERNO",
+                            EstadoDerivacion = item.EstadoDerivacion + " - " + item.FueProcesado,
+                            TipoDerivacion = "AUTOMATICA",
+                            FueProcesadaLaDerivacion = item.FueProcesado,
+                            //DATOS QUE DEBEN SER BUSCADOS POR EL ID ASIGNAICON
+                            CodCampaña = getInformation.data != null ? getInformation.data.CodCampaña : "NO SE ENCONTRO CAMPAÑA",
+                            Oferta = getInformation.data != null ? getInformation.data.Oferta : 0,
+                            CodCanal = getInformation.data != null ? getInformation.data.CodCanal : "NO SE ENCONTRO UN CANAL",
+                            FechaCarga = getInformation.data != null ? getInformation.data.FechaCarga : DateTime.Now,
+                            IdSupervisor = getInformation.data != null ? getInformation.data.IdSupervisor : 0,
+                            Supervisor = getInformation.data != null ? getInformation.data.Supervisor : "NO SE ENCONTRO SUPERVISOR",
+                            IdDesembolso = getInformation.data != null ? getInformation.data.IdDesembolso : 0,
+                            FechaDesembolso = getInformation.data != null ? getInformation.data.FechaDesembolso : null,
+                            EstadoDesembolso = getInformation.data != null ? getInformation.data.EstadoDesembolso : "NO SE ENCONTRO ESTADO DE DESEMBOLSO",
+                            Observacion = getInformation.data != null ? getInformation.data.Observacion : "NO SE ENCONTRO OBSERVACION",
+                        };
+                        getClientesDatosDTO.Add(newItem);
                     }
-                    var newItem = new GestionDetalleDTO
-                    {
-                        IdAsignacion = item.IdDerivacion,
-                        DocCliente = item.DniCliente ?? string.Empty,
-                        Canal = "A365",
-                        FechaEnvio = item.FechaDerivacion,
-                        FechaGestion = item.FechaDerivacion,
-                        Telefono = item.TelefonoCliente,
-                        OrigenTelefono = "A365",
-                        CodTip = 2,
-                        DocAsesor = item.DniAsesor,
-                        Origen = "A365",
-                        ArchivoOrigen = "SISTEMA INTERNO",
-                        IdDerivacion = item.IdDerivacion,
-                        TraidoDe = "SISTEMA INTERNO",
-                        EstadoDerivacion = item.EstadoDerivacion + " - " + item.FueProcesado,
-                        TipoDerivacion = "AUTOMATICA",
-                        //DATOS QUE DEBEN SER BUSCADOS POR EL ID ASIGNAICON
-                        CodCampaña = getInformation.data != null ? getInformation.data.CodCampaña : "NO SE ENCONTRO CAMPAÑA",
-                        Oferta = getInformation.data != null ? getInformation.data.Oferta : 0,
-                        CodCanal = getInformation.data != null ? getInformation.data.CodCanal : "NO SE ENCONTRO UN CANAL",
-                        FechaCarga = getInformation.data != null ? getInformation.data.FechaCarga : DateTime.Now,
-                        IdSupervisor = getInformation.data != null ? getInformation.data.IdSupervisor : 0,
-                        Supervisor = getInformation.data != null ? getInformation.data.Supervisor : "NO SE ENCONTRO SUPERVISOR",
-                        IdDesembolso = getInformation.data != null ? getInformation.data.IdDesembolso : 0,
-                        FechaDesembolso = getInformation.data != null ? getInformation.data.FechaDesembolso : null,
-                        EstadoDesembolso = getInformation.data != null ? getInformation.data.EstadoDesembolso : "NO SE ENCONTRO ESTADO DE DESEMBOLSO",
-                        Observacion = getInformation.data != null ? getInformation.data.Observacion : "NO SE ENCONTRO OBSERVACION"
-                    };
-                    getClientesDatosDTO.Add(newItem);
                 }
-                foreach (var item in getclientesDerivadosBSDial.Data)
+
+                if (getclientesDerivadosBSDial.Data != null)
                 {
-                    var newItem = new GestionDetalleDTO
+                    foreach (var item in getclientesDerivadosBSDial.Data)
                     {
-                        IdFeedback = item.IdFeedback,
-                        IdAsignacion = item.IdAsignacion,
-                        CodCanal = item.CodCanal,
-                        Canal = item.Canal,
-                        DocCliente = item.DocCliente,
-                        FechaEnvio = item.FechaEnvio,
-                        FechaGestion = item.FechaGestion,
-                        HoraGestion = item.HoraGestion,
-                        Telefono = item.Telefono,
-                        OrigenTelefono = item.OrigenTelefono,
-                        CodCampaña = item.CodCampaña,
-                        CodTip = item.CodTip,
-                        Oferta = item.Oferta,
-                        DocAsesor = item.DocAsesor,
-                        Origen = item.Origen,
-                        ArchivoOrigen = item.ArchivoOrigen,
-                        FechaCarga = item.FechaCarga,
-                        IdDerivacion = item.IdDerivacion,
-                        IdSupervisor = item.IdSupervisor,
-                        Supervisor = item.Supervisor,
-                        IdDesembolso = item.IdDesembolso,
-                        TraidoDe = "SISTEMA EXTERNO",
-                        EstadoDerivacion = "DERIVADO MANUALMENTE",
-                        TipoDerivacion = "MANUAL"
-                    };
-                    getClientesDatosDTO.Add(newItem);
+                        var newItem = new GestionDetalleDTO
+                        {
+                            IdFeedback = item.IdFeedback,
+                            IdAsignacion = item.IdAsignacion,
+                            CodCanal = item.CodCanal,
+                            Canal = item.Canal,
+                            DocCliente = item.DocCliente,
+                            FechaEnvio = item.FechaEnvio,
+                            FechaGestion = item.FechaGestion,
+                            HoraGestion = item.HoraGestion,
+                            Telefono = item.Telefono,
+                            OrigenTelefono = item.OrigenTelefono,
+                            CodCampaña = item.CodCampaña,
+                            CodTip = item.CodTip,
+                            Oferta = item.Oferta,
+                            DocAsesor = item.DocAsesor,
+                            Origen = item.Origen,
+                            ArchivoOrigen = item.ArchivoOrigen,
+                            FechaCarga = item.FechaCarga,
+                            IdDerivacion = item.IdDerivacion,
+                            IdSupervisor = item.IdSupervisor,
+                            Supervisor = item.Supervisor,
+                            IdDesembolso = item.IdDesembolso,
+                            TraidoDe = "SISTEMA EXTERNO",
+                            EstadoDerivacion = "DERIVADO MANUALMENTE",
+                            TipoDerivacion = "MANUAL",
+                            FueProcesadaLaDerivacion = true
+                        };
+                        getClientesDatosDTO.Add(newItem);
+                    }
                 }
                 ViewData["Asesores"] = getAsesoresAsignados.Data;
                 return View("Derivacion", getClientesDatosDTO);
@@ -156,88 +166,97 @@ namespace ALFINapp.Controllers
                 }
                 var DniAsesor = getDniAsesor.Data.Dni;
                 var getDerivaciones = await _dBServicesDerivacion.GetEntradasBSDialXSupervisor(new List<Usuario> { new Usuario { Dni = DniAsesor } });
-                if (!getDerivaciones.IsSuccess || getDerivaciones.Data == null)
+                if (!getDerivaciones.IsSuccess)
                 {
                     TempData["MessageError"] = getDerivaciones.Message;
                     return RedirectToAction("Index", "Home");
                 }
                 var getClientesDerivadosGenerales = await _dBServicesDerivacion.GetClientesDerivadosGenerales(new List<Usuario> { new Usuario { Dni = DniAsesor } });
-                if (!getClientesDerivadosGenerales.IsSuccess || getClientesDerivadosGenerales.Data == null)
+                if (!getClientesDerivadosGenerales.IsSuccess)
                 {
                     TempData["MessageError"] = getClientesDerivadosGenerales.Message;
                     return RedirectToAction("Index", "Home");
                 }
                 var getClientesDatosDTO = new List<GestionDetalleDTO>();
-                foreach (var item in getClientesDerivadosGenerales.Data)
+                if (getClientesDerivadosGenerales.Data != null)
                 {
-                    //var getInformation = await _dBServicesDerivacion.GetDerivacionInformation(item);
-                    var getInformation = await _dBServicesDerivacion.GetDerivacionInformation(item);
-                    if (!getInformation.IsSuccess)
+                    foreach (var item in getClientesDerivadosGenerales.Data)
                     {
-                        TempData["MessageError"] = getInformation.Message;
-                        return RedirectToAction("Index", "Home");
+                        //var getInformation = await _dBServicesDerivacion.GetDerivacionInformation(item);
+                        var getInformation = await _dBServicesDerivacion.GetDerivacionInformation(item);
+                        if (!getInformation.IsSuccess)
+                        {
+                            TempData["MessageError"] = getInformation.Message;
+                            return RedirectToAction("Index", "Home");
+                        }
+                        var newItem = new GestionDetalleDTO
+                        {
+                            IdAsignacion = item.IdDerivacion,
+                            DocCliente = item.DniCliente ?? string.Empty,
+                            Canal = "A365",
+                            FechaEnvio = item.FechaDerivacion,
+                            FechaGestion = item.FechaDerivacion,
+                            Telefono = item.TelefonoCliente,
+                            OrigenTelefono = "A365",
+                            CodTip = 2,
+                            DocAsesor = item.DniAsesor,
+                            Origen = "A365",
+                            ArchivoOrigen = "SISTEMA INTERNO",
+                            IdDerivacion = item.IdDerivacion,
+                            TraidoDe = "SISTEMA INTERNO",
+                            EstadoDerivacion = item.EstadoDerivacion + " - " + item.FueProcesado,
+                            TipoDerivacion = "AUTOMATICA",
+                            FueProcesadaLaDerivacion = item.FueProcesado,
+                            //DATOS QUE DEBEN SER BUSCADOS POR EL ID ASIGNAICON
+                            CodCampaña = getInformation.data != null ? getInformation.data.CodCampaña : "NO SE ENCONTRO CAMPAÑA",
+                            Oferta = getInformation.data != null ? getInformation.data.Oferta : 0,
+                            CodCanal = getInformation.data != null ? getInformation.data.CodCanal : "NO SE ENCONTRO UN CANAL",
+                            FechaCarga = getInformation.data != null ? getInformation.data.FechaCarga : DateTime.Now,
+                            IdSupervisor = getInformation.data != null ? getInformation.data.IdSupervisor : 0,
+                            Supervisor = getInformation.data != null ? getInformation.data.Supervisor : "NO SE ENCONTRO SUPERVISOR",
+                            IdDesembolso = getInformation.data != null ? getInformation.data.IdDesembolso : 0,
+                            FechaDesembolso = getInformation.data != null ? getInformation.data.FechaDesembolso : null,
+                            EstadoDesembolso = getInformation.data != null ? getInformation.data.EstadoDesembolso : "NO SE ENCONTRO ESTADO DE DESEMBOLSO",
+                            Observacion = getInformation.data != null ? getInformation.data.Observacion : "NO SE ENCONTRO OBSERVACION"
+                        };
+                        getClientesDatosDTO.Add(newItem);
                     }
-                    var newItem = new GestionDetalleDTO
-                    {
-                        IdAsignacion = item.IdDerivacion,
-                        DocCliente = item.DniCliente ?? string.Empty,
-                        Canal = "A365",
-                        FechaEnvio = item.FechaDerivacion,
-                        FechaGestion = item.FechaDerivacion,
-                        Telefono = item.TelefonoCliente,
-                        OrigenTelefono = "A365",
-                        CodTip = 2,
-                        DocAsesor = item.DniAsesor,
-                        Origen = "A365",
-                        ArchivoOrigen = "SISTEMA INTERNO",
-                        IdDerivacion = item.IdDerivacion,
-                        TraidoDe = "SISTEMA INTERNO",
-                        EstadoDerivacion = item.EstadoDerivacion + " - " + item.FueProcesado,
-                        TipoDerivacion = "AUTOMATICA",
-                        //DATOS QUE DEBEN SER BUSCADOS POR EL ID ASIGNAICON
-                        CodCampaña = getInformation.data != null ? getInformation.data.CodCampaña : "NO SE ENCONTRO CAMPAÑA",
-                        Oferta = getInformation.data != null ? getInformation.data.Oferta : 0,
-                        CodCanal = getInformation.data != null ? getInformation.data.CodCanal : "NO SE ENCONTRO UN CANAL",
-                        FechaCarga = getInformation.data != null ? getInformation.data.FechaCarga : DateTime.Now,
-                        IdSupervisor = getInformation.data != null ? getInformation.data.IdSupervisor : 0,
-                        Supervisor = getInformation.data != null ? getInformation.data.Supervisor : "NO SE ENCONTRO SUPERVISOR",
-                        IdDesembolso = getInformation.data != null ? getInformation.data.IdDesembolso : 0,
-                        FechaDesembolso = getInformation.data != null ? getInformation.data.FechaDesembolso : null,
-                        EstadoDesembolso = getInformation.data != null ? getInformation.data.EstadoDesembolso : "NO SE ENCONTRO ESTADO DE DESEMBOLSO",
-                        Observacion = getInformation.data != null ? getInformation.data.Observacion : "NO SE ENCONTRO OBSERVACION"
-                    };
-                    getClientesDatosDTO.Add(newItem);
                 }
-                foreach (var item in getDerivaciones.Data)
+
+                if (getDerivaciones.Data != null)
                 {
-                    var newItem = new GestionDetalleDTO
+                    foreach (var item in getDerivaciones.Data)
                     {
-                        IdFeedback = item.IdFeedback,
-                        IdAsignacion = item.IdAsignacion,
-                        CodCanal = item.CodCanal,
-                        Canal = item.Canal,
-                        DocCliente = item.DocCliente,
-                        FechaEnvio = item.FechaEnvio,
-                        FechaGestion = item.FechaGestion,
-                        HoraGestion = item.HoraGestion,
-                        Telefono = item.Telefono,
-                        OrigenTelefono = item.OrigenTelefono,
-                        CodCampaña = item.CodCampaña,
-                        CodTip = item.CodTip,
-                        Oferta = item.Oferta,
-                        DocAsesor = item.DocAsesor,
-                        Origen = item.Origen,
-                        ArchivoOrigen = item.ArchivoOrigen,
-                        FechaCarga = item.FechaCarga,
-                        IdDerivacion = item.IdDerivacion,
-                        IdSupervisor = item.IdSupervisor,
-                        Supervisor = item.Supervisor,
-                        IdDesembolso = item.IdDesembolso,
-                        TraidoDe = "SISTEMA EXTERNO",
-                        EstadoDerivacion = "DERIVADO MANUALMENTE",
-                        TipoDerivacion = "MANUAL"
-                    };
-                    getClientesDatosDTO.Add(newItem);
+                        var newItem = new GestionDetalleDTO
+                        {
+                            IdFeedback = item.IdFeedback,
+                            IdAsignacion = item.IdAsignacion,
+                            CodCanal = item.CodCanal,
+                            Canal = item.Canal,
+                            DocCliente = item.DocCliente,
+                            FechaEnvio = item.FechaEnvio,
+                            FechaGestion = item.FechaGestion,
+                            HoraGestion = item.HoraGestion,
+                            Telefono = item.Telefono,
+                            OrigenTelefono = item.OrigenTelefono,
+                            CodCampaña = item.CodCampaña,
+                            CodTip = item.CodTip,
+                            Oferta = item.Oferta,
+                            DocAsesor = item.DocAsesor,
+                            Origen = item.Origen,
+                            ArchivoOrigen = item.ArchivoOrigen,
+                            FechaCarga = item.FechaCarga,
+                            IdDerivacion = item.IdDerivacion,
+                            IdSupervisor = item.IdSupervisor,
+                            Supervisor = item.Supervisor,
+                            IdDesembolso = item.IdDesembolso,
+                            TraidoDe = "SISTEMA EXTERNO",
+                            EstadoDerivacion = "DERIVADO MANUALMENTE",
+                            TipoDerivacion = "MANUAL",
+                            FueProcesadaLaDerivacion = true
+                        };
+                        getClientesDatosDTO.Add(newItem);
+                    }
                 }
                 ViewData["Derivaciones"] = getClientesDatosDTO;
                 return View("Derivacion", getClientesDatosDTO);
@@ -295,6 +314,7 @@ namespace ALFINapp.Controllers
                         TraidoDe = "SISTEMA INTERNO",
                         EstadoDerivacion = item.EstadoDerivacion + " - " + item.FueProcesado,
                         TipoDerivacion = "AUTOMATICA",
+                        FueProcesadaLaDerivacion = item.FueProcesado,
                         //DATOS QUE DEBEN SER BUSCADOS POR EL ID ASIGNAICON
                         CodCampaña = getInformation.data != null ? getInformation.data.CodCampaña : "NO SE ENCONTRO CAMPAÑA",
                         Oferta = getInformation.data != null ? getInformation.data.Oferta : 0,
@@ -336,7 +356,8 @@ namespace ALFINapp.Controllers
                         IdDesembolso = item.IdDesembolso,
                         TraidoDe = "SISTEMA EXTERNO",
                         EstadoDerivacion = "DERIVADO MANUALMENTE",
-                        TipoDerivacion = "MANUAL"
+                        TipoDerivacion = "MANUAL",
+                        FueProcesadaLaDerivacion = true
                     };
                     getClientesDatosDTO.Add(newItem);
                 }
@@ -420,6 +441,7 @@ namespace ALFINapp.Controllers
                         OrigenTelefono = "A365",
                         CodTip = 2,
                         DocAsesor = item.DniAsesor,
+                        FueProcesadaLaDerivacion = item.FueProcesado,
                         //DATOS QUE DEBEN SER BUSCADOS POR EL ID ASIGNAICON
                         CodCampaña = item.NombreAgencia,
                         Oferta = 0,
@@ -465,6 +487,7 @@ namespace ALFINapp.Controllers
                         IdDesembolso = item.IdDesembolso,
                         TraidoDe = "SISTEMA EXTERNO",
                         EstadoDerivacion = "DERIVADO MANUALMENTE",
+                        FueProcesadaLaDerivacion = true,
                     };
                     getClientesDatosDTO.Add(newItem);
                 }

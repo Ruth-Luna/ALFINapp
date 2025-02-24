@@ -141,5 +141,22 @@ namespace ALFINapp.Controllers
 
             return Json(new { success = true, message = getReferido.Message + ". " + enviarCorreo.Message });
         }
+
+        public IActionResult Consulta()
+        {
+            return View("Consulta");
+        }
+
+        public async Task<IActionResult> BuscarReferidosDeDNI(string DNI)
+        {
+            var getDNIConsulta = await _dbServicesReferido.GetReferidosDelDNI(DNI);
+
+            if (getDNIConsulta.IsSuccess == false)
+            {
+                return Json(new { success = false, message = getDNIConsulta.Message });
+            }
+
+            return PartialView("_BuscarReferidoDeDNI", getDNIConsulta.Data);
+        }
     }
 }

@@ -33,7 +33,7 @@ function actualizarIdTipificacion(contadorNumeros) {
 function guardarCambiosPorAsesor() {
     const formData = {};
     console.log('Guardando cambios...');
-    
+
     // Recolectar datos del formulario
     document.querySelectorAll(".form-control-editable").forEach(input => {
         if (!input.hasAttribute("readonly")) {
@@ -64,8 +64,7 @@ function guardarCambiosPorAsesor() {
                     confirmButtonText: 'Aceptar'
                 });
             }
-            else
-            {
+            else {
                 Swal.fire({
                     title: 'Error en la operación',
                     text: result.message,
@@ -73,7 +72,7 @@ function guardarCambiosPorAsesor() {
                     confirmButtonText: 'Aceptar'
                 });
             }
-            
+
         },
         error: function (xhr, status, error) {
             Swal.fire({
@@ -87,48 +86,58 @@ function guardarCambiosPorAsesor() {
     });
 }
 
-function enviarFormularioDerivacion(idAgenciaComercial, idFechaDeVisita, idBase, idTelefonoEnviado)
-{
+function enviarFormularioDerivacion(idAgenciaComercial, idFechaDeVisita, idBase, idTelefonoEnviado) {
     agenciaComercial = document.getElementById(idAgenciaComercial).value;
     FechaVisita = document.getElementById(idFechaDeVisita).value;
     Telefono = document.getElementById(idTelefonoEnviado).value;
-    $.ajax({
-        url: '/Tipificaciones/GenerarDerivacion',
-        type: 'POST',
-        data: {
-            agenciaComercial: agenciaComercial,
-            FechaVisita: FechaVisita,
-            Telefono: Telefono,
-            idBase: idBase,
-        },
-        success: function (result) {
-            if (result.success === true) {
-                Swal.fire({
-                    title: 'Derivación enviada',
-                    text: result.message,
-                    icon:'success',
-                    confirmButtonText: 'Aceptar'
-                });
-            }
-            else
-            {
-                Swal.fire({
-                    title: 'Error en la operación',
-                    text: result.message,
-                    icon: 'error',
-                    confirmButtonText: 'Aceptar'
-                });
-            }
-            
-        },
-        error: function (xhr, status, error) {
-            Swal.fire({
-                title: 'Error al enviar la derivación',
-                text: 'Hubo un error al intentar enviar la derivación. Por favor, inténtalo nuevamente.',
-                icon: 'error',
-                confirmButtonText: 'Aceptar'
+    Swal.fire({
+        title: 'Derivaciones',
+        text: 'Al enviar la derivación, el cliente será contactado por el banco y se dara el seguimiento correspondiente. Procure no cerrar esta pagina. Este proceso puede durar varios segundos.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Continuar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: '/Tipificaciones/GenerarDerivacion',
+                type: 'POST',
+                data: {
+                    agenciaComercial: agenciaComercial,
+                    FechaVisita: FechaVisita,
+                    Telefono: Telefono,
+                    idBase: idBase,
+                },
+                success: function (result) {
+                    if (result.success === true) {
+                        Swal.fire({
+                            title: 'Derivación enviada',
+                            text: result.message,
+                            icon: 'success',
+                            confirmButtonText: 'Aceptar'
+                        });
+                    }
+                    else {
+                        Swal.fire({
+                            title: 'Error en la operación',
+                            text: result.message,
+                            icon: 'error',
+                            confirmButtonText: 'Aceptar'
+                        });
+                    }
+
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire({
+                        title: 'Error al enviar la derivación',
+                        text: 'Hubo un error al intentar enviar la derivación. Por favor, inténtalo nuevamente.',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                    console.error('Error al enviar la derivación:', error);
+                }
             });
-            console.error('Error al enviar la derivación:', error);
         }
     });
+
 }

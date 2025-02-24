@@ -402,5 +402,62 @@ namespace ALFINapp.Services
                 return (false, ex.Message, null);
             }
         }
+
+        public async Task<(bool IsSuccess, string Message, List<ClientesReferidosDTO>? Data)> GetReferidosDelDNI(string DNI)
+        {
+            try
+            {
+                var referidos = await (from cr in _context.clientes_referidos
+                                where cr.DniAsesor == DNI
+                                select new ClientesReferidosDTO
+                                {
+                                    IdReferido = cr.IdReferido,
+                                    IdBaseClienteA365 = cr.IdBaseClienteA365,
+                                    IdBaseClienteBanco = cr.IdBaseClienteBanco,
+                                    IdSupervisorReferido = cr.IdSupervisorReferido,
+                                    NombreCompletoAsesor = cr.NombreCompletoAsesor,
+                                    NombreCompletoCliente = cr.NombreCompletoCliente,
+                                    DniAsesor = cr.DniAsesor,
+                                    DniCliente = cr.DniCliente,
+                                    FechaReferido = cr.FechaReferido,
+                                    TraidoDe = cr.TraidoDe,
+                                    Telefono = cr.Telefono,
+                                    Agencia = cr.Agencia,
+                                    FechaVisita = cr.FechaVisita,
+                                    OfertaEnviada = cr.OfertaEnviada,
+                                    FueProcesado = cr.FueProcesado,
+                                    CelularAsesor = cr.CelularAsesor,
+                                    CorreoAsesor = cr.CorreoAsesor,
+                                    CciAsesor = cr.CciAsesor,
+                                    DepartamentoAsesor = cr.DepartamentoAsesor,
+                                    UbigeoAsesor = cr.UbigeoAsesor,
+                                    BancoAsesor = cr.BancoAsesor,
+                                    EstadoReferencia = cr.EstadoReferencia,
+                                }).ToListAsync();
+
+                if (referidos == null)
+                {
+                    return (true, "No se han encontrado referidos para el DNI especificado", new List<ClientesReferidosDTO>());
+                }
+
+                foreach (var referido in referidos)
+                {
+                    var desembolsos = await (from d in _context.desembolsos
+                                            where d.DniDesembolso == referido.DniCliente &&
+                                                d.FechaDesembolsos != null &&
+                                                d.FechaDesembolsos.Value.Year == referido.FechaReferido.Value.Year &&
+                                                d.FechaDesembolsos.Value.Month == referido.FechaReferido.Value.Month
+                                            orderby d.FechaDesembolsos descending
+                                            select d).FirstOrDefaultAsync();
+                    referido.EstadoDesembolso = desembolsos == null ? "DESEMBOLSADO" : "NO DESEMBOLSADO";
+                    referido.FechaReferido = desembolsos?.FechaDesembolsos?.ToLocalTime();
+                }
+                return (true, "Se han encontrado referidos para el DNI especificado", referidos);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message, null);
+            }
+        }
     }
 }

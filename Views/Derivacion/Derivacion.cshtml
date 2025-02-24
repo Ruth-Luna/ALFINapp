@@ -2,6 +2,7 @@
 
 @{
     var Asesores = ViewData["Asesores"] as List<Usuario>;
+    var RolActual = ViewData["RolUsuario"] as int?;
 }
 
 @section Styles {
@@ -10,31 +11,54 @@
 
 <div class="container-fluid mt-4">
     <div class="container">
-        <h3> Derivaciones de sus Asesores </h3>
 
-        <div class="alert alert-info" role="alert">
-            <span> En esta seccion puede ver las Derivaciones de sus asesores </span>
-        </div>
+        @if (RolActual == 3)
+        {
+            <h3> Derivaciones del Asesor de Creditos</h3>
+            <div class="alert alert-info" role="alert">
+                <span> En esta seccion puede ver sus Derivaciones </span>
+            </div>
+        }
+        else if (RolActual == 2)
+        {
+            <h3> Derivaciones de sus Asesores </h3>
+            <div class="alert alert-info" role="alert">
+                <span> En esta seccion puede ver las Derivaciones de sus asesores </span>
+            </div>
+        }
+        else
+        {
+            <h3> Derivaciones de Administrador y Jefes de Zona </h3>
+            <div class="alert alert-info" role="alert">
+                <span> En esta seccion puede ver las Derivaciones de todos los asesores de Creditos </span>
+            </div>
+        }
 
-        <label for="IdAsesoresDerivacion">Asesor</label>
-        <select class="form-select" name="IdAsesoresDerivacion" id="IdAsesoresDerivacion"
-            onchange="cargarDerivacionesXAsesor(this.value)">
-            <option value="">Seleccione un Asesor</option>
-            @if (Asesores != null)
-            {
-                foreach (var asesor in Asesores)
+
+        @if (RolActual != 3)
+        {
+            <label for="IdAsesoresDerivacion">Asesor</label>
+            <select class="form-select" name="IdAsesoresDerivacion" id="IdAsesoresDerivacion"
+                onchange="cargarDerivacionesXAsesor(this.value)">
+                <option value="">Seleccione un Asesor</option>
+                @if (Asesores != null)
                 {
-                    if (asesor.Estado == "ACTIVO")
+                    foreach (var asesor in Asesores)
                     {
-                        <option value="@asesor.Dni">@asesor.Dni - @asesor.NombresCompletos</option>
-                    }
-                    else if (asesor.Estado == "INACTIVO")
-                    {
-                        <option style="background-color: rgb(255, 93, 93);" value="@asesor.Dni">@asesor.Dni - @asesor.NombresCompletos <i class="fa fa-circle-exclamation"></i> <span> -- Asesor DESACTIVADO</span></option>
+                        if (asesor.Estado == "ACTIVO")
+                        {
+                            <option value="@asesor.Dni">@asesor.Dni - @asesor.NombresCompletos</option>
+                        }
+                        else if (asesor.Estado == "INACTIVO")
+                        {
+                            <option style="background-color: rgb(255, 93, 93);" value="@asesor.Dni">@asesor.Dni -
+                                @asesor.NombresCompletos <i class="fa fa-circle-exclamation"></i> <span> -- Asesor DESACTIVADO</span>
+                            </option>
+                        }
                     }
                 }
-            }
-        </select>
+            </select>
+        }
     </div>
 
     <div class="container" id="DerivacionXAsesor" style="display: none;">
@@ -42,7 +66,7 @@
 
     <div class="container mt-4" id="DerivacionesSupervisorGeneral" style="display: block;">
         <div class="form-group mb-3">
-            <label for="numeroClientesDerivacion">Numero de Clientes</label>
+            <label for="numeroClientesDerivacion">Numero de Clientes Derivados</label>
             <input type="text" class="form-control" id="numeroClientesDerivacion" name="numeroClientesDerivacion"
                 value="@Model.Count" readonly>
         </div>
@@ -50,6 +74,7 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
+                        <th>Estado de la Derivacion</th>
                         <th>DNI Cliente</th>
                         <th>Telefono</th>
                         <th>DNI Asesor</th>
@@ -63,11 +88,20 @@
                         foreach (var derivacionAsesor in Model)
                         {
                             <tr>
+                                @if (derivacionAsesor.FueProcesadaLaDerivacion == true)
+                                {
+                                    <td><span class="badge bg-primary">@derivacionAsesor.EstadoDerivacion</span></td>
+                                }
+                                else
+                                {
+                                    <td><span class="badge bg-secondary">@derivacionAsesor.EstadoDerivacion</span></td>
+                                }
                                 <td>@derivacionAsesor.DocCliente</td>
                                 <td>@derivacionAsesor.Telefono</td>
                                 <td>@derivacionAsesor.DocAsesor</td>
-                                <td><span class="badge bg-success">@derivacionAsesor.OrigenTelefono</span></td>
+                                <td><span class="badge bg-warning">@derivacionAsesor.OrigenTelefono</span></td>
                                 <td>@derivacionAsesor.FechaEnvio</td>
+
                             </tr>
                         }
                     }
