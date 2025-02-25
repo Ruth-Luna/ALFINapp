@@ -146,7 +146,7 @@ namespace ALFINapp.Services
                     XAppaterno = cliente.LatestRecord?.bc.XAppaterno ?? "",
                     XApmaterno = cliente.LatestRecord?.bc.XApmaterno ?? "",
                     XNombre = cliente.LatestRecord?.bc.XNombre ?? "",
-                    OfertaMax = cliente.LatestRecord?.bcb.OfertaMax ?? 0,
+                    OfertaMax = (cliente.LatestRecord?.bcb.OfertaMax*100) ?? 0,
                     Campaña = cliente.LatestRecord?.cgb.NombreCampana ?? "",
                     IdBase = cliente.IdBase,
                     IdAsignacion = cliente.LatestRecord?.ca.IdAsignacion,

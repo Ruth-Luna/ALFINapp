@@ -263,4 +263,8 @@ public partial class DetalleBase
     public string? BaseBanco { get; set; }
     [Column("flag_deuda_v_oferta")]
     public int? FlagDeudaVOferta { get; set; }
+    [Column("PERFIL_RO")]
+    public string? PerfilRo { get; set; }
+    [Column("PROPENSIONV2")]
+    public string? Propensionv2 { get; set; }
 }

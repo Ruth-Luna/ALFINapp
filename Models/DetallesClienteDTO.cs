@@ -32,5 +32,6 @@ namespace ALFINapp.Models
         public string? Nombres { get; set; }
         public string? UserV3 { get; set; }
         public int? FlagDeudaVOferta { get; set; }
+        public string? PerfilRo { get; set; }
     }
 }

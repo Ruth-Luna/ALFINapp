@@ -33,6 +33,7 @@ namespace ALFINapp.Models
         public string? ColorFinal { get; set; }
         public string? Usuario { get; set; }
         public string? SegmentoUser { get; set; }
+        public string? PerfilRo { get; set; }
 
         //Propiedades de la Tabla ClientsEnriquecido
         public int? IdCliente { get; set; }

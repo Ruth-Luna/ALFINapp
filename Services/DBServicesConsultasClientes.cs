@@ -62,7 +62,8 @@ namespace ALFINapp.Services
                         ApellidoMaterno = clienteExistenteBD.XApmaterno,
                         Nombres = clienteExistenteBD.XNombre,
                         UserV3 = detalleclienteExistenteBD.UserV3,
-                        FlagDeudaVOferta = detalleclienteExistenteBD.FlagDeudaVOferta
+                        FlagDeudaVOferta = detalleclienteExistenteBD.FlagDeudaVOferta,
+                        PerfilRo = detalleclienteExistenteBD.PerfilRo
                     };
                     // El DNI se encuentra registrado en la Base de Datos de A365
                     return (true, "El DNI se encuentra registrado en la Base de Datos de A365. Se devolvera la entrada correspondiente", clienteA365Encontrado); // Se devuelve la entrada correspondiente
@@ -141,6 +142,7 @@ namespace ALFINapp.Services
                     GrupoTasa = detalleclienteExistenteBD.GrupoTasa,
                     Usuario = detalleclienteExistenteBD.Usuario,
                     SegmentoUser = detalleclienteExistenteBD.SegmentoUser,
+                    PerfilRo = detalleclienteExistenteBD.PerfilRo,
                     TraidoDe = "BDA365",
                     IdBase = detalleclienteExistenteBD.IdBase,
                     ApellidoPaterno = baseClienteExistenteBD.XAppaterno,
@@ -205,6 +207,7 @@ namespace ALFINapp.Services
                     ClienteNuevo = data.ClienteNuevo,
                     Color = data.Color,
                     ColorFinal = data.ColorFinal,
+                    PerfilRo = data.PerfilRo,
 
                     // Propiedades de ClientesEnriquecido
                     IdCliente = data.IdCliente,
@@ -353,6 +356,7 @@ namespace ALFINapp.Services
                                             ColorFinal = bcc.NombreColor ?? "DESCONOCIDO",
                                             Usuario = bcu.NombreUsuario,
                                             SegmentoUser = bcu.TipoUsuario,
+                                            PerfilRo = "DESCONOCIDO",
 
                                             // Propiedades de ClientesEnriquecido
                                             IdCliente = ce.IdCliente,
@@ -420,6 +424,7 @@ namespace ALFINapp.Services
                     ClienteNuevo = detallesClientes.ClienteNuevo ?? "DESCONOCIDO",
                     Color = detallesClientes.Color ?? "DESCONOCIDO",
                     ColorFinal = detallesClientes.ColorFinal ?? "DESCONOCIDO",
+                    PerfilRo = detallesClientes.PerfilRo ?? "DESCONOCIDO",
 
                     // Propiedades de ClientesEnriquecido
                     Telefonos = new List<TelefonoDTO>
