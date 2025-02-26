@@ -89,9 +89,10 @@
     <footer class="@(ViewBag.isFooterAbsoluteAtBottom == true ? "tfoot-position-login" : "") text-center p-2">&copy; 2024 - AppBancoAlFIN - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></footer>
     <!-- Agregar el script de SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.js"></script> *@
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script>
@@ -194,7 +195,7 @@
             });
         });
     </script>
-    
+
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

@@ -316,32 +316,21 @@
                     </div>
                     <div class="col-12 col-md-8 mt-2 mt-md-0">
 
-                        <!-- Select de Tipificación -->
-
-                        <input type="hidden" name="tipificaciones[@contadorNumeros].TipificacionId"
-                            id="tipificacionId_@contadorNumeros" />
-
-                        <!-- Datalist para el filtrado -->
-
                         <label for="tipificacionSelect_@contadorNumeros" class="form-label mt-2">Tipificación Asignada
                             @contadorNumeros: </label>
-                        <input class="form-control" list="tipificacionesList_@contadorNumeros"
-                            name="tipificaciones[@contadorNumeros].TipificacionDescripcion"
-                            id="tipificacionSelect_@contadorNumeros" placeholder="Presione 2 veces para ver las tipificaciones"
-                            oninput="actualizarIdTipificacion(@contadorNumeros); verificarTipificacion(@contadorNumeros)" />
-
-                        <datalist id="tipificacionesList_@contadorNumeros">
-                            <option value="">Seleccione la descripción de Tipificación</option>
+                        <select id="tipificacionSelect_@contadorNumeros" class="select2 form-control"
+                            name="tipificaciones[@contadorNumeros].TipificacionId"
+                            onchange="verificarTipificacion(@contadorNumeros)">
+                            <option value="">Seleccione una tipificacion</option>
                             @if (tipificacionesLista != null)
                             {
                                 @foreach (var tipificacion in tipificacionesLista)
                                 {
-                                    <option value="@tipificacion.DescripcionTipificacion" data-id="@tipificacion.IdTipificacion">
-                                        @tipificacion.DescripcionTipificacion</option>
+                                    <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
                                 }
                             }
-                        </datalist>
-
+                        </select>
+                        
                         <!-- Campo de Fecha Oculto por Defecto FECHA VISITA-->
                         <div class="form-group mt-3" id="fechaVisitaContainer_@contadorNumeros" style="display: none;">
                             <div class="row">
@@ -459,24 +448,27 @@
                 @if (Model.Telefonos[@i].Numero != "0" && !string.IsNullOrEmpty(Model.Telefonos[@i].Numero))
                 {
                     <div class="col-12 col-md-8 mt-2 mt-md-0">
-                        <input type="hidden" name="Tipificacion_@j" id="tipificacionId_db_@j" />
-
                         <label for="tipificacionSelect_db_@j" class="form-label mt-2">Tipificacion Asignada @j:</label>
-                        <input class="form-control" list="tipificacionesList_db_@j"
-                            name="tipificacionesdbTipificacionDescripcion_@j" id="tipificacionSelect_db_@j"
-                            placeholder="Presione 2 veces para ver las tipificaciones"
-                            oninput="actualizarIdTipificacion('db_@j'); verificarTipificacion('db_@j')" type="text">
-                        <datalist id="tipificacionesList_db_@j">
-                            <option value="">Seleccione la descripción de Tipificacion</option>
-                            @if (tipificacionesLista != null)
-                            {
-                                @foreach (var tipificacion in tipificacionesLista)
+                        <input type="text" name="Tipificacion_@j" id="tipificacionSelect_db_@j" oninput="verificarTipificacion('db_@j')" style="display: none;">
+                        <div class="custom-select">
+                            <div class="custom-selected-option" id="selectedOption_tipificacionSelect_db_@j" onclick="mostrarOpciones('tipificacionSelect_db_@j')">
+                                Seleccione una Tipificación
+                            </div>
+                            <div class="custom-options" id="opciones_tipificacionSelect_db_@j">
+                                <input type="text" class="custom-search" id="busqueda_tipificacionSelect_db_@j" onkeyup="filtrarOpciones('tipificacionSelect_db_@j')" placeholder="Buscar...">
+                                @if (tipificacionesLista != null)
                                 {
-                                    <option value="@tipificacion.DescripcionTipificacion" data-id="@tipificacion.IdTipificacion">
-                                        @tipificacion.DescripcionTipificacion</option>
+                                    @foreach (var tipificacion in tipificacionesLista)
+                                    {
+                                        <div class="custom-option" id="opcion_@(tipificacion.IdTipificacion)_tipificacionSelect_db_@j"
+                                            onclick="seleccionarOpcion('tipificacionSelect_db_@j', '@tipificacion.IdTipificacion', '@tipificacion.DescripcionTipificacion')">
+                                            @tipificacion.DescripcionTipificacion
+                                        </div>
+                                    }
                                 }
-                            }
-                        </datalist>
+                            </div>
+                        </div>
+
                         <div class="form-group mt-3" id="fechaVisitaContainer_db_@j" style="display: none;">
                             <div class="row">
                                 <div class="col">

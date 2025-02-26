@@ -72,7 +72,7 @@ function loadTipificarCliente(idBase, functionToExecute) {
                     confirmButtonText: 'Aceptar'
                 });
                 return;
-                
+
             }
             $('#modalContentGeneralTemplate').html(result); // Inserta el contenido de la vista en el modal
             $('#GeneralTemplateModal').modal('show'); // Muestra el modal

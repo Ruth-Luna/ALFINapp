@@ -500,5 +500,17 @@ namespace ALFINapp.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+
+        public async Task<IActionResult> CargarDerivacionesGestion ()
+        {
+            try
+            {
+                return Json(new { success = true, message = "EN PROCESO NO USE ESTA VISTA" });
+            }
+            catch (System.Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
     }
 }

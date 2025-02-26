@@ -31,6 +31,7 @@ namespace ALFINapp.Models
         public string? TraidoDe { get; set; }
         public string? EstadoDerivacion { get; set; }
         public string? EstadoDesembolso { get; set; }
+        public bool? FueDesembolsado { get; set; }
         public DateTime? FechaDesembolso { get; set; }
         public string? TipoDerivacion { get; set; }
         public DateTime? FechaDerivacion { get; set; }

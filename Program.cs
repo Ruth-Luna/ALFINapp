@@ -3,18 +3,15 @@ using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuración de cultura predeterminada
 var defaultCulture = new CultureInfo("es-ES");
 CultureInfo.DefaultThreadCurrentCulture = defaultCulture;
 CultureInfo.DefaultThreadCurrentUICulture = defaultCulture;
 
-// Registrar servicios
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<MDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Registrar servicio de memoria distribuida para la sesión
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -23,13 +20,10 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Registrar servicio HTTP
 builder.Services.AddHttpClient();
 
-// Registrar IHttpContextAccessor para acceso global al HttpContext
 builder.Services.AddHttpContextAccessor();
 
-// Registrar automáticamente los servicios que siguen el patrón "DBServices"
 var servicesAssembly = typeof(Program).Assembly;
 
 foreach (var serviceType in servicesAssembly.GetTypes()
@@ -40,19 +34,27 @@ foreach (var serviceType in servicesAssembly.GetTypes()
 
 var app = builder.Build();
 
-// Configuración del middleware
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
-// Configuración de manejo de códigos de estado
 app.UseStatusCodePagesWithReExecute("/Home/Error404");
 
 app.UseSession();
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+
+// Configuración para deshabilitar la caché de archivos estáticos
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        ctx.Context.Response.Headers.Append("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+        ctx.Context.Response.Headers.Append("Expires", "0");
+        ctx.Context.Response.Headers.Append("Pragma", "no-cache");
+    }
+});
 
 app.UseRouting();
 

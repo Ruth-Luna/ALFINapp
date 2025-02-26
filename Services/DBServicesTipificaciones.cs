@@ -79,7 +79,7 @@ namespace ALFINapp.Services
                                     orderby bcb.FechaSubida descending
                                     select new DetalleBase
                                     {
-                                        OfertaMax = bcb.OfertaMax,
+                                        OfertaMax = bcb.OfertaMax*100,
                                         Campaña = cg.NombreCampana,
                                     }).FirstOrDefault();
                 }
@@ -99,6 +99,30 @@ namespace ALFINapp.Services
                         return (false, "No se encontro la derivacion del cliente, recuerde que debe mandar la derivacion antes de guardar la tipificacion");
                     }
                 }
+                string codigoTelefono = "TA";
+                if (Tipificacion.TelefonoTipificado != null)
+                {
+                    if (Tipificacion.TelefonoTipificado == Enriquecido.Telefono1)
+                    {
+                        codigoTelefono = "T1";
+                    }
+                    else if (Tipificacion.TelefonoTipificado == Enriquecido.Telefono2)
+                    {
+                        codigoTelefono = "T2";
+                    }
+                    else if (Tipificacion.TelefonoTipificado == Enriquecido.Telefono3)
+                    {
+                        codigoTelefono = "T3";
+                    }
+                    else if (Tipificacion.TelefonoTipificado == Enriquecido.Telefono4)
+                    {
+                        codigoTelefono = "T4";
+                    }
+                    else if (Tipificacion.TelefonoTipificado == Enriquecido.Telefono5)
+                    {
+                        codigoTelefono = "T5";
+                    }
+                }
 
                 var parameters = new[]
                 {
@@ -107,7 +131,7 @@ namespace ALFINapp.Services
                     new SqlParameter("@CodCanal", "SYSTEMA365"),
                     new SqlParameter("@Canal", "A365"),
                     new SqlParameter("@DocCliente", clienteDatos.Dni),
-                    new SqlParameter("@FechaEnvio", DateTime.Now),
+                    new SqlParameter("@FechaEnvio", ClienteAsignado.FechaAsignacionVendedor),
                     new SqlParameter("@FechaGestion", Tipificacion.FechaTipificacion),
                     new SqlParameter("@HoraGestion", Tipificacion.FechaTipificacion != null ? 
                         (object)Tipificacion.FechaTipificacion.Value.TimeOfDay : DBNull.Value) 
@@ -115,7 +139,7 @@ namespace ALFINapp.Services
                         SqlDbType = SqlDbType.Time 
                     },
                     new SqlParameter("@Telefono", Tipificacion.TelefonoTipificado),
-                    new SqlParameter("@OrigenTelefono", "E"),
+                    new SqlParameter("@OrigenTelefono", codigoTelefono),
                     new SqlParameter("@CodCampaña", detalle_base.Campaña),
                     new SqlParameter("@CodTip", Tipificacion.IdTipificacion),
                     new SqlParameter("@Oferta", detalle_base.OfertaMax),

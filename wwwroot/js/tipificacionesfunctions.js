@@ -2,8 +2,11 @@ function verificarTipificacion(index) {
     const tipificacionInput = document.getElementById(`tipificacionSelect_${index}`);
     const fechaVisitaContainer = document.getElementById(`fechaVisitaContainer_${index}`);
     const buttonDerivacionContainer = document.getElementById(`buttonDerivacionContainer_${index}`);
+    console.log('Verificando tipificación...');
+    console.log('Tipificación seleccionada:', tipificacionInput.value);
 
-    if (tipificacionInput.value === "CLIENTE ACEPTO OFERTA DERIVACION") {
+    if (tipificacionInput.value == 2) {
+        console.log('Tipificación seleccionada: Derivación');
         fechaVisitaContainer.style.display = "block";
         buttonDerivacionContainer.style.display = "block";
     } else {
