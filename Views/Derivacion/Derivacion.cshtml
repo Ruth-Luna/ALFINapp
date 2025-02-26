@@ -3,6 +3,7 @@
 @{
     var Asesores = ViewData["Asesores"] as List<Usuario>;
     var RolActual = ViewData["RolUsuario"] as int?;
+    var Dni = ViewData["DniUsuario"] as string;
 }
 
 @section Styles {
@@ -16,14 +17,14 @@
         {
             <h3> Derivaciones del Asesor de Creditos</h3>
             <div class="alert alert-info" role="alert">
-                <span> En esta seccion puede ver sus Derivaciones </span>
+                <span> En esta seccion puede ver sus Derivaciones del mes. Para ver sus Derivaciones durante todo el tiempo puede ingresar a Derivaciones de Gestion </span>
             </div>
         }
         else if (RolActual == 2)
         {
             <h3> Derivaciones de sus Asesores </h3>
             <div class="alert alert-info" role="alert">
-                <span> En esta seccion puede ver las Derivaciones de sus asesores </span>
+                <span> En esta seccion puede ver las Derivaciones de sus asesores de Creditos asignados a Usted </span>
             </div>
         }
         else
@@ -70,19 +71,29 @@
                 value="@Model.Count" readonly>
         </div>
 
-        @*<div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="btn-group" role="group" aria-label="Selector de vista">
-                <a href="javascript:void(0);" type="button" class="btn btn-primary active" id="btnTablaSistema" onclick="cargarDerivacionesSistema()">
-                    <i class="fas fa-table"></i> Derivaciones Sistema
-                </a>
-                <a href="javascript:void(0);" type="button" class="btn btn-primary" id="btnTablaGestion" onclick="cargarDerivacionesGestion()">
-                    <i class="fas fa-table"></i> Derivaciones Gestión
-                </a>
+        @if (RolActual == 3)
+        {
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="btn-group" role="group" aria-label="Selector de vista">
+                    <a href="@Url.Action("Derivacion", "Derivacion")" 
+                        type="button" class="btn btn-primary active" 
+                        id="btnTablaSistema">
+                        <i class="fas fa-table"></i> Derivaciones Sistema
+                    </a>
+                    <a href="javascript:void(0);" type="button" class="btn btn-primary" 
+                        id="btnTablaGestion"
+                        onclick="cargarDerivacionesGestion(@Dni)">
+                        <i class="fas fa-table"></i> Derivaciones Gestión
+                    </a>
+                </div>
+                <div class="badge bg-info text-wrap" style="width: 6rem;">
+                    <span id="informationTabla">Total: </span>
+                </div>
             </div>
-            <div class="badge bg-info text-wrap" style="width: 6rem;">
-                Total: @Model.Count
-            </div>
-        </div>*@
+        }
+
+        <div id="tablaDerivacionesGestion">
+        </div>
 
         <div class="table-responsive" id="tablaDerivacionesSistema">
             <table class="table table-bordered">
@@ -90,10 +101,13 @@
                     <tr>
                         <th>Estado de la Derivacion</th>
                         <th>DNI Cliente</th>
+                        <th>Nombres del Cliente</th>
                         <th>Telefono</th>
                         <th>DNI Asesor</th>
                         <th>Origen del Telefono</th>
                         <th>Fecha de Derivacion</th>
+                        <th>Estado del Desembolso</th>
+                        <th>Fecha del Desembolso</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -104,54 +118,27 @@
                             <tr>
                                 @if (derivacionAsesor.FueProcesadaLaDerivacion == true)
                                 {
-                                    <td><span class="badge bg-primary">@derivacionAsesor.EstadoDerivacion</span></td>
+                                    <td><span class="badge bg-success">@derivacionAsesor.EstadoDerivacion</span></td>
                                 }
                                 else
                                 {
-                                    <td><span class="badge bg-secondary">@derivacionAsesor.EstadoDerivacion</span></td>
+                                    <td><span class="badge bg-error">@derivacionAsesor.EstadoDerivacion</span></td>
                                 }
                                 <td>@derivacionAsesor.DocCliente</td>
+                                <td>@derivacionAsesor.NombreCompletoCliente</td>
                                 <td>@derivacionAsesor.Telefono</td>
                                 <td>@derivacionAsesor.DocAsesor</td>
                                 <td><span class="badge bg-warning">@derivacionAsesor.OrigenTelefono</span></td>
                                 <td>@derivacionAsesor.FechaEnvio</td>
-                            </tr>
-                        }
-                    }
-                </tbody>
-            </table>
-        </div>
-        <div class="table-responsive" id="tablaDerivacionesGestionDetalles" style="display: none;">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Estado de la Derivacion</th>
-                        <th>DNI Cliente</th>
-                        <th>Telefono</th>
-                        <th>DNI Asesor</th>
-                        <th>Origen del Telefono</th>
-                        <th>Fecha de Derivacion</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model != null)
-                    {
-                        foreach (var derivacionAsesor in Model)
-                        {
-                            <tr>
-                                @if (derivacionAsesor.FueProcesadaLaDerivacion == true)
+                                @if (derivacionAsesor.FueDesembolsado == true)
                                 {
-                                    <td><span class="badge bg-primary">@derivacionAsesor.EstadoDerivacion</span></td>
+                                    <td><span class="badge bg-success">@derivacionAsesor.EstadoDesembolso</span></td>
                                 }
                                 else
                                 {
-                                    <td><span class="badge bg-secondary">@derivacionAsesor.EstadoDerivacion</span></td>
+                                    <td><span class="badge bg-info">@derivacionAsesor.EstadoDesembolso</span></td>
                                 }
-                                <td>@derivacionAsesor.DocCliente</td>
-                                <td>@derivacionAsesor.Telefono</td>
-                                <td>@derivacionAsesor.DocAsesor</td>
-                                <td><span class="badge bg-warning">@derivacionAsesor.OrigenTelefono</span></td>
-                                <td>@derivacionAsesor.FechaEnvio</td>
+                                <td>@derivacionAsesor.FechaDesembolso</td>
                             </tr>
                         }
                     }

@@ -91,12 +91,15 @@ function mostrarOpciones(id) {
     console.log(opcionesDiv.style.display);
 }
 
-function seleccionarOpcion(id, value, text) {
+function seleccionarOpcion(id, value, text, index = null) {
     console.log(id, value, text);
     document.getElementById("selectedOption_" + id).innerText = text;
     document.getElementById(id).value = value;
     let opciones = document.getElementById("opciones_" + id);
     opciones.style.display = "none";
+    if (index != null) {
+        verificarTipificacion(index);
+    }
 }
 
 function filtrarOpciones(id) {

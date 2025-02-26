@@ -253,7 +253,7 @@ namespace ALFINapp.Controllers
                     return Json(new { success = false, message = "No ha iniciado sesion, por favor inicie sesion." });
                 }
 
-                var detallesClientes = await  _dbServicesConsultasClientes.GetDataParaTipificarClienteA365(id_base, IdUsuario.Value);
+                var detallesClientes = await _dbServicesConsultasClientes.GetDataParaTipificarClienteA365(id_base, IdUsuario.Value);
                 if (!detallesClientes.IsSuccess || detallesClientes.Data == null)
                 {
                     return Json(new { success = false, message = detallesClientes.message });
@@ -305,7 +305,7 @@ namespace ALFINapp.Controllers
                 {
                     return Json(new { success = false, message = detallesClientes.message });
                 }
-                
+
                 var tipificaciones = await _dbServicesTipificaciones.ObtenerTipificaciones();
                 if (!tipificaciones.IsSuccess || tipificaciones.Data == null)
                 {
@@ -436,6 +436,13 @@ namespace ALFINapp.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            var obtenerDataUsuario = await _dbServicesGeneral.GetUserInformation(usuarioId.Value);
+            if (!obtenerDataUsuario.IsSuccess || obtenerDataUsuario.Data == null)
+            {
+                TempData["MessageError"] = obtenerDataUsuario.Message;
+                return RedirectToAction("Inicio");
+            }
+
             var ClienteAsignado = await _dbServicesAsesores.ObtenerAsignacion(usuarioId.Value, IdAsignacion);
             if (ClienteAsignado.Data == null || !ClienteAsignado.IsSuccess)
             {
@@ -491,6 +498,38 @@ namespace ALFINapp.Controllers
                 {
                     TempData["MessageError"] = "Debe ingresar una agencia comercial para la tipificación CLIENTE ACEPTO OFERTA DERIVACION (Se obviaron las inserciones).";
                     return RedirectToAction("Inicio");
+                }
+
+                if (tipificacion == 2)
+                {
+                    var verificarTipificacion = _context.derivaciones_asesores
+                        .Where(d => d.DniAsesor == obtenerDataUsuario.Data.Dni
+                            && d.IdCliente == ClienteAsignado.Data.IdCliente
+                            && d.FechaDerivacion.Year == DateTime.Now.Year
+                            && d.FechaDerivacion.Month == DateTime.Now.Month)
+                        .ToList();
+                    if (verificarTipificacion == null || verificarTipificacion.Count == 0)
+                    {
+                        TempData["MessageError"] = "No ha enviado la derivacion correspondiente. No se guardara ninguna Tipificacion";
+                        return RedirectToAction("Inicio");
+                    }
+                    if (verificarTipificacion.Count > 1)
+                    {
+                        TempData["MessageError"] = "Usted ya ha derivado previamente a este cliente durante este mes, para ver su estado puede dirigirse a la pestana de Derivaciones. No se han subido al sistema ninguna de las tipificaciones.";
+                        return RedirectToAction("Inicio");
+                    }
+                    var checkGestionDetalle = _context.GESTION_DETALLE
+                        .Where(gd => gd.DocCliente == verificarTipificacion[0].DniCliente
+                            && gd.FechaGestion.Year == DateTime.Now.Year
+                            && gd.FechaGestion.Month == DateTime.Now.Month
+                            && gd.DocAsesor == obtenerDataUsuario.Data.Dni)
+                        .ToList();
+                    if (checkGestionDetalle.Count > 0 || checkGestionDetalle != null)
+                    {
+                        TempData["MessageError"] = "Usted ya ha derivado previamente a este cliente durante este mes, para ver su estado puede dirigirse a la pestana de Derivaciones. No se han subido al sistema ninguna de las tipificaciones.";
+                        return RedirectToAction("Inicio");
+                    }
+
                 }
 
                 if (tipificacion == 2 && derivacion != null && agenciasComerciales[i] != null)
@@ -636,6 +675,13 @@ namespace ALFINapp.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            var obtenerDataUsuario = await _dbServicesGeneral.GetUserInformation(usuarioId.Value);
+            if (!obtenerDataUsuario.IsSuccess || obtenerDataUsuario.Data == null)
+            {
+                TempData["MessageError"] = obtenerDataUsuario.Message;
+                return RedirectToAction("Inicio");
+            }
+
             if (tipificaciones == null || !tipificaciones.Any())
             {
                 TempData["MessageError"] = "No se estan enviando datos para guardar.";
@@ -664,8 +710,41 @@ namespace ALFINapp.Controllers
 
                 if (tipificacion.FechaVisita == null && tipificacion.TipificacionId == 2)
                 {
+
                     TempData["MessageError"] = "Debe ingresar una fecha de derivación para la tipificación CLIENTE ACEPTO OFERTA DERIVACION (Se obviaron las inserciones).";
                     return RedirectToAction("Inicio");
+                }
+                if (tipificacion.TipificacionId == 2)
+                {
+                    var verificarTipificacion = _context.derivaciones_asesores
+                        .Where(d => d.DniAsesor == obtenerDataUsuario.Data.Dni
+                            && d.IdCliente == ClienteAsignado.Data.IdCliente
+                            && d.FechaDerivacion.Year == DateTime.Now.Year
+                            && d.FechaDerivacion.Month == DateTime.Now.Month)
+                        .ToList();
+
+                    if (verificarTipificacion == null || verificarTipificacion.Count == 0)
+                    {
+                        TempData["MessageError"] = "No ha enviado la derivacion correspondiente. No se guardara ninguna Tipificacion";
+                        return RedirectToAction("Inicio");
+                    }
+                    if (verificarTipificacion.Count > 1)
+                    {
+                        TempData["MessageError"] = "Usted ya ha derivado previamente a este cliente durante este mes, para ver su estado puede dirigirse a la pestana de Derivaciones. No se han subido al sistema ninguna de las tipificaciones.";
+                        return RedirectToAction("Inicio");
+                    }
+                    
+                    var checkGestionDetalle = _context.GESTION_DETALLE
+                        .Where(gd => gd.DocCliente == verificarTipificacion[0].DniCliente
+                            && gd.FechaGestion.Year == DateTime.Now.Year
+                            && gd.FechaGestion.Month == DateTime.Now.Month
+                            && gd.DocAsesor == obtenerDataUsuario.Data.Dni)
+                        .ToList();
+                    if (checkGestionDetalle.Count > 0 || checkGestionDetalle != null)
+                    {
+                        TempData["MessageError"] = "Usted ya ha derivado previamente a este cliente durante este mes, para ver su estado puede dirigirse a la pestana de Derivaciones. No se han subido al sistema ninguna de las tipificaciones.";
+                        return RedirectToAction("Inicio");
+                    }
                 }
                 agregado = true;
             }

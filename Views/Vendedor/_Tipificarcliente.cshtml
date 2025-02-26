@@ -315,22 +315,28 @@
                         </a>
                     </div>
                     <div class="col-12 col-md-8 mt-2 mt-md-0">
-
                         <label for="tipificacionSelect_@contadorNumeros" class="form-label mt-2">Tipificación Asignada
                             @contadorNumeros: </label>
-                        <select id="tipificacionSelect_@contadorNumeros" class="select2 form-control"
-                            name="tipificaciones[@contadorNumeros].TipificacionId"
-                            onchange="verificarTipificacion(@contadorNumeros)">
-                            <option value="">Seleccione una tipificacion</option>
-                            @if (tipificacionesLista != null)
-                            {
-                                @foreach (var tipificacion in tipificacionesLista)
+                        <input type="text" name="tipificaciones[@contadorNumeros].TipificacionId" id="tipificacionSelect_@contadorNumeros" style="display: none;">
+                        <div class="custom-select">
+                            <div class="custom-selected-option" id="selectedOption_tipificacionSelect_@contadorNumeros" onclick="mostrarOpciones('tipificacionSelect_@contadorNumeros')">
+                                Seleccione una Tipificación
+                            </div>
+                            <div class="custom-options" id="opciones_tipificacionSelect_@contadorNumeros">
+                                <input type="text" class="custom-search" id="busqueda_tipificacionSelect_@contadorNumeros" onkeyup="filtrarOpciones('tipificacionSelect_@contadorNumeros')" placeholder="Buscar...">
+                                @if (tipificacionesLista != null)
                                 {
-                                    <option value="@tipificacion.IdTipificacion">@tipificacion.DescripcionTipificacion</option>
+                                    @foreach (var tipificacion in tipificacionesLista)
+                                    {
+                                        <div class="custom-option" id="opcion_@(tipificacion.IdTipificacion)_tipificacionSelect_@contadorNumeros"
+                                            onclick="seleccionarOpcion('tipificacionSelect_@contadorNumeros', '@tipificacion.IdTipificacion', '@tipificacion.DescripcionTipificacion', '@contadorNumeros')">
+                                            @tipificacion.DescripcionTipificacion
+                                        </div>
+                                    }
                                 }
-                            }
-                        </select>
-                        
+                            </div>
+                        </div>
+
                         <!-- Campo de Fecha Oculto por Defecto FECHA VISITA-->
                         <div class="form-group mt-3" id="fechaVisitaContainer_@contadorNumeros" style="display: none;">
                             <div class="row">
@@ -449,7 +455,7 @@
                 {
                     <div class="col-12 col-md-8 mt-2 mt-md-0">
                         <label for="tipificacionSelect_db_@j" class="form-label mt-2">Tipificacion Asignada @j:</label>
-                        <input type="text" name="Tipificacion_@j" id="tipificacionSelect_db_@j" oninput="verificarTipificacion('db_@j')" style="display: none;">
+                        <input type="text" name="Tipificacion_@j" id="tipificacionSelect_db_@j" style="display: none;">
                         <div class="custom-select">
                             <div class="custom-selected-option" id="selectedOption_tipificacionSelect_db_@j" onclick="mostrarOpciones('tipificacionSelect_db_@j')">
                                 Seleccione una Tipificación
@@ -461,7 +467,7 @@
                                     @foreach (var tipificacion in tipificacionesLista)
                                     {
                                         <div class="custom-option" id="opcion_@(tipificacion.IdTipificacion)_tipificacionSelect_db_@j"
-                                            onclick="seleccionarOpcion('tipificacionSelect_db_@j', '@tipificacion.IdTipificacion', '@tipificacion.DescripcionTipificacion')">
+                                            onclick="seleccionarOpcion('tipificacionSelect_db_@j', '@tipificacion.IdTipificacion', '@tipificacion.DescripcionTipificacion', 'db_@j')">
                                             @tipificacion.DescripcionTipificacion
                                         </div>
                                     }

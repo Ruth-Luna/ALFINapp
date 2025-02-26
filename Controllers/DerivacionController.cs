@@ -34,6 +34,12 @@ namespace ALFINapp.Controllers
         [PermissionAuthorization("Derivacion", "Derivacion")]
         public async Task<IActionResult> Derivacion()
         {
+            var UsuarioIdSupervisor = HttpContext.Session.GetInt32("UsuarioId");
+            if (UsuarioIdSupervisor == null)
+            {
+                TempData["MessageError"] = "No se ha iniciado sesión.";
+                return RedirectToAction("Index", "Home");
+            }
             var rolUsuario = HttpContext.Session.GetInt32("RolUser");
             if (rolUsuario == null)
             {
@@ -41,14 +47,15 @@ namespace ALFINapp.Controllers
                 return RedirectToAction("Index", "Home");
             }
             ViewData["RolUsuario"] = rolUsuario;
+            var getdatosUsuario = await _dBServicesGeneral.GetUserInformation(UsuarioIdSupervisor.Value);
+            if (!getdatosUsuario.IsSuccess || getdatosUsuario.Data == null)
+            {
+                TempData["MessageError"] = getdatosUsuario.Message;
+                return RedirectToAction("Index", "Home");
+            }
+            ViewData["DniUsuario"] = getdatosUsuario.Data.Dni;
             if (rolUsuario == 2 || rolUsuario == 1)
             {
-                var UsuarioIdSupervisor = HttpContext.Session.GetInt32("UsuarioId");
-                if (UsuarioIdSupervisor == null)
-                {
-                    TempData["MessageError"] = "No se ha iniciado sesión.";
-                    return RedirectToAction("Index", "Home");
-                }
                 var getAsesoresAsignados = await _dBServicesConsultasSupervisores.GetAsesorsFromSupervisor(UsuarioIdSupervisor.Value);
                 if (!getAsesoresAsignados.IsSuccess || getAsesoresAsignados.Data == null)
                 {
@@ -85,6 +92,7 @@ namespace ALFINapp.Controllers
                             Canal = "A365",
                             FechaEnvio = item.FechaDerivacion,
                             FechaGestion = item.FechaDerivacion,
+                            NombreCompletoCliente = item.NombreCliente,
                             Telefono = item.TelefonoCliente,
                             OrigenTelefono = "A365",
                             CodTip = 2,
@@ -93,7 +101,7 @@ namespace ALFINapp.Controllers
                             ArchivoOrigen = "SISTEMA INTERNO",
                             IdDerivacion = item.IdDerivacion,
                             TraidoDe = "SISTEMA INTERNO",
-                            EstadoDerivacion = item.EstadoDerivacion + " - " + item.FueProcesado,
+                            EstadoDerivacion = item.EstadoDerivacion,
                             TipoDerivacion = "AUTOMATICA",
                             FueProcesadaLaDerivacion = item.FueProcesado,
                             //DATOS QUE DEBEN SER BUSCADOS POR EL ID ASIGNAICON
@@ -123,6 +131,7 @@ namespace ALFINapp.Controllers
                             CodCanal = item.CodCanal,
                             Canal = item.Canal,
                             DocCliente = item.DocCliente,
+                            NombreCompletoCliente = "DESCONOCIDO",
                             FechaEnvio = item.FechaEnvio,
                             FechaGestion = item.FechaGestion,
                             HoraGestion = item.HoraGestion,
@@ -165,12 +174,6 @@ namespace ALFINapp.Controllers
                     return RedirectToAction("Index", "Home");
                 }
                 var DniAsesor = getDniAsesor.Data.Dni;
-                var getDerivaciones = await _dBServicesDerivacion.GetEntradasBSDialXSupervisor(new List<Usuario> { new Usuario { Dni = DniAsesor } });
-                if (!getDerivaciones.IsSuccess)
-                {
-                    TempData["MessageError"] = getDerivaciones.Message;
-                    return RedirectToAction("Index", "Home");
-                }
                 var getClientesDerivadosGenerales = await _dBServicesDerivacion.GetClientesDerivadosGenerales(new List<Usuario> { new Usuario { Dni = DniAsesor } });
                 if (!getClientesDerivadosGenerales.IsSuccess)
                 {
@@ -193,6 +196,7 @@ namespace ALFINapp.Controllers
                         {
                             IdAsignacion = item.IdDerivacion,
                             DocCliente = item.DniCliente ?? string.Empty,
+                            NombreCompletoCliente = item.NombreCliente,
                             Canal = "A365",
                             FechaEnvio = item.FechaDerivacion,
                             FechaGestion = item.FechaDerivacion,
@@ -204,7 +208,7 @@ namespace ALFINapp.Controllers
                             ArchivoOrigen = "SISTEMA INTERNO",
                             IdDerivacion = item.IdDerivacion,
                             TraidoDe = "SISTEMA INTERNO",
-                            EstadoDerivacion = item.EstadoDerivacion + " - " + item.FueProcesado,
+                            EstadoDerivacion = item.EstadoDerivacion,
                             TipoDerivacion = "AUTOMATICA",
                             FueProcesadaLaDerivacion = item.FueProcesado,
                             //DATOS QUE DEBEN SER BUSCADOS POR EL ID ASIGNAICON
@@ -222,53 +226,12 @@ namespace ALFINapp.Controllers
                         getClientesDatosDTO.Add(newItem);
                     }
                 }
-
-                if (getDerivaciones.Data != null)
-                {
-                    foreach (var item in getDerivaciones.Data)
-                    {
-                        var newItem = new GestionDetalleDTO
-                        {
-                            IdFeedback = item.IdFeedback,
-                            IdAsignacion = item.IdAsignacion,
-                            CodCanal = item.CodCanal,
-                            Canal = item.Canal,
-                            DocCliente = item.DocCliente,
-                            FechaEnvio = item.FechaEnvio,
-                            FechaGestion = item.FechaGestion,
-                            HoraGestion = item.HoraGestion,
-                            Telefono = item.Telefono,
-                            OrigenTelefono = item.OrigenTelefono,
-                            CodCampaña = item.CodCampaña,
-                            CodTip = item.CodTip,
-                            Oferta = item.Oferta,
-                            DocAsesor = item.DocAsesor,
-                            Origen = item.Origen,
-                            ArchivoOrigen = item.ArchivoOrigen,
-                            FechaCarga = item.FechaCarga,
-                            IdDerivacion = item.IdDerivacion,
-                            IdSupervisor = item.IdSupervisor,
-                            Supervisor = item.Supervisor,
-                            IdDesembolso = item.IdDesembolso,
-                            TraidoDe = "SISTEMA EXTERNO",
-                            EstadoDerivacion = "DERIVADO MANUALMENTE",
-                            TipoDerivacion = "MANUAL",
-                            FueProcesadaLaDerivacion = true
-                        };
-                        getClientesDatosDTO.Add(newItem);
-                    }
-                }
+                getClientesDatosDTO = getClientesDatosDTO.OrderByDescending(a => a.FechaEnvio).ToList();
                 ViewData["Derivaciones"] = getClientesDatosDTO;
                 return View("Derivacion", getClientesDatosDTO);
             }
             if (rolUsuario == 4)
             {
-                var UsuarioIdSupervisor = HttpContext.Session.GetInt32("UsuarioId");
-                if (UsuarioIdSupervisor == null)
-                {
-                    TempData["MessageError"] = "No se ha iniciado sesión.";
-                    return RedirectToAction("Index", "Home");
-                }
                 var getAsesoresAsignados = await _dBServicesConsultasAdministrador.ConseguirTodosLosUsuarios();
                 if (!getAsesoresAsignados.IsSuccess || getAsesoresAsignados.Data == null)
                 {
@@ -301,6 +264,7 @@ namespace ALFINapp.Controllers
                     {
                         IdAsignacion = item.IdDerivacion,
                         DocCliente = item.DniCliente ?? string.Empty,
+                        NombreCompletoCliente = item.NombreCliente,
                         Canal = "A365",
                         FechaEnvio = item.FechaDerivacion,
                         FechaGestion = item.FechaDerivacion,
@@ -312,7 +276,7 @@ namespace ALFINapp.Controllers
                         ArchivoOrigen = "SISTEMA INTERNO",
                         IdDerivacion = item.IdDerivacion,
                         TraidoDe = "SISTEMA INTERNO",
-                        EstadoDerivacion = item.EstadoDerivacion + " - " + item.FueProcesado,
+                        EstadoDerivacion = item.EstadoDerivacion,
                         TipoDerivacion = "AUTOMATICA",
                         FueProcesadaLaDerivacion = item.FueProcesado,
                         //DATOS QUE DEBEN SER BUSCADOS POR EL ID ASIGNAICON
@@ -338,6 +302,7 @@ namespace ALFINapp.Controllers
                         CodCanal = item.CodCanal,
                         Canal = item.Canal,
                         DocCliente = item.DocCliente,
+                        NombreCompletoCliente = "DESCONOCIDO",
                         FechaEnvio = item.FechaEnvio,
                         FechaGestion = item.FechaGestion,
                         HoraGestion = item.HoraGestion,
@@ -501,11 +466,58 @@ namespace ALFINapp.Controllers
             }
         }
 
-        public async Task<IActionResult> CargarDerivacionesGestion ()
+        public async Task<IActionResult> ObtenerDerivacionesGestion(string DniAsesor)
         {
             try
             {
-                return Json(new { success = true, message = "EN PROCESO NO USE ESTA VISTA" });
+                var enviarDni = new List<Usuario>();
+                var Asesor = new Usuario
+                {
+                    Dni = DniAsesor.ToString()
+                };
+                enviarDni.Add(Asesor);
+                var getClientesDerivadosGenerales = await _dBServicesDerivacion.GetEntradasBSDialXSupervisor(enviarDni);
+                if (!getClientesDerivadosGenerales.IsSuccess)
+                {
+                    return Json(new { success = false, message = getClientesDerivadosGenerales.Message });
+                }
+                var getClientesDatosDTO = new List<GestionDetalleDTO>();
+                if (getClientesDerivadosGenerales.Data != null)
+                {
+                    foreach (var item in getClientesDerivadosGenerales.Data)
+                    {
+                        var newItem = new GestionDetalleDTO
+                        {
+                            IdFeedback = item.IdFeedback,
+                            IdAsignacion = item.IdAsignacion,
+                            CodCanal = item.CodCanal,
+                            Canal = item.Canal,
+                            DocCliente = item.DocCliente,
+                            FechaEnvio = item.FechaEnvio,
+                            FechaGestion = item.FechaGestion,
+                            HoraGestion = item.HoraGestion,
+                            Telefono = item.Telefono,
+                            OrigenTelefono = item.OrigenTelefono,
+                            CodCampaña = item.CodCampaña,
+                            CodTip = item.CodTip,
+                            Oferta = item.Oferta,
+                            DocAsesor = item.DocAsesor,
+                            Origen = item.Origen,
+                            ArchivoOrigen = item.ArchivoOrigen,
+                            FechaCarga = item.FechaCarga,
+                            IdDerivacion = item.IdDerivacion,
+                            IdSupervisor = item.IdSupervisor,
+                            Supervisor = item.Supervisor,
+                            IdDesembolso = item.IdDesembolso,
+                            TraidoDe = "SISTEMA EXTERNO",
+                            EstadoDerivacion = "DERIVADO MANUALMENTE",
+                            FueProcesadaLaDerivacion = true,
+                        };
+                        getClientesDatosDTO.Add(newItem);
+                    }
+                }
+                getClientesDatosDTO = getClientesDatosDTO.OrderByDescending(a => a.FechaGestion).ToList();
+                return PartialView("_DerivacionesGestion", getClientesDatosDTO);
             }
             catch (System.Exception ex)
             {

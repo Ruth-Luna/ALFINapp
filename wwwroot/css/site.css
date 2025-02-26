@@ -118,7 +118,7 @@ body {
 @media (max-width: 768px) {
   .custom-select {
     font-size: 16px;
-    padding: 12px;
+    padding: 0px;
   }
 
   .custom-options {

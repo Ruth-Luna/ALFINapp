@@ -60,9 +60,9 @@ function deriveEsteCliente() {
                 location.href = '/Consulta/Consulta';
             } else {
                 Swal.fire ({
-                    title: 'Error',
+                    title: 'Error en la operación. Lea el mensaje a continuación',
                     text: data.message,
-                    icon: 'error',
+                    icon: 'warning',
                     confirmButtonText: 'Aceptar'
                 });
             }

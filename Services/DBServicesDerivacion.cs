@@ -21,6 +21,17 @@ namespace ALFINapp.Services
         {
             try
             {
+                var verificarDerivacion = (from ad in _context.derivaciones_asesores
+                                           where ad.DniAsesor == DNIAsesorDerivacion
+                                                && ad.DniCliente == DNIClienteDerivacion
+                                                && ad.FechaDerivacion.Year == DateTime.Now.Year
+                                                && ad.FechaDerivacion.Month == DateTime.Now.Month
+                                           select ad).FirstOrDefault();
+                if (verificarDerivacion != null)
+                {
+                    return (false, "Ya se ha generado una derivación para este cliente en este mes, puede verificar el estado de la derivacion en la pestaña de derivaciones");
+                }
+
                 var idDni = await (from bc in _context.base_clientes
                                    join ce in _context.clientes_enriquecidos on bc.IdBase equals ce.IdBase
                                    where bc.Dni == DNIClienteDerivacion
@@ -108,7 +119,7 @@ namespace ALFINapp.Services
         {
             try
             {
-                int tiempoMaximoEspera = 30000; // 30 segundos
+                int tiempoMaximoEspera = 40000; // 30 segundos
                 int intervaloEspera = 1000; // 1 segundo
                 int tiempoTranscurrido = 0;
 
@@ -133,7 +144,7 @@ namespace ALFINapp.Services
                     tiempoTranscurrido += intervaloEspera;
                 }
 
-                return (false, "Tiempo de espera agotado. La entrada no fue procesada.");
+                return (false, "Tiempo de espera agotado. La entrada no fue procesada. Pero fue guardada correctamente en nuestro sistema no sera necesario que envie mas derivaciones de este cliente en caso su rol sea Asesor. Su derivacion sera procesada muy pronto. Para conocer el estado de su derivacion puede dirigirse a la pestaña de Derivaciones");
             }
             catch (System.Exception ex)
             {
@@ -151,7 +162,7 @@ namespace ALFINapp.Services
                         && x.FechaProporcion.HasValue
                         && x.FechaProporcion.Value.Month == derivacion.FechaDerivacion.Month
                         && x.FechaProporcion.Value.Year == derivacion.FechaDerivacion.Year)
-                    .OrderByDescending(x => x.FechaProporcion)
+                    .OrderByDescending(x => x.FechaSol)
                     .FirstOrDefaultAsync();
                 if (derivacion.IdAsignacion == null)
                 {
@@ -179,8 +190,9 @@ namespace ALFINapp.Services
                             IdSupervisor = asesorInfo != null ? asesorInfo.IDUSUARIOSUP : 0,
                             Supervisor = asesorInfo != null ? asesorInfo.RESPONSABLESUP : "NO SE ENCONTRO SUPERVISOR ENCARGADO",
                             IdDesembolso = desembolsoInfo != null ? desembolsoInfo.IdDesembolsos : 0,
-                            FechaDesembolso = desembolsoInfo != null ? desembolsoInfo.FechaDesembolsos : DateTime.MinValue,
-                            EstadoDesembolso = desembolsoInfo != null ? desembolsoInfo.Observacion : "AUN NO SE HA REALIZADO EL DESEMBOLSO",
+                            FechaDesembolso = desembolsoInfo != null ? desembolsoInfo.FechaDesembolsos : null,
+                            FueDesembolsado = desembolsoInfo != null ? true : false,
+                            EstadoDesembolso = desembolsoInfo != null ? "DESEMBOLSADO" : "NO DESEMBOLSADO",
                             Observacion = "LA INFORMACION TRAIDA ES DE A365/SISTEMA INTERNO Y NO DEL BANCO",
                         };
                         return (true, "Informacion de la derivacion encontrada mas actual traida de A365", nuevaGestionDetalle);
@@ -222,8 +234,9 @@ namespace ALFINapp.Services
                             IdSupervisor = asesorInfo != null ? asesorInfo.IDUSUARIOSUP : 0,
                             Supervisor = asesorInfo != null ? asesorInfo.RESPONSABLESUP : "NO SE ENCONTRO SUPERVISOR ENCARGADO",
                             IdDesembolso = desembolsoInfo != null ? desembolsoInfo.IdDesembolsos : 0,
-                            FechaDesembolso = desembolsoInfo != null ? desembolsoInfo.FechaDesembolsos : DateTime.MinValue,
-                            EstadoDesembolso = desembolsoInfo != null ? desembolsoInfo.Observacion : "AUN NO SE HA REALIZADO EL DESEMBOLSO",
+                            FechaDesembolso = desembolsoInfo != null ? desembolsoInfo.FechaDesembolsos : null,
+                            FueDesembolsado = desembolsoInfo != null ? true : false,
+                            EstadoDesembolso = desembolsoInfo != null ? "DESEMBOLSADO" : "NO DESEMBOLSADO",
                             Observacion = "LA INFORMACION TRAIDA ES DE ALFIN/SISTEMA INTERNO Y NO DEL BANCO",
                         };
                         return (true, "Información de la derivación encontrada mas actual traida de ALFIN", nuevaGestionDetalle);
@@ -247,8 +260,9 @@ namespace ALFINapp.Services
                         IdSupervisor = asesorInfo != null ? asesorInfo.IDUSUARIOSUP : 0,
                         Supervisor = asesorInfo != null ? asesorInfo.RESPONSABLESUP : "NO SE ENCONTRO SUPERVISOR ENCARGADO",
                         IdDesembolso = desembolsoInfo != null ? desembolsoInfo.IdDesembolsos : 0,
-                        FechaDesembolso = desembolsoInfo != null ? desembolsoInfo.FechaDesembolsos : DateTime.MinValue,
-                        EstadoDesembolso = desembolsoInfo != null ? desembolsoInfo.Observacion : "AUN NO SE HA REALIZADO EL DESEMBOLSO",
+                        FechaDesembolso = desembolsoInfo != null ? desembolsoInfo.FechaDesembolsos : null,
+                        FueDesembolsado = desembolsoInfo != null ? true : false,
+                        EstadoDesembolso = desembolsoInfo != null ? "DESEMBOLSADO" : "NO DESEMBOLSADO",
                         Observacion = "LA INFORMACION TRAIDA ES DE A365/SISTEMA INTERNO Y NO DEL BANCO",
                     }).FirstOrDefaultAsync();
 
@@ -287,8 +301,9 @@ namespace ALFINapp.Services
                         IdSupervisor = asesorInfo != null ? asesorInfo.IDUSUARIOSUP : 0,
                         Supervisor = asesorInfo != null ? asesorInfo.RESPONSABLESUP : "NO SE ENCONTRO SUPERVISOR ENCARGADO",
                         IdDesembolso = desembolsoInfo != null ? desembolsoInfo.IdDesembolsos : 0,
-                        FechaDesembolso = desembolsoInfo != null ? desembolsoInfo.FechaDesembolsos : DateTime.MinValue,
-                        EstadoDesembolso = desembolsoInfo != null ? desembolsoInfo.Observacion : "AUN NO SE HA REALIZADO EL DESEMBOLSO",
+                        FechaDesembolso = desembolsoInfo != null ? desembolsoInfo.FechaDesembolsos : null,
+                        FueDesembolsado = desembolsoInfo != null ? true : false,
+                        EstadoDesembolso = desembolsoInfo != null ? "DESEMBOLSADO" : "NO DESEMBOLSADO",
                         Observacion = "LA INFORMACION TRAIDA ES DE ALFIN/SISTEMA INTERNO Y NO DEL BANCO",
                     }).FirstOrDefaultAsync();
                 if (derivacionInfoAlfin != null)

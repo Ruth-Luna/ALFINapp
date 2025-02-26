@@ -32,7 +32,14 @@ function cargarDerivacionManual(IdReferido) {
 }
 
 function enviarDerivacionPorReferencia(IdReferido) {
-
+    let loadingSwal = Swal.fire({
+        title: 'Enviando...',
+        text: 'Por favor, espera mientras se procesa la solicitud.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
     $.ajax({
         type: 'POST',
         url: '/Referidos/EnviarDerivacionPorReferencia',
@@ -40,6 +47,7 @@ function enviarDerivacionPorReferencia(IdReferido) {
             IdReferido: IdReferido
         },
         success: function (response) {
+            Swal.close();
             if (response.success === false) {
                 Swal.fire({
                     title: 'Error al enviar la derivacion',
@@ -59,6 +67,7 @@ function enviarDerivacionPorReferencia(IdReferido) {
             }
         },
         error: function (error) {
+            Swal.close();
             Swal.fire({
                 title: 'Error al enviar la derivacion',
                 text: 'Hubo un error inesperado al enviar la derivacion.',

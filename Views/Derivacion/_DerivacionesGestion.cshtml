@@ -1,19 +1,14 @@
 @model List<ALFINapp.Models.GestionDetalleDTO>
 @{
 }
-
-<div class="table-responsive" id="tablaDerivacionesSistema">
+<div class="table-responsive" id="tablaDerivacionesGestion">
     <table class="table table-bordered">
         <thead>
             <tr>
                 <th>Estado de la Derivacion</th>
                 <th>DNI Cliente</th>
                 <th>Telefono</th>
-                <th>DNI Asesor</th>
                 <th>Origen del Telefono</th>
-                <th>Fecha de Derivacion</th>
-                <th>Posible Desembolso</th>
-                <th>Fecha Desembolso</th>
             </tr>
         </thead>
         <tbody>
@@ -32,12 +27,7 @@
                         }
                         <td>@derivacionAsesor.DocCliente</td>
                         <td>@derivacionAsesor.Telefono</td>
-                        <td>@derivacionAsesor.DocAsesor</td>
                         <td><span class="badge bg-warning">@derivacionAsesor.OrigenTelefono</span></td>
-                        <td>@derivacionAsesor.FechaEnvio</td>
-                        
-                        <td>@derivacionAsesor.EstadoDesembolso</td>
-                        <td>@derivacionAsesor.FechaDesembolso</td>
                     </tr>
                 }
             }
