@@ -34,7 +34,8 @@
                 }
             </div>
             <label for="BaseDestino">Destino</label>
-            <select class="form-control" name="BaseDestino" id="BaseDestino" onchange="cargarBaseDisponible(this.value)">
+            <select class="form-control" name="BaseDestino" id="BaseDestino"
+                onchange="cargarBaseDisponible(this.value)">
                 <option value="">Seleccione una Base de Destino</option>
                 @if (destinoBases != null)
                 {
@@ -94,8 +95,18 @@
 @section Scripts {
     <script>
         function EnviarDatos() {
-
             const asignaciones = [];
+
+            // Mostrar la ventana de carga
+            Swal.fire({
+                title: 'Procesando...',
+                text: 'Por favor, espera mientras se procesa la asignación.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
 
             // Recopilar datos del formulario dinámico
             document.querySelectorAll('tbody tr').forEach((row) => {
@@ -116,6 +127,7 @@
                     }
                 }
             });
+
             const selectAsesorBase = document.getElementById('BaseDestino').value;
 
             // Imprimir la información completa a enviar antes de hacer el AJAX
@@ -133,27 +145,31 @@
                     selectAsesorBase: selectAsesorBase,
                 },
                 success: function (response) {
-                    if (response.success) {
-                        Swal.fire({
-                            title: 'Modificación Exitosa',
-                            text: response.message,
-                            icon: 'success',
-                            confirmButtonText: 'Aceptar'
-                        }).then(() => {
-                            // Reset UI
-                            document.getElementById('guardarAsignacionesContainer').style.display = 'block';
-                            location.reload();
-                        });
-                    } else {
+                    Swal.close(); // Cerrar la ventana de carga
+
+                    if (response.success === false) {
                         Swal.fire({
                             title: 'Error en la asignación',
                             text: response.message,
                             icon: 'error',
                             confirmButtonText: 'Aceptar'
                         });
+                    } else {
+                        Swal.fire({
+                            title: 'Asignación Exitosa',
+                            text: response.message,
+                            icon: 'success',
+                            confirmButtonText: 'Aceptar'
+                        }).then(() => {
+                            // Reset UI
+                            document.getElementById('guardarAsignacionesContainer').style.display = 'none';
+                            location.reload();
+                        });
                     }
                 },
                 error: function () {
+                    Swal.close(); // Cerrar la ventana de carga
+
                     Swal.fire({
                         title: 'Error en la Reasignación',
                         text: 'Error en la Reasignación',
@@ -163,6 +179,7 @@
                 }
             });
         }
+
     </script>
     <script src="~/js/Asignacion/Asignacion.js" asp-append-version="true"></script>
 }

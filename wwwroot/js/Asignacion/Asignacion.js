@@ -19,13 +19,6 @@ function cargarBaseDisponible(destino) {
                 $("#NumTotalLeads").val(response.data.totalClientes);
                 $("#NumLeadsDisponible").val(response.data.clientesPendientesSupervisor);
                 $("#NumLeadsAsignados").val(response.data.clientesAsignadosSupervisor);
-                
-                // Opcional: Añadir logging para debuggear
-                console.log("Datos actualizados:", {
-                    total: response.data.totalClientes,
-                    disponibles: response.data.clientesPendientesSupervisor,
-                    asignados: response.data.clientesAsignadosSupervisor
-                });
             }
         },
         error: function (xhr, status, error) {

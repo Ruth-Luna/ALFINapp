@@ -419,9 +419,9 @@ namespace ALFINapp.Controllers
                 {
                     return Json(new { success = false, message = supervisorData.Message });
                 }
-                int clientesPendientesSupervisor = supervisorData.Data != null ? supervisorData.Data.Count(cliente => cliente.IdUsuarioV == 0) : 0;
+                int clientesPendientesSupervisor = supervisorData.Data != null ? supervisorData.Data.Count(cliente => cliente.IdUsuarioV == null) : 0;
                 int totalClientes = supervisorData.Data != null ? supervisorData.Data.Count() : 0;
-                int clientesAsignadosSupervisor = supervisorData.Data != null ? supervisorData.Data.Count(cliente => cliente.IdUsuarioV != 0) : 0;
+                int clientesAsignadosSupervisor = supervisorData.Data != null ? supervisorData.Data.Count(cliente => cliente.IdUsuarioV != null) : 0;
                 return Json(new { success = true, message = "Busqueda de datos por base con exito", data = new { clientesPendientesSupervisor, totalClientes, clientesAsignadosSupervisor } });
             }
             catch (System.Exception ex)

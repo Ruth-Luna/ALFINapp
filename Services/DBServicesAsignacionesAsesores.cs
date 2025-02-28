@@ -242,7 +242,7 @@ namespace ALFINapp.Services
         {
             try
             {
-                var result = await _context.Database.ExecuteSqlRawAsync("EXEC sp_asesores_actualizar_clientes_asignados @IdAsignacion, @IdUsuarioV",
+                var result = await _context.Database.ExecuteSqlRawAsync("EXEC sp_asesores_asignar_clientes @IdAsignacion, @IdUsuarioV",
                     new SqlParameter("@IdAsignacion", cliente.IdAsignacion),
                     new SqlParameter("@IdUsuarioV", cliente.IdUsuarioV));
 

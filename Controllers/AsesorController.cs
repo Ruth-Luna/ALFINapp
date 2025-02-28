@@ -20,19 +20,22 @@ namespace ALFINapp.Controllers
         private readonly DBServicesEstadoAsesores _dbServicesEstadoAsesores;
         private readonly MDbContext _context;
         private readonly DBServicesUsuarios _dBServicesUsuarios;
+        private readonly DBServicesConsultasSupervisores _dBServicesConsultasSupervisores;
 
         public AsesorController(
             DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores,
             DBServicesGeneral dbServicesGeneral,
             DBServicesEstadoAsesores dbServicesEstadoAsesores,
             MDbContext context,
-            DBServicesUsuarios dBServicesUsuarios)
+            DBServicesUsuarios dBServicesUsuarios,
+            DBServicesConsultasSupervisores dBServicesConsultasSupervisores)
         {
             _dbServicesAsignacionesAsesores = dbServicesAsignacionesAsesores;
             _dbServicesGeneral = dbServicesGeneral;
             _dbServicesEstadoAsesores = dbServicesEstadoAsesores;
             _context = context;
             _dBServicesUsuarios = dBServicesUsuarios;
+            _dBServicesConsultasSupervisores = dBServicesConsultasSupervisores;
         }
 
         [HttpPost]
@@ -378,6 +381,37 @@ namespace ALFINapp.Controllers
                     return Json(new { success = false, message = "No se ha llenado ninguna entrada. Los campos no pueden estar vacíos." });
                 }
                 int contadorClientesAsignados = 0;
+                var totalClientes = await _dBServicesConsultasSupervisores.ConsultaLeadsDelSupervisorDestino(idSupervisorActual.Value, selectAsesorBase);
+                if (!totalClientes.IsSuccess || totalClientes.Data == null)
+                {
+                    return Json(new { success = false, message = $"Ha ocurrido un error al obtener los clientes disponibles. {totalClientes.Message}" });
+                }
+                foreach (var asignacion in asignacionasesor)
+                {
+                    if (asignacion.NumClientes == 0)
+                    {
+                        continue;
+                    }
+
+                    int nClientes = asignacion.NumClientes;
+                    contadorClientesAsignados = contadorClientesAsignados + nClientes;
+                    var clientesDisponibles = totalClientes.Data;
+                    if (clientesDisponibles.Count < nClientes)
+                    {
+                        mensajesError = mensajesError + $"En la base '{selectAsesorBase}', solo hay {clientesDisponibles.Count} clientes disponibles para la asignación. La entrada ha sido obviada.";
+                        continue;
+                    }
+                    if (contadorClientesAsignados > clientesDisponibles.Count)
+                    {
+                        mensajesError = mensajesError + $"Ha ocurrido un error al asignar los clientes. Esta mandando mas entradas del total disponible";
+                        continue;
+                    }
+                }
+                if (mensajesError != " ")
+                {
+                    return Json(new { success = false, message = $"{mensajesError}" });
+                }
+                contadorClientesAsignados = 0;
                 foreach (var asignacion in asignacionasesor)
                 {
                     Console.WriteLine($"IdVendedor: {asignacion.IdVendedor}, NumClientes: {asignacion.NumClientes}");
@@ -391,15 +425,9 @@ namespace ALFINapp.Controllers
                     var getClientesDisponibles = await _dbServicesAsignacionesAsesores.ObtenerClientesDisponibles(idSupervisorActual.Value, selectAsesorBase, nClientes);
                     if (!getClientesDisponibles.IsSuccess || getClientesDisponibles.data == null)
                     {
-                        mensajesError = mensajesError + $"Ha ocurrido un error al obtener los clientes disponibles. {getClientesDisponibles.message}";
-                        continue;
+                        return Json(new { success = false, message = $"{getClientesDisponibles.message}" });
                     }
                     var clientesDisponibles = getClientesDisponibles.data;
-                    if (clientesDisponibles.Count < nClientes)
-                    {
-                        mensajesError = mensajesError + $"En la base '{selectAsesorBase}', solo hay {clientesDisponibles.Count} clientes disponibles para la asignación. La entrada ha sido obviada.";
-                        continue;
-                    }
                     foreach (var cliente in clientesDisponibles)
                     {
                         cliente.IdUsuarioV = asignacion.IdVendedor;
@@ -407,13 +435,13 @@ namespace ALFINapp.Controllers
                         var result = await _dbServicesAsignacionesAsesores.ActualizarClienteAsignado(cliente);
                         if (!result.IsSuccess)
                         {
-                            mensajesError = mensajesError + $"Ha ocurrido un error al asignar el cliente {cliente.IdCliente}. {result.message}";
+                            return Json(new { success = false, message = $"{result.message}" });
                         }
                     }
                 }
                 if (mensajesError != " ")
                 {
-                    return Json(new { success = true, message = $"{mensajesError}" });
+                    return Json(new { success = false, message = $"{mensajesError}" });
                 }
                 else
                 {
