@@ -524,7 +524,7 @@ namespace ALFINapp.Controllers
                             && gd.FechaGestion.Month == DateTime.Now.Month
                             && gd.DocAsesor == obtenerDataUsuario.Data.Dni)
                         .ToList();
-                    if (checkGestionDetalle.Count > 0 || checkGestionDetalle != null)
+                    if (checkGestionDetalle.Count != 0)
                     {
                         TempData["MessageError"] = "Usted ya ha derivado previamente a este cliente durante este mes, para ver su estado puede dirigirse a la pestana de Derivaciones. No se han subido al sistema ninguna de las tipificaciones.";
                         return RedirectToAction("Inicio");

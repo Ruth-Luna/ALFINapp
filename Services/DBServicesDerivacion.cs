@@ -317,5 +317,51 @@ namespace ALFINapp.Services
                 return (false, ex.Message, null);
             }
         }
+        public async Task<(bool IsSuccess, string message)> EnviarEmailDeDerivacion(string destinatario, string mensaje, string asunto)
+        {
+            try
+            {
+                await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC msdb.dbo.sp_send_dbmail @profile_name = {0}, @recipients = {1}, @body = {2}, @body_format = {3}, @subject = {4}",
+                    "RoxanaAlfin", destinatario, mensaje, "HTML", asunto
+                );
+                return (true, "El correo ha sido enviado exitosamente");
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        public async Task<(bool IsSuccess, string message, GestionDetalleDTO? data)> GetDerivacionXDNI(string dni)
+        {
+            try
+            {
+                var getDerivacion = await (from da in _context.derivaciones_asesores
+                                                join ce in _context.clientes_enriquecidos on da.IdCliente equals ce.IdCliente into ceGroup
+                                                from ce in ceGroup.DefaultIfEmpty()
+                                                join bc in _context.base_clientes on ce.IdBase equals bc.IdBase into bcGroup
+                                                from bc in bcGroup.DefaultIfEmpty()
+                                                join db in _context.detalle_base on bc.IdBase equals db.IdBase into dbGroup
+                                                from db in dbGroup.DefaultIfEmpty()
+                                                where da.DniCliente == dni
+                                                orderby da.FechaDerivacion descending, db.FechaCarga descending
+                                                select new GestionDetalleDTO
+                                                {
+                                                    CodCampaña = db.Campaña,
+                                                    Oferta = db.OfertaMax != null ? db.OfertaMax.Value : 0,
+                                                    CodCanal = db.Canal,
+                                                }).FirstOrDefaultAsync();
+                if (getDerivacion == null)
+                {
+                    return (false, "No se encontró la derivación", null);
+                }
+                return (true, "Derivación encontrada", getDerivacion);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message, null);
+            }
+        }
     }
 }

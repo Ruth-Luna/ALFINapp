@@ -14,7 +14,7 @@ namespace ALFINapp.Controllers
     [RequireSession]
     public class TipificacionesController : Controller
     {
-        
+
         private readonly DBServicesGeneral _dbServicesGeneral;
         private readonly DBServicesTipificaciones _dbServicesTipificaciones;
         private readonly DBServicesDerivacion _dBServicesDerivacion;
@@ -24,7 +24,7 @@ namespace ALFINapp.Controllers
             _dbServicesTipificaciones = dbServicesTipificaciones;
             _dBServicesDerivacion = dBServicesDerivacion;
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> GenerarDerivacion(string agenciaComercial, DateTime FechaVisita, string Telefono, int idBase)
         {
@@ -44,7 +44,7 @@ namespace ALFINapp.Controllers
                 return Json(new { success = false, message = getAsesor.Message });
             }
 
-            var getClienteEnriquecido = await _dbServicesGeneral.GetClienteEnriquecidoFunction(idBase); 
+            var getClienteEnriquecido = await _dbServicesGeneral.GetClienteEnriquecidoFunction(idBase);
 
             if (getClienteEnriquecido.data == null || !getClienteEnriquecido.IsSuccess)
             {
@@ -64,11 +64,11 @@ namespace ALFINapp.Controllers
                 EstadoDerivacion = "DERIVACION PENDIENTE"
             };
             var enviarFomularioAsignacion = await _dBServicesDerivacion.GenerarDerivacion
-                (enviarDerivacion.FechaDerivacion, 
-                enviarDerivacion.NombreAgencia, 
-                enviarDerivacion.DniAsesor, 
-                enviarDerivacion.TelefonoCliente, 
-                enviarDerivacion.DniCliente, 
+                (enviarDerivacion.FechaDerivacion,
+                enviarDerivacion.NombreAgencia,
+                enviarDerivacion.DniAsesor,
+                enviarDerivacion.TelefonoCliente,
+                enviarDerivacion.DniCliente,
                 enviarDerivacion.NombreCliente);
             if (enviarFomularioAsignacion.IsSuccess == false)
             {
@@ -79,7 +79,85 @@ namespace ALFINapp.Controllers
             {
                 return Json(new { success = false, message = derivacionEnviada.Message });
             }
-            return Json(new { success = true, message = "La Derivacion se ha enviado correctamente, pero para guardar los cambios debe darle al boton Guardar Tipificaciones" });;
+
+            var usuarioinfo = await _dbServicesGeneral.GetUserInformation(usuarioId.Value);
+            if (usuarioinfo.IsSuccess == false || usuarioinfo.Data == null)
+            {
+                return Json(new { success = false, message = usuarioinfo.Message });
+            }
+            var getDerivacion = await _dBServicesDerivacion.GetDerivacionXDNI(enviarDerivacion.DniCliente);
+            if (getDerivacion.IsSuccess == false || getDerivacion.data == null)
+            {
+                return Json(new { success = false, message = getDerivacion.message });
+            }
+            var mensajereal = $@"
+            <div>
+                <div style='font-size: 12px;'>
+                    <span>
+                        Estimados <br> Buen día
+                    </span>
+                </div>
+                <div style='margin-top: 20px;'>
+                    Desde el <strong>CANAL DE A365</strong> originamos y compartimos un prospecto de cliente<br>
+                    interesado en la toma de un crédito en efectivo.
+                </div>
+
+                <div style='margin-top: 30px;'>
+                    <span style='background-color: yellow; padding: 10px; border-radius: 5px; font-family: Segoe UI, Tahoma, Geneva, Verdana, sans-serif; font-size: 24px;'>
+                        <strong>Información del Prospecto del Cliente</strong>
+                    </span>
+                </div>
+
+                <div style='margin-top: 40px; font-family: Courier New, Courier, monospace;'>
+                    <table border='1' cellspacing='0' cellpadding='5' style='border-collapse: collapse; width: 100%;'>
+                        <tr>
+                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'><strong>CANAL TELECAMPO:</strong></td>
+                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'>A365</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'><strong>CÓDIGO DEL EJECUTIVO:</strong></td>
+                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'>{usuarioinfo.Data.Dni}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'><strong>CDV ALFIN BANCO:</strong></td>
+                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'>{usuarioinfo.Data.NombresCompletos}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 10px;'><strong>DNI Cliente:</strong></td>
+                            <td style='padding: 10px;'>{enviarDerivacion.DniCliente}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 10px;'><strong>Nombre Cliente:</strong></td>
+                            <td style='padding: 10px;'>{enviarDerivacion.NombreCliente}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 10px;'><strong>Monto Solicitado (S/.):</strong></td>
+                            <td style='padding: 10px;'>{getDerivacion.data.Oferta}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 10px;'><strong>Celular:</strong></td>
+                            <td style='padding: 10px;'>{enviarDerivacion.TelefonoCliente}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'><strong>Agencia de Atención:</strong></td>
+                            <td style='padding: 10px; background-color: yellow;'>{enviarDerivacion.NombreAgencia}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'><strong>Fecha de Visita a Agencia:</strong></td>
+                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'>
+                                {enviarDerivacion.FechaDerivacion:yyyy-MM-dd}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'><strong>Hora de Visita a Agencia:</strong></td>
+                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'>HORARIO DE AGENCIA</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>";
+
+            var enviarEmailDerivacion = await _dBServicesDerivacion.EnviarEmailDeDerivacion("svilcalim@unsa.edu.pe", mensajereal, $"Asunto: Fwd: A365 FFVV CAMPO CLIENTE DNI: {enviarDerivacion.DniCliente} / NOMBRE: {enviarDerivacion.NombreCliente}");
+            return Json(new { success = true, message = "La Derivacion se ha enviado correctamente, pero para guardar los cambios debe darle al boton Guardar Tipificaciones. " + enviarEmailDerivacion.message }); ;
         }
     }
 }

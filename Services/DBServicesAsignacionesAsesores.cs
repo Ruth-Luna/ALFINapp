@@ -141,7 +141,7 @@ namespace ALFINapp.Services
                         return (false, "El cliente no tiene entrada en la Base de Datos de ALFIN, si el cliente tiene Datos en la base de Datos del banco A365 puede hacer la consulta con los datos correspondientes");
                     }
 
-                    var BaseClienteBanco = await _context.base_clientes.FirstOrDefaultAsync(c => c.IdBaseBanco == ClienteDBAlfinBanco.IdBaseBanco);
+                    var BaseClienteBanco = await _context.base_clientes.FirstOrDefaultAsync(c => c.IdBaseBanco == ClienteDBAlfinBanco.IdBaseBanco || c.Dni == ClienteDBAlfinBanco.Dni);
 
                     var nuevoBaseClienteDelBanco = new BaseCliente();
                     if (BaseClienteBanco == null)
@@ -161,6 +161,7 @@ namespace ALFINapp.Services
                     else
                     {
                         nuevoBaseClienteDelBanco = BaseClienteBanco;
+                        nuevoBaseClienteDelBanco.IdBaseBanco = ClienteDBAlfinBanco.IdBaseBanco;
                     }
 
                     var EnriquecidoClienteAlfin = await _context.clientes_enriquecidos.FirstOrDefaultAsync(ce => ce.IdBase == nuevoBaseClienteDelBanco.IdBase);
