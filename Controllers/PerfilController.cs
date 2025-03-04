@@ -39,18 +39,7 @@ namespace ALFINapp.Controllers
                 if (userInformation.IsSuccess == false)
                 {
                     TempData["MessageError"] = userInformation.Message;
-                    if (RolUser == 1)
-                    {
-                        return RedirectToAction("Inicio", "Vendedor");
-                    }
-                    else if (RolUser == 2)
-                    {
-                        return RedirectToAction("Inicio", "Supervisor");
-                    }
-                    else
-                    {
-                        return RedirectToAction("Index", "Home");
-                    }
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 ViewData["RolUser"] = RolUser;
                 return View("Perfil", userInformation.Data);
@@ -58,7 +47,7 @@ namespace ALFINapp.Controllers
             catch (System.Exception ex)
             {
                 TempData["MessageError"] = ex.Message;
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Redireccionar", "Error");
             }
         }
 

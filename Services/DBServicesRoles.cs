@@ -119,5 +119,68 @@ namespace ALFINapp.Services
                 return (false, ex.Message, null);
             }
         }
+
+        public async Task<(bool IsSuccess, string Message, List<Roles>? Data)> getAllRoles()
+        {
+            try
+            {
+                var roles = await (from r in _context.roles
+                                   select r).ToListAsync();
+                if (roles.Count > 0)
+                {
+                    return (true, "Roles encontrados", roles);
+                }
+                return (false, "No se encontraron roles", null);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message, null);
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message)> actualizarPermisoRol(int idVista, int idRol)
+        {
+            try
+            {
+                var rolesExistentes = await (from p in _context.roles
+                                            select p).ToListAsync();
+                if (!rolesExistentes.Any(r => r.IdRol == idRol))
+                {
+                    return (false, "El rol especificado no existe");
+                }
+                var vistasExistentes = await (from v in _context.Vista_Rutas
+                                             select v).ToListAsync();
+                if (!vistasExistentes.Any(v => v.IdVista == idVista))
+                {
+                    return (false, "La vista especificada no existe");
+                }
+                var permiso = await (
+                    from p in _context.Permisos_Roles_Vistas
+                    where p.IdRol == idRol && p.IdVista == idVista
+                    select p
+                ).FirstOrDefaultAsync();
+                if (permiso == null)
+                {
+                    var nuevoPermiso = new PermisosRolesVistas
+                    {
+                        IdRol = idRol,
+                        IdVista = idVista
+                    };
+                    _context.Permisos_Roles_Vistas.Add(nuevoPermiso);
+                    await _context.SaveChangesAsync();
+                    return (true, "Permiso agregado correctamente");
+                }
+                else
+                {
+                    _context.Permisos_Roles_Vistas.Remove(permiso);
+                    await _context.SaveChangesAsync();
+                    return (true, "Permiso removido correctamente");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
     }
 }

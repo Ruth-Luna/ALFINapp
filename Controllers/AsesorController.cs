@@ -14,7 +14,6 @@ namespace ALFINapp.Controllers
 
     public class AsesorController : Controller
     {
-        private readonly List<int> rolesPermitidos = new List<int> { 1, 2, 3 };
         private readonly DBServicesAsignacionesAsesores _dbServicesAsignacionesAsesores;
         private readonly DBServicesGeneral _dbServicesGeneral;
         private readonly DBServicesEstadoAsesores _dbServicesEstadoAsesores;
@@ -42,7 +41,8 @@ namespace ALFINapp.Controllers
         public async Task<IActionResult> ActivarAsesor(string DNI, int idUsuario)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId == null)
+            int? rol = HttpContext.Session.GetInt32("RolUser");
+            if (usuarioId == null || rol == null)
             {
                 TempData["Message"] = "Ha ocurrido un error en la autenticación";
                 return RedirectToAction("Index", "Home");

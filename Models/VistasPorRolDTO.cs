@@ -15,5 +15,6 @@ namespace ALFINapp.Models
         public string? Rol { get; set; }
         public string? bi_logo { get; set; }
         public string? nombre_sidebar { get; set; }
+        public int? id_rol { get; set; }
     }
 }

@@ -39,9 +39,10 @@ namespace ALFINapp.Controllers
         public async Task<IActionResult> Asignacion()
         {
             var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId == null )
+            var rol = HttpContext.Session.GetInt32("RolUser");
+            if (usuarioId == null || rol == null)
             {
-                TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
+                TempData["MessageError"] = "No se ha iniciado sesión";
                 return RedirectToAction("Index", "Home");
             }
             var GetVendedoresAsignados = await _dbServicesConsultasSupervisores.GetAsesorsFromSupervisor(usuarioId.Value);
@@ -49,7 +50,7 @@ namespace ALFINapp.Controllers
             if (GetVendedoresAsignados.IsSuccess == false || GetVendedoresAsignados.Data == null)
             {
                 TempData["MessageError"] = GetVendedoresAsignados.Message;
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Redireccionar", "Error");
             }
             var vendedoresAsignados = GetVendedoresAsignados.Data;
 
@@ -60,11 +61,10 @@ namespace ALFINapp.Controllers
             {
                 // Llamada al servicio para obtener el número de clientes y el mapeo de datos
                 var vendedorIndividualMapeado = await _dbServicesConsultasSupervisores.GetNumberTipificacionesPlotedOnDTO(vendedorIndividual, usuarioId.Value);
-
                 if (vendedorIndividualMapeado.IsSuccess == false || vendedorIndividualMapeado.Data == null)
                 {
                     TempData["MessageError"] = GetVendedoresAsignados.Message;
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
 
                 // Agregar el VendedorConClientesDTO mapeado a la lista
@@ -74,7 +74,7 @@ namespace ALFINapp.Controllers
             if (vendedoresConClientes == null)
             {
                 TempData["MessageError"] = GetVendedoresAsignados.Message;
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Redireccionar", "Error");
             }
 
             var DestinoBases = await _context.clientes_asignados
@@ -86,14 +86,14 @@ namespace ALFINapp.Controllers
             if (DestinoBases == null)
             {
                 TempData["MessageError"] = "No hay bases de destino disponibles para asignar.";
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Redireccionar", "Error");
             }
             var supervisorData = await _dbServicesConsultasSupervisores.ConsultaLeadsDelSupervisor(usuarioId.Value);
 
             if (supervisorData.IsSuccess == false)
             {
                 TempData["MessageError"] = supervisorData.Message;
-                return RedirectToAction("Inicio", "Supervisor");
+                return RedirectToAction("Redireccionar", "Error");
             }
 
             int totalClientes = supervisorData.Data != null ? supervisorData.Data.Count() : 0;
@@ -138,77 +138,77 @@ namespace ALFINapp.Controllers
                 if (GetUCampanas.IsSuccess == false || GetUCampanas.data == null)
                 {
                     TempData["MessageError"] = GetUCampanas.Message;
-                    return RedirectToAction("Inicio", "Administrador");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 if (GetUClienteEstado.IsSuccess == false || GetUClienteEstado.data == null)
                 {
                     TempData["MessageError"] = GetUClienteEstado.Message;
-                    return RedirectToAction("Inicio", "Administrador");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 if (GetUColor.IsSuccess == false || GetUColor.data == null)
                 {
                     TempData["MessageError"] = GetUColor.Message;
-                    return RedirectToAction("Inicio", "Administrador");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 if (GetUColorFinal.IsSuccess == false || GetUColorFinal.data == null)
                 {
                     TempData["MessageError"] = GetUColorFinal.Message;
-                    return RedirectToAction("Inicio", "Administrador");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 if (GetUFrescura.IsSuccess == false || GetUFrescura.data == null)
                 {
                     TempData["MessageError"] = GetUFrescura.Message;
-                    return RedirectToAction("Inicio", "Administrador");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 if (GetUGrupoMonto.IsSuccess == false || GetUGrupoMonto.data == null)
                 {
                     TempData["MessageError"] = GetUGrupoMonto.Message;
-                    return RedirectToAction("Inicio", "Administrador");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 if (GetUGrupoTasa.IsSuccess == false || GetUGrupoTasa.data == null)
                 {
                     TempData["MessageError"] = GetUGrupoTasa.Message;
-                    return RedirectToAction("Inicio", "Administrador");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 if (GetUPropension.IsSuccess == false || GetUPropension.data == null)
                 {
                     TempData["MessageError"] = GetUPropension.Message;
-                    return RedirectToAction("Inicio", "Administrador");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 if (GetURangoEdad.IsSuccess == false || GetURangoEdad.data == null)
                 {
                     TempData["MessageError"] = GetURangoEdad.Message;
-                    return RedirectToAction("Inicio", "Administrador");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 if (GetURangoOferta.IsSuccess == false || GetURangoOferta.data == null)
                 {
                     TempData["MessageError"] = GetURangoOferta.Message;
-                    return RedirectToAction("Inicio", "Administrador");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 if (GetURangoTasas.IsSuccess == false || GetURangoTasas.data == null)
                 {
                     TempData["MessageError"] = GetURangoTasas.Message;
-                    return RedirectToAction("Inicio", "Administrador");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 if (GetUTipoCliente.IsSuccess == false || GetUTipoCliente.data == null)
                 {
                     TempData["MessageError"] = GetUTipoCliente.Message;
-                    return RedirectToAction("Inicio", "Administrador");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 if (GetUUsuario.IsSuccess == false || GetUUsuario.data == null)
                 {
                     TempData["MessageError"] = GetUUsuario.Message;
-                    return RedirectToAction("Inicio", "Administrador");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 if (GetUTipoBase.IsSuccess == false || GetUTipoBase.data == null)
                 {
                     TempData["MessageError"] = GetUTipoBase.Message;
-                    return RedirectToAction("Inicio", "Administrador");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 if (GetUFlgDeudaPlus.IsSuccess == false || GetUFlgDeudaPlus.data == null)
                 {
                     TempData["MessageError"] = GetUFlgDeudaPlus.Message;
-                    return RedirectToAction("Inicio", "Administrador");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 var GetDataLabels = new AsignacionSupervisoresDTO
                 {
@@ -248,7 +248,7 @@ namespace ALFINapp.Controllers
             catch (System.Exception ex)
             {
                 TempData["MessageError"] = ex.Message;
-                return RedirectToAction("Inicio", "Administrador");
+                return RedirectToAction("Redireccionar", "Error");
             }
         }
         [HttpGet]

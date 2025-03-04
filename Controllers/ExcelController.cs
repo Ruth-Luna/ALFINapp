@@ -153,7 +153,7 @@ namespace ALFINapp.Controllers
                 if (supervisorUsuario == null)
                 {
                     TempData["Message"] = "Error al verificar el usuario. Intente iniciar sesión nuevamente.";
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 /*var supervisorData = (from ca in _context.clientes_asignados
                                       join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
@@ -343,8 +343,8 @@ namespace ALFINapp.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al verificar : {ex.Message}");
-                return RedirectToAction("Index", "Home");
+                Console.WriteLine($"Error: {ex.Message}");
+                return RedirectToAction("Redireccionar", "Error");
             }
         }
         /*[HttpGet]

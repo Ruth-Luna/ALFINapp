@@ -140,7 +140,7 @@ namespace ALFINapp.Controllers
                     string.IsNullOrWhiteSpace(model.Departamento))
                 {
                     TempData["MessageError"] = "Debe llenar todos los campos!";
-                    return RedirectToAction("Inicio");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
 
                 Regex regexNoNumeros = new Regex(@"^\D+$");
@@ -148,32 +148,32 @@ namespace ALFINapp.Controllers
                 if (!regexNoNumeros.IsMatch(model.XAppaterno))
                 {
                     TempData["MessageError"] = "El apellido paterno no debe contener números.";
-                    return RedirectToAction("Inicio");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
 
                 if (!regexNoNumeros.IsMatch(model.XApmaterno))
                 {
                     TempData["MessageError"] = "El apellido materno no debe contener números.";
-                    return RedirectToAction("Inicio");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
 
                 if (!regexNoNumeros.IsMatch(model.XNombre))
                 {
                     TempData["MessageError"] = "El nombre no debe contener números.";
-                    return RedirectToAction("Inicio");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
 
                 if (!regexNoNumeros.IsMatch(model.Departamento))
                 {
                     TempData["MessageError"] = "El departamento no debe contener números.";
-                    return RedirectToAction("Inicio");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
 
                 // Validar que la edad sea un número positivo.
                 if (!int.TryParse(model.Edad.ToString(), out int edad) || edad <= 0)
                 {
                     TempData["MessageError"] = "La edad debe ser un número válido y mayor que cero.";
-                    return RedirectToAction("Inicio");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
 
                 var idSupervisor = (from u in _context.usuarios
@@ -184,7 +184,7 @@ namespace ALFINapp.Controllers
                 if (idSupervisor == null)
                 {
                     TempData["MessageError"] = "Usted no tiene un Supervisor Asignado, no puede agregar clientes.";
-                    return RedirectToAction("Inicio");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
 
 
@@ -236,10 +236,10 @@ namespace ALFINapp.Controllers
                 _context.SaveChanges();
 
                 TempData["Message"] = "Cliente agregado con exito!";
-                return RedirectToAction("Inicio");
+                return RedirectToAction("Redireccionar", "Error");
             }
             TempData["MessageError"] = "El modelo enviado no es valido Comunicarse con servicio tecnico.";
-            return RedirectToAction("Inicio");
+            return RedirectToAction("Redireccionar", "Error");
         }
 
         [HttpGet]
@@ -440,14 +440,14 @@ namespace ALFINapp.Controllers
             if (!obtenerDataUsuario.IsSuccess || obtenerDataUsuario.Data == null)
             {
                 TempData["MessageError"] = obtenerDataUsuario.Message;
-                return RedirectToAction("Inicio");
+                return RedirectToAction("Redireccionar", "Error");
             }
 
             var ClienteAsignado = await _dbServicesAsesores.ObtenerAsignacion(usuarioId.Value, IdAsignacion);
             if (ClienteAsignado.Data == null || !ClienteAsignado.IsSuccess)
             {
                 TempData["MessageError"] = ClienteAsignado.Message;
-                return RedirectToAction("Inicio");
+                return RedirectToAction("Redireccionar", "Error");
             }
 
             var telefonos = new List<string?> { Telefono_1, Telefono_2, Telefono_3, Telefono_4, Telefono_5 };
@@ -464,7 +464,7 @@ namespace ALFINapp.Controllers
             if (!ClientesEnriquecido.IsSuccess || ClientesEnriquecido.Data == null)
             {
                 TempData["MessageError"] = ClientesEnriquecido.Message;
-                return RedirectToAction("Inicio");
+                return RedirectToAction("Redireccionar", "Error");
             }
             var agregado = false;
             int countNonNull = 0;
@@ -485,19 +485,19 @@ namespace ALFINapp.Controllers
                 {
                     Console.WriteLine("El Telefono es NULL o 0, este campo debe tener un numero.");
                     TempData["MessageError"] = "Se debe mandar un número de teléfono válido (Se obviaron las inserciones).";
-                    return RedirectToAction("Inicio");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
 
                 if (derivacion == null && tipificacion == 2)
                 {
                     TempData["MessageError"] = "Debe ingresar una fecha de derivación para la tipificación CLIENTE ACEPTO OFERTA DERIVACION (Se obviaron las inserciones).";
-                    return RedirectToAction("Inicio");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
 
                 if (agenciasComerciales[i] == null && tipificacion == 2)  // Verificamos si el valor no es null
                 {
                     TempData["MessageError"] = "Debe ingresar una agencia comercial para la tipificación CLIENTE ACEPTO OFERTA DERIVACION (Se obviaron las inserciones).";
-                    return RedirectToAction("Inicio");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
 
                 if (tipificacion == 2)
@@ -511,12 +511,12 @@ namespace ALFINapp.Controllers
                     if (verificarTipificacion == null || verificarTipificacion.Count == 0)
                     {
                         TempData["MessageError"] = "No ha enviado la derivacion correspondiente. No se guardara ninguna Tipificacion";
-                        return RedirectToAction("Inicio");
+                        return RedirectToAction("Redireccionar", "Error");
                     }
                     if (verificarTipificacion.Count > 1)
                     {
                         TempData["MessageError"] = "Usted ya ha derivado previamente a este cliente durante este mes, para ver su estado puede dirigirse a la pestana de Derivaciones. No se han subido al sistema ninguna de las tipificaciones.";
-                        return RedirectToAction("Inicio");
+                        return RedirectToAction("Redireccionar", "Error");
                     }
                     var checkGestionDetalle = _context.GESTION_DETALLE
                         .Where(gd => gd.DocCliente == verificarTipificacion[0].DniCliente
@@ -527,7 +527,7 @@ namespace ALFINapp.Controllers
                     if (checkGestionDetalle.Count != 0)
                     {
                         TempData["MessageError"] = "Usted ya ha derivado previamente a este cliente durante este mes, para ver su estado puede dirigirse a la pestana de Derivaciones. No se han subido al sistema ninguna de las tipificaciones.";
-                        return RedirectToAction("Inicio");
+                        return RedirectToAction("Redireccionar", "Error");
                     }
 
                 }
@@ -542,7 +542,7 @@ namespace ALFINapp.Controllers
             if (agregado == false)
             {
                 TempData["MessageError"] = "No se ha llenado ningun campo o se han llenado incorrectamente.";
-                return RedirectToAction("Inicio");
+                return RedirectToAction("Redireccionar", "Error");
             }
 
             for (int i = 0; i < telefonos.Count; i++)
@@ -562,7 +562,7 @@ namespace ALFINapp.Controllers
                 if (!tipificacionInfo.IsSuccess || tipificacionInfo.Data == null)
                 {
                     TempData["MessageError"] = tipificacionInfo.Message;
-                    return RedirectToAction("Inicio");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 // Actualizar tipificación de mayor peso si aplica
                 if (tipificacionInfo.Data.Peso > pesoMayor)
@@ -584,7 +584,7 @@ namespace ALFINapp.Controllers
                 if (!result.IsSuccess)
                 {
                     TempData["MessageError"] = result.Message;
-                    return RedirectToAction("Inicio");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
 
                 // Actualizar última tipificación en clientes_enriquecidos
@@ -592,7 +592,7 @@ namespace ALFINapp.Controllers
                 if (tipificacion_guardada == null)
                 {
                     TempData["MessageError"] = "No se ha encontrado la tipificación en la base de datos.";
-                    return RedirectToAction("Inicio");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 switch (i + 1)
                 {
@@ -629,7 +629,7 @@ namespace ALFINapp.Controllers
                 if (!guardarGestionDetalle.IsSuccess)
                 {
                     TempData["MessageError"] = guardarGestionDetalle.Message;
-                    return RedirectToAction("Inicio");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
             }
             if (!string.IsNullOrEmpty(descripcionTipificacionMayorPeso) && pesoMayor > (ClienteAsignado.Data.PesoTipificacionMayor ?? 0))
@@ -647,7 +647,7 @@ namespace ALFINapp.Controllers
             }
 
             TempData["Message"] = "Las tipificaciones se han guardado correctamente (Se han Obviado los campos Vacios y los campos que fueron llenados con datos incorrectos). " + message;
-            return RedirectToAction("Inicio");
+            return RedirectToAction("Redireccionar", "Error");
         }
 
         [HttpGet]
@@ -679,20 +679,20 @@ namespace ALFINapp.Controllers
             if (!obtenerDataUsuario.IsSuccess || obtenerDataUsuario.Data == null)
             {
                 TempData["MessageError"] = obtenerDataUsuario.Message;
-                return RedirectToAction("Inicio");
+                return RedirectToAction("Redireccionar", "Error");
             }
 
             if (tipificaciones == null || !tipificaciones.Any())
             {
                 TempData["MessageError"] = "No se estan enviando datos para guardar.";
-                return RedirectToAction("Inicio");
+                return RedirectToAction("Redireccionar", "Error");
             }
 
             var ClienteAsignado = await _dbServicesAsesores.ObtenerAsignacion(usuarioId.Value, IdAsignacionCliente);
             if (!ClienteAsignado.IsSuccess || ClienteAsignado.Data == null)
             {
                 TempData["MessageError"] = ClienteAsignado.Message;
-                return RedirectToAction("Inicio");
+                return RedirectToAction("Redireccionar", "Error");
             }
 
             int? tipificacionMayorPeso = null;
@@ -712,7 +712,7 @@ namespace ALFINapp.Controllers
                 {
 
                     TempData["MessageError"] = "Debe ingresar una fecha de derivación para la tipificación CLIENTE ACEPTO OFERTA DERIVACION (Se obviaron las inserciones).";
-                    return RedirectToAction("Inicio");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 if (tipificacion.TipificacionId == 2)
                 {
@@ -726,12 +726,12 @@ namespace ALFINapp.Controllers
                     if (verificarTipificacion == null || verificarTipificacion.Count == 0)
                     {
                         TempData["MessageError"] = "No ha enviado la derivacion correspondiente. No se guardara ninguna Tipificacion";
-                        return RedirectToAction("Inicio");
+                        return RedirectToAction("Redireccionar", "Error");
                     }
                     if (verificarTipificacion.Count > 1)
                     {
                         TempData["MessageError"] = "Usted ya ha derivado previamente a este cliente durante este mes, para ver su estado puede dirigirse a la pestana de Derivaciones. No se han subido al sistema ninguna de las tipificaciones.";
-                        return RedirectToAction("Inicio");
+                        return RedirectToAction("Redireccionar", "Error");
                     }
                     
                     var checkGestionDetalle = _context.GESTION_DETALLE
@@ -743,7 +743,7 @@ namespace ALFINapp.Controllers
                     if (checkGestionDetalle.Count > 0 || checkGestionDetalle != null)
                     {
                         TempData["MessageError"] = "Usted ya ha derivado previamente a este cliente durante este mes, para ver su estado puede dirigirse a la pestana de Derivaciones. No se han subido al sistema ninguna de las tipificaciones.";
-                        return RedirectToAction("Inicio");
+                        return RedirectToAction("Redireccionar", "Error");
                     }
                 }
                 agregado = true;
@@ -752,7 +752,7 @@ namespace ALFINapp.Controllers
             if (agregado == false)
             {
                 TempData["MessageError"] = "No se ha llenado ningun campo o se han llenado incorrectamente.";
-                return RedirectToAction("Inicio");
+                return RedirectToAction("Redireccionar", "Error");
             }
 
             foreach (var tipificacion in tipificaciones)
@@ -777,7 +777,7 @@ namespace ALFINapp.Controllers
                 if (!resultGuardarClienteTipificado.IsSuccess)
                 {
                     TempData["MessageError"] = resultGuardarClienteTipificado.Message;
-                    return RedirectToAction("Inicio");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 // Verificar si esta tipificación tiene el mayor peso
                 var tipificacionActual = _context.tipificaciones.FirstOrDefault(t => t.IdTipificacion == tipificacion.TipificacionId);
@@ -796,7 +796,7 @@ namespace ALFINapp.Controllers
                 if (telefonoTipificado == null)
                 {
                     TempData["MessageError"] = "El Numero de Telefono Agregado no ha sido encontrado.";
-                    return RedirectToAction("Inicio");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 else
                 {
@@ -804,7 +804,7 @@ namespace ALFINapp.Controllers
                     if (tipificacionUltima == null)
                     {
                         TempData["MessageError"] = "La tipificacion no ha sido encontrada.";
-                        return RedirectToAction("Inicio");
+                        return RedirectToAction("Redireccionar", "Error");
                     }
                     telefonoTipificado.UltimaTipificacion = tipificacionUltima.DescripcionTipificacion;
                     telefonoTipificado.FechaUltimaTipificacion = DateTime.Now;
@@ -816,13 +816,13 @@ namespace ALFINapp.Controllers
                 if (!clienteEnriquecido.IsSuccess || clienteEnriquecido.Data == null)
                 {
                     TempData["MessageError"] = clienteEnriquecido.Message;
-                    return RedirectToAction("Inicio");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 var guardarGestionDetalle = await _dbServicesTipificaciones.GuardarGestionDetalle(ClienteAsignado.Data, nuevaTipificacion, clienteEnriquecido.Data);
                 if (!guardarGestionDetalle.IsSuccess)
                 {
                     TempData["MessageError"] = guardarGestionDetalle.Message;
-                    return RedirectToAction("Inicio");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 await _context.SaveChangesAsync();
             }
@@ -839,7 +839,7 @@ namespace ALFINapp.Controllers
             }
             _context.SaveChanges();
             TempData["Message"] = "Las tipificaciones se han guardado correctamente (Se han Obviado los campos Vacios y los campos que fueron llenados con datos incorrectos).";
-            return RedirectToAction("Inicio");
+            return RedirectToAction("Redireccionar", "Error");
         }
     }
 }

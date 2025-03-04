@@ -100,7 +100,6 @@ function seleccionarOpcion(id, value, text, index = null) {
     if (index != null) {
         verificarTipificacion(index);
     }
-    console.log('MODIFICADO');
 }
 
 function filtrarOpciones(id) {
@@ -113,7 +112,6 @@ function filtrarOpciones(id) {
         let texto = opciones[i].innerText.toLowerCase();
         opciones[i].style.display = texto.includes(filter) ? "block" : "none";
     }
-    console.log('MODIFICADO');
 }
 
 document.addEventListener("click", function (event) {
@@ -127,5 +125,4 @@ document.addEventListener("click", function (event) {
             opcionesDiv.style.display = "none";
         }
     });
-    console.log('MODIFICADO');
 });

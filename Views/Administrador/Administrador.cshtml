@@ -2,8 +2,6 @@
 @{
     ViewData["Title"] = "Ventas del Usuario";
     var usuarioNombre = ViewData["UsuarioNombre"];
-
-    var clientesPendientesSupervisor = (int)(ViewData["ClientesPendientesSupervisor"] ?? 0);
 }
 
 @section Styles {
@@ -11,111 +9,41 @@
 }
 
 <div class="container mt-4">
-    <div class="container mb-3">
-        <div class="row align-items-center">
-            <div class="col-12 col-md-6 mb-3 mb-md-0">
-                <h2 class="mb-0">Supervisor - @usuarioNombre</h2>
-                <div class="spacing"></div>
-                <div>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Base</th>
-                                <th>Asignado a Asesores</th>
-                                <th>Disponible</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>@ViewData["totalClientes"]</td>
-                                <td>@ViewData["clientesAsignadosSupervisor"]</td>
-                                <td>@ViewData["ClientesPendientesSupervisor"]</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="col-12 col-md-6 d-flex flex-column align-items-center">
-                <div class="d-flex flex-column align-items-center w-100">
-                    <div class="d-flex justify-content-between w-100 mb-3">
-                        <div class="me-2">
-                            <label for="fechaInicio">Fecha Inicio:</label>
-                            <input type="date" id="fechaInicio" class="form-control" />
-                            <label for="fechaFin">Fecha Fin:</label>
-                            <input type="date" id="fechaFin" class="form-control" />
-                        </div>
+    <!-- 🔹 Mensaje de información -->
+    <div class="alert alert-info" role="alert">
+        <h4 class="alert-heading">Graficos y Reportes</h4>
+        <p>En esta sección se pueden visualizar las derivaciones realizadas por el usuario seleccionado.</p>
+        <hr>
+        <p class="mb-0">Seleccione el supervisor del cual desea visualizar sus .</p>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <form id="filterForm">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="supervisorSelect" class="form-label">Seleccionar Supervisor:</label>
+                        <select id="supervisorSelect" class="form-select">
+                            <option value="">Todos</option>
+                            @foreach (var supervisor in Model)
+                            {
+                                <option value=""></option>
+                            }
+                        </select>
                     </div>
-                    <div class="d-flex justify-content-between w-100">
-                        <a href="@Url.Action("Supervisores", "Asignacion")" class="btn btn-primary mb-3 ms-2"
-                            >ASIGNAR Supervisor</a>
-                        <a href="javascript:void(0);" class="btn btn-success mb-3 ms-2"
-                            onclick="loadAsignarClienteAVendedor()">Asignar Asesores</a>
-                        <a href="javascript:void(0);" class="btn btn-info mb-3 ms-2"
-                            onclick="showMyModal('Usuarios','Usuarios','GET','Agregar Modificar o Desactivar Asesores')">Modificar Asignaciones</a>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">Filtrar</button>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 
-    <!-- Tabla para mostrar los DetalleBases/ventas -->
-    <div class="table-responsive">
-        <table class="table table-bordered" id="clientesTable">
-            <thead>
-                <tr>
-                    <th>DNI Cliente</th>
-                    <th>
-                        Nombres del Cliente
-                        <!--<button class="btn btn-link p-0"
-                            onclick="sortTable('clientesTable', 2, 'string')">Ordenar</button>-->
-                    </th>
-
-                    <th>
-                        Asesor Asignado
-                        <!--<button class="btn btn-link p-0"
-                            onclick="sortTable('clientesTable', 3, 'string')">Ordenar</button>-->
-                    </th>
-
-                    <th>DNI Asesor</th>
-                    <th>
-                        Fecha Asignacion Asesor
-                        <!--<button class="btn btn-link p-0"
-                            onclick="sortTable('clientesTable', 5, 'date')">Ordenar</button>-->
-                    </th>
-
-                    <!--<th>Asigne o Modifique la Asignacion</th>
-                        <td><a href="javascript:void(0);" class="btn btn-primary"
-                                onclick="loadModificarVendedorAsignado(SupervisorDTO.IdAsignacion)">Modificar</a>
-                    </td>-->
-                </tr>
-            </thead>
-            <tbody id="data-table">
-                @if (Model != null && Model.Any()) // Verificamos si Model no es null y tiene elementos
-                {
-                    int contr = 1;
-                    foreach (var SupervisorDTO in Model)
-                    {
-                        <tr>
-                            @{
-                                contr++;
-                            }
-                            <td>@SupervisorDTO.Dni</td>
-                            <td>@(SupervisorDTO.XNombre?.ToUpper() ?? "DESCONOCIDO") @(SupervisorDTO.XAppaterno?.ToUpper() ?? string.Empty)
-                                @(SupervisorDTO.XApmaterno?.ToUpper() ?? "DESCONOCIDO")</td>
-                            <td>@(SupervisorDTO.NombresCompletos?.ToUpper() ?? "DESCONOCIDO")</td>
-                            <td>@SupervisorDTO.DniVendedor</td>
-                            <td>@SupervisorDTO.FechaAsignacionV</td>
-                        </tr>
-                    }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="6" class="text-center">No hay datos disponibles</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title text-center">Número de Clientes Derivados por Supervisor</h5>
+            <canvas id="chartSupervisores"></canvas>
+        </div>
     </div>
 </div>
 
@@ -147,7 +75,6 @@
             });
         </script>
     }
-
     @if (TempData["MessageError"] != null)
     {
         <script>
@@ -164,4 +91,6 @@
     <script src="~/js/accountfunctions.js" asp-append-version="true"></script>
     <script src="~/js/generalfunctions.js" asp-append-version="true"></script>
     <script src="~/js/modificacionesfunctions.js" asp-append-version="true"></script>
+
+    <script src="~/js/Administrador/Administrador.js" asp-append-version="true"></script>
 }

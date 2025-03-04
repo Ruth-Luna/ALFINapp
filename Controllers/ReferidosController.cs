@@ -36,21 +36,21 @@ namespace ALFINapp.Controllers
                 if (idUsuarioSupervisor == null)
                 {
                     TempData["MessageError"] = "No se ha podido obtener el id del usuario supervisor";
-                    return RedirectToAction("Inicio", "Supervisor");
+                    return RedirectToAction("Index", "Home");
                 }
 
                 var getReferidos = await _dbServicesReferido.GetReferidosGeneral();
                 if (getReferidos.IsSuccess == false || getReferidos.Data == null)
                 {
                     TempData["MessageError"] = getReferidos.Message;
-                    return RedirectToAction("Inicio", "Supervisor");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 return View("Referidos", getReferidos.Data);
             }
             catch (System.Exception ex)
             {
                 TempData["MessageError"] = ex.Message;
-                return RedirectToAction("Inicio", "Supervisor");
+                return RedirectToAction("Redireccionar", "Error");
             }
         }
 

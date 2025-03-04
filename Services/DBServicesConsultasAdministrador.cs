@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ALFINapp.Models;
+using ALFINapp.Models.DTOs;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -96,7 +97,7 @@ namespace ALFINapp.Services
                 return (false, ex.Message, null);
             }
         }
-        
+
         public async Task<(bool IsSuccess, string Message, List<Usuario>? Data)> ConseguirTodosLosUsuarios()
         {
             try
@@ -111,6 +112,78 @@ namespace ALFINapp.Services
                 return (true, "Se han encontrado los siguientes usuarios", TodosLosUsuarios);
             }
             catch (Exception ex)
+            {
+                return (false, ex.Message, null);
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message, EnriquecerConsultasSupervisorDTO? Data)> EnriquecerConsultasSupervisor(Usuario supervisor)
+        {
+            try
+            {
+                var getAsesoresInfo = await (from u in _context.usuarios
+                                                where u.IDUSUARIOSUP == supervisor.IdUsuario
+                                                    && u.IdRol == 3
+                                                    && u.Estado == "ACTIVO"
+                                                select u
+                                            ).ToListAsync();
+
+                var getAsesoresTipInfo = new List<EnriquecerConsultasSupervisorDTO>();
+                if (getAsesoresInfo != null)
+                {
+                    foreach (var item in getAsesoresInfo)
+                    {
+                        var getDerivacionesInfo = await (from d in _context.derivaciones_asesores
+                                                            where d.DniAsesor == item.Dni
+                                                                && d.FechaDerivacion.Year == DateTime.Now.Year
+                                                                && d.FechaDerivacion.Month == DateTime.Now.Month
+                                                            select new DerivacionesInfo
+                                                            {
+                                                                IdDerivacion = d.IdDerivacion,
+                                                                DniCliente = d.DniCliente,
+                                                                FechaDerivacion = d.FechaDerivacion
+                                                            }).ToListAsync();
+                        var getDerivacionesTotales = await (from d in _context.derivaciones_asesores
+                                                            where d.DniAsesor == item.Dni
+                                                            select d
+                                                            ).ToListAsync();
+                        var getClientesAsignadosInfo = await (from ca in _context.clientes_asignados
+                                                            where ca.IdUsuarioV == item.IdUsuario
+                                                                && ca.FechaAsignacionVendedor.HasValue
+                                                                && ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
+                                                                && ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month
+                                                            select ca
+                                                            ).ToListAsync();
+                        var enriquecerClientesAsignadosInfoXTipificacion = new List<AsignacionesInfo> ();
+                        foreach (var item2 in getClientesAsignadosInfo)
+                        {
+                            var getTipificacionesInfo = await (from ct in _context.clientes_tipificados
+                                                            join t in _context.tipificaciones on ct.IdTipificacion equals t.IdTipificacion
+                                                            where ct.IdAsignacion == item2.IdAsignacion
+                                                            select new { ct, t }
+                                                            ).ToListAsync();
+                            var getAsignacionesInfo = new AsignacionesInfo
+                            {
+                                IdAsignacion = item2.IdAsignacion,
+                                Tipificaciones = getTipificacionesInfo.Select(x => x.t.DescripcionTipificacion).ToList(),
+                                idTipificaciones = getTipificacionesInfo.Select(x => x.t.IdTipificacion).ToList()
+                            };
+                            enriquecerClientesAsignadosInfoXTipificacion.Add(getAsignacionesInfo);                            
+                        }
+                        var getAsesoresTipInfoDerivacionesAsignaciones = new EnriquecerConsultasSupervisorDTO
+                        {
+                            IdUsuario = item.IdUsuario,
+                            Dni = item.Dni,
+                            NombresCompletos = item.NombresCompletos,
+                            Rol = item.Rol,
+                            derivaciones = getDerivacionesInfo,
+                            AsignacionesInfo = enriquecerClientesAsignadosInfoXTipificacion
+                        };
+                    }
+                }
+                return (true, "Se han encontrado los siguientes asesores", null);
+            }
+            catch (System.Exception ex)
             {
                 return (false, ex.Message, null);
             }

@@ -77,7 +77,7 @@ namespace ALFINapp.Controllers
             if (supervisorData.IsSuccess == false)
             {
                 TempData["MessageError"] = supervisorData.Message;
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Redireccionar", "Error");
             }
             int clientesPendientesSupervisor = supervisorData.Data != null ? supervisorData.Data.Count(cliente => cliente.idUsuarioV == 0) : 0;
             int totalClientes = supervisorData.Data != null ? supervisorData.Data.Count() : 0;
@@ -104,14 +104,14 @@ namespace ALFINapp.Controllers
             if (!int.TryParse(nclientes.ToString(), out int n_clientes) || nclientes <= 0)
             {
                 TempData["MessageError"] = "La entrada debe de ser un numero valido y positivo.";
-                return RedirectToAction("Inicio");
+                return RedirectToAction("Redireccionar", "Error");
             }
 
             var idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
             if (idSupervisorActual == null)
             {
                 TempData["MessageError"] = "No se ha iniciado sesion.";
-                return RedirectToAction("Inicio");
+                return RedirectToAction("Redireccionar", "Error");
             }
             var clientesDisponibles = _context.clientes_asignados
                                             .Where(ca => ca.IdUsuarioS == idSupervisorActual.Value && ca.IdUsuarioV == null && ca.FechaAsignacionSup.HasValue && ca.FechaAsignacionSup.Value.Year == 2025
@@ -123,7 +123,7 @@ namespace ALFINapp.Controllers
             if (clientesDisponibles.Count < nclientes)
             {
                 TempData["MessageError"] = $"Solo hay {clientesDisponibles.Count} clientes disponibles para asignar.";
-                return RedirectToAction("Inicio");
+                return RedirectToAction("Redireccionar", "Error");
             }
 
             foreach (var cliente in clientesDisponibles)
@@ -136,7 +136,7 @@ namespace ALFINapp.Controllers
             // Guardar los cambios en la base de datos
             _context.SaveChanges();
             TempData["Message"] = $"{nclientes} clientes han sido asignados correctamente al Asesor.";
-            return RedirectToAction("Inicio");
+            return RedirectToAction("Redireccionar", "Error");
         }
 
         [HttpGet]
@@ -146,7 +146,7 @@ namespace ALFINapp.Controllers
             if (idSupervisorActual == null)
             {
                 TempData["MessageError"] = "No se ha iniciado sesión";
-                return RedirectToAction("Inicio", "Supervisor");
+                return RedirectToAction("Index", "Home");
             }
 
             var vendedoresAsignados = (from u in _context.usuarios
@@ -168,7 +168,7 @@ namespace ALFINapp.Controllers
             if (vendedoresAsignados == null)
             {
                 TempData["MessageError"] = "La consulta para dar asesores ha fallado";
-                return RedirectToAction("Inicio", "Supervisor");
+                return RedirectToAction("Redireccionar", "Error");
             }
 
             TempData["idAsignacion"] = id_asignacion;
@@ -181,13 +181,13 @@ namespace ALFINapp.Controllers
             if (asignacion == null)
             {
                 TempData["MessageError"] = "El id de Asignacion mandado es incorrecto";
-                return RedirectToAction("Inicio");
+                return RedirectToAction("Redireccionar", "Error");
             }
             
             if (asignacion.IdUsuarioV == idVendedor)
             {
                 TempData["MessageError"] = "Debe seleccionar un Asesor diferente, ya que el Asesor actual es el mismo.";
-                return RedirectToAction("Inicio");
+                return RedirectToAction("Redireccionar", "Error");
             }
             if (asignacion != null)
             {
@@ -203,7 +203,7 @@ namespace ALFINapp.Controllers
                 TempData["Message"] = "El id de Asignacion mandado es incorrecto";
             }
 
-            return RedirectToAction("Inicio");
+            return RedirectToAction("Redireccionar", "Error");
         }
 
         [HttpGet]
@@ -366,7 +366,6 @@ namespace ALFINapp.Controllers
         {
             try
             {
-
                 return PartialView("_InformesTipificacionesAsesores");
             }
             catch (System.Exception ex)

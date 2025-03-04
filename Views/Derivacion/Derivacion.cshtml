@@ -106,8 +106,6 @@
                         <th>DNI Asesor</th>
                         <th>Origen del Telefono</th>
                         <th>Fecha de Derivacion</th>
-                        <th>Estado del Desembolso</th>
-                        <th>Fecha del Desembolso</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -130,15 +128,6 @@
                                 <td>@derivacionAsesor.DocAsesor</td>
                                 <td><span class="badge bg-warning">@derivacionAsesor.OrigenTelefono</span></td>
                                 <td>@derivacionAsesor.FechaEnvio</td>
-                                @if (derivacionAsesor.FueDesembolsado == true)
-                                {
-                                    <td><span class="badge bg-success">@derivacionAsesor.EstadoDesembolso</span></td>
-                                }
-                                else
-                                {
-                                    <td><span class="badge bg-info">@derivacionAsesor.EstadoDesembolso</span></td>
-                                }
-                                <td>@derivacionAsesor.FechaDesembolso</td>
                             </tr>
                         }
                     }

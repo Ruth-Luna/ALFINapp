@@ -44,20 +44,26 @@ namespace ALFINapp.Controllers
                 TempData["MessageError"] = "No se pudo obtener la vista por defecto";
                 return RedirectToAction("Index", "Home");
             }*/
-            var rolesConVistas = new List<List<VistasPorRolDTO>>();
-            for (int i = 1; i <= 3; i++)
+            var getTodosLosRoles = await _dbServicesRoles.getAllRoles();
+            if (!getTodosLosRoles.IsSuccess || getTodosLosRoles.Data == null)
             {
-                var getRol = await _dbServicesRoles.getVistasPorRol(i);
-                if (getRol.Data != null)
+                TempData["MessageError"] = getTodosLosRoles.Message;
+                return RedirectToAction("Redireccionar", "Error");
+            }
+            var rolesConVistas = new List<List<VistasPorRolDTO>>();
+            foreach (var rolItem in getTodosLosRoles.Data)
+            {
+                var vistas = await _dbServicesRoles.getVistasPorRol(rolItem.IdRol);
+                if (vistas.IsSuccess && vistas.Data != null)
                 {
-                    rolesConVistas.Add(getRol.Data);
+                    rolesConVistas.Add(vistas.Data);
                 }
             }
             var getTodasLasVistasRutas = await _dbServicesRoles.getTodasLasVistasRutas();
             if (!getTodasLasVistasRutas.IsSuccess || getTodasLasVistasRutas.Data == null)
             {
                 TempData["MessageError"] = getTodasLasVistasRutas.Message;
-                return RedirectToAction("Inicio", "Supervisor");
+                return RedirectToAction("Redireccionar", "Error");
             }
             ViewData["Vistas"] = getTodasLasVistasRutas.Data;
             return View("Roles", rolesConVistas);
@@ -77,5 +83,24 @@ namespace ALFINapp.Controllers
             }
             return PartialView("_Sidebar", vistas.Data);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ActualizarPermisosRoles (string rol, int idVista, int idRol)
+        {
+            try
+            {
+                var actualizarPermiso = await _dbServicesRoles.actualizarPermisoRol(idVista, idRol);
+                if (!actualizarPermiso.IsSuccess)
+                {
+                    return Json(new { success = false, message = actualizarPermiso.Message });
+                }
+                return Json(new { success = true, message = "Permiso actualizado correctamente" });
+            }
+            catch (System.Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
     }
 }

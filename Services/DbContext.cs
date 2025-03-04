@@ -31,6 +31,7 @@ public class MDbContext : DbContext
     public DbSet<Roles> roles { get; set; }
     public DbSet<GESTIONDETALLE> GESTION_DETALLE { get; set; }
     public DbSet<Desembolsos> desembolsos { get; set; }
+    public DbSet<PermisosRolesVistas> Permisos_Roles_Vistas { get; set; }
 
     //DTOS Y PROCEDIMIENTOS ALMACENADOS
     public DbSet<StringDTO> string_dto { get; set; }
