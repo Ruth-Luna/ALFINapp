@@ -97,18 +97,15 @@ namespace ALFINapp.Services
                 return (false, ex.Message, null);
             }
         }
-
         public async Task<(bool IsSuccess, string Message, List<Usuario>? Data)> ConseguirTodosLosUsuarios()
         {
             try
             {
                 var TodosLosUsuarios = await _context.usuarios.FromSqlRaw("EXEC sp_usuario_conseguir_todos").ToListAsync();
-
                 if (TodosLosUsuarios == null)
                 {
                     return (false, "No se han encontrado usuarios este error fue inesperado", null);
                 }
-
                 return (true, "Se han encontrado los siguientes usuarios", TodosLosUsuarios);
             }
             catch (Exception ex)

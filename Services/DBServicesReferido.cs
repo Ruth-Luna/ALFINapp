@@ -409,6 +409,9 @@ namespace ALFINapp.Services
             {
                 var referidos = await (from cr in _context.clientes_referidos
                                 where cr.DniAsesor == DNI
+                                    && cr.FechaReferido.HasValue
+                                    && cr.FechaReferido.Value.Year == DateTime.Now.Year
+                                    && cr.FechaReferido.Value.Month == DateTime.Now.Month
                                 select new ClientesReferidosDTO
                                 {
                                     IdReferido = cr.IdReferido,
@@ -445,6 +448,7 @@ namespace ALFINapp.Services
                     var desembolsos = await (from d in _context.desembolsos
                                             where d.DniDesembolso == referido.DniCliente &&
                                                 d.FechaDesembolsos != null &&
+                                                referido.FechaReferido.HasValue &&
                                                 d.FechaDesembolsos.Value.Year == referido.FechaReferido.Value.Year &&
                                                 d.FechaDesembolsos.Value.Month == referido.FechaReferido.Value.Month
                                             orderby d.FechaDesembolsos descending

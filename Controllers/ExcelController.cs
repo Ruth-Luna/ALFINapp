@@ -107,6 +107,7 @@ namespace ALFINapp.Controllers
                                          db.FlagDeudaVOferta,
                                          db.PerfilRo,
                                          db.Propensionv2,
+                                         db.PrioridadSistema,
                                          bc.Dni,
                                          bc.XAppaterno,
                                          bc.XApmaterno,
@@ -216,6 +217,7 @@ namespace ALFINapp.Controllers
                     CLIENTE_NUEVO = detallesClientes.ClienteNuevo,
                     COLOR = detallesClientes.Color,
                     COLOR_FINAL = detallesClientes.ColorFinal,
+                    PRIORIDAD_SISTEMA = detallesClientes.PrioridadSistema,
                     TELEFONO1 = detallesClientes.Telefono1,
                     TELEFONO2 = detallesClientes.Telefono2,
                     TELEFONO3 = detallesClientes.Telefono3,
@@ -270,14 +272,13 @@ namespace ALFINapp.Controllers
                     worksheet.Cells[1, 36].Value = "USUARIO V3";
                     worksheet.Cells[1, 37].Value = "FLAG DEUDA V OFERTA";
                     worksheet.Cells[1, 38].Value = "PERFIL_RO";
+                    worksheet.Cells[1, 39].Value = "PRIORIDAD";
 
-                    worksheet.Cells[1, 39].Value = "TELEFONO1";
-                    worksheet.Cells[1, 40].Value = "TELEFONO2";
-                    worksheet.Cells[1, 41].Value = "TELEFONO3";
-                    worksheet.Cells[1, 42].Value = "TELEFONO4";
-                    worksheet.Cells[1, 43].Value = "TELEFONO5";
-
-
+                    worksheet.Cells[1, 40].Value = "TELEFONO1";
+                    worksheet.Cells[1, 41].Value = "TELEFONO2";
+                    worksheet.Cells[1, 42].Value = "TELEFONO3";
+                    worksheet.Cells[1, 43].Value = "TELEFONO4";
+                    worksheet.Cells[1, 44].Value = "TELEFONO5";
                     // Llena los datos
                     int row = 2;
                     foreach (var data in detallesClientesSupervisor)
@@ -323,12 +324,13 @@ namespace ALFINapp.Controllers
                         worksheet.Cells[row, 36].Value = data.USERV3;
                         worksheet.Cells[row, 37].Value = data.FLAG_DEUDA_V_OFERTA;
                         worksheet.Cells[row, 38].Value = data.PERFILRO;
+                        worksheet.Cells[row, 39].Value = data.PRIORIDAD_SISTEMA;
 
-                        worksheet.Cells[row, 39].Value = data.TELEFONO1;
-                        worksheet.Cells[row, 40].Value = data.TELEFONO2;
-                        worksheet.Cells[row, 41].Value = data.TELEFONO3;
-                        worksheet.Cells[row, 42].Value = data.TELEFONO4;
-                        worksheet.Cells[row, 43].Value = data.TELEFONO5;
+                        worksheet.Cells[row, 40].Value = data.TELEFONO1;
+                        worksheet.Cells[row, 41].Value = data.TELEFONO2;
+                        worksheet.Cells[row, 42].Value = data.TELEFONO3;
+                        worksheet.Cells[row, 43].Value = data.TELEFONO4;
+                        worksheet.Cells[row, 44].Value = data.TELEFONO5;
 
                         row++;
                     }

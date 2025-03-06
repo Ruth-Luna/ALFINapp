@@ -19,12 +19,27 @@
             Llene los campos para poder agregar un nuevo usuario. <strong>No todos son obligatorios</strong>
         </div>
         <div class="col-md-6">
-            <div class="mb-2">
-                <label for="Nuevo_dni" class="form-label">Documento de Identificacion</label>
-                <input type="text" class="form-control" id="Nuevo_dni" name="Nuevo_dni" required
-                    oninput="validarDNISupervisor('Nuevo_dni')">
-                <div class="invalid-feedback" id="Nuevo_dni-error">
-                    El Documento debe de tener el formato de DNI o de Carnet de Extranjeria.
+            <div class="row">
+                <div class="col">
+                    <div class="mb-2">
+                        <label for="tipo_documento" class="form-label">Tipo de Documento</label>
+                        <select class="form-control" id="tipo_documento" name="tipo_documento"
+                            onchange="cambiarTipoDoc(this.value)" required>
+                            <option value="">Seleccione un tipo de documento</option>
+                            <option value="DNI">DNI</option>
+                            <option value="CE">CARNET DE EXTRANJERIA</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col" id="documento-container" style="display: none;">
+                    <div class="mb-2">
+                        <label for="Nuevo_dni" class="form-label" id="label-documento">DNI</label>
+                        <input type="text" class="form-control" id="Nuevo_dni" name="Nuevo_dni" required
+                            oninput="validarDNISupervisor('Nuevo_dni')">
+                        <div class="invalid-feedback" id="Nuevo_dni-error">
+                            El Documento debe de tener el formato de DNI (8 Digitos numericos).
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="mb-2">

@@ -1,10 +1,10 @@
 function guardarNuevoUsuario() {
     var dni = document.getElementById('Nuevo_dni').value.trim();
-    if (!/^[0-9]{8}$/.test(dni) && !/^[0-9]{9}$/.test(dni)) {
+    if (!/^[0-9]{8}$/.test(dni) && !/^[0-9]{9}$|^[A-Z]{1}[0-9]{8}$/i.test(dni)) {
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'El Documento debe tener 8 dígitos o 9 digitos numericos. Ademas que no puede estar vacio'
+            text: 'El Documento debe tener 8 dígitos (DNI) o 9 dígitos numéricos / 1 letra + 8 dígitos (Carnet de Extranjería). Además, no puede estar vacío.'
         });
         return;
     }
@@ -58,7 +58,8 @@ function guardarNuevoUsuario() {
             + document.getElementById('Nuevo_apellido_materno').value.trim()).toUpperCase(),
         Telefono: telefono,
         IdRol: document.getElementById('Nuevo_rol').value.trim().toUpperCase(),
-        IDUSUARIOSUP: parseInt(document.getElementById('Nuevo_Supervisor').value)
+        IDUSUARIOSUP: parseInt(document.getElementById('Nuevo_Supervisor').value),
+        TipoDocumento: document.getElementById('tipo_documento').value.trim().toUpperCase()
     };
 
     console.log(dataToSend);

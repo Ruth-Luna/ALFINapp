@@ -263,12 +263,14 @@ namespace ALFINapp.Services
                                             join u in _context.usuarios on ca.IdUsuarioV equals u.IdUsuario into usuarioJoin
                                             from u in usuarioJoin.DefaultIfEmpty()
                                             where ca.IdUsuarioS == idSupervisorActual
-                                               && ca.ClienteDesembolso != true
-                                               && ca.ClienteRetirado != true
-                                               && ca.FechaAsignacionSup.HasValue
-                                               && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                                               && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
-                                               && db.TipoBase == ca.FuenteBase
+                                                && ca.ClienteDesembolso != true
+                                                && ca.ClienteRetirado != true
+                                                && ca.Destino != "A365_AGREGADO_MANUALMENTE" 
+                                                && ca.Destino != "ALFIN_AGREGADO_MANUALMENTE"
+                                                && ca.FechaAsignacionSup.HasValue
+                                                && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
+                                                && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
+                                                && db.TipoBase == ca.FuenteBase
                                             select new SupervisorDTO
                                             {
                                                 IdAsignacion = ca.IdAsignacion,

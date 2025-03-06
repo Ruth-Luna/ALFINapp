@@ -3,16 +3,13 @@
 /// It performs client-side validation for the input fields and sends an AJAX request to the server to save the new asesor.
 /// </summary>
 function guardarNuevoAsesor() {
-    // Define an array of input field IDs
-    var inputs = ['dni', 'departamento', 'provincia', 'distrito', 'region', 'rol', 'apellido_paterno', 'apellido_materno', 'nombres', 'telefono'];
-
     // Get the DNI value and perform validation
-    var dni = document.getElementById('dni').value.trim();
-    if (!/^[0-9]{8}$/.test(dni) && !/^[0-9]{9}$/.test(dni)) {
+    var dni = document.getElementById('Nuevo_dni').value.trim();
+    if (!/^[0-9]{8}$/.test(dni) && !/^[0-9]{9}$|^[A-Z]{1}[0-9]{8}$/i.test(dni)) {
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'El Documento debe tener el formato de DNI (8 Digitos Numericos) o de Carnet de Extranjeria (9 Digitos Numericos).'
+            text: 'El Documento debe tener 8 dígitos (DNI) o 9 dígitos numéricos / 1 letra + 8 dígitos (Carnet de Extranjería). Además, no puede estar vacío.'
         });
         return;
     }
@@ -37,7 +34,11 @@ function guardarNuevoAsesor() {
 
     // If any field fails validation, log an error message and return
     if (!valid) {
-        console.log('Existen errores en los campos.');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Por favor, corrija los campos con errores.'
+        });
         return;
     }
 
@@ -47,7 +48,7 @@ function guardarNuevoAsesor() {
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'El campo Telefono solo puede tener valores Numericos y No puede estar Vacio'
+            text: 'El campo Telefono solo puede tener valores Numericos con un maximo de 9 digitos y No puede estar Vacio'
         });
         return;
     }
@@ -63,7 +64,8 @@ function guardarNuevoAsesor() {
             + document.getElementById('apellido_paterno').value.trim() + ' ' 
             + document.getElementById('apellido_materno').value.trim()).toUpperCase(),
         Telefono: telefono,
-        IdRol: 3
+        IdRol: 3,
+        TipoDocumento: document.getElementById('tipo_documento').value.trim().toUpperCase()
     };
 
     console.log(dataToSend);
@@ -112,9 +114,8 @@ function validarDNISupervisor(campo = 'dni') {
     var dniInput = document.getElementById(campo);
     var errorElement = document.getElementById(campo + '-error');
     var regex = /^[0-9]{8}$/;
-    var regex2 = /^[0-9]{9}$/;
 
-    if (!regex.test(dni) && !regex2.test(dni)) {
+    if (!regex.test(dni)) {
         dniInput.classList.add('is-invalid'); // Aplica el estilo de error de Bootstrap
         errorElement.style.display = 'block'; // Muestra el mensaje de error
     } else {
@@ -122,6 +123,27 @@ function validarDNISupervisor(campo = 'dni') {
         errorElement.style.display = 'none'; // Oculta el mensaje de error
     }
 }
+
+/**
+ * Valida el DNI del usuario y aplica estilos de error si es inválido.
+ *
+ * @param {string} [campo='dni'] - El ID del campo de entrada del DNI.
+ */
+function validarCarnetSupervisor(campo = 'dni') {
+    var dni = document.getElementById(campo).value;
+    var dniInput = document.getElementById(campo);
+    var errorElement = document.getElementById(campo + '-error');
+    var regex = /^[0-9]{9}$|^[A-Z]{1}[0-9]{8}$/i;
+
+    if (!regex.test(dni)) {
+        dniInput.classList.add('is-invalid'); // Aplica el estilo de error de Bootstrap
+        errorElement.style.display = 'block'; // Muestra el mensaje de error
+    } else {
+        dniInput.classList.remove('is-invalid'); // Remueve el estilo de error de Bootstrap
+        errorElement.style.display = 'none'; // Oculta el mensaje de error
+    }
+}
+
 
 /// <summary>
 /// This function is responsible for validating the telefono input field in the "Agregar Nuevo Asesor" view.
@@ -164,5 +186,28 @@ function validarLetras(campo) {
     } else {
         campolInput.classList.remove('is-invalid'); // Remove Bootstrap's 'is-invalid' class from the input field
         errorElement.style.display = 'none'; // Hide the error message
+    }
+}
+
+function cambiarTipoDoc(doc) {
+    let labelDocumento = document.getElementById('label-documento');
+    let inputDocumento = document.getElementById('Nuevo_dni');
+    let contenedorDocumento = document.getElementById('documento-container');
+    let mensajeError = document.getElementById('Nuevo_dni-error');
+
+    if (doc == "DNI") {
+        labelDocumento.textContent = "DNI";
+        mensajeError.textContent = "El Documento debe de tener el formato de DNI (8 Digitos numericos).";
+        inputDocumento.setAttribute("oninput", "validarDNISupervisor('Nuevo_dni')");
+        contenedorDocumento.style.display = "block"; // Mostrar input
+    } else if (doc == "CE") {
+        labelDocumento.textContent = "Carnet de Extranjería";
+        mensajeError.textContent = "El Documento debe de tener el formato de Carnet de Extranjería (9 Digitos numericos o 1 Letra seguida de 8 Digitos Numericos).";
+        inputDocumento.setAttribute("oninput", "validarCarnetSupervisor('Nuevo_dni')");
+        contenedorDocumento.style.display = "block"; // Mostrar input
+
+    } else {
+        contenedorDocumento.style.display = "none"; // Ocultar input si no se selecciona nada
+        inputDocumento.removeAttribute("oninput");
     }
 }

@@ -136,7 +136,8 @@ namespace ALFINapp.Services
                     new SqlParameter("@REGION", usuario.REGION != null ? usuario.REGION : (object)DBNull.Value),
                     new SqlParameter("@NOMBRECAMPAÑA", usuario.NOMBRECAMPAÑA != null ? usuario.NOMBRECAMPAÑA : (object)DBNull.Value),
                     new SqlParameter("@IdRol", usuario.IdRol),
-                    new SqlParameter("@id_usuario_accion", IdUsuarioAccion)
+                    new SqlParameter("@id_usuario_accion", IdUsuarioAccion),
+                    new SqlParameter("@tipo_documento", usuario.TipoDocumento != null ? usuario.TipoDocumento : (object)DBNull.Value)
                 };
                 await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_crear_nuevo @Dni, @NombresCompletos, @Rol, @Departamento, @Provincia, @Distrito, @Telefono, @Estado, @IDUSUARIOSUP, @RESPONSABLESUP, @REGION, @NOMBRECAMPAÑA, @IdRol, @id_usuario_accion",
                     parameters);

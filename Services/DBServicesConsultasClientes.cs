@@ -56,7 +56,7 @@ namespace ALFINapp.Services
                         .FirstOrDefault();
                         if (detalleclienteExistenteBD != null)
                         {
-                            var clienteExistenteBD = await _context.base_clientes.FirstOrDefaultAsync(c => c.Dni == DNIBusqueda && c.IdBaseBanco == null);
+                            var clienteExistenteBD = await _context.base_clientes.FirstOrDefaultAsync(c => c.Dni == DNIBusqueda);
                             if (clienteExistenteBD == null)
                             {
                                 return (false, "El cliente no tiene Detalles en la Base de Datos de A365, este DNI fue eliminado manualmente durante la consulta", null);
