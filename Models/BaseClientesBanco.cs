@@ -86,4 +86,12 @@ public partial class BaseClientesBanco
     public string? Numero4 { get; set; }
     [Column("Numero5")]
     public string? Numero5 { get; set; }
+    [Column("id_user_v3")]
+    public int? IdUserV3 { get; set; }
+    [Column("deuda_entidades")]
+    public int? DeudaEntidades { get; set; }
+    [Column("perfil_ro")]
+    public string? PerfilRo { get; set; }
+    [Column("PRIORIDAD_SISTEMA")]
+    public string? PrioridadSistema { get; set; }
 }

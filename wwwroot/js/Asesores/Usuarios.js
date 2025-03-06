@@ -8,11 +8,11 @@ function guardarNuevoAsesor() {
 
     // Get the DNI value and perform validation
     var dni = document.getElementById('dni').value.trim();
-    if (!/^[0-9]{8}$/.test(dni)) {
+    if (!/^[0-9]{8}$/.test(dni) && !/^[0-9]{9}$/.test(dni)) {
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'El DNI debe tener 10 dígitos y solo números.'
+            text: 'El Documento debe tener el formato de DNI (8 Digitos Numericos) o de Carnet de Extranjeria (9 Digitos Numericos).'
         });
         return;
     }
@@ -54,14 +54,14 @@ function guardarNuevoAsesor() {
 
     // Prepare the data to be sent in the AJAX request
     var dataToSend = {
-        Dni: dni,
-        Departamento: document.getElementById('departamento').value.trim(),
-        Provincia: document.getElementById('provincia').value.trim(),
-        Distrito: document.getElementById('distrito').value.trim(),
-        REGION: document.getElementById('region').value.trim(),
-        NombresCompletos: document.getElementById('nombres').value.trim()
-            + ' ' + document.getElementById('apellido_paterno').value.trim()
-            + ' ' + document.getElementById('apellido_materno').value.trim(),
+        Dni: dni.toUpperCase(),
+        Departamento: document.getElementById('departamento').value.trim().toUpperCase(),
+        Provincia: document.getElementById('provincia').value.trim().toUpperCase(),
+        Distrito: document.getElementById('distrito').value.trim().toUpperCase(),
+        REGION: document.getElementById('region').value.trim().toUpperCase(),
+        NombresCompletos: (document.getElementById('nombres').value.trim() + ' ' 
+            + document.getElementById('apellido_paterno').value.trim() + ' ' 
+            + document.getElementById('apellido_materno').value.trim()).toUpperCase(),
         Telefono: telefono,
         IdRol: 3
     };
@@ -102,21 +102,19 @@ function guardarNuevoAsesor() {
     });
 }
 
-/// <summary>
-/// This function is responsible for validating the DNI input field in the "Agregar Nuevo Asesor" view.
-/// It checks if the DNI value is a 8-digit number and only contains numeric characters.
-/// If the validation fails, it adds the 'is-invalid' class to the input field and displays an error message.
-/// If the validation passes, it removes the 'is-invalid' class and hides the error message.
-/// </summary>
-/// <param name="dni">The value entered in the DNI input field.</param>
-/// <returns>No return value.</returns>
+/**
+ * Valida el DNI del supervisor y aplica estilos de error si es inválido.
+ *
+ * @param {string} [campo='dni'] - El ID del campo de entrada del DNI.
+ */
 function validarDNISupervisor(campo = 'dni') {
     var dni = document.getElementById(campo).value;
     var dniInput = document.getElementById(campo);
     var errorElement = document.getElementById(campo + '-error');
     var regex = /^[0-9]{8}$/;
+    var regex2 = /^[0-9]{9}$/;
 
-    if (!regex.test(dni)) {
+    if (!regex.test(dni) && !regex2.test(dni)) {
         dniInput.classList.add('is-invalid'); // Aplica el estilo de error de Bootstrap
         errorElement.style.display = 'block'; // Muestra el mensaje de error
     } else {
@@ -124,7 +122,6 @@ function validarDNISupervisor(campo = 'dni') {
         errorElement.style.display = 'none'; // Oculta el mensaje de error
     }
 }
-
 
 /// <summary>
 /// This function is responsible for validating the telefono input field in the "Agregar Nuevo Asesor" view.
@@ -138,7 +135,7 @@ function validarTelefono(campo = 'telefono') {
     var telefono = document.getElementById(campo).value;
     var telefonoInput = document.getElementById(campo);
     var errorElement = document.getElementById(campo + '-error');
-    var regex = /^[0-9]+$/;
+    var regex = /^[0-9]{9}$/;
 
     if (!regex.test(telefono)) {
         telefonoInput.classList.add('is-invalid');

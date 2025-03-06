@@ -2,6 +2,20 @@ function ActualizarPermisosRoles(rol, idvista, idrol) {
     console.log(rol);
     console.log(idvista);
     console.log(idrol);
+
+    if (idvista === "1" || idvista === "6") {
+        Swal.fire({
+            title: 'Error al actualizar el rol',
+            text: `El rol: ${rol} no se pudo actualizar, seleccione una vista`,
+            icon: 'warning',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+
+    if (idvista ) {
+        
+    }
     $.ajax({
         url: "/Rol/ActualizarPermisosRoles",
         method: "POST",

@@ -12,8 +12,12 @@
 <div class="container mt-4">
     <div id="container dni-section mb-3">
         <h3>Busqueda de Clientes</h3>
+        <div class="alert alert-info" role="alert">
+            <h5>Informacion: </h5>
+            <p class="mb-0">Un cliente para ser tipificado debe de haber sido enviado por el banco durante el <strong>presente mes</strong> .<strong>Si el cliente no se encuentra durante este mes no podra ser tipificado. </strong> </p>
+        </div>
         <div class="form-group">
-            <label for="DNI"> Ingresa DNI o Numero de Telefono</label>
+            <label for="DNI"> Ingrese un DNI o Numero de Telefono</label>
             <input type="text" id="dnicliente" class="form-control" placeholder="Ingrese DNI">
             <br>
             <button id="consultar-dni" class="btn btn-primary" onclick="validarDNI()"><i class="bi bi-search"></i>

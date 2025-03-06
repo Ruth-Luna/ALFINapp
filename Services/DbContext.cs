@@ -29,9 +29,11 @@ public class MDbContext : DbContext
     public DbSet<FeedGReportes> feed_G_REPORTES { get; set; }
     public DbSet<VistaRutas> Vista_Rutas { get; set; }
     public DbSet<Roles> roles { get; set; }
+    public DbSet<BancoUserV3> base_clientes_banco_user_v3 { get; set; }
     public DbSet<GESTIONDETALLE> GESTION_DETALLE { get; set; }
     public DbSet<Desembolsos> desembolsos { get; set; }
     public DbSet<PermisosRolesVistas> Permisos_Roles_Vistas { get; set; }
+    public DbSet<Retiros> retiros { get; set; }
 
     //DTOS Y PROCEDIMIENTOS ALMACENADOS
     public DbSet<StringDTO> string_dto { get; set; }

@@ -1,10 +1,10 @@
 function guardarNuevoUsuario() {
     var dni = document.getElementById('Nuevo_dni').value.trim();
-    if (!/^[0-9]{8}$/.test(dni)) {
+    if (!/^[0-9]{8}$/.test(dni) && !/^[0-9]{9}$/.test(dni)) {
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'El DNI debe tener 10 dígitos y solo números. Ademas que no puede estar vacio'
+            text: 'El Documento debe tener 8 dígitos o 9 digitos numericos. Ademas que no puede estar vacio'
         });
         return;
     }
@@ -13,12 +13,11 @@ function guardarNuevoUsuario() {
     var valid = true;
     soloLetrasCampos.forEach(function (campo) {
         var valor = document.getElementById(campo).value.trim();
-
         if (!/^[a-zA-Z\s]+$/.test(valor)) {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'El campo "' + campo + '" solo puede tener letras. Y no puede estar vaco'
+                text: 'El campo "' + campo + '" solo puede tener letras. Y no puede estar vacio'
             });
             valid = false;
             return;
@@ -76,7 +75,7 @@ function guardarNuevoUsuario() {
                 Swal.fire({
                     icon: 'success',
                     title: 'Informacion del asesor',
-                    text: response.message
+                    text: response.message,
                 });
             }
             else {

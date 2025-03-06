@@ -251,7 +251,7 @@ namespace ALFINapp.Controllers
                 var usuarioExistente = _context.usuarios.FirstOrDefault(u => u.Dni == nuevoUsuario.Dni);
                 if (usuarioExistente != null)
                 {
-                    return Json(new { success = false, message = "El DNI ya está registrado en la base de datos." });
+                    return Json(new { success = false, message = "El Documento ya está registrado en la base de datos." });
                 }
 
                 if (!ModelState.IsValid)
@@ -259,9 +259,11 @@ namespace ALFINapp.Controllers
                     return Json(new { success = false, message = "Los datos enviados no son válidos" });
                 }
 
-                if (string.IsNullOrEmpty(nuevoUsuario.Dni) || nuevoUsuario.Dni.Length < 8)
+                if (string.IsNullOrEmpty(nuevoUsuario.Dni) ||
+                    (nuevoUsuario.Dni.Length != 8 && nuevoUsuario.Dni.Length != 9) ||
+                    !nuevoUsuario.Dni.All(char.IsDigit))
                 {
-                    return Json(new { success = false, message = "El DNI debe contener al menos 8 dígitos." });
+                    return Json(new { success = false, message = "El DNI o documento de Identidad debe contener 8 o 9 dígitos numéricos." });
                 }
 
                 int? idsupervisoractual = HttpContext.Session.GetInt32("UsuarioId");
@@ -286,7 +288,6 @@ namespace ALFINapp.Controllers
                 {
                     return Json(new { success = false, message = "Debe seleccionar un Rol para el nuevo usuario" });
                 }
-                nuevoUsuario.IdRol = nuevoUsuario.IdRol;
                 if (nuevoUsuario.IdRol == 1)
                 {
                     nuevoUsuario.Rol = "ADMINISTRADOR";
@@ -320,7 +321,7 @@ namespace ALFINapp.Controllers
                 {
                     return Json(new { success = false, message = EnviarNuevoUsuario.Message });
                 }
-                return Json(new { success = true, message = $"Se ha agregado al nuevo Usuario {nuevoUsuario.NombresCompletos} con el Rol {nuevoUsuario.Rol}" });
+                return Json(new { success = true, message = $"Se ha agregado al nuevo Usuario {nuevoUsuario.NombresCompletos} con el Rol {nuevoUsuario.Rol}. Usted ha sido asignado como Supervisor del Asesor de Creditos" });
             }
             catch (System.Exception ex)
             {

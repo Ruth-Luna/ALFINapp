@@ -94,7 +94,7 @@ namespace ALFINapp.Controllers
                 var GetUserRol = HttpContext.Session.GetInt32("RolUser");
                 if (GetUserRol == null)
                 {
-                    return Json(new { existe = false, error = true, message = "No ha iniciado sesion" });
+                    return Json(new { existe = false, error = true, message = "No se ha encontrado una sesion activa, vuelva a iniciar sesion. " });
                 }
                 var GetClienteExistente = await _dbServicesConsultasClientes.GetClientsFromDBandBank(dni);
                 if (GetClienteExistente.IsSuccess == false || GetClienteExistente.Data == null)
@@ -112,7 +112,7 @@ namespace ALFINapp.Controllers
                 }
                 else
                 {
-                    return Json(new { existe = false, error = true, message = "La Base fue conseguida, pero no se le permite ver los datos de este cliente" });
+                    return Json(new { existe = false, error = true, message = "El cliente fue conseguido, pero no se le permite ver los datos de este cliente. Por una politica interna del banco. " });
                 }
             }
             catch (Exception ex)

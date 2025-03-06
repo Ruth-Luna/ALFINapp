@@ -69,14 +69,14 @@
     <div id="detalle-campana">
         @if (Model.TraidoDe == "BDALFIN")
         {
-            <div class="alert alert-warning mt-2" role="alert">
-                El cliente fue extraido de la base de datos de ALFIN
+            <div class="alert alert-primary mt-2" role="alert">
+                El cliente fue extraido de la base de datos de <strong>ALFIN</strong>
             </div>
         }
         else
         {
             <div class="alert alert-info mt-2" role="alert">
-                El cliente fue extraido de la base de datos de A365
+                El cliente fue extraido de la base de datos de <strong>A365</strong>
             </div>
         }
         <input type="text" id="DNIClienteDerivacion" value="@Model.Dni" hidden>
@@ -208,7 +208,9 @@
                         <label for="hasta_s_3k">Hasta S/ 3k:</label>
                     </div>
                     <div class="col-md-6">
-                        <input type="text" id="hasta_s_3k" class="form-control" value="@Model.Tasa1" required readonly>
+                        <input type="text" id="hasta_s_3k" class="form-control" 
+                            value="@(Model.Tasa1.HasValue && Math.Truncate(Model.Tasa1.Value) != 0 ? Math.Truncate(Model.Tasa1.Value) + "%" : "")" 
+                            required readonly>
                     </div>
                 </div>
                 <div class="form-group row align-items-center mb-2">
@@ -216,8 +218,9 @@
                         <label for="hasta_s_6_1k">Hasta S/ 6.1k:</label>
                     </div>
                     <div class="col-md-6">
-                        <input type="text" id="hasta_s_6_1k" class="form-control" value="@Model.Tasa2" required
-                            readonly>
+                        <input type="text" id="hasta_s_3k" class="form-control" 
+                            value="@(Model.Tasa2.HasValue && Math.Truncate(Model.Tasa2.Value) != 0 ? Math.Truncate(Model.Tasa2.Value) + "%" : "")" 
+                            required readonly>
                     </div>
                 </div>
                 <div class="form-group row align-items-center mb-2">
@@ -225,8 +228,9 @@
                         <label for="hasta_s_8_6k">Hasta S/ 8.6k:</label>
                     </div>
                     <div class="col-md-6">
-                        <input type="text" id="hasta_s_8_6k" class="form-control" value="@Model.Tasa3" required
-                            readonly>
+                        <input type="text" id="hasta_s_3k" class="form-control" 
+                            value="@(Model.Tasa3.HasValue && Math.Truncate(Model.Tasa3.Value) != 0 ? Math.Truncate(Model.Tasa3.Value) + "%" : "")" 
+                            required readonly>
                     </div>
                 </div>
                 <div class="form-group row align-items-center mb-2">
@@ -234,8 +238,9 @@
                         <label for="hasta_s_12_4k">Hasta S/ 12.4k:</label>
                     </div>
                     <div class="col-md-6">
-                        <input type="text" id="hasta_s_12_4k" class="form-control" value="@Model.Tasa4" required
-                            readonly>
+                        <input type="text" id="hasta_s_3k" class="form-control" 
+                            value="@(Model.Tasa4.HasValue && Math.Truncate(Model.Tasa4.Value) != 0 ? Math.Truncate(Model.Tasa4.Value) + "%" : "")" 
+                            required readonly>
                     </div>
                 </div>
                 <div class="form-group row align-items-center mb-2">
@@ -243,8 +248,9 @@
                         <label for="hasta_s_15_1k">Hasta S/ 15.1k:</label>
                     </div>
                     <div class="col-md-6">
-                        <input type="text" id="hasta_s_15_1k" class="form-control" value="@Model.Tasa5" required
-                            readonly>
+                        <input type="text" id="hasta_s_3k" class="form-control" 
+                            value="@(Model.Tasa5.HasValue && Math.Truncate(Model.Tasa5.Value) != 0 ? Math.Truncate(Model.Tasa5.Value) + "%" : "")" 
+                            required readonly>
                     </div>
                 </div>
                 <div class="form-group row align-items-center mb-2">
@@ -252,8 +258,9 @@
                         <label for="hasta_s_24_6k">Hasta S/ 24.6k:</label>
                     </div>
                     <div class="col-md-6">
-                        <input type="text" id="hasta_s_24_6k" class="form-control" value="@Model.Tasa6" required
-                            readonly>
+                        <input type="text" id="hasta_s_3k" class="form-control" 
+                            value="@(Model.Tasa6.HasValue && Math.Truncate(Model.Tasa6.Value) != 0 ? Math.Truncate(Model.Tasa6.Value) + "%" : "")" 
+                            required readonly>
                     </div>
                 </div>
                 <div class="form-group row align-items-center mb-2">
@@ -261,8 +268,9 @@
                         <label for="mas_de_s_24_6k">Mas de S/ 24.6k:</label>
                     </div>
                     <div class="col-md-6">
-                        <input type="text" id="mas_de_s_24_6k" class="form-control" value="@Model.Tasa7" required
-                            readonly>
+                        <input type="text" id="hasta_s_3k" class="form-control" 
+                            value="@(Model.Tasa7.HasValue && Math.Truncate(Model.Tasa7.Value) != 0 ? Math.Truncate(Model.Tasa7.Value) + "%" : "")" 
+                            required readonly>
                     </div>
                 </div>
                 <div class="form-group row align-items-center mb-2">

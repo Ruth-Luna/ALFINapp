@@ -58,3 +58,16 @@ public partial class UsuarioBanco
     [Column("tipo_usuario")]
     public string? TipoUsuario { get; set; }
 }
+
+public partial class BancoUserV3
+{
+    [Key]
+    [Column("id_user_v3")]
+    public int IdUserV3 { get; set; }
+
+    [Column("name_user")]
+    public string? NameUser { get; set; }
+
+    [Column("user_agrupado")]
+    public string? UserAgrupado { get; set; }
+}

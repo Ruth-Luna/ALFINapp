@@ -267,4 +267,6 @@ public partial class DetalleBase
     public string? PerfilRo { get; set; }
     [Column("PROPENSIONV2")]
     public string? Propensionv2 { get; set; }
+    [Column("PRIORIDAD_SISTEMA")]
+    public string? PrioridadSistema { get; set; }
 }

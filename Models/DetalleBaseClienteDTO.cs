@@ -39,7 +39,7 @@ public class DetalleBaseClienteDTO
     public string? GrupoTasa { get; set; }
     public string? GrupoMonto { get; set; }
     public int? Propension { get; set; }
-
+    public string? PrioridadSistema { get; set; }
     //Ids y demas NO MOSTRABLE
     public int? IdAsignacion { get; set; }
     public int? IdBase { get; set; }

@@ -13,9 +13,7 @@
         <h4 class="alert-heading">Roles</h4>
         <p>En esta sección se pueden asignar permisos a los roles de la aplicación.</p>
         <hr>
-        <p class="mb-0">Seleccione los permisos que desea asignar a cada rol. </p>
-        <hr>
-        <p class="mb-0">NO REASIGNE LOS ROLES INICIO ESTO TRAERA PROBLEMAS</p>
+        <p class="mb-0">NO REASIGNE LOS ROLES INICIO</p>
     </div>
 
     <div class="table-responsive">
@@ -23,13 +21,16 @@
             <thead>
                 <tr>
                     <th>Nombre de Rol</th>
-                    <th colspan="@Vistas.Count">Vistas del Rol</th>
+                    <th colspan="@(Vistas != null ? Vistas.Count : 0)">Vistas del Rol</th>
                 </tr>
                 <tr>
                     <th></th>
-                    @foreach (var vista in Vistas)
+                    @if (Vistas != null)
                     {
-                        <th>@vista.NombreVista</th>
+                        @foreach (var vista in Vistas)
+                        {
+                            <th>@vista.NombreVista</th>
+                        }
                     }
                 </tr>
             </thead>
@@ -38,6 +39,8 @@
                 {
                     <tr>
                         <td>@item[0].Rol</td>
+                        @if (Vistas != null)
+
                         @foreach (var vista in Vistas)
                         {
                             <td

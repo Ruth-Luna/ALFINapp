@@ -47,7 +47,7 @@
     @if (isEditable)
     {
         <div class="alert alert-info" role="alert">
-            Este Cliente fue agregado por un Asesor, por ende se pueden modificar los campos.
+            Este Cliente fue agregado manualmente por un Asesor de Creditos.
         </div>
     }
 
@@ -62,40 +62,35 @@
             </div>
             <div class="form-group">
                 <label for="X_APPATERNO">Apellido Paterno</label>
-                <input class="form-control form-control-editable" id="X_APPATERNO" type="text" value="@Model.XAppaterno"
-                @(isEditable ? "" : "readonly")>
+                <input class="form-control form-control-editable" id="X_APPATERNO" type="text" value="@Model.XAppaterno" readonly>
             </div>
             <div class="form-group">
                 <label for="X_APMATERNO">Apellido Materno</label>
-                <input class="form-control form-control-editable" id="X_APMATERNO" type="text" value="@Model.XApmaterno"
-                @(isEditable ? "" : "readonly")>
+                <input class="form-control form-control-editable" id="X_APMATERNO" type="text" value="@Model.XApmaterno" readonly>
             </div>
             <div class="form-group">
                 <label for="X_NOMBRE">Nombre</label>
-                <input class="form-control form-control-editable" id="X_NOMBRE" type="text" value="@Model.XNombre"
-                @(isEditable ? "" : "readonly")>
+                <input class="form-control form-control-editable" id="X_NOMBRE" type="text" value="@Model.XNombre" readonly>
             </div>
             <div class="form-group">
                 <label for="EDAD">Edad</label>
-                <input class="form-control form-control-editable" id="EDAD" type="text" value="@Model.Edad" @(isEditable
-                    ? "" : "readonly")>
+                <input class="form-control form-control-editable" id="EDAD" type="text" value="@Model.Edad" readonly>
             </div>
             <div class="form-group">
                 <label for="DEPARTAMENTO">Departamento</label>
                 <input class="form-control form-control-editable" id="DEPARTAMENTO" type="text"
-                    value="@Model.Departamento" @(isEditable ? "" : "readonly")>
+                    value="@Model.Departamento" readonly>
             </div>
             <div class="form-group">
                 <label for="PROVINCIA">Provincia</label>
                 <input class="form-control form-control-editable" id="PROVINCIA" type="text" value="@Model.Provincia"
-                @(isEditable ? "" : "readonly")>
+                readonly>
             </div>
             <div class="form-group">
                 <label for="DISTRITO">Distrito</label>
                 <input class="form-control form-control-editable" id="DISTRITO" type="text" value="@Model.Distrito"
-                @(isEditable ? "" : "readonly")>
+                readonly>
             </div>
-            <div class="spacing"></div>
         </div>
         <!-- Segunda Columna -->
         <div class="col-md-6">
@@ -144,17 +139,6 @@
                 <input class="form-control form-control-editable" id="PERFILRO" type="text" value="@Model.PerfilRo"
                     readonly>
             </div>
-            <div class="spacing"></div>
-
-            <!--<div class="spacing"></div>
-        <form asp-action="culminarCliente" asp-controller="User">
-            <input type="hidden" name="IdAsignacion" value="@id_asignacion" />
-            <button class="btn btn-warning" type="submit">Culminar</button>
-        </form>
-        <div class="spacing"></div>
-        <p>Activar este boton culminara con las tipificaciones del Cliente y sera notificado al Supervisor.
-            Esta accion no puede ser revertida</p>
-        -->
         </div>
     </div>
 
@@ -176,7 +160,6 @@
                 <input class="form-control form-control-editable" id="CUOTA12M" type="text" value="@Model.Cuota12m"
                     readonly>
             </div>
-            <div class="spacing"></div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Oferta 18 Meses</label>
                 <input class="form-control form-control-editable" id="OFERTA18M" type="text" value="@Model.Oferta18m"
@@ -209,7 +192,6 @@
                 <input class="form-control form-control-editable" id="CUOTA24M" type="text" value="@Model.Cuota24m"
                     readonly>
             </div>
-            <div class="spacing"></div>
             <div class="form-group">
                 <label for="GRUPO_MONTO">Oferta 36 Meses</label>
                 <input class="form-control form-control-editable" id="OFERTA36M" type="text" value="@Model.Oferta36m"

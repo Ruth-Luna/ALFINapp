@@ -112,7 +112,7 @@ function validarDNI() {
                 } else {
                     Swal.fire({
                         title: 'Cliente encontrado',
-                        text: 'El cliente existe en la base de datos.',
+                        text: 'Se encontro una entrada del cliente en una de nuestras bases de datos conocidas.',
                         icon: 'success',
                         confirmButtonText: 'Aceptar'
                     });

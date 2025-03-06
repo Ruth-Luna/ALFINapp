@@ -9,18 +9,21 @@ function CambiarEstadoUsuario(accion, idUsuario) {
         success: function (response) {
             if (response.success === false) {
                 Swal.fire({
-                    title: 'Error al cambiar el estado del Usuario',
+                    title: 'Error al cambiar el estado del Usuario. ',
                     text: response.message,
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });
             } else {
                 Swal.fire({
-                    title: 'El Estado del asesor fue cambiado correctamente',
+                    title: 'El Estado del asesor fue cambiado correctamente. Se recargara la pagina en 3 segundos para visualizar los cambios. ',
                     text: response.message,
                     icon: 'success',
                     confirmButtonText: 'OK'
                 });
+                setTimeout(function() {
+                    location.reload();
+                }, 3000);
             }
         },
         error: function (error) {

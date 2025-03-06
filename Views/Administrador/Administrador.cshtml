@@ -23,12 +23,8 @@
                 <div class="row">
                     <div class="col-md-4">
                         <label for="supervisorSelect" class="form-label">Seleccionar Supervisor:</label>
-                        <select id="supervisorSelect" class="form-select">
+                        <select id="supervisorSelect" class="form-select" onchange="crearGrafico(this.value)">
                             <option value="">Todos</option>
-                            @foreach (var supervisor in Model)
-                            {
-                                <option value=""></option>
-                            }
                         </select>
                     </div>
                     <div class="col-md-4 d-flex align-items-end">

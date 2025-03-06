@@ -56,8 +56,9 @@ namespace ALFINapp.Services
                 TipificacionDeMayorPeso = cliente.LatestRecord?.ca.TipificacionMayorPeso,
                 PesoTipificacionMayor = cliente.LatestRecord?.ca.PesoTipificacionMayor,
                 FechaTipificacionDeMayorPeso = cliente.LatestRecord?.ca.FechaTipificacionMayorPeso,
+                PrioridadSistema = cliente.LatestRecord?.db.PrioridadSistema,
             }).ToList();
-
+            detallesClientes = detallesClientes.OrderBy(x => x.PrioridadSistema).ToList();
             return detallesClientes;
         }
 
@@ -77,13 +78,11 @@ namespace ALFINapp.Services
                                               XApmaterno = bc.XApmaterno,
                                               IdCliente = ce.IdCliente
                                           }).FirstOrDefaultAsync();
-
                 return clienteDatos;
             }
             catch (Exception ex)
             {
-                // Maneja la excepción según corresponda
-                throw;
+                return ex.Message;
             }
         }
 
@@ -93,12 +92,8 @@ namespace ALFINapp.Services
         {
             try
             {
-                // Add the new entry to the "derivaciones_asesor" table
                 _context.derivaciones_asesores.Add(nuevaDerivacion);
-
-                // Save the changes to the database
                 await _context.SaveChangesAsync();
-
                 return true;
             }
             catch (System.Exception ex)
@@ -155,8 +150,10 @@ namespace ALFINapp.Services
                     TipificacionDeMayorPeso = cliente.LatestRecord?.ca.TipificacionMayorPeso,
                     PesoTipificacionMayor = cliente.LatestRecord?.ca.PesoTipificacionMayor,
                     FechaTipificacionDeMayorPeso = cliente.LatestRecord?.ca.FechaTipificacionMayorPeso,
+                    PrioridadSistema = cliente.LatestRecord?.bcb.PrioridadSistema,
                 }).ToList();
 
+                detallesClientes = detallesClientes.OrderBy(x => x.PrioridadSistema).ToList();
                 return (true,"Datos conseguidos exitosamente de la Base de datos ALFIN",detallesClientes);
             }
             catch (Exception ex)

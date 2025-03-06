@@ -96,10 +96,16 @@ namespace ALFINapp.Services
                 {
                     return (false, "El rol del usuario es obligatorio");
                 }
-                if (usuario.Dni == null)
+                if (string.IsNullOrEmpty(usuario.Dni) || (usuario.Dni.Length != 8 && usuario.Dni.Length != 9) || !usuario.Dni.All(char.IsDigit))
                 {
-                    return (false, "El DNI del usuario es obligatorio");
+                    return (false, "El DNI o documento de Identidad del usuario es obligatorio y debe tener 8 o 9 dígitos");
                 }
+                var dniExiste = await _context.usuarios.AnyAsync(x => x.Dni == usuario.Dni);
+                if (dniExiste)
+                {
+                    return (false, "El DNI ingresado ya existe en la base de datos");
+                }
+
                 if (usuario.NombresCompletos == null)
                 {
                     return (false, "El nombre del usuario es obligatorio");
@@ -110,10 +116,11 @@ namespace ALFINapp.Services
                     getUsuario = await _context.usuarios.FirstOrDefaultAsync(x => x.IdUsuario == usuario.IDUSUARIOSUP);
                     if (getUsuario == null)
                     {
-                        return (false, "El usuario supervisor no existe");
+                        return (false, "El usuario supervisor no existe o no se ha encontrado");
                     }
                 }
                 var rolConseguir = await _context.roles.FirstOrDefaultAsync(x => x.IdRol == usuario.IdRol);
+                
                 var parameters = new[]
                 {
                     new SqlParameter("@Dni", usuario.Dni),
