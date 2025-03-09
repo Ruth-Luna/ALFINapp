@@ -3,11 +3,6 @@
 }
 
 <div class="container mt-4">
-    <div class="form-group mb-3">
-        <label for="numeroClientesDerivacion">Numero de Clientes</label>
-        <input type="text" class="form-control" id="numeroClientesDerivacion" name="numeroClientesDerivacion"
-            value="@(DerivacionesAsesores != null ? DerivacionesAsesores.Count : 0)" readonly>
-    </div>
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -34,3 +29,9 @@
 
     </table>
 </div>
+
+<script>
+    $(document).ready(function () {
+        $('#informationTabla').text('@DerivacionesAsesores?.Count ?? 0');
+    });
+</script>

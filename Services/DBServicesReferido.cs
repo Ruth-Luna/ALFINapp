@@ -200,7 +200,7 @@ namespace ALFINapp.Services
 
                 if (clientebcbList.Count == 0)
                 {
-                    return (false, "No se ha encontrado el detalle del cliente en la base de datos. La entrada fue eliminada manualmente, o el usuario esta en retiros o desembolsos en ALFIN", null);
+                    return (false, "No se ha encontrado el detalle del cliente en la base de datos del mes actual. La entrada fue eliminada manualmente, o el usuario esta en retiros o desembolsos en ALFIN", null);
                 }
 
                 else

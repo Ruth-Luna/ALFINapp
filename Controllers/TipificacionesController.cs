@@ -91,66 +91,67 @@ namespace ALFINapp.Controllers
                 return Json(new { success = false, message = getDerivacion.message });
             }
             var mensajereal = $@"
-            <div>
-                <div style='font-size: 12px;'>
-                    <span>
-                        Estimados <br> Buen día
+            <div style=""font-family: 'Arial', sans-serif; color: #333;"">
+                <p style=""font-size: 16px; margin: 0;"">
+                    <strong>Estimados,</strong><br>
+                    Buen día.
+                </p>
+
+                <p style=""margin-top: 20px; font-size: 16px;"">
+                    Desde el <strong style=""color: #0073e6;"">CANAL DE A365</strong>, originamos y compartimos un prospecto de cliente interesado en la toma de un crédito en efectivo.
+                </p>
+
+                <div style=""margin-top: 30px; text-align: center;"">
+                    <span style=""background-color: #ffcc00; padding: 15px 25px; border-radius: 8px; font-size: 20px; font-weight: bold; display: inline-block;"">
+                        Información del Prospecto del Cliente
                     </span>
                 </div>
-                <div style='margin-top: 20px;'>
-                    Desde el <strong>CANAL DE A365</strong> originamos y compartimos un prospecto de cliente<br>
-                    interesado en la toma de un crédito en efectivo.
-                </div>
 
-                <div style='margin-top: 30px;'>
-                    <span style='background-color: yellow; padding: 10px; border-radius: 5px; font-family: Segoe UI, Tahoma, Geneva, Verdana, sans-serif; font-size: 24px;'>
-                        <strong>Información del Prospecto del Cliente</strong>
-                    </span>
-                </div>
-
-                <div style='margin-top: 40px; font-family: Courier New, Courier, monospace;'>
-                    <table border='1' cellspacing='0' cellpadding='5' style='border-collapse: collapse; width: 100%;'>
-                        <tr>
-                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'><strong>CANAL TELECAMPO:</strong></td>
-                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'>A365</td>
+                <div style=""margin-top: 40px;"">
+                    <table style=""width: 100%; border-collapse: collapse; font-size: 16px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);"">
+                        <tr style=""background-color: #0073e6; color: white; text-align: left;"">
+                            <th style=""padding: 12px;"">Campo</th>
+                            <th style=""padding: 12px;"">Información</th>
+                        </tr>
+                        <tr style=""background-color: #f2f2f2;"">
+                            <td style=""padding: 12px; font-weight: bold;"">CANAL TELECAMPO:</td>
+                            <td style=""padding: 12px;"">A365</td>
                         </tr>
                         <tr>
-                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'><strong>CÓDIGO DEL EJECUTIVO:</strong></td>
-                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'>{usuarioinfo.Data.Dni}</td>
+                            <td style=""padding: 12px; font-weight: bold;"">CÓDIGO DEL EJECUTIVO:</td>
+                            <td style=""padding: 12px;"">{usuarioinfo.Data.Dni}</td>
+                        </tr>
+                        <tr style=""background-color: #f2f2f2;"">
+                            <td style=""padding: 12px; font-weight: bold;"">CDV ALFIN BANCO:</td>
+                            <td style=""padding: 12px;"">{usuarioinfo.Data.NombresCompletos}</td>
                         </tr>
                         <tr>
-                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'><strong>CDV ALFIN BANCO:</strong></td>
-                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'>{usuarioinfo.Data.NombresCompletos}</td>
+                            <td style=""padding: 12px; font-weight: bold;"">DNI Cliente:</td>
+                            <td style=""padding: 12px;"">{enviarDerivacion.DniCliente}</td>
+                        </tr>
+                        <tr style=""background-color: #f2f2f2;"">
+                            <td style=""padding: 12px; font-weight: bold;"">Nombre Cliente:</td>
+                            <td style=""padding: 12px;"">{enviarDerivacion.NombreCliente}</td>
                         </tr>
                         <tr>
-                            <td style='padding: 10px;'><strong>DNI Cliente:</strong></td>
-                            <td style='padding: 10px;'>{enviarDerivacion.DniCliente}</td>
+                            <td style=""padding: 12px; font-weight: bold;"">Monto Solicitado (S/.):</td>
+                            <td style=""padding: 12px;"">{getDerivacion.data.Oferta}</td>
+                        </tr>
+                        <tr style=""background-color: #f2f2f2;"">
+                            <td style=""padding: 12px; font-weight: bold;"">Celular:</td>
+                            <td style=""padding: 12px;"">{enviarDerivacion.TelefonoCliente}</td>
                         </tr>
                         <tr>
-                            <td style='padding: 10px;'><strong>Nombre Cliente:</strong></td>
-                            <td style='padding: 10px;'>{enviarDerivacion.NombreCliente}</td>
+                            <td style=""padding: 12px; font-weight: bold;"">Agencia de Atención:</td>
+                            <td style=""padding: 12px; background-color: #ffcc00; font-weight: bold;"">{enviarDerivacion.NombreAgencia}</td>
+                        </tr>
+                        <tr style=""background-color: #f2f2f2;"">
+                            <td style=""padding: 12px; font-weight: bold;"">Fecha de Visita a Agencia:</td>
+                            <td style=""padding: 12px;"">{enviarDerivacion.FechaDerivacion:yyyy-MM-dd}</td>
                         </tr>
                         <tr>
-                            <td style='padding: 10px;'><strong>Monto Solicitado (S/.):</strong></td>
-                            <td style='padding: 10px;'>{getDerivacion.data.Oferta}</td>
-                        </tr>
-                        <tr>
-                            <td style='padding: 10px;'><strong>Celular:</strong></td>
-                            <td style='padding: 10px;'>{enviarDerivacion.TelefonoCliente}</td>
-                        </tr>
-                        <tr>
-                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'><strong>Agencia de Atención:</strong></td>
-                            <td style='padding: 10px; background-color: yellow;'>{enviarDerivacion.NombreAgencia}</td>
-                        </tr>
-                        <tr>
-                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'><strong>Fecha de Visita a Agencia:</strong></td>
-                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'>
-                                {enviarDerivacion.FechaDerivacion:yyyy-MM-dd}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'><strong>Hora de Visita a Agencia:</strong></td>
-                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'>HORARIO DE AGENCIA</td>
+                            <td style=""padding: 12px; font-weight: bold;"">Hora de Visita a Agencia:</td>
+                            <td style=""padding: 12px;"">HORARIO DE AGENCIA</td>
                         </tr>
                     </table>
                 </div>

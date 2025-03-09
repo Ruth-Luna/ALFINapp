@@ -54,7 +54,7 @@ namespace ALFINapp.Controllers
                 return RedirectToAction("Index", "Home");
             }
             ViewData["DniUsuario"] = getdatosUsuario.Data.Dni;
-            if (rolUsuario == 2 || rolUsuario == 1)
+            if (rolUsuario == 2)
             {
                 var getAsesoresAsignados = await _dBServicesConsultasSupervisores.GetAsesorsFromSupervisor(UsuarioIdSupervisor.Value);
                 if (!getAsesoresAsignados.IsSuccess || getAsesoresAsignados.Data == null)
@@ -188,7 +188,7 @@ namespace ALFINapp.Controllers
                 ViewData["Derivaciones"] = getClientesDatosDTO;
                 return View("Derivacion", getClientesDatosDTO);
             }
-            if (rolUsuario == 4)
+            if (rolUsuario == 4 || rolUsuario == 1)
             {
                 var getAsesoresAsignados = await _dBServicesConsultasAdministrador.ConseguirTodosLosUsuarios();
                 if (!getAsesoresAsignados.IsSuccess || getAsesoresAsignados.Data == null)
@@ -304,72 +304,70 @@ namespace ALFINapp.Controllers
                 }
 
                 var mensaje = $@"
-            <div>
-                <div style='font-size: 12px;'>
-                    <span>
-                        Estimados <br> Buen día
-                    </span>
-                </div>
-                <div style='margin-top: 20px;'>
-                    Desde el <strong>CANAL DE A365</strong> originamos y compartimos un prospecto de cliente<br>
-                    interesado en la toma de un crédito en efectivo.
-                </div>
+                <div>
+                    <div style=""font-size: 12px;"">
+                        <span>
+                            Estimados <br> Buen día
+                        </span>
+                    </div>
 
-                <div style='margin-top: 30px;'>
-                    <span style='background-color: yellow; padding: 10px; border-radius: 5px; font-family: Segoe UI, Tahoma, Geneva, Verdana, sans-serif; font-size: 24px;'>
-                        <strong>Información del Prospecto del Cliente</strong>
-                    </span>
-                </div>
+                    <div style=""margin-top: 20px;"">
+                        Desde el <strong>CANAL DE A365</strong> originamos y compartimos un prospecto de cliente<br>
+                        interesado en la toma de un crédito en efectivo.
+                    </div>
 
-                <div style='margin-top: 40px; font-family: Courier New, Courier, monospace;'>
-                    <table border='1' cellspacing='0' cellpadding='5' style='border-collapse: collapse; width: 100%;'>
-                        <tr>
-                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'><strong>CANAL TELECAMPO:</strong></td>
-                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'>A365</td>
-                        </tr>
-                        <tr>
-                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'><strong>CÓDIGO DEL EJECUTIVO:</strong></td>
-                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'>{usuarioinfo.Data.Dni}</td>
-                        </tr>
-                        <tr>
-                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'><strong>CDV ALFIN BANCO:</strong></td>
-                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'>{usuarioinfo.Data.NombresCompletos}</td>
-                        </tr>
-                        <tr>
-                            <td style='padding: 10px;'><strong>DNI Cliente:</strong></td>
-                            <td style='padding: 10px;'>{DNIClienteDerivacion}</td>
-                        </tr>
-                        <tr>
-                            <td style='padding: 10px;'><strong>Nombre Cliente:</strong></td>
-                            <td style='padding: 10px;'>{NombreClienteDerivacion}</td>
-                        </tr>
-                        <tr>
-                            <td style='padding: 10px;'><strong>Monto Solicitado (S/.):</strong></td>
-                            <td style='padding: 10px;'>{getDerivacion.data.Oferta}</td>
-                        </tr>
-                        <tr>
-                            <td style='padding: 10px;'><strong>Celular:</strong></td>
-                            <td style='padding: 10px;'>{TelefonoDerivacion}</td>
-                        </tr>
-                        <tr>
-                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'><strong>Agencia de Atención:</strong></td>
-                            <td style='padding: 10px; background-color: yellow;'>{TelefonoDerivacion}</td>
-                        </tr>
-                        <tr>
-                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'><strong>Fecha de Visita a Agencia:</strong></td>
-                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'>
-                                {FechaVisitaDerivacion:yyyy-MM-dd}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'><strong>Hora de Visita a Agencia:</strong></td>
-                            <td style='padding: 10px; background-color: rgb(226, 226, 226);'>HORARIO DE AGENCIA</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>";
+                    <div style=""margin-top: 30px;"">
+                        <span style=""background-color: yellow; padding: 10px; border-radius: 5px; 
+                                    font-family: Segoe UI, Tahoma, Geneva, Verdana, sans-serif; font-size: 24px;"">
+                            <strong>Información del Prospecto del Cliente</strong>
+                        </span>
+                    </div>
 
-
+                    <div style=""margin-top: 40px; font-family: Segoe UI, Tahoma, Geneva, Verdana, sans-serif; font-size: 16px;"">
+                        <table border=""1"" cellspacing=""0"" cellpadding=""5"" style=""border-collapse: collapse; width: 100%;"">
+                            <tr style=""background-color: rgb(226, 226, 226);"">
+                                <td style=""padding: 10px;""><strong>CANAL TELECAMPO:</strong></td>
+                                <td style=""padding: 10px;"">A365</td>
+                            </tr>
+                            <tr style=""background-color: rgb(226, 226, 226);"">
+                                <td style=""padding: 10px;""><strong>CÓDIGO DEL EJECUTIVO:</strong></td>
+                                <td style=""padding: 10px;"">{usuarioinfo.Data.Dni}</td>
+                            </tr>
+                            <tr style=""background-color: rgb(226, 226, 226);"">
+                                <td style=""padding: 10px;""><strong>CDV ALFIN BANCO:</strong></td>
+                                <td style=""padding: 10px;"">{usuarioinfo.Data.NombresCompletos}</td>
+                            </tr>
+                            <tr>
+                                <td style=""padding: 10px;""><strong>DNI Cliente:</strong></td>
+                                <td style=""padding: 10px;"">{DNIClienteDerivacion}</td>
+                            </tr>
+                            <tr>
+                                <td style=""padding: 10px;""><strong>Nombre Cliente:</strong></td>
+                                <td style=""padding: 10px;"">{NombreClienteDerivacion}</td>
+                            </tr>
+                            <tr>
+                                <td style=""padding: 10px;""><strong>Monto Solicitado (S/.):</strong></td>
+                                <td style=""padding: 10px;"">{getDerivacion.data.Oferta}</td>
+                            </tr>
+                            <tr>
+                                <td style=""padding: 10px;""><strong>Celular:</strong></td>
+                                <td style=""padding: 10px;"">{TelefonoDerivacion}</td>
+                            </tr>
+                            <tr style=""background-color: rgb(226, 226, 226);"">
+                                <td style=""padding: 10px;""><strong>Agencia de Atención:</strong></td>
+                                <td style=""padding: 10px; background-color: yellow;"">{TelefonoDerivacion}</td>
+                            </tr>
+                            <tr style=""background-color: rgb(226, 226, 226);"">
+                                <td style=""padding: 10px;""><strong>Fecha de Visita a Agencia:</strong></td>
+                                <td style=""padding: 10px;"">{FechaVisitaDerivacion:yyyy-MM-dd}</td>
+                            </tr>
+                            <tr style=""background-color: rgb(226, 226, 226);"">
+                                <td style=""padding: 10px;""><strong>Hora de Visita a Agencia:</strong></td>
+                                <td style=""padding: 10px;"">HORARIO DE AGENCIA</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>";
                 var enviarEmailDerivacion = await _dBServicesDerivacion.EnviarEmailDeDerivacion("svilcalim@unsa.edu.pe", mensaje, $"Asunto: Fwd: A365 FFVV CAMPO CLIENTE DNI: {DNIClienteDerivacion} / NOMBRE: {NombreClienteDerivacion}");
                 return Json(new { success = true, message = enviarDerivacion.Message + " " + enviarEmailDerivacion.message });
             }
@@ -388,13 +386,11 @@ namespace ALFINapp.Controllers
                     Dni = DniAsesor
                 };
 
-                var enviarDni = new List<Usuario>();
-                enviarDni.Add(DniAsesorGet);
-                var getDerivaciones = await _dBServicesDerivacion.GetEntradasBSDialXSupervisor(enviarDni);
-                if (!getDerivaciones.IsSuccess || getDerivaciones.Data == null)
+                var enviarDni = new List<Usuario>
                 {
-                    return Json(new { success = false, message = getDerivaciones.Message });
-                }
+                    DniAsesorGet
+                };
+
                 var getClientesDerivadosGenerales = await _dBServicesDerivacion.GetClientesDerivadosGenerales(enviarDni);
                 if (!getClientesDerivadosGenerales.IsSuccess || getClientesDerivadosGenerales.Data == null)
                 {
@@ -432,39 +428,7 @@ namespace ALFINapp.Controllers
                     };
                     getClientesDatosDTO.Add(newItem);
                 }
-
-                foreach (var item in getDerivaciones.Data)
-                {
-                    var newItem = new GestionDetalleDTO
-                    {
-                        IdFeedback = item.IdFeedback,
-                        IdAsignacion = item.IdAsignacion,
-                        CodCanal = item.CodCanal,
-                        Canal = item.Canal,
-                        DocCliente = item.DocCliente,
-                        FechaEnvio = item.FechaEnvio,
-                        FechaGestion = item.FechaGestion,
-                        HoraGestion = item.HoraGestion,
-                        Telefono = item.Telefono,
-                        OrigenTelefono = item.OrigenTelefono,
-                        CodCampaña = item.CodCampaña,
-                        CodTip = item.CodTip,
-                        Oferta = item.Oferta,
-                        DocAsesor = item.DocAsesor,
-                        Origen = item.Origen,
-                        ArchivoOrigen = item.ArchivoOrigen,
-                        FechaCarga = item.FechaCarga,
-                        IdDerivacion = item.IdDerivacion,
-                        IdSupervisor = item.IdSupervisor,
-                        Supervisor = item.Supervisor,
-                        IdDesembolso = item.IdDesembolso,
-                        TraidoDe = "SISTEMA EXTERNO",
-                        EstadoDerivacion = "DERIVADO MANUALMENTE",
-                        FueProcesadaLaDerivacion = true,
-                    };
-                    getClientesDatosDTO.Add(newItem);
-                }
-
+                getClientesDatosDTO = getClientesDatosDTO.OrderByDescending(a => a.FechaEnvio).ToList();
                 ViewData["Derivaciones"] = getClientesDatosDTO;
                 return PartialView("_DerivacionesAsesor");
             }
@@ -517,8 +481,8 @@ namespace ALFINapp.Controllers
                             IdSupervisor = item.IdSupervisor,
                             Supervisor = item.Supervisor,
                             IdDesembolso = item.IdDesembolso,
-                            TraidoDe = "SISTEMA EXTERNO",
-                            EstadoDerivacion = "DERIVADO MANUALMENTE",
+                            TraidoDe = "DETALLES DE GESTION",
+                            EstadoDerivacion = "DERIVACION POR SISTEMA",
                             FueProcesadaLaDerivacion = true,
                         };
                         getClientesDatosDTO.Add(newItem);
@@ -532,7 +496,81 @@ namespace ALFINapp.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> ObtenerDerivacionesGestionSupervisor(string? DniAsesor = null)
+        {
+            try
+            {
+                var UsuarioIdSupervisor = HttpContext.Session.GetInt32("UsuarioId");
+                if (UsuarioIdSupervisor == null)
+                {
+                    return Json (new { success = false, message = "No se ha iniciado sesión." });
+                }
+                var enviarDni = new List<Usuario>();
+                var Asesor = new Usuario ();
+                
+                if (DniAsesor == null)
+                {
+                    var getAsesoresAsignados = await _dBServicesConsultasSupervisores.GetAsesorsFromSupervisor(UsuarioIdSupervisor.Value);
+                    if (!getAsesoresAsignados.IsSuccess || getAsesoresAsignados.Data == null)
+                    {
+                        return Json (new { success = false, message = getAsesoresAsignados.Message });
+                    }
+                    enviarDni = getAsesoresAsignados.Data;
+                }
+                else
+                {
+                    Asesor.Dni = DniAsesor.ToString();
+                    enviarDni.Add(Asesor);
+                }
 
-
+                var getClientesDerivadosGenerales = await _dBServicesDerivacion.GetEntradasBSDialXSupervisor(enviarDni);
+                if (!getClientesDerivadosGenerales.IsSuccess)
+                {
+                    return Json(new { success = false, message = getClientesDerivadosGenerales.Message });
+                }
+                var getClientesDatosDTO = new List<GestionDetalleDTO>();
+                if (getClientesDerivadosGenerales.Data != null)
+                {
+                    foreach (var item in getClientesDerivadosGenerales.Data)
+                    {
+                        var newItem = new GestionDetalleDTO
+                        {
+                            IdFeedback = item.IdFeedback,
+                            IdAsignacion = item.IdAsignacion,
+                            CodCanal = item.CodCanal,
+                            Canal = item.Canal,
+                            DocCliente = item.DocCliente,
+                            FechaEnvio = item.FechaEnvio,
+                            FechaGestion = item.FechaGestion,
+                            HoraGestion = item.HoraGestion,
+                            Telefono = item.Telefono,
+                            OrigenTelefono = item.OrigenTelefono,
+                            CodCampaña = item.CodCampaña,
+                            CodTip = item.CodTip,
+                            Oferta = item.Oferta,
+                            DocAsesor = item.DocAsesor,
+                            Origen = item.Origen,
+                            ArchivoOrigen = item.ArchivoOrigen,
+                            FechaCarga = item.FechaCarga,
+                            IdDerivacion = item.IdDerivacion,
+                            IdSupervisor = item.IdSupervisor,
+                            Supervisor = item.Supervisor,
+                            IdDesembolso = item.IdDesembolso,
+                            TraidoDe = "DETALLES DE GESTION",
+                            EstadoDerivacion = "DERIVACION POR SISTEMA",
+                            FueProcesadaLaDerivacion = true,
+                        };
+                        getClientesDatosDTO.Add(newItem);
+                    }
+                }
+                getClientesDatosDTO = getClientesDatosDTO.OrderByDescending(a => a.FechaGestion).ToList();
+                return PartialView("_DerivacionesGestion", getClientesDatosDTO);
+            }
+            catch (System.Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
     }
 }
