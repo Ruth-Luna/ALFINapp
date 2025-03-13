@@ -34,6 +34,9 @@ public class MDbContext : DbContext
     public DbSet<Desembolsos> desembolsos { get; set; }
     public DbSet<PermisosRolesVistas> Permisos_Roles_Vistas { get; set; }
     public DbSet<Retiros> retiros { get; set; }
+    public DbSet<Correos> correos { get; set; }
+    public DbSet<DirectorioComercial> directorio_comercial { get; set; }
+    public DbSet<AsesoresOcultos> Asesores_Ocultos { get; set; }
 
     //DTOS Y PROCEDIMIENTOS ALMACENADOS
     public DbSet<StringDTO> string_dto { get; set; }

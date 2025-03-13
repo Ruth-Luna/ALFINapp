@@ -263,9 +263,7 @@ namespace ALFINapp.Services
                                             join u in _context.usuarios on ca.IdUsuarioV equals u.IdUsuario into usuarioJoin
                                             from u in usuarioJoin.DefaultIfEmpty()
                                             where ca.IdUsuarioS == idSupervisorActual
-                                                && ca.ClienteDesembolso != true
-                                                && ca.ClienteRetirado != true
-                                                && ca.Destino != "A365_AGREGADO_MANUALMENTE" 
+                                                && ca.Destino != "A365_AGREGADO_MANUALMENTE"
                                                 && ca.Destino != "ALFIN_AGREGADO_MANUALMENTE"
                                                 && ca.FechaAsignacionSup.HasValue
                                                 && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
@@ -277,15 +275,36 @@ namespace ALFINapp.Services
                                                 IdCliente = ca.IdCliente,
                                                 idUsuarioV = ca.IdUsuarioV ?? 0,
                                                 FechaAsignacionV = ca.FechaAsignacionVendedor,
-
                                                 Dni = bc.Dni,
                                                 XAppaterno = bc.XAppaterno,
                                                 XApmaterno = bc.XApmaterno,
                                                 XNombre = bc.XNombre,
-
                                                 NombresCompletos = u != null ? u.NombresCompletos : "Asesor no Asignado",
                                                 DniVendedor = u != null ? u.Dni : " ",
                                             }).ToListAsync();
+
+                // Obtener los DNIs de supervisorData
+                var dnisClientes = supervisorData.Select(s => s.Dni).ToHashSet();
+
+                // Buscar los DNIs en desembolsos y retiros, filtrando solo los de supervisorData
+                var dniDesembolsosYRetiros = await _context.desembolsos
+                    .Where(d => d.FechaDesembolsos.HasValue
+                        && d.FechaDesembolsos.Value.Year == DateTime.Now.Year
+                        && d.FechaDesembolsos.Value.Month == DateTime.Now.Month
+                        && dnisClientes.Contains(d.DniDesembolso)) // Solo DNIs de supervisorData
+                    .Select(d => d.DniDesembolso)
+                    .Union(
+                        _context.retiros
+                            .Where(r => r.FechaRetiro.HasValue
+                                && r.FechaRetiro.Value.Year == DateTime.Now.Year
+                                && r.FechaRetiro.Value.Month == DateTime.Now.Month
+                                && dnisClientes.Contains(r.DniRetiros)) // Solo DNIs de supervisorData
+                            .Select(r => r.DniRetiros))
+                    .ToListAsync();
+
+                // Remover de supervisorData los DNIs encontrados en desembolsos o retiros
+                supervisorData.RemoveAll(s => dniDesembolsosYRetiros.Contains(s.Dni));
+
                 if (supervisorData == null)
                 {
                     return (true, "El presente Usuario Supervisor no tiene clientes Asignados", null);
@@ -305,19 +324,20 @@ namespace ALFINapp.Services
                 if (destino == null)
                 {
                     var supervisorDataNoDestino = await (from ca in _context.clientes_asignados
-                                            where ca.IdUsuarioS == idSupervisorActual
-                                               && ca.ClienteDesembolso != true
-                                               && ca.ClienteRetirado != true
-                                               && ca.FechaAsignacionSup.HasValue
-                                               && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                                               && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
-                                            select ca).ToListAsync();
+                                                         where ca.IdUsuarioS == idSupervisorActual
+                                                            && ca.ClienteDesembolso != true
+                                                            && ca.ClienteRetirado != true
+                                                            && ca.FechaAsignacionSup.HasValue
+                                                            && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
+                                                            && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
+                                                         select ca).ToListAsync();
                     if (supervisorDataNoDestino.Count == 0)
                     {
                         return (true, "El presente Usuario Supervisor no tiene clientes Asignados", null);
                     }
                     return (true, "La Consulta se produjo con exito", supervisorDataNoDestino);
                 }
+                
                 var supervisorData = await (from ca in _context.clientes_asignados
                                             where ca.IdUsuarioS == idSupervisorActual
                                                && ca.ClienteDesembolso != true

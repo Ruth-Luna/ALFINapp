@@ -1,4 +1,5 @@
 using System.Data;
+using System.Text.RegularExpressions;
 using ALFINapp.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -50,7 +51,7 @@ namespace ALFINapp.Services
                 };
 
                 var generarDerivacion = _context.Database.ExecuteSqlRaw(
-                    "EXEC SP_derivacion_insertar_derivacion @fecha_visita_derivacion, @dni_asesor_derivacion, @DNI_cliente_derivacion, @id_cliente, @nombre_cliente_derivacion, @telefono_derivacion, @agencia_derivacion, @num_agencia",
+                    "EXEC SP_derivacion_insertar_derivacion_test @fecha_visita_derivacion, @dni_asesor_derivacion, @DNI_cliente_derivacion, @id_cliente, @nombre_cliente_derivacion, @telefono_derivacion, @agencia_derivacion, @num_agencia",
                     parametros);
 
                 if (generarDerivacion == 0)
@@ -91,6 +92,101 @@ namespace ALFINapp.Services
                     getClientesDerivados.AddRange(derivaciones);
                 }
                 return (true, "Derivaciones obtenidas correctamente", getClientesDerivados);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message, null);
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message, List<GestionDetalleDTO>? Data)> GetDerivacionInformationAll(List<DerivacionesAsesores> clientes)
+        {
+            try
+            {
+                var getAllDnisClientes = clientes.Select(x => x.DniCliente).ToHashSet();
+                var getInformationDesem = await _context.desembolsos
+                    .Where(x => getAllDnisClientes.Contains(x.DniDesembolso)
+                        && x.FechaDesembolsos.HasValue
+                        && x.FechaDesembolsos.Value.Year == DateTime.Now.Year
+                        && x.FechaDesembolsos.Value.Month == DateTime.Now.Month)
+                    .OrderByDescending(x => x.FechaDesembolsos)
+                    .ToListAsync();
+                var getInformationA365 = await _context.base_clientes
+                    .Join(_context.detalle_base, bc => bc.IdBase, db => db.IdBase, (bc, db) => new { bc, db })
+                    .Where(x => getAllDnisClientes.Contains(x.bc.Dni)
+                        && x.db.FechaCarga.HasValue
+                        && x.db.FechaCarga.Value.Year == DateTime.Now.Year
+                        && x.db.FechaCarga.Value.Month == DateTime.Now.Month)
+                    .OrderByDescending(x => x.db.FechaCarga)
+                    .AsNoTracking()
+                    .ToListAsync();
+                var getInformationAlfin = await _context.base_clientes_banco
+                    .Join(_context.base_clientes_banco_campana_grupo,
+                        bcb => bcb.IdCampanaGrupoBanco,
+                        bcg => bcg.IdCampanaGrupo,
+                        (bcb, bcg) => new { bcb, bcg })
+                    .Join(_context.base_clientes_banco_color,
+                        b => b.bcb.IdColorBanco,
+                        bcc => bcc.IdColor,
+                        (b, bcc) => new { b.bcb, b.bcg, bcc })
+                    .Join(_context.base_clientes_banco_plazo,
+                        b => b.bcb.IdPlazoBanco,
+                        bcp => bcp.IdPlazo,
+                        (b, bcp) => new { b.bcb, b.bcg, b.bcc, bcp })
+                    .Join(_context.base_clientes_banco_rango_deuda,
+                        b => b.bcb.IdRangoDeuda,
+                        bcr => bcr.IdRangoDeuda,
+                        (b, bcr) => new { b.bcb, b.bcg, b.bcc, b.bcp, bcr })
+                    .Join(_context.base_clientes_banco_usuario,
+                        b => b.bcb.IdUsuarioBanco,
+                        bcu => bcu.IdUsuario,
+                        (b, bcu) => new { b.bcb, b.bcg, b.bcc, b.bcp, b.bcr, bcu })
+                    .Where(b => getAllDnisClientes.Contains(b.bcb.Dni)
+                        && b.bcb.FechaSubida.HasValue
+                        && b.bcb.FechaSubida.Value.Year == DateTime.Now.Year
+                        && b.bcb.FechaSubida.Value.Month == DateTime.Now.Month)
+                    .OrderByDescending(b => b.bcb.FechaSubida)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                var joinInformation = (from cliente in clientes
+                                        join desem in getInformationDesem on cliente.DniCliente equals desem.DniDesembolso into desemGroup
+                                        from desem in desemGroup.DefaultIfEmpty()
+                                        join a365 in getInformationA365 on cliente.DniCliente equals a365.bc.Dni into a365Group
+                                        from a365 in a365Group.DefaultIfEmpty()
+                                        join alfin in getInformationAlfin on cliente.DniCliente equals alfin.bcb.Dni into alfinGroup
+                                        from alfin in alfinGroup.DefaultIfEmpty()
+                                        let ofertaA365 = a365?.db.OfertaMax ?? 0
+                                        let ofertaAlfin = alfin?.bcb.OfertaMax ?? 0
+                                        select new GestionDetalleDTO
+                                        {
+                                            ArchivoOrigen = a365 != null ? "A365" : alfin != null ? "ALFIN" : "NO SE ENCONTRO",
+                                            Canal = a365 != null ? a365.db.Canal : " ",
+                                            CodCampaña = a365 != null ? a365.db.Campaña : alfin?.bcg.NombreCampana ?? "NO SE ENCONTRO CAMPAÑA",
+                                            Oferta = ofertaA365 > 0 ? ofertaA365 : ofertaAlfin,
+                                            CodCanal = a365?.db.Canal ?? " ",
+                                            DocAsesor = cliente.DniAsesor,
+                                            DocCliente = cliente.DniCliente,
+                                            EstadoDerivacion = cliente.EstadoDerivacion,
+                                            FechaDerivacion = cliente.FechaDerivacion,
+                                            FechaEnvio = cliente.FechaVisita ?? DateTime.MinValue,
+                                            FechaGestion = cliente.FechaDerivacion,
+                                            FueProcesadaLaDerivacion = cliente.FueProcesado,
+                                            IdAsignacion = cliente.IdAsignacion,
+                                            IdDerivacion = cliente.IdDerivacion,
+                                            FechaCarga = a365?.db.FechaCarga ?? alfin?.bcb.FechaSubida ?? DateTime.MinValue,
+                                            IdSupervisor = 0,
+                                            Supervisor = "NO SE ENCONTRO SUPERVISOR ENCARGADO",
+                                            IdDesembolso = desem?.IdDesembolsos ?? 0,
+                                            FechaDesembolso = desem?.FechaDesembolsos,
+                                            FueDesembolsado = desem != null,
+                                            EstadoDesembolso = desem != null ? "DESEMBOLSADO" : "NO DESEMBOLSADO",
+                                            Observacion = "LA INFORMACION TRAIDA ES DE SISTEMA INTERNO",
+                                            NombreCompletoCliente = cliente.NombreCliente,
+                                            Telefono = cliente.TelefonoCliente,
+                                        }).ToList();
+
+                return (true, "Información de las derivaciones obtenida correctamente", joinInformation);
             }
             catch (System.Exception ex)
             {
@@ -317,13 +413,35 @@ namespace ALFINapp.Services
                 return (false, ex.Message, null);
             }
         }
-        public async Task<(bool IsSuccess, string message)> EnviarEmailDeDerivacion(string destinatario, string mensaje, string asunto)
+        public async Task<(bool IsSuccess, string message)> EnviarEmailDeDerivacion(string destinatario_agencia_codigo, string mensaje, string asunto)
         {
             try
             {
+                string destinatario_codigo = Regex.Match(destinatario_agencia_codigo, @"^\d+").Value;
+                destinatario_codigo = "73" + destinatario_codigo;
+                var destinatario_principal = await _context.directorio_comercial
+                    .Where(x => x.Ceco == destinatario_codigo)
+                    .Select(x => new { x.CorreoAgencia, x.CorreoGerente })
+                    .FirstOrDefaultAsync();
+
+                if (destinatario_principal == null)
+                {
+                    return (false, "No se encontró el destinatario principal, seleccione una agencia valida");
+                }
+
+                var correos = await _context.correos.Where(x => x.Envio == "derivaciones" && !x.EsCorreoPropio).ToListAsync();
+                var destinatarios = string.Join("; ", correos.Select(x => x.Correo));
+
+                destinatarios = string.Join("; ", destinatarios, destinatario_principal.CorreoGerente);
+
                 await _context.Database.ExecuteSqlRawAsync(
-                    "EXEC msdb.dbo.sp_send_dbmail @profile_name = {0}, @recipients = {1}, @body = {2}, @body_format = {3}, @subject = {4}",
-                    "RoxanaAlfin", destinatario, mensaje, "HTML", asunto
+                    "EXEC msdb.dbo.sp_send_dbmail @profile_name = {0}, @recipients = {1}, @copy_recipients = {2}, @body = {3}, @body_format = {4}, @subject = {5}",
+                    new SqlParameter("@profile_name", "RoxanaAlfin"),
+                    new SqlParameter("@recipients", destinatario_principal.CorreoAgencia),
+                    new SqlParameter("@copy_recipients", destinatarios),
+                    new SqlParameter("@body", mensaje),
+                    new SqlParameter("@body_format", "HTML"),
+                    new SqlParameter("@subject", asunto)
                 );
                 return (true, "El correo ha sido enviado exitosamente");
             }
@@ -338,20 +456,20 @@ namespace ALFINapp.Services
             try
             {
                 var getDerivacion = await (from da in _context.derivaciones_asesores
-                                                join ce in _context.clientes_enriquecidos on da.IdCliente equals ce.IdCliente into ceGroup
-                                                from ce in ceGroup.DefaultIfEmpty()
-                                                join bc in _context.base_clientes on ce.IdBase equals bc.IdBase into bcGroup
-                                                from bc in bcGroup.DefaultIfEmpty()
-                                                join db in _context.detalle_base on bc.IdBase equals db.IdBase into dbGroup
-                                                from db in dbGroup.DefaultIfEmpty()
-                                                where da.DniCliente == dni
-                                                orderby da.FechaDerivacion descending, db.FechaCarga descending
-                                                select new GestionDetalleDTO
-                                                {
-                                                    CodCampaña = db.Campaña,
-                                                    Oferta = db.OfertaMax != null ? db.OfertaMax.Value : 0,
-                                                    CodCanal = db.Canal,
-                                                }).FirstOrDefaultAsync();
+                                           join ce in _context.clientes_enriquecidos on da.IdCliente equals ce.IdCliente into ceGroup
+                                           from ce in ceGroup.DefaultIfEmpty()
+                                           join bc in _context.base_clientes on ce.IdBase equals bc.IdBase into bcGroup
+                                           from bc in bcGroup.DefaultIfEmpty()
+                                           join db in _context.detalle_base on bc.IdBase equals db.IdBase into dbGroup
+                                           from db in dbGroup.DefaultIfEmpty()
+                                           where da.DniCliente == dni
+                                           orderby da.FechaDerivacion descending, db.FechaCarga descending
+                                           select new GestionDetalleDTO
+                                           {
+                                               CodCampaña = db.Campaña,
+                                               Oferta = db.OfertaMax != null ? db.OfertaMax.Value : 0,
+                                               CodCanal = db.Canal,
+                                           }).FirstOrDefaultAsync();
                 if (getDerivacion == null)
                 {
                     return (false, "No se encontró la derivación", null);

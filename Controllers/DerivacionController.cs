@@ -7,6 +7,7 @@ using ALFINapp.Filters;
 using ALFINapp.Models;
 using ALFINapp.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace ALFINapp.Controllers
@@ -51,7 +52,7 @@ namespace ALFINapp.Controllers
             if (!getdatosUsuario.IsSuccess || getdatosUsuario.Data == null)
             {
                 TempData["MessageError"] = getdatosUsuario.Message;
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Redireccionar", "Error");
             }
             ViewData["DniUsuario"] = getdatosUsuario.Data.Dni;
             if (rolUsuario == 2)
@@ -60,62 +61,37 @@ namespace ALFINapp.Controllers
                 if (!getAsesoresAsignados.IsSuccess || getAsesoresAsignados.Data == null)
                 {
                     TempData["MessageError"] = getAsesoresAsignados.Message;
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 var getClientesDerivadosGenerales = await _dBServicesDerivacion.GetClientesDerivadosGenerales(getAsesoresAsignados.Data);
                 if (!getClientesDerivadosGenerales.IsSuccess)
                 {
                     TempData["MessageError"] = getClientesDerivadosGenerales.Message;
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Redireccionar", "Error");
                 }
                 var getClientesDatosDTO = new List<GestionDetalleDTO>();
-                if (getClientesDerivadosGenerales.Data != null)
+                if (getClientesDerivadosGenerales.Data == null)
                 {
-                    foreach (var item in getClientesDerivadosGenerales.Data)
-                    {
-                        var getInformation = await _dBServicesDerivacion.GetDerivacionInformation(item);
-                        if (!getInformation.IsSuccess)
-                        {
-                            TempData["MessageError"] = getInformation.Message;
-                            return RedirectToAction("Index", "Home");
-                        }
-                        var newItem = new GestionDetalleDTO
-                        {
-                            IdAsignacion = item.IdDerivacion,
-                            DocCliente = item.DniCliente ?? string.Empty,
-                            Canal = "A365",
-                            FechaEnvio = item.FechaDerivacion,
-                            FechaGestion = item.FechaDerivacion,
-                            NombreCompletoCliente = item.NombreCliente,
-                            Telefono = item.TelefonoCliente,
-                            OrigenTelefono = "A365",
-                            CodTip = 2,
-                            DocAsesor = item.DniAsesor,
-                            Origen = "A365",
-                            ArchivoOrigen = "SISTEMA INTERNO",
-                            IdDerivacion = item.IdDerivacion,
-                            TraidoDe = "SISTEMA INTERNO",
-                            EstadoDerivacion = item.EstadoDerivacion,
-                            TipoDerivacion = "AUTOMATICA",
-                            FueProcesadaLaDerivacion = item.FueProcesado,
-                            //DATOS QUE DEBEN SER BUSCADOS POR EL ID ASIGNAICON
-                            CodCampaña = getInformation.data != null ? getInformation.data.CodCampaña : "NO SE ENCONTRO CAMPAÑA",
-                            Oferta = getInformation.data != null ? getInformation.data.Oferta : 0,
-                            CodCanal = getInformation.data != null ? getInformation.data.CodCanal : "NO SE ENCONTRO UN CANAL",
-                            FechaCarga = getInformation.data != null ? getInformation.data.FechaCarga : DateTime.Now,
-                            IdSupervisor = getInformation.data != null ? getInformation.data.IdSupervisor : 0,
-                            Supervisor = getInformation.data != null ? getInformation.data.Supervisor : "NO SE ENCONTRO SUPERVISOR",
-                            IdDesembolso = getInformation.data != null ? getInformation.data.IdDesembolso : 0,
-                            FechaDesembolso = getInformation.data != null ? getInformation.data.FechaDesembolso : null,
-                            EstadoDesembolso = getInformation.data != null ? getInformation.data.EstadoDesembolso : "NO SE ENCONTRO ESTADO DE DESEMBOLSO",
-                            Observacion = getInformation.data != null ? getInformation.data.Observacion : "NO SE ENCONTRO OBSERVACION",
-                        };
-                        getClientesDatosDTO.Add(newItem);
-                    }
+                    ViewData["Asesores"] = getAsesoresAsignados.Data;
+                    return View("Derivacion", getClientesDatosDTO);
                 }
 
+                var getInformation = await _dBServicesDerivacion.GetDerivacionInformationAll(getClientesDerivadosGenerales.Data);
+                if (!getInformation.IsSuccess)
+                {
+                    TempData["MessageError"] = getInformation.Message;
+                    return RedirectToAction("Redireccionar", "Error");
+                }
+
+                if (getInformation.Data == null)
+                {
+                    TempData["MessageError"] = "Ocurrio un error al obtener la información de las derivaciones.";
+                    return RedirectToAction("Redireccionar", "Error");
+                }
+
+                getInformation.Data = getInformation.Data.OrderByDescending(a => a.FechaEnvio).ToList();
                 ViewData["Asesores"] = getAsesoresAsignados.Data;
-                return View("Derivacion", getClientesDatosDTO);
+                return View("Derivacion", getInformation.Data);
             }
             if (rolUsuario == 3)
             {
@@ -139,54 +115,24 @@ namespace ALFINapp.Controllers
                     return RedirectToAction("Index", "Home");
                 }
                 var getClientesDatosDTO = new List<GestionDetalleDTO>();
-                if (getClientesDerivadosGenerales.Data != null)
+                if (getClientesDerivadosGenerales.Data == null)
                 {
-                    foreach (var item in getClientesDerivadosGenerales.Data)
-                    {
-                        //var getInformation = await _dBServicesDerivacion.GetDerivacionInformation(item);
-                        var getInformation = await _dBServicesDerivacion.GetDerivacionInformation(item);
-                        if (!getInformation.IsSuccess)
-                        {
-                            TempData["MessageError"] = getInformation.Message;
-                            return RedirectToAction("Index", "Home");
-                        }
-                        var newItem = new GestionDetalleDTO
-                        {
-                            IdAsignacion = item.IdDerivacion,
-                            DocCliente = item.DniCliente ?? string.Empty,
-                            NombreCompletoCliente = item.NombreCliente,
-                            Canal = "A365",
-                            FechaEnvio = item.FechaDerivacion,
-                            FechaGestion = item.FechaDerivacion,
-                            Telefono = item.TelefonoCliente,
-                            OrigenTelefono = "A365",
-                            CodTip = 2,
-                            DocAsesor = item.DniAsesor,
-                            Origen = "A365",
-                            ArchivoOrigen = "SISTEMA INTERNO",
-                            IdDerivacion = item.IdDerivacion,
-                            TraidoDe = "SISTEMA INTERNO",
-                            EstadoDerivacion = item.EstadoDerivacion,
-                            TipoDerivacion = "AUTOMATICA",
-                            FueProcesadaLaDerivacion = item.FueProcesado,
-                            //DATOS QUE DEBEN SER BUSCADOS POR EL ID ASIGNAICON
-                            CodCampaña = getInformation.data != null ? getInformation.data.CodCampaña : "NO SE ENCONTRO CAMPAÑA",
-                            Oferta = getInformation.data != null ? getInformation.data.Oferta : 0,
-                            CodCanal = getInformation.data != null ? getInformation.data.CodCanal : "NO SE ENCONTRO UN CANAL",
-                            FechaCarga = getInformation.data != null ? getInformation.data.FechaCarga : DateTime.Now,
-                            IdSupervisor = getInformation.data != null ? getInformation.data.IdSupervisor : 0,
-                            Supervisor = getInformation.data != null ? getInformation.data.Supervisor : "NO SE ENCONTRO SUPERVISOR",
-                            IdDesembolso = getInformation.data != null ? getInformation.data.IdDesembolso : 0,
-                            FechaDesembolso = getInformation.data != null ? getInformation.data.FechaDesembolso : null,
-                            EstadoDesembolso = getInformation.data != null ? getInformation.data.EstadoDesembolso : "NO SE ENCONTRO ESTADO DE DESEMBOLSO",
-                            Observacion = getInformation.data != null ? getInformation.data.Observacion : "NO SE ENCONTRO OBSERVACION"
-                        };
-                        getClientesDatosDTO.Add(newItem);
-                    }
+                    ViewData["Asesores"] = new List<Usuario> { new Usuario { Dni = DniAsesor } };
+                    return View("Derivacion", getClientesDatosDTO);
                 }
-                getClientesDatosDTO = getClientesDatosDTO.OrderByDescending(a => a.FechaEnvio).ToList();
-                ViewData["Derivaciones"] = getClientesDatosDTO;
-                return View("Derivacion", getClientesDatosDTO);
+                var getInformation = await _dBServicesDerivacion.GetDerivacionInformationAll(getClientesDerivadosGenerales.Data);
+                if (!getInformation.IsSuccess)
+                {
+                    TempData["MessageError"] = getInformation.Message;
+                    return RedirectToAction("Index", "Home");
+                }
+                if (getInformation.Data == null)
+                {
+                    TempData["MessageError"] = "Ocurrio un error al obtener la información de las derivaciones.";
+                    return RedirectToAction("Index", "Home");
+                }
+                getInformation.Data = getInformation.Data.OrderByDescending(a => a.FechaEnvio).ToList();
+                return View("Derivacion", getInformation.Data);
             }
             if (rolUsuario == 4 || rolUsuario == 1)
             {
@@ -204,52 +150,25 @@ namespace ALFINapp.Controllers
                     return RedirectToAction("Index", "Home");
                 }
                 var getClientesDatosDTO = new List<GestionDetalleDTO>();
-                if (getClientesDerivadosGenerales.Data != null)
+                if (getClientesDerivadosGenerales.Data == null)
                 {
-                    foreach (var item in getClientesDerivadosGenerales.Data)
-                    {
-                        var getInformation = await _dBServicesDerivacion.GetDerivacionInformation(item);
-                        if (!getInformation.IsSuccess)
-                        {
-                            TempData["MessageError"] = getInformation.Message;
-                            return RedirectToAction("Index", "Home");
-                        }
-                        var newItem = new GestionDetalleDTO
-                        {
-                            IdAsignacion = item.IdDerivacion,
-                            DocCliente = item.DniCliente ?? string.Empty,
-                            NombreCompletoCliente = item.NombreCliente,
-                            Canal = "A365",
-                            FechaEnvio = item.FechaDerivacion,
-                            FechaGestion = item.FechaDerivacion,
-                            Telefono = item.TelefonoCliente,
-                            OrigenTelefono = "A365",
-                            CodTip = 2,
-                            DocAsesor = item.DniAsesor,
-                            Origen = "A365",
-                            ArchivoOrigen = "SISTEMA INTERNO",
-                            IdDerivacion = item.IdDerivacion,
-                            TraidoDe = "SISTEMA INTERNO",
-                            EstadoDerivacion = item.EstadoDerivacion,
-                            TipoDerivacion = "AUTOMATICA",
-                            FueProcesadaLaDerivacion = item.FueProcesado,
-                            //DATOS QUE DEBEN SER BUSCADOS POR EL ID ASIGNAICON
-                            CodCampaña = getInformation.data != null ? getInformation.data.CodCampaña : "NO SE ENCONTRO CAMPAÑA",
-                            Oferta = getInformation.data != null ? getInformation.data.Oferta : 0,
-                            CodCanal = getInformation.data != null ? getInformation.data.CodCanal : "NO SE ENCONTRO UN CANAL",
-                            FechaCarga = getInformation.data != null ? getInformation.data.FechaCarga : DateTime.Now,
-                            IdSupervisor = getInformation.data != null ? getInformation.data.IdSupervisor : 0,
-                            Supervisor = getInformation.data != null ? getInformation.data.Supervisor : "NO SE ENCONTRO SUPERVISOR",
-                            IdDesembolso = getInformation.data != null ? getInformation.data.IdDesembolso : 0,
-                            FechaDesembolso = getInformation.data != null ? getInformation.data.FechaDesembolso : null,
-                            EstadoDesembolso = getInformation.data != null ? getInformation.data.EstadoDesembolso : "NO SE ENCONTRO ESTADO DE DESEMBOLSO",
-                            Observacion = getInformation.data != null ? getInformation.data.Observacion : "NO SE ENCONTRO OBSERVACION"
-                        };
-                        getClientesDatosDTO.Add(newItem);
-                    }
+                    ViewData["Asesores"] = todosAsesores;
+                    return View("Derivacion", getClientesDatosDTO);
                 }
+                var getInformation = await _dBServicesDerivacion.GetDerivacionInformationAll(getClientesDerivadosGenerales.Data);
+                if (!getInformation.IsSuccess)
+                {
+                    TempData["MessageError"] = getInformation.Message;
+                    return RedirectToAction("Index", "Home");
+                }
+                if (getInformation.Data == null)
+                {
+                    TempData["MessageError"] = "Ocurrio un error al obtener la información de las derivaciones.";
+                    return RedirectToAction("Index", "Home");
+                }
+                getInformation.Data = getInformation.Data.OrderByDescending(a => a.FechaEnvio).ToList();
                 ViewData["Asesores"] = todosAsesores;
-                return View("Derivacion", getClientesDatosDTO);
+                return View("Derivacion", getInformation.Data);
             }
             else
             {
@@ -312,7 +231,7 @@ namespace ALFINapp.Controllers
                     </div>
 
                     <div style=""margin-top: 20px;"">
-                        Desde el <strong>CANAL DE A365</strong> originamos y compartimos un prospecto de cliente<br>
+                        Desde el <strong>CANAL DE A365</strong> originamos y compartimos un prospecto de cliente <br>
                         interesado en la toma de un crédito en efectivo.
                     </div>
 
@@ -324,18 +243,18 @@ namespace ALFINapp.Controllers
                     </div>
 
                     <div style=""margin-top: 40px; font-family: Segoe UI, Tahoma, Geneva, Verdana, sans-serif; font-size: 16px;"">
-                        <table border=""1"" cellspacing=""0"" cellpadding=""5"" style=""border-collapse: collapse; width: 100%;"">
-                            <tr style=""background-color: rgb(226, 226, 226);"">
-                                <td style=""padding: 10px;""><strong>CANAL TELECAMPO:</strong></td>
-                                <td style=""padding: 10px;"">A365</td>
+                        <table>
+                            <tr>
+                                <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>CANAL TELECAMPO:</strong></td>
+                                <td style=""padding: 10px; background-color: rgb(226, 226, 226);"">A365</td>
                             </tr>
-                            <tr style=""background-color: rgb(226, 226, 226);"">
-                                <td style=""padding: 10px;""><strong>CÓDIGO DEL EJECUTIVO:</strong></td>
-                                <td style=""padding: 10px;"">{usuarioinfo.Data.Dni}</td>
+                            <tr>
+                                <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>CÓDIGO DEL EJECUTIVO:</strong></td>
+                                <td style=""padding: 10px; background-color: rgb(226, 226, 226);"">{usuarioinfo.Data.Dni}</td>
                             </tr>
-                            <tr style=""background-color: rgb(226, 226, 226);"">
-                                <td style=""padding: 10px;""><strong>CDV ALFIN BANCO:</strong></td>
-                                <td style=""padding: 10px;"">{usuarioinfo.Data.NombresCompletos}</td>
+                            <tr>
+                                <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>CDV ALFIN BANCO:</strong></td>
+                                <td style=""padding: 10px; background-color: rgb(226, 226, 226);"">{usuarioinfo.Data.NombresCompletos}</td>
                             </tr>
                             <tr>
                                 <td style=""padding: 10px;""><strong>DNI Cliente:</strong></td>
@@ -353,22 +272,22 @@ namespace ALFINapp.Controllers
                                 <td style=""padding: 10px;""><strong>Celular:</strong></td>
                                 <td style=""padding: 10px;"">{TelefonoDerivacion}</td>
                             </tr>
-                            <tr style=""background-color: rgb(226, 226, 226);"">
-                                <td style=""padding: 10px;""><strong>Agencia de Atención:</strong></td>
+                            <tr>
+                                <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>Agencia de Atención:</strong></td>
                                 <td style=""padding: 10px; background-color: yellow;"">{TelefonoDerivacion}</td>
                             </tr>
-                            <tr style=""background-color: rgb(226, 226, 226);"">
-                                <td style=""padding: 10px;""><strong>Fecha de Visita a Agencia:</strong></td>
-                                <td style=""padding: 10px;"">{FechaVisitaDerivacion:yyyy-MM-dd}</td>
+                            <tr>
+                                <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>Fecha de Visita a Agencia:</strong></td>
+                                <td style=""padding: 10px; background-color: rgb(226, 226, 226);"">{FechaVisitaDerivacion:yyyy-MM-dd}</td>
                             </tr>
-                            <tr style=""background-color: rgb(226, 226, 226);"">
-                                <td style=""padding: 10px;""><strong>Hora de Visita a Agencia:</strong></td>
-                                <td style=""padding: 10px;"">HORARIO DE AGENCIA</td>
+                            <tr>
+                                <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>Hora de Visita a Agencia:</strong></td>
+                                <td style=""padding: 10px; background-color: rgb(226, 226, 226);"">HORARIO DE AGENCIA</td>
                             </tr>
                         </table>
                     </div>
                 </div>";
-                var enviarEmailDerivacion = await _dBServicesDerivacion.EnviarEmailDeDerivacion("svilcalim@unsa.edu.pe", mensaje, $"Asunto: Fwd: A365 FFVV CAMPO CLIENTE DNI: {DNIClienteDerivacion} / NOMBRE: {NombreClienteDerivacion}");
+                var enviarEmailDerivacion = await _dBServicesDerivacion.EnviarEmailDeDerivacion(AgenciaDerivacion, mensaje, $"Asunto: Fwd: A365 FFVV CAMPO CLIENTE DNI: {DNIClienteDerivacion} / NOMBRE: {NombreClienteDerivacion}");
                 return Json(new { success = true, message = enviarDerivacion.Message + " " + enviarEmailDerivacion.message });
             }
             catch (System.Exception ex)

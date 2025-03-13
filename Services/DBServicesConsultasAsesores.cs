@@ -39,7 +39,6 @@ namespace ALFINapp.Services
                                       IdBase = grouped.Key,
                                       LatestRecord = grouped.OrderByDescending(x => x.db.FechaCarga).FirstOrDefault()
                                   }).ToListAsync();
-
             // Mapear los resultados a DTO
             var detallesClientes = clientes.Select(cliente => new DetalleBaseClienteDTO
             {
@@ -59,6 +58,23 @@ namespace ALFINapp.Services
                 PrioridadSistema = cliente.LatestRecord?.db.PrioridadSistema,
             }).ToList();
             detallesClientes = detallesClientes.OrderBy(x => x.PrioridadSistema).ToList();
+            var DnisLeads = detallesClientes.Select(x => x.Dni).ToHashSet();
+
+            var DesembolsosYRetiros = await _context.desembolsos
+                .Where(x => DnisLeads.Contains(x.DniDesembolso)
+                        && x.FechaDesembolsos.HasValue
+                        && x.FechaDesembolsos.Value.Year == DateTime.Now.Year
+                        && x.FechaDesembolsos.Value.Month == DateTime.Now.Month)
+                .Select(x => x.DniDesembolso)
+                .Union(_context.retiros
+                    .Where(x => DnisLeads.Contains(x.DniRetiros)
+                            && x.FechaRetiro.HasValue
+                            && x.FechaRetiro.Value.Year == DateTime.Now.Year
+                            && x.FechaRetiro.Value.Month == DateTime.Now.Month)
+                    .Select(x => x.DniRetiros))
+                .ToListAsync();
+            detallesClientes.RemoveAll(x => DesembolsosYRetiros.Contains(x.Dni));
+
             return detallesClientes;
         }
 

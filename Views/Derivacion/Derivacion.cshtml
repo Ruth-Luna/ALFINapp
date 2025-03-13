@@ -35,31 +35,54 @@
                 <span> En esta seccion puede ver las Derivaciones de todos los asesores de Creditos </span>
             </div>
         }
-
-        @if (RolActual != 3)
-        {
-            <label for="IdAsesoresDerivacion">Asesor</label>
-            <select class="form-select" name="IdAsesoresDerivacion" id="IdAsesoresDerivacion"
-                onchange="cargarDerivacionesXAsesorSistema(this.value)">
-                <option value="">Seleccione un Asesor</option>
-                @if (Asesores != null)
-                {
-                    foreach (var asesor in Asesores)
-                    {
-                        if (asesor.Estado == "ACTIVO")
+        <div class="row">
+            @if (RolActual != 3)
+            {
+                <div class="col">
+                    <label for="IdAsesoresDerivacion">Asesor</label>
+                    <select class="form-select" name="IdAsesoresDerivacion" id="IdAsesoresDerivacion"
+                        onchange="cargarDerivacionesXAsesorSistema(this.value)">
+                        <option value="">Seleccione un Asesor</option>
+                        @if (Asesores != null)
                         {
-                            <option value="@asesor.Dni">@asesor.Dni - @asesor.NombresCompletos</option>
+                            foreach (var asesor in Asesores)
+                            {
+                                if (asesor.Estado == "ACTIVO")
+                                {
+                                    <option value="@asesor.Dni">@asesor.Dni - @asesor.NombresCompletos</option>
+                                }
+                                else if (asesor.Estado == "INACTIVO")
+                                {
+                                    <option style="background-color: rgb(255, 93, 93);" value="@asesor.Dni">@asesor.Dni -
+                                        @asesor.NombresCompletos <i class="fa fa-circle-exclamation"></i> <span> -- Asesor
+                                            DESACTIVADO</span>
+                                    </option>
+                                }
+                            }
                         }
-                        else if (asesor.Estado == "INACTIVO")
-                        {
-                            <option style="background-color: rgb(255, 93, 93);" value="@asesor.Dni">@asesor.Dni -
-                                @asesor.NombresCompletos <i class="fa fa-circle-exclamation"></i> <span> -- Asesor DESACTIVADO</span>
-                            </option>
-                        }
-                    }
-                }
-            </select>
-        }
+                    </select>
+                </div>
+            }
+            <div class="col">
+                <div class="row">
+                    <div class="col">
+                        <label for="IdAsesoresDerivacion">Buscar Por:</label>
+                        <select name="cargaTipoFiltro" class="form-control" id="cargaTipoFiltro" onchange="cargarTipoFiltro(this.value)">
+                            <option value=""> Seleccione una opcion </option>
+                            <option value="dni"> DNI </option>
+                            <option value="fecha"> Fecha </option>
+                        </select>
+                    </div>
+                    <div class="col" style="display: none;" id="filtrosTabla">
+                        <label for=""></label>
+                        <input type="text" class="form-control" id="filtroDNI" style="display: none;"
+                            oninput="filtrarTabla('tablaGeneralSistema', this.value, 1, 'text')">
+                        <input type="date" class="form-control" id="filtroFecha" style="display: none;"
+                            oninput="filtrarTabla('tablaGeneralSistema', this.value, 6, 'date')">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="container mt-4" id="DerivacionesSupervisorGeneral" style="display: block;">
@@ -67,8 +90,8 @@
         {
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div class="btn-group" role="group" aria-label="Selector de vista">
-                    <a href="javascript:void(0);" type="button" class="btn btn-primary"
-                        id="btnTablaSistema" onclick="cargarDerivacionesSistema()">
+                    <a href="javascript:void(0);" type="button" class="btn btn-primary" id="btnTablaSistema"
+                        onclick="cargarDerivacionesSistema()">
                         <i class="fas fa-table"></i> Derivaciones Sistema
                     </a>
                     <a href="javascript:void(0);" type="button" class="btn btn-primary" id="btnTablaGestion"
@@ -77,16 +100,16 @@
                     </a>
                 </div>
                 <div class="badge bg-info text-wrap" style="width: 6rem;">
-                    <span id="informationTabla">Total: @Model.Count</span>
+                    <span id="informationTabla">Total del Mes: @Model.Count</span>
                 </div>
             </div>
         }
-        @if (RolActual == 2 || RolActual == 1)
+        @if (RolActual == 2 || RolActual == 1 || RolActual == 4)
         {
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div class="btn-group" role="group" aria-label="Selector de vista">
-                    <a href="javascript:void(0);" type="button" class="btn btn-primary"
-                        id="btnTablaSistema" onclick="cargarDerivacionesSistemaSupervisor('IdAsesoresDerivacion', '@Dni')">
+                    <a href="javascript:void(0);" type="button" class="btn btn-primary" id="btnTablaSistema"
+                        onclick="cargarDerivacionesSistemaSupervisor('IdAsesoresDerivacion', '@Dni')">
                         <i class="fas fa-table"></i> Derivaciones Sistema
                     </a>
                     <a href="javascript:void(0);" type="button" class="btn btn-primary" id="btnTablaGestion"
@@ -109,16 +132,18 @@
         <div id="tablaGeneralGestion" loadedfield="false">
         </div>
         <div class="table-responsive" id="tablaGeneralSistema" loadedfield="true">
-            <table class="table table-bordered">
+            <table class="table table-bordered" id="derivacionesTable">
                 <thead>
                     <!-- Nueva fila para los encabezados de las secciones -->
                     <tr>
-                        <th colspan="7" class="text-center text-white" style="background-color: #063f73;">Detalles de la Derivación</th>
+                        <th colspan="7" class="text-center text-white" style="background-color: #063f73;">Detalles de la
+                            Derivación</th>
                         <th style="background-color: white;
                         border-left: 1px solid #2980b9; 
                         border-top: 1px solid white;
                         border-bottom: 1px solid white;"></th>
-                        <th colspan="3" class="text-center text-white" style="background-color: #063f73;">Detalles del Desembolso</th>
+                        <th colspan="3" class="text-center text-white" style="background-color: #063f73;">Detalles del
+                            Desembolso</th>
                     </tr>
                     <!-- Encabezados originales -->
                     <tr>
@@ -140,6 +165,24 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <button class="btn btn-warning p-0 mt-auto"
+                                onclick="sortTableDerivaciones('derivacionesTable', 6, 'date')" data-sort-ignore>
+                                &#x25BC;
+                            </button>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
                     @if (Model != null)
                     {
                         foreach (var derivacionAsesor in Model)
@@ -158,12 +201,12 @@
                                 <td>@derivacionAsesor.Telefono</td>
                                 <td>@derivacionAsesor.DocAsesor</td>
                                 <td><span class="badge bg-warning">@derivacionAsesor.OrigenTelefono</span></td>
-                                <td>@derivacionAsesor.FechaEnvio</td>
+                                <td>@derivacionAsesor.FechaDerivacion</td>
 
                                 <td style="background-color: white;
-                                       border-left: 1px solid #2980b9; 
-                                       border-top: 1px solid white;
-                                       border-bottom: 1px solid white;"></td>
+                                                                       border-left: 1px solid #2980b9; 
+                                                                       border-top: 1px solid white;
+                                                                       border-bottom: 1px solid white;"></td>
 
                                 <td>@derivacionAsesor.NombreCompletoCliente</td>
                                 @if (derivacionAsesor.FueDesembolsado == true)

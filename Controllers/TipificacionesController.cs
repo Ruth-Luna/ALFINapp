@@ -53,7 +53,7 @@ namespace ALFINapp.Controllers
 
             var enviarDerivacion = new DerivacionesAsesores
             {
-                FechaDerivacion = DateTime.Now,
+                FechaDerivacion = FechaVisita,
                 DniAsesor = getAsesor.Data?.Dni ?? throw new ArgumentNullException("DniAsesor", "DniAsesor cannot be null"),
                 DniCliente = getClienteBase.data?.Dni ?? throw new ArgumentNullException("DniCliente", "DniCliente cannot be null"),
                 IdCliente = getClienteEnriquecido.data.IdCliente,
@@ -157,7 +157,11 @@ namespace ALFINapp.Controllers
                 </div>
             </div>";
 
-            var enviarEmailDerivacion = await _dBServicesDerivacion.EnviarEmailDeDerivacion("svilcalim@unsa.edu.pe", mensajereal, $"Asunto: Fwd: A365 FFVV CAMPO CLIENTE DNI: {enviarDerivacion.DniCliente} / NOMBRE: {enviarDerivacion.NombreCliente}");
+            var enviarEmailDerivacion = await _dBServicesDerivacion.EnviarEmailDeDerivacion(agenciaComercial, mensajereal, $"Asunto: Fwd: A365 FFVV CAMPO CLIENTE DNI: {enviarDerivacion.DniCliente} / NOMBRE: {enviarDerivacion.NombreCliente}");
+            if (enviarEmailDerivacion.IsSuccess == false)
+            {
+                return Json(new { success = false, message = enviarEmailDerivacion.message });
+            }
             return Json(new { success = true, message = "La Derivacion se ha enviado correctamente, pero para guardar los cambios debe darle al boton Guardar Tipificaciones. " + enviarEmailDerivacion.message }); ;
         }
     }

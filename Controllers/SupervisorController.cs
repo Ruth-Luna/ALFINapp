@@ -77,7 +77,7 @@ namespace ALFINapp.Controllers
             if (supervisorData.IsSuccess == false)
             {
                 TempData["MessageError"] = supervisorData.Message;
-                return RedirectToAction("Redireccionar", "Error");
+                return RedirectToAction("Index", "Home");
             }
             int clientesPendientesSupervisor = supervisorData.Data != null ? supervisorData.Data.Count(cliente => cliente.idUsuarioV == 0) : 0;
             int totalClientes = supervisorData.Data != null ? supervisorData.Data.Count() : 0;
