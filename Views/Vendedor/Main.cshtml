@@ -295,4 +295,15 @@
             });
         </script>
     }
+    @if (TempData["ActivarCambio"] != null && (int?)TempData["ActivarCambio"] == 1)
+    {
+        <script>
+            Swal.fire({
+                title: 'Cambio de Usuario', // Título del mensaje
+                text: 'Usted ha sido registrado como un Usuario oculto, podra tipificar a sus clientes, sin embargo sus tipificaciones seran enviados con el DNI: @Html.Raw(TempData["DniCambio"] as string)',
+                icon: 'warning',
+                confirmButtonText: 'Aceptar'
+            });
+        </script>
+    }
 }

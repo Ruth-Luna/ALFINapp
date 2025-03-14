@@ -37,7 +37,6 @@ public class MDbContext : DbContext
     public DbSet<Correos> correos { get; set; }
     public DbSet<DirectorioComercial> directorio_comercial { get; set; }
     public DbSet<AsesoresOcultos> Asesores_Ocultos { get; set; }
-
     //DTOS Y PROCEDIMIENTOS ALMACENADOS
     public DbSet<StringDTO> string_dto { get; set; }
     public DbSet<NumerosEnterosDTO> numeros_enteros_dto { get; set; }

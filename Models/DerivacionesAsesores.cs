@@ -36,5 +36,7 @@ namespace ALFINapp.Models
         public string? EstadoDerivacion { get; set; }
         [Column("id_asignacion")]
         public int? IdAsignacion { get; set; }
+        [Column("observacion_derivacion")]
+        public string? ObservacionDerivacion { get; set; }
     }
 }

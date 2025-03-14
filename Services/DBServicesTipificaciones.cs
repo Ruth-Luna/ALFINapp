@@ -42,7 +42,8 @@ namespace ALFINapp.Services
         public async Task<(bool IsSuccess, string Message)> GuardarGestionDetalle(
             ClientesAsignado ClienteAsignado,
             ClientesTipificado Tipificacion,
-            ClientesEnriquecido Enriquecido)
+            ClientesEnriquecido Enriquecido,
+            int IdUsuario)
         {
             try
             {
@@ -55,7 +56,7 @@ namespace ALFINapp.Services
                     return (false, "El cliente Tipificado no se encuentro en la base de datos");
                 }
                 var asesorDatos = await (from u in _context.usuarios
-                                where u.IdUsuario == ClienteAsignado.IdUsuarioV
+                                where u.IdUsuario == IdUsuario
                                 select u)
                                 .FirstOrDefaultAsync();
                 if (asesorDatos == null)
@@ -63,15 +64,12 @@ namespace ALFINapp.Services
                     return (false, "El asesor asignado no se encuentro en la base de datos");
                 }
                 var detalle_base = new DetalleBase();
-                if (clienteDatos.IdBaseBanco == null)
-                {
-                    detalle_base = (from db in _context.detalle_base
+                detalle_base = (from db in _context.detalle_base
                                     where db.IdBase == clienteDatos.IdBase
                                     orderby db.FechaCarga descending
                                     select db)
                                     .FirstOrDefault();
-                }
-                else
+                if (detalle_base == null)
                 {
                     detalle_base = (from bcb in _context.base_clientes_banco
                                     join cg in _context.base_clientes_banco_campana_grupo on bcb.IdCampanaGrupoBanco equals cg.IdCampanaGrupo

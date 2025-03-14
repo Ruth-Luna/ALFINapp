@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ALFINapp.Models
 {
@@ -19,5 +16,8 @@ namespace ALFINapp.Models
 
         [Column("NOMBRE_CAMBIO")]
         public string? NombreCambio { get; set; }
+        [Key]
+        [Column("id_asesor_oculto")]
+        public int IdAsesorOculto { get; set; }
     }
 }

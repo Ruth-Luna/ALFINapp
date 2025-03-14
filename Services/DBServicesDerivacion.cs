@@ -108,7 +108,8 @@ namespace ALFINapp.Services
                     .Where(x => getAllDnisClientes.Contains(x.DniDesembolso)
                         && x.FechaDesembolsos.HasValue
                         && x.FechaDesembolsos.Value.Year == DateTime.Now.Year
-                        && x.FechaDesembolsos.Value.Month == DateTime.Now.Month)
+                        && x.FechaDesembolsos.Value.Month == DateTime.Now.Month
+                        && x.Sucursal != null)
                     .OrderByDescending(x => x.FechaDesembolsos)
                     .ToListAsync();
                 var getInformationA365 = await _context.base_clientes
@@ -215,32 +216,59 @@ namespace ALFINapp.Services
         {
             try
             {
-                int tiempoMaximoEspera = 40000; // 30 segundos
-                int intervaloEspera = 1000; // 1 segundo
+                int tiempoMaximoEspera = 40000;
+                int intervaloEspera = 1000;
                 int tiempoTranscurrido = 0;
 
+                var verificarDerivacionEnviada = await _context.derivaciones_asesores
+                        .FromSqlRaw("EXEC sp_Derivacion_verificar_derivacion_enviada {0}", dni)
+                        .AsNoTracking()
+                        .ToListAsync();
+                var derivacionEnviada = verificarDerivacionEnviada.FirstOrDefault();
                 while (tiempoTranscurrido < tiempoMaximoEspera)
                 {
-                    var verificarDerivacionEnviada = await _context.derivaciones_asesores
+                    verificarDerivacionEnviada = await _context.derivaciones_asesores
                         .FromSqlRaw("EXEC sp_Derivacion_verificar_derivacion_enviada {0}", dni)
                         .AsNoTracking()
                         .ToListAsync();
                     if (verificarDerivacionEnviada.Count == 0)
                     {
-                        return (false, "No se mando la derivación, esta no fue guardada en la base de datos");
+                        return (false, "No se mando la derivación, esta no fue guardada en la base de datos, vuelva a intentarlo");
                     }
-
-                    var derivacionEnviada = verificarDerivacionEnviada.FirstOrDefault();
+                    derivacionEnviada = verificarDerivacionEnviada.FirstOrDefault();
                     if (derivacionEnviada != null && derivacionEnviada.FueProcesado == true)
                     {
                         return (true, "Entrada correctamente procesada");
                     }
-
                     await Task.Delay(intervaloEspera);
                     tiempoTranscurrido += intervaloEspera;
                 }
+                if (derivacionEnviada == null)
+                {
+                    return (false, "No se encontró la derivación en la base de datos, intentelo nuevamente");
+                }
+                var observarDerivacion = await ObservarDerivacion(derivacionEnviada.IdDerivacion, "CORREO ELECTRONICO NO ENVIADO. ENVIAR MANUALMENTE");
+                return (false, "Tiempo de espera agotado. La entrada no fue procesada. Pero fue guardada correctamente en nuestro sistema no sera necesario que envie mas derivaciones de este cliente en caso su rol sea Asesor. Su derivacion sera procesada muy pronto. Para conocer el estado de su derivacion puede dirigirse a la pestaña de Derivaciones, ademas no se olvide de guardar la Tipificacion");
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
 
-                return (false, "Tiempo de espera agotado. La entrada no fue procesada. Pero fue guardada correctamente en nuestro sistema no sera necesario que envie mas derivaciones de este cliente en caso su rol sea Asesor. Su derivacion sera procesada muy pronto. Para conocer el estado de su derivacion puede dirigirse a la pestaña de Derivaciones");
+        public async Task<(bool IsSuccess, string Message)> ObservarDerivacion(int id, string observacion)
+        {
+            try
+            {
+                var derivacion = await _context.derivaciones_asesores.FirstOrDefaultAsync(x => x.IdDerivacion == id);
+                if (derivacion == null)
+                {
+                    return (false, "No se encontró la derivación");
+                }
+                derivacion.ObservacionDerivacion = observacion;
+                _context.derivaciones_asesores.Update(derivacion);
+                await _context.SaveChangesAsync();
+                return (true, "Observación guardada correctamente");
             }
             catch (System.Exception ex)
             {
