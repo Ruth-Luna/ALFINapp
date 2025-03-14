@@ -161,7 +161,7 @@ namespace ALFINapp.Controllers
                         </tr>
                         <tr>
                             <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>Fecha de Visita a Agencia: </strong></td>
-                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);""> {enviarDerivacion.FechaVisita:yyyy-MM-dd} </td>
+                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);""> {FechaVisita.ToString("yyyy-MM-dd")} </td>
                         </tr>
                         <tr>
                             <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>Hora de Visita a Agencia: </strong></td>

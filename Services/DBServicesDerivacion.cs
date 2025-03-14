@@ -51,7 +51,7 @@ namespace ALFINapp.Services
                 };
 
                 var generarDerivacion = _context.Database.ExecuteSqlRaw(
-                    "EXEC SP_derivacion_insertar_derivacion_test @fecha_visita_derivacion, @dni_asesor_derivacion, @DNI_cliente_derivacion, @id_cliente, @nombre_cliente_derivacion, @telefono_derivacion, @agencia_derivacion, @num_agencia",
+                    "EXEC SP_derivacion_insertar_derivacion @fecha_visita_derivacion, @dni_asesor_derivacion, @DNI_cliente_derivacion, @id_cliente, @nombre_cliente_derivacion, @telefono_derivacion, @agencia_derivacion, @num_agencia",
                     parametros);
 
                 if (generarDerivacion == 0)
@@ -185,7 +185,14 @@ namespace ALFINapp.Services
                                             Observacion = "LA INFORMACION TRAIDA ES DE SISTEMA INTERNO",
                                             NombreCompletoCliente = cliente.NombreCliente,
                                             Telefono = cliente.TelefonoCliente,
+                                            OrigenTelefono = "A365",
                                         }).ToList();
+
+                joinInformation = joinInformation.OrderBy(x => x.FechaDerivacion).ToList();
+                joinInformation = joinInformation
+                    .GroupBy(x => x.DocCliente)
+                    .Select(g => g.First())
+                    .ToList();
 
                 return (true, "Información de las derivaciones obtenida correctamente", joinInformation);
             }

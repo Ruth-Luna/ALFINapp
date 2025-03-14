@@ -42,7 +42,7 @@ namespace ALFINapp.Services
         {
             try
             {
-                var GetVista = await _context.vistas_por_rol_dto.FromSqlRaw("EXEC sp_Roles_Vista_por_defecto_test @idRol", new SqlParameter("@idRol", idRol)).ToListAsync();
+                var GetVista = await _context.vistas_por_rol_dto.FromSqlRaw("EXEC sp_Roles_Vista_por_defecto @idRol", new SqlParameter("@idRol", idRol)).ToListAsync();
 
                 if (GetVista.Count() != 0)
                 {
