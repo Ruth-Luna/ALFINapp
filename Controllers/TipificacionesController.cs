@@ -20,8 +20,8 @@ namespace ALFINapp.Controllers
         private readonly DBServicesDerivacion _dBServicesDerivacion;
         private readonly DBServicesConsultasAsesores _dbServicesAsesores;
         private readonly MDbContext _context;
-        public TipificacionesController(DBServicesGeneral dbServicesGeneral, 
-            DBServicesTipificaciones dbServicesTipificaciones, 
+        public TipificacionesController(DBServicesGeneral dbServicesGeneral,
+            DBServicesTipificaciones dbServicesTipificaciones,
             DBServicesDerivacion dBServicesDerivacion,
             MDbContext context,
             DBServicesConsultasAsesores dbServicesAsesores)
@@ -110,66 +110,66 @@ namespace ALFINapp.Controllers
             }
             var mensajereal = $@"
             <div>
-    <div style=""font-size: 12px;"">
-        <span>
-            Estimados <br> Buen dia
-        </span>
-    </div>
-    <div style=""margin-top: 20px;"">
-        Desde el <strong>CANAL DE A365</strong> originamos y compratimos un prospecto de cliente <br>
-        interesado en la toma de un credito en efectivo
-    </div>
+                <div style=""font-size: 12px;"">
+                    <span>
+                        Estimados <br> Buen dia
+                    </span>
+                </div>
+                <div style=""margin-top: 20px;"">
+                    Desde el <strong>CANAL DE A365</strong> originamos y compratimos un prospecto de cliente <br>
+                    interesado en la toma de un credito en efectivo
+                </div>
 
-    <div style=""margin-top: 30px;"">
-        <span style=""background-color: yellow; padding: 10px; border-radius: 5px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24px;"">
-            <strong>Informacion del Prospecto del Cliente</strong>
-        </span>
-    </div>
-    <div style=""margin-top: 40px; font-family: 'Courier New', Courier, monospace;"">
-        <table>
-            <tr>
-                <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>CANAL TELECAMPO: </strong></td>
-                <td style=""padding: 10px; background-color: rgb(226, 226, 226);"">A365</td>
-            </tr>
-            <tr>
-                <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>CODIGO DEL EJECUTIVO: </strong></td>
-                <td style=""padding: 10px; background-color: rgb(226, 226, 226);"">{usuarioinfo.Data.Dni}</td>
-            </tr>
-            <tr>
-                <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>CDV ALFIN BANCO: </strong></td>
-                <td style=""padding: 10px; background-color: rgb(226, 226, 226);"">{usuarioinfo.Data.NombresCompletos}</td>
-            </tr>
-            <tr>
-                <td style=""padding: 10px;""><strong>DNI cliente: </strong></td>
-                <td style=""padding: 10px;"">{enviarDerivacion.DniCliente}</td>
-            </tr>
-            <tr>
-                <td style=""padding: 10px;""><strong>Nombre Cliente: </strong></td>
-                <td style=""padding: 10px;"">{enviarDerivacion.NombreCliente}</td>
-            </tr>
-            <tr>
-                <td style=""padding: 10px;""><strong>Monto Solicitado (S/.): </strong></td>
-                <td style=""padding: 10px;"">{getDerivacion.data.Oferta}</td>
-            </tr>
-            <tr>
-                <td style=""padding: 10px;""><strong>Celular: </strong></td>
-                <td style=""padding: 10px;"">{enviarDerivacion.TelefonoCliente}</td>
-            </tr>
-            <tr>
-                <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>Agencia de Atencion: </strong></td>
-                <td style=""padding: 10px; background-color: yellow;""> {enviarDerivacion.NombreAgencia} </td>
-            </tr>
-            <tr>
-                <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>Fecha de Visita a Agencia: </strong></td>
-                <td style=""padding: 10px; background-color: rgb(226, 226, 226);""> {enviarDerivacion.FechaVisita:yyyy-MM-dd} </td>
-            </tr>
-            <tr>
-                <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>Hora de Visita a Agencia: </strong></td>
-                <td style=""padding: 10px; background-color: rgb(226, 226, 226);""> HORARIO DE AGENCIA </td>
-            </tr>
-        </table>
-    </div>
-</div>";
+                <div style=""margin-top: 30px;"">
+                    <span style=""background-color: yellow; padding: 10px; border-radius: 5px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24px;"">
+                        <strong>Informacion del Prospecto del Cliente</strong>
+                    </span>
+                </div>
+                <div style=""margin-top: 40px; font-family: 'Courier New', Courier, monospace;"">
+                    <table>
+                        <tr>
+                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>CANAL TELECAMPO: </strong></td>
+                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);"">A365</td>
+                        </tr>
+                        <tr>
+                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>CODIGO DEL EJECUTIVO: </strong></td>
+                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);"">{usuarioinfo.Data.Dni}</td>
+                        </tr>
+                        <tr>
+                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>CDV ALFIN BANCO: </strong></td>
+                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);"">{usuarioinfo.Data.NombresCompletos}</td>
+                        </tr>
+                        <tr>
+                            <td style=""padding: 10px;""><strong>DNI cliente: </strong></td>
+                            <td style=""padding: 10px;"">{enviarDerivacion.DniCliente}</td>
+                        </tr>
+                        <tr>
+                            <td style=""padding: 10px;""><strong>Nombre Cliente: </strong></td>
+                            <td style=""padding: 10px;"">{enviarDerivacion.NombreCliente}</td>
+                        </tr>
+                        <tr>
+                            <td style=""padding: 10px;""><strong>Monto Solicitado (S/.): </strong></td>
+                            <td style=""padding: 10px;"">{getDerivacion.data.Oferta}</td>
+                        </tr>
+                        <tr>
+                            <td style=""padding: 10px;""><strong>Celular: </strong></td>
+                            <td style=""padding: 10px;"">{enviarDerivacion.TelefonoCliente}</td>
+                        </tr>
+                        <tr>
+                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>Agencia de Atencion: </strong></td>
+                            <td style=""padding: 10px; background-color: yellow;""> {enviarDerivacion.NombreAgencia} </td>
+                        </tr>
+                        <tr>
+                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>Fecha de Visita a Agencia: </strong></td>
+                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);""> {enviarDerivacion.FechaVisita:yyyy-MM-dd} </td>
+                        </tr>
+                        <tr>
+                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>Hora de Visita a Agencia: </strong></td>
+                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);""> HORARIO DE AGENCIA </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>";
 
             var enviarEmailDerivacion = await _dBServicesDerivacion.EnviarEmailDeDerivacion(agenciaComercial, mensajereal, $"Asunto: Fwd: A365 FFVV CAMPO CLIENTE DNI: {enviarDerivacion.DniCliente} / NOMBRE: {enviarDerivacion.NombreCliente}");
             if (enviarEmailDerivacion.IsSuccess == false)
