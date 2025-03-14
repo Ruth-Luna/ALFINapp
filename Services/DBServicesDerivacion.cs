@@ -51,7 +51,7 @@ namespace ALFINapp.Services
                 };
 
                 var generarDerivacion = _context.Database.ExecuteSqlRaw(
-                    "EXEC SP_derivacion_insertar_derivacion @fecha_visita_derivacion, @dni_asesor_derivacion, @DNI_cliente_derivacion, @id_cliente, @nombre_cliente_derivacion, @telefono_derivacion, @agencia_derivacion, @num_agencia",
+                    "EXEC SP_derivacion_insertar_derivacion_2 @fecha_visita_derivacion, @dni_asesor_derivacion, @DNI_cliente_derivacion, @id_cliente, @nombre_cliente_derivacion, @telefono_derivacion, @agencia_derivacion, @num_agencia",
                     parametros);
 
                 if (generarDerivacion == 0)
