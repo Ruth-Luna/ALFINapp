@@ -93,20 +93,21 @@ namespace ALFINapp.Controllers
             {
                 return Json(new { success = false, message = getDerivacion.message });
             }
-            int? activarCambio = HttpContext.Session.GetInt32("ActivarCambio");
-            if (activarCambio != null && activarCambio.Value == 1)
-            {
-                var usuarioIdCambio = HttpContext.Session.GetInt32("UsuarioIdCambio");
-                if (usuarioIdCambio == null)
-                {
-                    return Json(new { success = false, message = "No se consiguio el id de la sesion, inicie sesion nuevamente." });
-                }
-                usuarioId = usuarioIdCambio;
-            }
             var usuarioinfo = await _dbServicesGeneral.GetUserInformation(usuarioId.Value);
             if (usuarioinfo.IsSuccess == false || usuarioinfo.Data == null)
             {
                 return Json(new { success = false, message = usuarioinfo.Message });
+            }
+            int? activarCambio = HttpContext.Session.GetInt32("ActivarCambio");
+            if (activarCambio != null && activarCambio.Value == 1)
+            {
+                var getCambio = await _dbServicesGeneral.GetCambio(usuarioinfo.Data.Dni != null ? usuarioinfo.Data.Dni : " ");
+                if (getCambio.IsSuccess == false || getCambio.data == null)
+                {
+                    return Json(new { success = false, message = getCambio.Message });
+                }
+                usuarioinfo.Data.Dni = getCambio.data.DniAlBanco;
+                usuarioinfo.Data.NombresCompletos = getCambio.data.NombreCambio;
             }
             var mensajereal = $@"
             <div>

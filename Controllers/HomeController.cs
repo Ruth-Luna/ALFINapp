@@ -105,18 +105,11 @@ public class HomeController : Controller
         }
         if (usuarioOculto.Data != null)
         {
-            var getUsuarioCambio = await _dBServicesUsuarios.GetUsuario(usuarioOculto.Data.DniAlBanco != null ? usuarioOculto.Data.DniAlBanco : throw new Exception("El DNI de cambio del usuario no está definido. Comuníquese con su Supervisor."));
-            if (!getUsuarioCambio.IsSuccess || getUsuarioCambio.Data == null)
-            {
-                TempData["MessageError"] = getUsuarioCambio.Message;
-                return RedirectToAction("Index", "Home");
-            }
-            HttpContext.Session.SetInt32("UsuarioIdCambio", getUsuarioCambio.Data.IdUsuario);
             HttpContext.Session.SetInt32("ActivarCambio", 1);
             HttpContext.Session.SetInt32("UsuarioId", usuario != null ? usuario.IdUsuario : throw new Exception("El usuario original no está definido. Comuníquese con su Supervisor."));
             HttpContext.Session.SetInt32("RolUser", usuario != null ? usuario.IdRol.Value : throw new Exception("El rol del usuario original no está definido. Comuníquese con su Supervisor."));
             TempData["ActivarCambio"] = 1;
-            TempData["DniCambio"] = usuarioOculto.Data.DniAlBanco + " - " + getUsuarioCambio.Data.NombresCompletos;
+            TempData["DniCambio"] = usuarioOculto.Data.DniAlBanco + " - " + usuarioOculto.Data.NombreCambio;
             return RedirectToAction("Inicio", "Vendedor");
         }
         HttpContext.Session.SetInt32("UsuarioId", usuario.IdUsuario);

@@ -517,6 +517,21 @@ namespace ALFINapp.Services
                 return (false, ex.Message, null);
             }
         }
+
+        public async Task<(bool IsSuccess, string Message, AsesoresOcultos? data)> GetCambio(string dni)
+        {
+            try
+            {
+                var asesorOculto = await _context.Asesores_Ocultos
+                    .FirstOrDefaultAsync( x => x.DniVicidial == dni);
+
+                return (true, "Cambio encontrado", asesorOculto);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message, null);
+            }
+        }
         // Other DB services can be added here
     }
 }
