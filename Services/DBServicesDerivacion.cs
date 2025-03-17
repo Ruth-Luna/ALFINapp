@@ -86,6 +86,7 @@ namespace ALFINapp.Services
             try
             {
                 var getClientesDerivados = new List<DerivacionesAsesores>();
+                
                 foreach (var asesor in asesores)
                 {
                     var derivaciones = await _context.derivaciones_asesores.FromSqlRaw("EXEC sp_Derivacion_consulta_derivaciones_x_asesor_por_dni {0}", asesor.Dni).ToListAsync();

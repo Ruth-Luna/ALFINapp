@@ -270,6 +270,25 @@ function cargarTipoFiltro(filtro) {
     const filtrosTabla = document.getElementById("filtrosTabla");
     const filtroDni = document.getElementById("filtroDNI");
     const filtroFecha = document.getElementById("filtroFecha");
+    const tablaSistema = document.getElementById("tablaDerivacionesSistema");
+    const tablaGestion = document.getElementById("tablaDerivacionesGestion");
+    
+    // Reset input values
+    if (filtroDni.querySelector('input')) {
+        filtroDni.querySelector('input').value = '';
+    }
+    if (filtroFecha.querySelector('input')) {
+        filtroFecha.querySelector('input').value = '';
+    }
+
+    // Reset table filters
+    if (tablaSistema) {
+        filtrarTabla("tablaDerivacionesSistema", "", 0, "text");
+    }
+    if (tablaGestion) {
+        filtrarTabla("tablaDerivacionesGestion", "", 0, "text");
+    }
+
     if (filtro === "dni") {
         filtrosTabla.style = "display: block;";
         filtroDni.style = "display: block;";
@@ -301,13 +320,16 @@ function filtrarTabla(idTabla, value, colIndex, type) {
         if (type === "text") {
             showRow = cellValue.toLowerCase().includes(value.toLowerCase());
         } else if (type === "date") {
-            const match = cellValue.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
-            if (match) {
-                const formattedDate = `${match[3]}-${match[2].padStart(2, '0')}-${match[1].padStart(2, '0')}`;
-                showRow = formattedDate === value;
+            if (value === "") {
+                showRow = true; // Show all rows when date filter is empty
+            } else {
+                const match = cellValue.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+                if (match) {
+                    const formattedDate = `${match[3]}-${match[2].padStart(2, '0')}-${match[1].padStart(2, '0')}`;
+                    showRow = formattedDate === value;
+                }
             }
         }
-
         row.style.display = showRow ? "" : "none";
     });
 }

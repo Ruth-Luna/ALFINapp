@@ -63,30 +63,6 @@ namespace ALFINapp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> VistaDerivacionManual()
-        {
-            try
-            {
-                var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-                if (usuarioId == null)
-                {
-                    return Json(new { success = false, message = "Debe Iniciar Sesion" });
-                }
-                var getAgencias = await _dbServicesGeneral.GetUAgenciasConNumeros();
-                if (getAgencias.IsSuccess == false)
-                {
-                    return Json(new { success = false, message = $"{getAgencias.Message}" });
-                }
-                ViewData["Agencias"] = getAgencias.data;
-                return PartialView("_VistaDerivacionManual");
-            }
-            catch (System.Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
-        }
-
-        [HttpGet]
         public async Task<IActionResult> VerificarDNIenBDoBanco(string dni)
         {
             try

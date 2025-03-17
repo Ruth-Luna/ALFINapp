@@ -88,96 +88,7 @@ namespace ALFINapp.Controllers
                 return Json(new { success = false, message = derivacionEnviada.Message });
             }
 
-            var getDerivacion = await _dBServicesDerivacion.GetDerivacionXDNI(enviarDerivacion.DniCliente);
-            if (getDerivacion.IsSuccess == false || getDerivacion.data == null)
-            {
-                return Json(new { success = false, message = getDerivacion.message });
-            }
-            var usuarioinfo = await _dbServicesGeneral.GetUserInformation(usuarioId.Value);
-            if (usuarioinfo.IsSuccess == false || usuarioinfo.Data == null)
-            {
-                return Json(new { success = false, message = usuarioinfo.Message });
-            }
-            int? activarCambio = HttpContext.Session.GetInt32("ActivarCambio");
-            if (activarCambio != null && activarCambio.Value == 1)
-            {
-                var getCambio = await _dbServicesGeneral.GetCambio(usuarioinfo.Data.Dni != null ? usuarioinfo.Data.Dni : " ");
-                if (getCambio.IsSuccess == false || getCambio.data == null)
-                {
-                    return Json(new { success = false, message = getCambio.Message });
-                }
-                usuarioinfo.Data.Dni = getCambio.data.DniAlBanco;
-                usuarioinfo.Data.NombresCompletos = getCambio.data.NombreCambio;
-            }
-            var mensajereal = $@"
-            <div>
-                <div style=""font-size: 12px;"">
-                    <span>
-                        Estimados <br> Buen dia
-                    </span>
-                </div>
-                <div style=""margin-top: 20px;"">
-                    Desde el <strong>CANAL DE A365</strong> originamos y compratimos un prospecto de cliente <br>
-                    interesado en la toma de un credito en efectivo
-                </div>
-
-                <div style=""margin-top: 30px;"">
-                    <span style=""background-color: yellow; padding: 10px; border-radius: 5px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24px;"">
-                        <strong>Informacion del Prospecto del Cliente</strong>
-                    </span>
-                </div>
-                <div style=""margin-top: 40px; font-family: 'Courier New', Courier, monospace;"">
-                    <table>
-                        <tr>
-                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>CANAL TELECAMPO: </strong></td>
-                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);"">A365</td>
-                        </tr>
-                        <tr>
-                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>CODIGO DEL EJECUTIVO: </strong></td>
-                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);"">{usuarioinfo.Data.Dni}</td>
-                        </tr>
-                        <tr>
-                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>CDV ALFIN BANCO: </strong></td>
-                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);"">{usuarioinfo.Data.NombresCompletos}</td>
-                        </tr>
-                        <tr>
-                            <td style=""padding: 10px;""><strong>DNI cliente: </strong></td>
-                            <td style=""padding: 10px;"">{enviarDerivacion.DniCliente}</td>
-                        </tr>
-                        <tr>
-                            <td style=""padding: 10px;""><strong>Nombre Cliente: </strong></td>
-                            <td style=""padding: 10px;"">{enviarDerivacion.NombreCliente}</td>
-                        </tr>
-                        <tr>
-                            <td style=""padding: 10px;""><strong>Monto Solicitado (S/.): </strong></td>
-                            <td style=""padding: 10px;"">{getDerivacion.data.Oferta}</td>
-                        </tr>
-                        <tr>
-                            <td style=""padding: 10px;""><strong>Celular: </strong></td>
-                            <td style=""padding: 10px;"">{enviarDerivacion.TelefonoCliente}</td>
-                        </tr>
-                        <tr>
-                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>Agencia de Atencion: </strong></td>
-                            <td style=""padding: 10px; background-color: yellow;""> {enviarDerivacion.NombreAgencia} </td>
-                        </tr>
-                        <tr>
-                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>Fecha de Visita a Agencia: </strong></td>
-                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);""> {FechaVisita.ToString("yyyy-MM-dd")} </td>
-                        </tr>
-                        <tr>
-                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);""><strong>Hora de Visita a Agencia: </strong></td>
-                            <td style=""padding: 10px; background-color: rgb(226, 226, 226);""> HORARIO DE AGENCIA </td>
-                        </tr>
-                    </table>
-                </div>
-            </div>";
-
-            var enviarEmailDerivacion = await _dBServicesDerivacion.EnviarEmailDeDerivacion(agenciaComercial, mensajereal, $"Asunto: Fwd: A365 FFVV CAMPO CLIENTE DNI: {enviarDerivacion.DniCliente} / NOMBRE: {enviarDerivacion.NombreCliente}");
-            if (enviarEmailDerivacion.IsSuccess == false)
-            {
-                return Json(new { success = false, message = enviarEmailDerivacion.message });
-            }
-            return Json(new { success = true, message = "La Derivacion se ha enviado correctamente, pero para guardar los cambios debe darle al boton Guardar Tipificaciones. " + enviarEmailDerivacion.message }); ;
+            return Json(new { success = true, message = "La Derivacion se ha enviado correctamente, pero para guardar los cambios debe darle al boton Guardar Tipificaciones. Se ha enviado automaticamente el correo de la derivacion a todos los destinatarios correspondientes"}); ;
         }
 
         [HttpPost]
@@ -363,22 +274,22 @@ namespace ALFINapp.Controllers
                     case 2:
                         ClientesEnriquecido.Data.UltimaTipificacionTelefono2 = tipificacion_guardada.DescripcionTipificacion;
                         ClientesEnriquecido.Data.FechaUltimaTipificacionTelefono2 = DateTime.Now;
-                        ClientesEnriquecido.Data.IdClientetipTelefono1 = nuevoClienteTipificado.IdClientetip;
+                        ClientesEnriquecido.Data.IdClientetipTelefono2 = nuevoClienteTipificado.IdClientetip;
                         break;
                     case 3:
                         ClientesEnriquecido.Data.UltimaTipificacionTelefono3 = tipificacion_guardada.DescripcionTipificacion;
                         ClientesEnriquecido.Data.FechaUltimaTipificacionTelefono3 = DateTime.Now;
-                        ClientesEnriquecido.Data.IdClientetipTelefono1 = nuevoClienteTipificado.IdClientetip;
+                        ClientesEnriquecido.Data.IdClientetipTelefono3 = nuevoClienteTipificado.IdClientetip;
                         break;
                     case 4:
                         ClientesEnriquecido.Data.UltimaTipificacionTelefono4 = tipificacion_guardada.DescripcionTipificacion;
                         ClientesEnriquecido.Data.FechaUltimaTipificacionTelefono4 = DateTime.Now;
-                        ClientesEnriquecido.Data.IdClientetipTelefono1 = nuevoClienteTipificado.IdClientetip;
+                        ClientesEnriquecido.Data.IdClientetipTelefono4 = nuevoClienteTipificado.IdClientetip;
                         break;
                     case 5:
                         ClientesEnriquecido.Data.UltimaTipificacionTelefono5 = tipificacion_guardada.DescripcionTipificacion;
                         ClientesEnriquecido.Data.FechaUltimaTipificacionTelefono5 = DateTime.Now;
-                        ClientesEnriquecido.Data.IdClientetipTelefono1 = nuevoClienteTipificado.IdClientetip;
+                        ClientesEnriquecido.Data.IdClientetipTelefono5 = nuevoClienteTipificado.IdClientetip;
                         break;
                 }
                 // Guardar cambios en la base de datos
