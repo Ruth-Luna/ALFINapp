@@ -255,7 +255,6 @@ namespace ALFINapp.Services
                 {
                     return (false, "No se encontró la derivación en la base de datos, intentelo nuevamente");
                 }
-                var observarDerivacion = await ObservarDerivacion(derivacionEnviada.IdDerivacion, "CORREO ELECTRONICO NO ENVIADO. ENVIAR MANUALMENTE");
                 return (false, "Tiempo de espera agotado. La entrada no fue procesada. Pero fue guardada correctamente en nuestro sistema no sera necesario que envie mas derivaciones de este cliente en caso su rol sea Asesor. Su derivacion sera procesada muy pronto. Para conocer el estado de su derivacion puede dirigirse a la pestaña de Derivaciones, ademas no se olvide de guardar la Tipificacion");
             }
             catch (System.Exception ex)
