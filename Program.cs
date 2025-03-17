@@ -3,6 +3,12 @@ using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory()) 
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true) 
+    .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true) // Agregar archivo local si existe
+    .AddEnvironmentVariables();
+
 var defaultCulture = new CultureInfo("es-ES");
 CultureInfo.DefaultThreadCurrentCulture = defaultCulture;
 CultureInfo.DefaultThreadCurrentUICulture = defaultCulture;
