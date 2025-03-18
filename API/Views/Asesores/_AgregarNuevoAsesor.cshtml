@@ -1,0 +1,160 @@
+@model ALFINapp.Infrastructure.Persistence.Models.Usuario
+@{
+    var rol = Model?.Rol ?? "ASESOR DE CREDITOS";
+    var RolUsuarioActual = ViewData["RolActual"] as int?;
+    if (RolUsuarioActual == null)
+    {
+        RolUsuarioActual = 0; // or any default value you prefer
+    }
+}
+<div class="container">
+    <div class="row label-for-sup-sec mb-4">
+        <div class="col">
+            <h3 class="d-inline-block"> Agregar Asesor de Creditos: </h3>
+        </div>
+        <div class="col-auto">
+            <button type="button" class="btn-close" aria-label="Close" onclick="cerraragregarNuevoAsesorView()"
+                style="filter: invert(1) brightness(2); background-color: transparent; border: none; "
+                onmouseover="this.style.filter='invert(1) brightness(2.5)';"
+                onmouseout="this.style.filter='invert(1) brightness(2)';">
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="alert alert-info">
+            Llene todos los campos para poder agregar un nuevo usuario.
+        </div>
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col">
+                    <div class="mb-2">
+                        <label for="tipo_documento" class="form-label">Tipo de Documento</label>
+                        <select class="form-control" id="tipo_documento" name="tipo_documento"
+                            onchange="cambiarTipoDoc(this.value)" required>
+                            <option value="">Seleccione un tipo de documento</option>
+                            <option value="DNI">DNI</option>
+                            <option value="CE">CARNET DE EXTRANJERIA</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col" id="documento-container" style="display: none;">
+                    <div class="mb-2">
+                        <label for="Nuevo_dni" class="form-label" id="label-documento">DNI</label>
+                        <input type="text" class="form-control" id="Nuevo_dni" name="Nuevo_dni" required
+                            oninput="validarDNISupervisor('Nuevo_dni')">
+                        <div class="invalid-feedback" id="Nuevo_dni-error">
+                            El Documento debe de tener el formato de DNI (8 Digitos numericos).
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="departamento" class="form-label">Departamento</label>
+                <select class="form-control" id="departamento" name="departamento" required>
+                    <option value="">Seleccione un departamento</option>
+                    <option value="Amazonas">Amazonas</option>
+                    <option value="Áncash">Áncash</option>
+                    <option value="Apurímac">Apurímac</option>
+                    <option value="Arequipa">Arequipa</option>
+                    <option value="Ayacucho">Ayacucho</option>
+                    <option value="Cajamarca">Cajamarca</option>
+                    <option value="Callao">Callao</option>
+                    <option value="Cusco">Cusco</option>
+                    <option value="Huancavelica">Huancavelica</option>
+                    <option value="Huánuco">Huánuco</option>
+                    <option value="Ica">Ica</option>
+                    <option value="Junín">Junín</option>
+                    <option value="La Libertad">La Libertad</option>
+                    <option value="Lambayeque">Lambayeque</option>
+                    <option value="Lima">Lima</option>
+                    <option value="Loreto">Loreto</option>
+                    <option value="Madre de Dios">Madre de Dios</option>
+                    <option value="Moquegua">Moquegua</option>
+                    <option value="Pasco">Pasco</option>
+                    <option value="Piura">Piura</option>
+                    <option value="Puno">Puno</option>
+                    <option value="San Martín">San Martín</option>
+                    <option value="Tacna">Tacna</option>
+                    <option value="Tumbes">Tumbes</option>
+                    <option value="Ucayali">Ucayali</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="provincia" class="form-label">Provincia</label>
+                <input type="text" class="form-control" id="provincia" name="provincia" required>
+            </div>
+            <div class="mb-3">
+                <label for="distrito" class="form-label">Distrito</label>
+                <input type="text" class="form-control" id="distrito" name="distrito" required>
+            </div>
+            <div class="mb-3">
+                <label for="region" class="form-label">Region</label>
+                <input type="text" class="form-control" id="region" name="region" required
+                    oninput="validarLetras('region')">
+                <div class="invalid-feedback" id="region-error">
+                    El campo Region solo puede tener letras.
+                </div>
+            </div>
+            @if (RolUsuarioActual == 4 || RolUsuarioActual == 1)
+            {
+                <div class="mb-3">
+                    <label for="rol" class="form-label">Rol</label>
+                    <select class="form-control" id="rol" name="rol" required>
+                        <option value="2">SUPERVISOR</option>
+                        <option value="3">ASESOR DE CREDITOS</option>
+                    </select>
+                </div>
+            }
+            else
+            {
+                <div class="mb-3">
+                    <label for="rol" class="form-label">Rol</label>
+                    <input type="text" class="form-control" id="rol" name="rol" required readonly
+                        value="ASESOR DE CREDITOS">
+                </div>
+            }
+        </div>
+
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="apellido_paterno" class="form-label">Apellido Paterno</label>
+                <input type="text" class="form-control" id="apellido_paterno" name="apellido_paterno" required
+                    oninput="validarLetras('apellido_paterno')">
+                <div class="invalid-feedback" id="apellido_paterno-error">
+                    El campo Apellido Paterno solo puede tener letras.
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="apellido_materno" class="form-label">Apellido Materno</label>
+                <input type="text" class="form-control" id="apellido_materno" name="apellido_materno" required
+                    oninput="validarLetras('apellido_materno')">
+                <div class="invalid-feedback" id="apellido_materno-error">
+                    El campo Apellido Materno solo puede tener letras.
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="nombres" class="form-label">Nombres Completos</label>
+                <input type="text" class="form-control" id="nombres" name="nombres" required
+                    oninput="validarLetras('nombres')">
+                <div class="invalid-feedback" id="nombres-error">
+                    El campo Nombres Completos solo puede tener letras.
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="telefono" class="form-label">Telefono</label>
+                <input type="text" class="form-control" id="telefono" name="telefono" required
+                    oninput="validarTelefono()">
+                <div class="invalid-feedback" id="telefono-error">
+                    El telefono solo puede tener números.
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="spacing"> </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <a href="javascript:void(0)" class="btn btn-success" onclick="guardarNuevoAsesor()">Agregar</a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,157 @@
+@{
+}
+@model IEnumerable<ALFINapp.Infrastructure.Persistence.Models.SupervisorDTO>
+
+@{
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/main_page.css">
+}
+
+<div class="container mt-4">
+    <div class="container mb-3">
+        <div class="row align-items-center">
+            <div class="col-12 col-md-6 mb-3 mb-md-0">
+                <div class="spacing"></div>
+                <div>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Base</th>
+                                <th>Asignado a Asesores</th>
+                                <th>Disponible</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>@ViewData["totalClientes"]</td>
+                                <td>@ViewData["clientesAsignadosSupervisor"]</td>
+                                <td>@ViewData["ClientesPendientesSupervisor"]</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 d-flex flex-column align-items-center">
+                <div clss="d-flex flex-column align-items-center w-100">
+                    <div class="d-flex justify-content-between w-100 mb-3">
+                        <div class="me-2">
+                            
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between w-100">
+                        <a href="javascript:void(0)" class="btn btn-primary mb-3 ms-2">
+                            Boton de Testeo
+                        </a>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla para mostrar los DetalleBases/ventas -->
+    <div class="table-responsive">
+        <table class="table table-bordered" id="clientesTable">
+            <thead>
+                <tr>
+                    <th>DNI Cliente</th>
+                    <th>
+                        Nombres del Cliente
+                        <!--<button class="btn btn-link p-0"
+                            onclick="sortTable('clientesTable', 2, 'string')">Ordenar</button>-->
+                    </th>
+
+                    <th>
+                        Asesor Asignado
+                        <!--<button class="btn btn-link p-0"
+                            onclick="sortTable('clientesTable', 3, 'string')">Ordenar</button>-->
+                    </th>
+
+                    <th>DNI Asesor</th>
+                    <th>
+                        Fecha Asignacion Asesor
+                        <!--<button class="btn btn-link p-0"
+                            onclick="sortTable('clientesTable', 5, 'date')">Ordenar</button>-->
+                    </th>
+
+                    <!--<th>Asigne o Modifique la Asignacion</th>
+                        <td><a href="javascript:void(0);" class="btn btn-primary"
+                                onclick="loadModificarVendedorAsignado(SupervisorDTO.IdAsignacion)">Modificar</a>
+                    </td>-->
+                </tr>
+            </thead>
+            <tbody id="data-table">
+                @if (Model != null && Model.Any()) // Verificamos si Model no es null y tiene elementos
+                {
+                    int contr = 1;
+                    foreach (var SupervisorDTO in Model)
+                    {
+                        <tr>
+                            @{
+                                contr++;
+                            }
+                            <td>@SupervisorDTO.Dni</td>
+                            <td>@SupervisorDTO.XNombre.ToUpper() @SupervisorDTO.XAppaterno.ToUpper()
+                                @SupervisorDTO.XApmaterno.ToUpper()</td>
+                            <td>@SupervisorDTO.NombresCompletos.ToUpper()</td>
+                            <td>@SupervisorDTO.DniVendedor</td>
+                            <td>@SupervisorDTO.FechaAsignacionV</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center">No hay datos disponibles</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="spacing"></div>
+</div>
+
+<div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="GeneralTemplateTitleModalLabel"></h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalContentGeneralTemplate">
+                    @* Template por defecto *@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @if (TempData["Message"] != null)
+    {
+        <script>
+            Swal.fire({
+                title: 'Mensaje', // Título del mensaje
+                text: '@Html.Raw(TempData["Message"] as string)', // Usamos Html.Raw para evitar que se escape el texto
+                icon: 'info', // Tipo de ícono (info, success, error, warning)
+                confirmButtonText: 'Aceptar' // Texto del botón de confirmación
+            });
+        </script>
+    }
+
+    @if (TempData["MessageError"] != null)
+    {
+        <script>
+            Swal.fire({
+                title: 'Error', // Título del mensaje
+                text: '@Html.Raw(TempData["MessageError"] as string)', // Usamos Html.Raw para evitar que se escape el texto
+                icon: 'error', // Tipo de ícono (info, success, error, warning)
+                confirmButtonText: 'Aceptar' // Texto del botón de confirmación
+            });
+        </script>
+    }
+
+}

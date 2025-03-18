@@ -1,0 +1,331 @@
+@model ALFINapp.Infrastructure.Persistence.Models.DetallesClienteDTO
+
+@{
+    var Asesores = ViewData["Asesores"];
+    var RolUser = ViewData["RolUser"] as int?;
+}
+
+@functions {
+    public string GetColorCode(string colorName)
+    {
+        if (string.IsNullOrEmpty(colorName))
+        {
+            return "#FFFFFF";
+        }
+        return colorName.ToLower() switch
+        {
+            "verde" => "#008000",
+            "amarillo" => "#FFFF00",
+            "naranja" => "#FFA500",
+            "rojo" => "#FF0000",
+            "verde claro" => "#90EE90",
+            "verde oscuro" => "#006400",
+            "amarillo claro" => "#FFFFE0",
+            "amarillo oscuro" => "#FFD700",
+            "naranja claro" => "#FFDAB9",
+            "naranja oscuro" => "#FF8C00",
+            "rojo claro" => "#FF7F7F",
+            "rojo oscuro" => "#8B0000",
+            _ => "#FFFFFF"
+        };
+    }
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <h3 class="label-fortip">Consulta de Campañas</h3>
+        <div class="spacing"></div>
+    </div>
+
+    @*<div class="row mb-2">
+        <div class="row mb-2 align-items-center">
+            @if (Asesores is List<AsesoresDeUnClienteDTO> AsesoresAsignados && AsesoresAsignados.Any())
+            {
+                <div class="alert alert-info mt-2" role="alert">
+                    El cliente a buscar tiene los siguientes asesores asignados
+                </div>
+
+                <div class="col-md-6">
+                    <label for="asesor">Asesor:</label>
+                    <select class="form-control" id="asesor" required>
+                        <option value="">Seleccione un asesor</option>
+                        @foreach (var asesor in AsesoresAsignados)
+                        {
+                            <option value="@asesor.IDAsesorPrimario">@asesor.NombreAsesorPrimario</option>
+                        }
+                    </select>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info mt-2" role="alert">
+                    El cliente a buscar no tiene asesores asignados
+                </div>
+            }
+
+        </div>
+    </div>*@
+
+    <div id="detalle-campana">
+        @if (Model.TraidoDe == "BDALFIN")
+        {
+            <div class="alert alert-primary mt-2" role="alert">
+                El cliente fue extraido de la base de datos de <strong>ALFIN</strong>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info mt-2" role="alert">
+                El cliente fue extraido de la base de datos de <strong>A365</strong>
+            </div>
+        }
+        <input type="text" id="DNIClienteDerivacion" value="@Model.Dni" hidden>
+        <div class="container mb-3">
+            <div class="form-group row align-items-center mb-2">
+                <label for=""></label>
+                <input type="text" id="NombresCompletosCliente" class="form-control"
+                    value="@((Model.ApellidoPaterno?.ToUpper() ?? string.Empty) + " " + (Model.ApellidoMaterno?.ToUpper() ?? string.Empty) + " " + (Model.Nombres?.ToUpper() ?? string.Empty))"
+                    readonly>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col">
+                <legend>
+                    <h3>Condiciones de Campaña</h3>
+                </legend>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="color_y_tonalidad">Color y Tonalidad:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center">
+                            <input class="form-control ml-2"
+                                style="background-color: @GetColorCode(Model.ColorFinal ?? string.Empty); width: 35px; height: 35px;"
+                                readonly>
+                            <input class="form-control ml-2" id="COLOR_FINAL" type="text"
+                                value="@(Model.ColorFinal?.ToUpper() ?? string.Empty)" readonly>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <input class="form-control ml-2"
+                                style="background-color: @GetColorCode(Model.Color ?? string.Empty); width: 35px; height: 35px;"
+                                readonly>
+                            <input class="form-control ml-2" id="COLOR" type="text"
+                                value="@(Model.Color?.ToUpper() ?? string.Empty)" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="campaña">Campaña:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="campaña" class="form-control" value="@Model.Campaña" required readonly>
+                    </div>
+                </div>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="oferta_maxima">Oferta Máxima:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="oferta_maxima" class="form-control" value="@Model.OfertaMax" required
+                            readonly>
+                    </div>
+                </div>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="plazo_maximo">Plazo Máximo:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="plazo_maximo" class="form-control" value="@Model.Plazo" required
+                            readonly>
+                    </div>
+                </div>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="capacidad_de_pago">Capacidad de Pago:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="capacidad_de_pago" class="form-control" value="@Model.CapacidadMax"
+                            required readonly>
+                    </div>
+                </div>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="deuda_con_alfin">Deuda con ALFIN:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="deuda_con_alfin" class="form-control"
+                            value="@Model.SaldoDiferencialReeng" required readonly>
+                    </div>
+                </div>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="nuevo_en_base">Nuevo en BASE:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="nuevo_en_base" class="form-control" value="@Model.ClienteNuevo" required
+                            readonly>
+                    </div>
+                </div>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="deuda">Deudas:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="deuda" class="form-control" value="@Model.Deuda1" required readonly>
+                    </div>
+                </div>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="nro_entidades">Nro Entidades:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="nro_entidades" class="form-control" value="@Model.Entidad1" required
+                            readonly>
+                    </div>
+                </div>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="usuario_v3">Usuario V3:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="usuario_v3" class="form-control" value="@Model.UserV3" required readonly>
+                    </div>
+                </div>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="perfil_ro">Perfil RO:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="perfil_ro" class="form-control" value="@Model.PerfilRo" required readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <h3>Tasas Aprobadas</h3>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="hasta_s_3k">Hasta S/ 3k:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="hasta_s_3k" class="form-control" 
+                            value="@(Model.Tasa1.HasValue && Math.Truncate(Model.Tasa1.Value) != 0 ? Math.Truncate(Model.Tasa1.Value) + "%" : "")" 
+                            required readonly>
+                    </div>
+                </div>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="hasta_s_6_1k">Hasta S/ 6.1k:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="hasta_s_3k" class="form-control" 
+                            value="@(Model.Tasa2.HasValue && Math.Truncate(Model.Tasa2.Value) != 0 ? Math.Truncate(Model.Tasa2.Value) + "%" : "")" 
+                            required readonly>
+                    </div>
+                </div>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="hasta_s_8_6k">Hasta S/ 8.6k:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="hasta_s_3k" class="form-control" 
+                            value="@(Model.Tasa3.HasValue && Math.Truncate(Model.Tasa3.Value) != 0 ? Math.Truncate(Model.Tasa3.Value) + "%" : "")" 
+                            required readonly>
+                    </div>
+                </div>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="hasta_s_12_4k">Hasta S/ 12.4k:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="hasta_s_3k" class="form-control" 
+                            value="@(Model.Tasa4.HasValue && Math.Truncate(Model.Tasa4.Value) != 0 ? Math.Truncate(Model.Tasa4.Value) + "%" : "")" 
+                            required readonly>
+                    </div>
+                </div>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="hasta_s_15_1k">Hasta S/ 15.1k:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="hasta_s_3k" class="form-control" 
+                            value="@(Model.Tasa5.HasValue && Math.Truncate(Model.Tasa5.Value) != 0 ? Math.Truncate(Model.Tasa5.Value) + "%" : "")" 
+                            required readonly>
+                    </div>
+                </div>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="hasta_s_24_6k">Hasta S/ 24.6k:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="hasta_s_3k" class="form-control" 
+                            value="@(Model.Tasa6.HasValue && Math.Truncate(Model.Tasa6.Value) != 0 ? Math.Truncate(Model.Tasa6.Value) + "%" : "")" 
+                            required readonly>
+                    </div>
+                </div>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="mas_de_s_24_6k">Mas de S/ 24.6k:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="hasta_s_3k" class="form-control" 
+                            value="@(Model.Tasa7.HasValue && Math.Truncate(Model.Tasa7.Value) != 0 ? Math.Truncate(Model.Tasa7.Value) + "%" : "")" 
+                            required readonly>
+                    </div>
+                </div>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="nueva_tasa">Nueva Tasa:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="nueva_tasa" class="form-control" value="@Model.GrupoTasa" required
+                            readonly>
+                    </div>
+                </div>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="usuario_tipo">Usuario Tipo:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="usuario_tipo" class="form-control" value="@Model.Usuario" required
+                            readonly>
+                    </div>
+                </div>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="usuario_segmento">Usuario Segmento:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="usuario_segmento" class="form-control" value="@Model.SegmentoUser"
+                            required readonly>
+                    </div>
+                </div>
+                <div class="form-group row align-items-center mb-2">
+                    <div class="col-md-6">
+                        <label for="flag_deuda_v_oferta">Flag Deuda Vs Oferta:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="flag_deuda_v_oferta" class="form-control" value="@Model.FlagDeudaVOferta" required readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group row align-items-center">
+        <div class="col-md-12">
+            @if (RolUser == 3)
+            {
+                <a class="btn btn-primary" href="javascript:void(0);"
+                    onclick="TakeThisClient('@Model.Dni', '@Model.TraidoDe')">Tipifique Este Cliente</a>
+            }
+
+            @*@if ( RolUser == 2)
+            {
+                <a class="btn btn-warning" href="javascript:void(0);"
+                    onclick="showMyModal('Consulta', 'VistaDerivacionManual', 'GET', 'Derivacion Manual por Supervisor')">
+                    <i class="fas fa-sync-alt"></i> Derive Este Cliente
+                </a>
+            }*@
+        </div>
+    </div>
+</div>

@@ -1,0 +1,175 @@
+@model List<ALFINapp.Infrastructure.Persistence.Models.Usuario>
+
+@{
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/main_page.css">
+    <link rel="stylesheet" href="~/css/Usuarios/Administracion.css">
+}
+
+<div>
+    <div class="mb-2">
+        <h3> Administracion de Usuarios </h3>
+        <div class="alert alert-info" role="alert">
+            <p>En esta sección podra administrar los usuarios de la plataforma A365. Aca podra <strong>editar,
+                    desactivar y eliminar</strong> usuarios.</p>
+        </div>
+        <div class="d-flex flex-column flex-md-row align-items-md-center">
+            <label for="searchField" class="form-label mb-2 mb-md-0 me-md-2">
+                Buscar por:
+            </label>
+            <select id="searchField" class="form-control me-md-2">
+                <option value="nombres">Nombres</option>
+                <!--<option value="apellidoMaterno">Apellido Materno</option>
+                <option value="nombre">Nombre</option>-->
+                <option value="dniadm">DNI</option>
+                <option value="rol">Rol</option>
+            </select>
+            <input type="text" class="form-control" id="searchInput" placeholder="Ingrese valor de búsqueda">
+            <select class="form-control" name="rolFiltro" id="rolFiltro" style="display: none;"
+                onchange="filtrarPorRol(this.value);">
+                <option value="">Seleccione un Rol</option>
+                <option value="ADMINISTRADOR">1 - ADMINISTRADOR</option>
+                <option value="SUPERVISOR">2 - SUPERVISOR</option>
+                <option value="ASESOR">3 - ASESOR DE CREDITOS</option>
+                <option value="GERENTE ZONAL">4 - GERENTE ZONAL</option>
+            </select>
+            <!-- Campos de fecha (inicial y final), ocultos por defecto -->
+            <input type="date" class="form-control mt-2" id="startDate" style="display: none;"
+                placeholder="Fecha Inicial">
+            <input type="date" class="form-control mt-2" id="endDate" style="display: none;" placeholder="Fecha Final">
+        </div>
+    </div>
+    <div class="table-responsive">
+
+        <table class="table table-bordered text-nowrap" id="clientesTable">
+            <thead>
+                <tr>
+                    <th>Acción</th>
+                    <th>
+                        <span>
+                            Estado
+                        </span>
+                    </th>
+                    <th>Dni</th>
+                    <th>Nombres Completos</th>
+                    <th>Supervisor Asignado</th>
+                    <th>Nombre Campaña</th>
+                    <th>Rol</th>
+                    <th>Última actualización</th>
+                    <th>Fecha Inicio</th>
+                    <th>Fecha Cese</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td>
+                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 1, 'string')"
+                            data-sort-ignore>
+                            <i class="bi bi-filter"></i>
+                        </button>
+                    </td>
+                </tr>
+
+                @foreach (var usuario in Model)
+                {
+                    <tr class="align-middle">
+                        <td>
+                            <div class="d-flex flex-column align-items-center">
+                                <div class="d-flex justify-content-center gap-2 mb-2">
+                                    @if (usuario.Estado == "ACTIVO")
+                                    {
+                                        <a href="javascript:void(0)" class="btn btn-warning btn-sm"
+                                            onclick="CambiarEstadoUsuario(0, '@usuario.IdUsuario');">
+                                            <i class="bi bi-toggle-off"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a href="javascript:void(0)" class="btn btn-success btn-sm"
+                                            onclick="CambiarEstadoUsuario(1, '@usuario.IdUsuario');">
+                                            <i class="bi bi-toggle-on"></i>
+                                        </a>
+                                    }
+
+                                    <button class="btn btn-primary btn-sm"
+                                        onclick="CargarModalModificarUsuario('@usuario.IdUsuario')">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            @if (usuario.Estado == "ACTIVO")
+                            {
+                                <span class="badge bg-success">@usuario.Estado</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">@usuario.Estado</span>
+                            }
+                        </td>
+                        <td>
+                            @usuario.Dni
+                        </td>
+                        <td>
+                            @usuario.NombresCompletos
+                        </td>
+                        <td>
+                            @if (usuario.IdRol == 3)
+                            {
+                                <span>@usuario.RESPONSABLESUP</span>
+                            }
+                            else
+                            {
+                                <span>
+                                    EL USUARIO NO TIENE SUPERVISOR
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            @usuario.NOMBRECAMPAÑA
+                        </td>
+                        <td>
+                            @usuario.Rol
+                        </td>
+                        <td>
+                            @usuario.FechaActualizacion
+                        </td>
+                        <td>
+                            @usuario.FechaInicio
+                        </td>
+                        <td>
+                            @usuario.FechaCese
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="GeneralTemplateTitleModalLabel"></h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalContentGeneralTemplate">
+                    <!-- Aquí se cargará el formulario de modificar cliente y demas detalles-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script src="~/js/Usuarios/Administracion.js" asp-append-version="true"></script>
+}

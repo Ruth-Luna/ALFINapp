@@ -1,0 +1,110 @@
+@model List<ALFINapp.Infrastructure.Persistence.Models.ClientesReferidos>
+@{
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/main_page.css">
+}
+
+<div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="GeneralTemplateTitleModalLabel"></h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalContentGeneralTemplate">
+                    <!-- Aquí se cargará el formulario de agregar cliente -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <h3>Gestion de Referidos</h3>
+    <div class="alert alert-info" role="alert">
+        <strong>Nota:</strong> En esta vista puede Derivar una Cliente previamente referido.
+
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered" id="ReferidoTable">
+            <thead>
+                <tr>
+                    <th>Accion</th>
+                    <th>Estado</th>
+                    <th>CDV Alfin</th>
+                    <th>DNI Cliente</th>
+                    <th>Nombre Cliente</th>
+                    <th>Monto Solicitado</th>
+                    <th>Telefono</th>
+                    <th>Agencia</th>
+                    <th>Fecha de Visita</th>
+                </tr>
+            </thead>
+            <tbody id="data-table">
+                <tr>
+                    <td></td>
+                    <td>
+                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('ReferidoTable', 1, 'string')"
+                            data-sort-ignore>
+                            <i class="bi bi-caret-down-square"></i>
+                        </button>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                @if (Model != null)
+                {
+                    foreach (var referido in Model)
+                    {
+                        <tr>
+                            @{
+                                var referidoIdCliente = referido.IdBaseClienteA365 != null ? referido.IdBaseClienteA365 :
+                                referido.IdBaseClienteBanco;
+                            }
+                            <td>
+                                <a href="javascript:void(0)"
+                                    onclick="cargarDerivacionManual('@referido.IdReferido');"
+                                    class="btn btn-primary">
+                                    <i class="fas fa-sync-alt"></i>
+                                    Derivar
+                                </a>
+                            </td>
+                            @if (referido.FueProcesado == true)
+                            {
+                                <td><span class="badge bg-success">@referido.EstadoReferencia</span></td>
+                            }
+                            else if (referido.EstadoReferencia == "ERROR")
+                            {
+                                <td><span class="badge bg-danger">@referido.EstadoReferencia</span></td>
+                            }
+                            else
+                            {
+                                <td><span class="badge bg-warning">@referido.EstadoReferencia</span></td>
+                            }
+                            <td>@(referido.NombreCompletoAsesor?.ToUpper() ?? "No Especificado")</td>
+                            <td>@referido.DniCliente</td>
+                            <td>@(referido.NombreCompletoCliente?.ToUpper() ?? "No Especificado")</td>
+                            <td>@referido.OfertaEnviada</td>
+                            <td>@referido.Telefono</td>
+                            <td>@(referido.Agencia?.ToUpper() ?? "No Especificado")</td>
+                            <td>@referido.FechaVisita</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script src="~/js/Referidos/Referidos.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,52 @@
+@model List<ALFINapp.Infrastructure.Persistence.Models.AsignacionFiltrarBasesDTO>
+@{
+}
+
+<div class="container-fluid mt-2">
+    <div class="form-group mb-3 mt-3">
+        <label for="entryCount">Número de entradas:</label>
+        <input type="text" id="entryCount" class="form-control" readonly value="@Model.Count">
+    </div>
+    <div class="container table-responsive">
+        <table class="table table-bordered" id="clientesTable">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Telefono</th>
+                    <th>Correo</th>
+                    <th>Fecha de Nacimiento</th>
+                    <th>Genero</th>
+                    <th>Estado Civil</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td id="idBase_@item.id_cliente">@item.id_cliente</td>
+                        <td>@item.dni</td>
+                        <td>@item.x_appaterno</td>
+                        <td>@item.x_apmaterno</td>
+                        <td>@item.x_nombre</td>
+                        <td>@item.campaña</td>
+                        <td>@item.color</td>
+                        <td>@item.color_final</td>
+                        <td>@item.edad</td>
+                        <td>@item.propension</td>
+                        <td>@item.frescura</td>
+                        <td>@item.grupo_tasa</td>
+                        <td>@item.grupo_monto</td>
+                        <td>@item.flg_deuda_plus</td>
+                        <td>@item.departamento</td>
+                        <td>@item.provincia</td>
+                        <td>@item.distrito</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

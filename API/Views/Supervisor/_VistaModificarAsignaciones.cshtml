@@ -1,0 +1,91 @@
+@model List<ALFINapp.Infrastructure.Persistence.Models.UsuarioAsesorDTO>
+
+@{
+    var AsesoraModificar = ViewData["AsesorAModificar"] as ALFINapp.Infrastructure.Persistence.Models.UsuarioAsesorDTO;
+}
+
+<div class="mt-3">
+    <h4>Modificar Clientes Asignados</h4>
+    <div class="alert alert-secondary" role="alert">
+        Seleccione un numero de Clientes de parte de los otros asesores para asignar a @AsesoraModificar.NombresCompletos
+    </div>
+    <div class="mb-3">
+        <label for="totalClientesAsignados" class="form-label">Total Clientes Asignados</label>
+        <input type="number" class="form-control" id="totalClientesAsignados"
+            value="@(AsesoraModificar?.TotalClientesAsignados ?? 0)" readonly>
+    </div>
+
+    @foreach (var AsesorAsignado in Model)
+    {
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="totalClientesAsignados" class="form-label"> @AsesorAsignado.NombresCompletos - Total
+                        Clientes Disponibles: </label>
+                    <input type="number" class="form-control" id="totalClientesAsignados_@AsesorAsignado.IdUsuario"
+                        value="@AsesorAsignado.ClientesSinTrabajar" readonly>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="totalClientesAsignados" class="form-label"> Modifique el Numero Disponibles Clientes</label>
+                    <input type="number" class="form-control" id="ModificarClientes_@AsesorAsignado.IdUsuario">
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<button class="btn btn-success" onclick="guardarCambiosAsignaciones(@AsesoraModificar.IdUsuario)">Guardar
+    Cambios</button>
+<script>
+    function guardarCambiosAsignaciones(asesorCambio) {
+        const asignaciones = [];
+
+        // Recopilar datos modificados
+        const modificarInputs = document.querySelectorAll("input[id^='ModificarClientes_']");
+        modificarInputs.forEach(input => {
+            const IdUsuario = input.id.split('_')[1]; // Obtener el IdUsuario
+            const Modificaciones = parseInt(input.value) || 0;
+
+            if (Modificaciones > 0) { // Solo enviar cambios relevantes
+                asignaciones.push({ IdUsuario, Modificaciones });
+            }
+        });
+
+        console.log(modificarInputs);
+        console.log(asignaciones);
+
+        // Llamada AJAX para guardar los cambios
+        $.ajax({
+            url: '/Asesor/GuardarCambiosAsignaciones',
+            type: 'POST',
+            data: { AsignacionesEnviadas: asignaciones , AsesorCambioID: asesorCambio},
+            success: function (response) {
+                if (response.success === true) {
+                    Swal.fire({
+                        title: 'Modificacion Exitosa',
+                        text: 'Las Modificaciones a la asignacion de asesores se completaron con exito.',
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar'
+                    });
+                    location.reload(); // Opcional: recargar la página
+                } else {
+                    Swal.fire({
+                        title: 'Error en la asignacion',
+                        text: response.message,
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    title: 'Error en la asignacion',
+                    text: 'Error en la asignacion',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+        });
+    }
+</script>
