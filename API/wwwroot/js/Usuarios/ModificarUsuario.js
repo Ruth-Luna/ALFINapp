@@ -9,15 +9,17 @@ function cambiarDatos(idUsuario) {
         NOMBRECAMPAÑA: document.getElementById('txtNombreCampania_EU').value.trim() || null,
         IdRol: parseInt(document.getElementById('txtRol_EU').value) || null,
         FechaInicio: document.getElementById('dateFechaInicio_EU').value ? new Date(document.getElementById('dateFechaInicio_EU').value).toISOString() : null,
-        FechaCese: document.getElementById('dateFechaCese_EU').value ? new Date(document.getElementById('dateFechaCese_EU').value).toISOString() : null
+        FechaCese: document.getElementById('dateFechaCese_EU').value ? new Date(document.getElementById('dateFechaCese_EU').value).toISOString() : null,
+        Correo: document.getElementById('txtCorreo_EU').value.trim() || null
     };
     if (datosUsuario.Dni === "" ||
         datosUsuario.NombresCompletos === "" ||
         datosUsuario.Estado === "" ||
-        datosUsuario.IdRol === "") {
+        datosUsuario.IdRol === "" || 
+        datosUsuario.Correo === "" ) {
         Swal.fire({
             title: 'Error al actualizar los datos',
-            text: 'Debe completar los campos DNI, Nombres Completos y Rol',
+            text: 'Debe completar los campos DNI, Nombres Completos o Rol',
             icon: 'error',
             confirmButtonText: 'OK'
         });
