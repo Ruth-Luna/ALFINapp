@@ -20,50 +20,75 @@ namespace ALFINapp.Infrastructure.Repositories
 
         public List<DetalleBaseClienteDTO>? GetClientesAlfinFromVendedor(int IdUsuarioVendedor)
         {
-            var clientes = _context
+            try
+            {
+                var clientes = _context
                 .inicio_detalles_clientes_from_asesor
                 .FromSqlRaw("EXECUTE sp_asesores_get_clientes_alfin_data_for_inicio @IdUsuarioVendedor = {0}",
                 new SqlParameter("@IdUsuarioVendedor", IdUsuarioVendedor))
                 .ToList(); // Usamos ToList() en lugar de ToListAsync()
 
-            if (clientes.Count == 0)
+                if (clientes.Count == 0)
+                {
+                    return new List<DetalleBaseClienteDTO>(); // Retorna lista vacía en vez de null
+                }
+
+                var dtoEnvio = new List<DetalleBaseClienteDTO>();
+                foreach (var cliente in clientes)
+                {
+                    dtoEnvio.Add(new DetalleBaseClienteDTO(cliente));
+                }
+
+                return dtoEnvio;
+            }
+            catch (System.Exception e)
             {
-                return new List<DetalleBaseClienteDTO>(); // Retorna lista vacía en vez de null
+                Console.WriteLine(e.Message);
+                return null;
             }
 
-            var dtoEnvio = new List<DetalleBaseClienteDTO>();
-            foreach (var cliente in clientes)
-            {
-                dtoEnvio.Add(new DetalleBaseClienteDTO(cliente));
-            }
-
-            return dtoEnvio;
         }
 
 
         public List<DetalleBaseClienteDTO>? GetClientesFromVendedor(int IdUsuarioVendedor)
         {
-            var clientes = _context
+            try
+            {
+                var clientes = _context
                 .inicio_detalles_clientes_from_asesor
                 .FromSqlRaw("EXECUTE sp_asesores_get_clientes_data_for_inicio @IdUsuarioVendedor = {0}",
                 new SqlParameter("@IdUsuarioVendedor", IdUsuarioVendedor))
                 .ToList();
-            if (clientes.Count == 0)
+                if (clientes.Count == 0)
+                {
+                    return null;
+                }
+                var dtoEnvio = new List<DetalleBaseClienteDTO>();
+                foreach (var cliente in clientes)
+                {
+                    dtoEnvio.Add(new DetalleBaseClienteDTO(cliente));
+                }
+                return dtoEnvio;
+            }
+            catch (System.Exception e)
             {
+                Console.WriteLine(e.Message);
                 return null;
             }
-            var dtoEnvio = new List<DetalleBaseClienteDTO>();
-            foreach (var cliente in clientes)
-            {
-                dtoEnvio.Add(new DetalleBaseClienteDTO(cliente));
-            }
-            return dtoEnvio;
         }
 
         public async Task<Persistence.Models.Usuario?> GetVendedor(int IdUsuario)
         {
-            var usuario = await _context.usuarios.FirstOrDefaultAsync(u => u.IdUsuario == IdUsuario);
-            return usuario;
+            try
+            {
+                var usuario = await _context.usuarios.FirstOrDefaultAsync(u => u.IdUsuario == IdUsuario);
+                return usuario;
+            }
+            catch (System.Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
         }
     }
 }

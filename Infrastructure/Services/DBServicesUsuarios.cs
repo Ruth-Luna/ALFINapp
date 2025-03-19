@@ -38,10 +38,11 @@ namespace ALFINapp.Infrastructure.Services
                     new SqlParameter("@IdRol", usuario.IdRol != null ? usuario.IdRol : (object)DBNull.Value),
                     new SqlParameter("@id_usuario_accion", IdUsuarioAccion),
                     new SqlParameter("@FechaInicio", usuario.FechaInicio != null ? usuario.FechaInicio : (object)DBNull.Value),
-                    new SqlParameter("@FechaCese", usuario.FechaCese != null ? usuario.FechaCese : (object)DBNull.Value)
+                    new SqlParameter("@FechaCese", usuario.FechaCese != null ? usuario.FechaCese : (object)DBNull.Value),
+                    new SqlParameter("@Correo", usuario.Correo != null ? usuario.Correo : (object)DBNull.Value)
                 };
 
-                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_modificacion_existente @IdUsuario, @Dni, @NombresCompletos, @Rol, @Departamento, @Provincia, @Distrito, @Telefono, @Estado, @IDUSUARIOSUP, @RESPONSABLESUP, @REGION, @NOMBRECAMPAÑA, @IdRol, @id_usuario_accion, @FechaInicio, @FechaCese", 
+                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_modificacion_existente @IdUsuario, @Dni, @NombresCompletos, @Rol, @Departamento, @Provincia, @Distrito, @Telefono, @Estado, @IDUSUARIOSUP, @RESPONSABLESUP, @REGION, @NOMBRECAMPAÑA, @IdRol, @id_usuario_accion, @FechaInicio, @FechaCese, @Correo", 
                     parameters);
 
                 return (true, "Datos actualizados correctamente");
@@ -137,9 +138,10 @@ namespace ALFINapp.Infrastructure.Services
                     new SqlParameter("@NOMBRECAMPAÑA", usuario.NOMBRECAMPAÑA != null ? usuario.NOMBRECAMPAÑA : (object)DBNull.Value),
                     new SqlParameter("@IdRol", usuario.IdRol),
                     new SqlParameter("@id_usuario_accion", IdUsuarioAccion),
-                    new SqlParameter("@tipo_documento", usuario.TipoDocumento != null ? usuario.TipoDocumento : (object)DBNull.Value)
+                    new SqlParameter("@tipo_documento", usuario.TipoDocumento != null ? usuario.TipoDocumento : (object)DBNull.Value),
+                    new SqlParameter("@Correo", usuario.Correo != null ? usuario.Correo : (object)DBNull.Value)
                 };
-                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_crear_nuevo @Dni, @NombresCompletos, @Rol, @Departamento, @Provincia, @Distrito, @Telefono, @Estado, @IDUSUARIOSUP, @RESPONSABLESUP, @REGION, @NOMBRECAMPAÑA, @IdRol, @id_usuario_accion",
+                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_crear_nuevo @Dni, @NombresCompletos, @Rol, @Departamento, @Provincia, @Distrito, @Telefono, @Estado, @IDUSUARIOSUP, @RESPONSABLESUP, @REGION, @NOMBRECAMPAÑA, @IdRol, @id_usuario_accion, @Correo",
                     parameters);
                 return (true, "Usuario creado correctamente");
             }

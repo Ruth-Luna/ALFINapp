@@ -44,8 +44,11 @@
                         readonly>
                 </div>
                 <div class="col-md-1">
-                    <a href="javascript:void(0)" id="DepartamentoBotonEdicion" class="btn btn-primary" onclick="activarEdicion('Departamento')" style="display: block;"><i class="bi bi-pencil"></i></a>
-                    <a href="javascript:void(0)" id="DepartamentoBotonEnvio" class="btn btn-success" onclick="enviarEdicion('Departamento')" style="display: none;"><i class="bi bi-check"></i></a>
+                    <a href="javascript:void(0)" id="DepartamentoBotonEdicion" class="btn btn-primary"
+                        onclick="activarEdicion('Departamento')" style="display: block;"><i
+                            class="bi bi-pencil"></i></a>
+                    <a href="javascript:void(0)" id="DepartamentoBotonEnvio" class="btn btn-success"
+                        onclick="enviarEdicion('Departamento')" style="display: none;"><i class="bi bi-check"></i></a>
                 </div>
             </div>
 
@@ -57,12 +60,13 @@
                     <label for="ProvinciaUsuario" class="form-label">Provincia</label>
                 </div>
                 <div class="col-md-7">
-                    <input type="text" class="form-control" id="ProvinciaUsuario" value="@Model.Provincia"
-                        readonly>
+                    <input type="text" class="form-control" id="ProvinciaUsuario" value="@Model.Provincia" readonly>
                 </div>
                 <div class="col-md-1">
-                    <a href="javascript:void(0)" id="ProvinciaBotonEdicion" class="btn btn-primary" onclick="activarEdicion('Provincia')" style="display: block;"><i class="bi bi-pencil"></i></a>
-                    <a href="javascript:void(0)" id="ProvinciaBotonEnvio" class="btn btn-success" onclick="enviarEdicion('Provincia')" style="display: none;"><i class="bi bi-check"></i></a>
+                    <a href="javascript:void(0)" id="ProvinciaBotonEdicion" class="btn btn-primary"
+                        onclick="activarEdicion('Provincia')" style="display: block;"><i class="bi bi-pencil"></i></a>
+                    <a href="javascript:void(0)" id="ProvinciaBotonEnvio" class="btn btn-success"
+                        onclick="enviarEdicion('Provincia')" style="display: none;"><i class="bi bi-check"></i></a>
                 </div>
             </div>
 
@@ -77,8 +81,28 @@
                     <input type="text" class="form-control" id="DistritoUsuario" value="@Model.Distrito" readonly>
                 </div>
                 <div class="col-md-1">
-                    <a href="javascript:void(0)" id="DistritoBotonEdicion" class="btn btn-primary" onclick="activarEdicion('Distrito')" style="display: block;"><i class="bi bi-pencil"></i></a>
-                    <a href="javascript:void(0)" id="DistritoBotonEnvio" class="btn btn-success" onclick="enviarEdicion('Distrito')" style="display: none;"><i class="bi bi-check"></i></a>
+                    <a href="javascript:void(0)" id="DistritoBotonEdicion" class="btn btn-primary"
+                        onclick="activarEdicion('Distrito')" style="display: block;"><i class="bi bi-pencil"></i></a>
+                    <a href="javascript:void(0)" id="DistritoBotonEnvio" class="btn btn-success"
+                        onclick="enviarEdicion('Distrito')" style="display: none;"><i class="bi bi-check"></i></a>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="alert alert-warning" id="AlertUpdateCorreo" style="display: none;">
+                    Actualizar el Correo
+                </div>
+                <div class="col-md-4">
+                    <label for="CorreoUsuario" class="form-label">Correo</label>
+                </div>
+                <div class="col-md-7">
+                    <input type="text" class="form-control" id="CorreoUsuario" value="@Model.Correo" readonly>
+                </div>
+                <div class="col-md-1">
+                    <a href="javascript:void(0)" id="CorreoBotonEdicion" class="btn btn-primary"
+                        onclick="activarEdicion('Correo')" style="display: block;"><i class="bi bi-pencil"></i></a>
+                    <a href="javascript:void(0)" id="CorreoBotonEnvio" class="btn btn-success"
+                        onclick="enviarEdicion('Correo')" style="display: none;"><i class="bi bi-check"></i></a>
                 </div>
             </div>
 
@@ -93,8 +117,10 @@
                     <input type="text" class="form-control" id="TelefonoUsuario" value="@Model.Telefono" readonly>
                 </div>
                 <div class="col-md-1">
-                    <a href="javascript:void(0)" id="TelefonoBotonEdicion" class="btn btn-primary" onclick="activarEdicion('Telefono')" style="display: block;"><i class="bi bi-pencil"></i></a>
-                    <a href="javascript:void(0)" id="TelefonoBotonEnvio" class="btn btn-success" onclick="enviarEdicion('Telefono')" style="display: none;"><i class="bi bi-check"></i></a>
+                    <a href="javascript:void(0)" id="TelefonoBotonEdicion" class="btn btn-primary"
+                        onclick="activarEdicion('Telefono')" style="display: block;"><i class="bi bi-pencil"></i></a>
+                    <a href="javascript:void(0)" id="TelefonoBotonEnvio" class="btn btn-success"
+                        onclick="enviarEdicion('Telefono')" style="display: none;"><i class="bi bi-check"></i></a>
                 </div>
             </div>
 
@@ -131,11 +157,9 @@
                 </div>
             </div>
         </div>
-
     </div>
-
 </div>
 
 @section Scripts {
-    <script src="~/js/Perfil/Perfil.js" asp-append-version="true"></script>
+    <script src="~/js/Perfil/Perfil.js?v=@DateTime.Now.Ticks"></script>
 }

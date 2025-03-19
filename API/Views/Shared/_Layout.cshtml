@@ -7,9 +7,9 @@
     <title>@ViewData["Title"] - ALFINapp</title>
     @RenderSection("Styles", required: false)
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/ALFINapp.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/styles.css" />
+    <link rel="stylesheet" href="~/ALFINapp.styles.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <!-- Agregar el CSS de SweetAlert2 -->
@@ -88,13 +88,13 @@
     </main>
     <footer class="@(ViewBag.isFooterAbsoluteAtBottom == true ? "tfoot-position-login" : "") text-center p-2">&copy; 2024 - AppBancoAlFIN - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></footer>
     <!-- Agregar el script de SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.js" asp-append-version="true"></script> *@
-    <script src="~/lib/jquery/dist/jquery.min.js" asp-append-version="true"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" asp-append-version="true"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.js" asp-append-version="true"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" asp-append-version="true"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
-    <script src="~/js/site.js" asp-append-version="true" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.js?v=@DateTime.Now.Ticks"></script> *@
+    <script src="~/lib/jquery/dist/jquery.min.js?v=@DateTime.Now.Ticks"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js?v=@DateTime.Now.Ticks"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.js?v=@DateTime.Now.Ticks"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/js/site.js?v=@DateTime.Now.Ticks"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const sidebar = document.getElementById('sidebar');
@@ -201,18 +201,18 @@
 </body>
 
 </html>
-<script src="~/js/mainsupervisorfunctions.js" asp-append-version="true"></script>
-<script src="~/js/accountfunctions.js" asp-append-version="true"></script>
-<script src="~/js/generalfunctions.js" asp-append-version="true"></script>
-<script src="~/js/modificacionesfunctions.js" asp-append-version="true"></script>
-<script src="~/js/mainfunctions.js" asp-append-version="true"></script>
-<script src="~/js/commentfunctions.js" asp-append-version="true"></script>
-<script src="~/js/telefonosfunctions.js" asp-append-version="true"></script>
-<script src="~/js/tipificacionesfunctions.js" asp-append-version="true"></script>
-<script src="~/js/tablefunctions.js" asp-append-version="true"></script>
-<script src="~/js/reagregacionesfunctions.js" asp-append-version="true"></script>
-<script src="~/js/accountfunctions.js" asp-append-version="true"></script>
-<script src="~/js/generalfunctions.js" asp-append-version="true"></script>
+<script src="~/js/mainsupervisorfunctions.js?v=@DateTime.Now.Ticks"></script>
+<script src="~/js/accountfunctions.js?v=@DateTime.Now.Ticks"></script>
+<script src="~/js/generalfunctions.js?v=@DateTime.Now.Ticks"></script>
+<script src="~/js/modificacionesfunctions.js?v=@DateTime.Now.Ticks"></script>
+<script src="~/js/mainfunctions.js?v=@DateTime.Now.Ticks"></script>
+<script src="~/js/commentfunctions.js?v=@DateTime.Now.Ticks"></script>
+<script src="~/js/telefonosfunctions.js?v=@DateTime.Now.Ticks"></script>
+<script src="~/js/tipificacionesfunctions.js?v=@DateTime.Now.Ticks"></script>
+<script src="~/js/tablefunctions.js?v=@DateTime.Now.Ticks"></script>
+<script src="~/js/reagregacionesfunctions.js?v=@DateTime.Now.Ticks"></script>
+<script src="~/js/accountfunctions.js?v=@DateTime.Now.Ticks"></script>
+<script src="~/js/generalfunctions.js?v=@DateTime.Now.Ticks"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {

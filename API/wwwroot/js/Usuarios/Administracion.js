@@ -16,14 +16,15 @@ function CambiarEstadoUsuario(accion, idUsuario) {
                 });
             } else {
                 Swal.fire({
-                    title: 'El Estado del asesor fue cambiado correctamente. Se recargara la pagina en 3 segundos para visualizar los cambios. ',
+                    title: 'El Estado del asesor fue cambiado correctamente',
                     text: response.message,
                     icon: 'success',
                     confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        location.reload();
+                    }
                 });
-                setTimeout(function() {
-                    location.reload();
-                }, 3000);
             }
         },
         error: function (error) {

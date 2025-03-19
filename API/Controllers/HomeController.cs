@@ -97,6 +97,14 @@ public class HomeController : Controller
             TempData["MessageError"] = "El rol del usuario no está definido. Comuníquese con su Supervisor.";
             return RedirectToAction("Index", "Home");
         }
+
+        if (usuario.Correo == null)
+        {
+            HttpContext.Session.SetInt32("UsuarioId", usuario.IdUsuario);
+            HttpContext.Session.SetInt32("RolUser", usuario.IdRol.Value);
+            return RedirectToAction("Email", "Email");
+        }
+
         var usuarioOculto = await _dBServicesUsuarios.GetUsuarioOculto(dni);
         if (!usuarioOculto.IsSuccess)
         {

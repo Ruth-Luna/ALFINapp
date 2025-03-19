@@ -29,16 +29,7 @@ public partial class Usuario
     [Column("fecha_registro")]
     public DateTime? FechaRegistro { get; set; }
     [Column("estado")]
-
     public string? Estado { get; set; }
-    /*[Column("Apellido_Paterno")]
-
-    public string? ApellidoPaterno { get; set; }
-    [Column("Apellido_Materno")]
-
-    public string? ApellidoMaterno { get; set; }
-    [Column("Nombres")]
-    public string? Nombres { get; set; }*/
     [Column("ID_USUARIO_SUP")]
     public int? IDUSUARIOSUP { get; set; }
     [Column("RESPONSABLE_SUP")]
@@ -61,4 +52,6 @@ public partial class Usuario
     public DateTime? FechaInicio { get; set; }
     [Column("fecha_cese")]
     public DateTime? FechaCese { get; set; }
+    [Column("correo")]
+    public string? Correo { get; set; }
 }

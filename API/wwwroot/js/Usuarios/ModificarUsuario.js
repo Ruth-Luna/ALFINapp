@@ -1,5 +1,4 @@
 function cambiarDatos(idUsuario) {
-
     var datosUsuario = {
         IdUsuario: parseInt(idUsuario),
         Dni: document.getElementById('txtDNI_EU').value.trim() || null,
@@ -12,10 +11,10 @@ function cambiarDatos(idUsuario) {
         FechaInicio: document.getElementById('dateFechaInicio_EU').value ? new Date(document.getElementById('dateFechaInicio_EU').value).toISOString() : null,
         FechaCese: document.getElementById('dateFechaCese_EU').value ? new Date(document.getElementById('dateFechaCese_EU').value).toISOString() : null
     };
-    if (datosUsuario.Dni === "" || 
-        datosUsuario.NombresCompletos === "" || 
-        datosUsuario.Estado === "" || 
-        datosUsuario.IdRol === "" ) {
+    if (datosUsuario.Dni === "" ||
+        datosUsuario.NombresCompletos === "" ||
+        datosUsuario.Estado === "" ||
+        datosUsuario.IdRol === "") {
         Swal.fire({
             title: 'Error al actualizar los datos',
             text: 'Debe completar los campos DNI, Nombres Completos y Rol',
@@ -48,10 +47,11 @@ function cambiarDatos(idUsuario) {
                     text: response.message,
                     icon: 'success',
                     confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        location.reload();
+                    }
                 });
-                setTimeout(function () {
-                    location.reload();
-                }, 3000);
             }
         },
         error: function (error) {
@@ -60,10 +60,11 @@ function cambiarDatos(idUsuario) {
                 text: error,
                 icon: 'error',
                 confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    location.reload();
+                }
             });
-            setTimeout(function () {
-                location.reload();
-            }, 2000);
         }
     });
 }

@@ -84,7 +84,6 @@ namespace ALFINapp.API.Controllers
             }
 
             var dataInicio = executeInicio.Data;
-
             ViewData["TotalClientes"] = dataInicio.clientesTotal;
             ViewData["ClientesPendientes"] = dataInicio.clientesPendientes;
             ViewData["ClientesTipificados"] = dataInicio.clientesTipificados;

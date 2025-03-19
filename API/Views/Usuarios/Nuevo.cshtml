@@ -134,6 +134,14 @@
                     El telefono solo puede tener números.
                 </div>
             </div>
+            <div class="mb-2">
+                <label for="Nuevo_correo" class="form-label">Correo</label>
+                <input type="text" class="form-control" id="Nuevo_correo" name="Nuevo_correo" required
+                    oninput="validarEmail('Nuevo_correo')">
+                <div class="invalid-feedback" id="Nuevo_correo-error">
+                    El formato del Correo es incorrecto
+                </div>
+            </div>
             <div class="mb-2" id="campoSupervisores" style="display: none;">
                 <div class="alert alert-secondary mb-2">
                     <strong>Nota:</strong> Si el rol seleccionado es de <strong>ASESOR DE CREDITOS</strong> es necesario
@@ -162,6 +170,6 @@
 </div>
 
 @section Scripts {
-    <script src="~/js/Usuarios/Nuevo.js" asp-append-version="true"></script>
-    <script src="~/js/Asesores/Usuarios.js" asp-append-version="true"></script>
+    <script src="~/js/Usuarios/Nuevo.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/js/Asesores/Usuarios.js?v=@DateTime.Now.Ticks"></script>
 }

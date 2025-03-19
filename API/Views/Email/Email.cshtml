@@ -1,0 +1,57 @@
+@{
+    var rol = (int?)ViewData["Rol"];
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/main_page.css">
+}
+
+<div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="GeneralTemplateTitleModalLabel">IMPORTANTE!</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalContentGeneralTemplate">
+                    <div class="container">
+                        <h4>Registre su Email</h4>
+                        <div class="alert alert-info mb-2">
+                            <span id="email-message">
+                                Para procesar todas las derivaciones de correo electrónico, debe registrar su correo
+                                electrónico.
+                                @if (rol == 3)
+                                {
+                                    <span>
+                                        Una copia de la derivación se enviará a su correo electrónico, y a la de su
+                                        Supervisor.
+                                    </span>
+                                }
+                                <strong>
+                                    Sus derivaciones se guardaran mas no se procesarán si no se registra su correo
+                                    electrónico.
+                                </strong>
+                            </span>
+                        </div>
+                        <div id="EmailForm_For_Users" class="mb-3">
+                            <div class="">
+                                <label for="email_update_users">Email</label>
+                                <input type="email" class="form-control" id="email_update_users"
+                                    placeholder="Ingrese su email">
+                            </div>
+                        </div>
+                        <div class="container">
+                            <a href="javascript:void(0)" class="btn btn-success me-2" onclick="registrarEmail('EmailForm_For_Users')">Registrar Email</a>
+                            <a href="@Url.Action("Redireccionar", "Error")" class="btn btn-secondary">Continuar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/Email/Email.js?v=@DateTime.Now.Ticks"></script>
+}

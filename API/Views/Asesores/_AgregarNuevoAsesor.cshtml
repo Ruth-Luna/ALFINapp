@@ -148,6 +148,14 @@
                     El telefono solo puede tener números.
                 </div>
             </div>
+            <div class="mb-3">
+                <label for="correo" class="form-label">Correo</label>
+                <input type="text" class="form-control" id="correo" name="correo" required
+                    oninput="validarEmail('correo')">
+                <div class="invalid-feedback" id="correo-error">
+                    El formato del correo no es valido.
+                </div>
+            </div>
         </div>
     </div>
     <div class="spacing"> </div>

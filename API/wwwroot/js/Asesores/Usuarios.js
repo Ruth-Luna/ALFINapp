@@ -15,7 +15,7 @@ function guardarNuevoAsesor() {
     }
 
     // Define an array of field IDs that should only contain letters
-    var soloLetrasCampos = ['region', 'apellido_paterno', 'apellido_materno', 'nombres'];
+    var soloLetrasCampos = ['apellido_paterno', 'apellido_materno', 'nombres'];
     var valid = true;
     // Perform validation for each field in the array
     soloLetrasCampos.forEach(function (campo) {
@@ -53,6 +53,17 @@ function guardarNuevoAsesor() {
         return;
     }
 
+    var correo = document.getElementById('correo').value.trim();
+    if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(correo)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'El campo Correo debe tener un formato de correo valido'
+        });
+        return;
+    }
+
+
     // Prepare the data to be sent in the AJAX request
     var dataToSend = {
         Dni: dni.toUpperCase(),
@@ -65,7 +76,8 @@ function guardarNuevoAsesor() {
             + document.getElementById('apellido_materno').value.trim()).toUpperCase(),
         Telefono: telefono,
         IdRol: 3,
-        TipoDocumento: document.getElementById('tipo_documento').value.trim().toUpperCase()
+        TipoDocumento: document.getElementById('tipo_documento').value.trim().toUpperCase(),
+        Correo: correo
     };
 
     console.log(dataToSend);
@@ -82,7 +94,12 @@ function guardarNuevoAsesor() {
                 Swal.fire({
                     icon: 'success',
                     title: 'Informacion del asesor',
-                    text: response.message
+                    text: response.message,
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        location.reload();
+                    }
                 });
             }
             else {
@@ -164,6 +181,21 @@ function validarTelefono(campo = 'telefono') {
         errorElement.style.display = 'block';
     } else {
         telefonoInput.classList.remove('is-invalid');
+        errorElement.style.display = 'none';
+    }
+}
+
+function validarEmail(campo) {
+    var email = document.getElementById(campo).value;
+    var emailInput = document.getElementById(campo);
+    var errorElement = document.getElementById(campo + '-error');
+    var regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+    if (!regex.test(email)) {
+        emailInput.classList.add('is-invalid');
+        errorElement.style.display = 'block';
+    } else {
+        emailInput.classList.remove('is-invalid');
         errorElement.style.display = 'none';
     }
 }

@@ -30,8 +30,10 @@ function enviarEdicion(campo) {
             confirmButtonText: 'OK'
         });
     }
-
-    const UsuarioMayusculas = Usuario.value.trim().toUpperCase();
+    let UsuarioMayusculas = Usuario.value.trim();
+    if (campo!="Correo") {
+        UsuarioMayusculas = Usuario.value.trim().toUpperCase();
+    }
 
     $.ajax({
         url: "/Perfil/EnviarEdicion",

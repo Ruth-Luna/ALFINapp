@@ -24,7 +24,6 @@ function guardarNuevoUsuario() {
         }
     });
 
-    // If any field fails validation, log an error message and return
     if (!valid) {
         Swal.fire({
             icon: 'error',
@@ -46,6 +45,16 @@ function guardarNuevoUsuario() {
         return;
     }
 
+    var email = document.getElementById('Nuevo_correo').value.trim();
+    if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'El campo Email no tiene un formato valido'
+        });
+        return;
+    }
+
     // Prepare the data to be sent in the AJAX request
     var dataToSend = {
         Dni: dni.toUpperCase(),
@@ -59,7 +68,8 @@ function guardarNuevoUsuario() {
         Telefono: telefono,
         IdRol: document.getElementById('Nuevo_rol').value.trim().toUpperCase(),
         IDUSUARIOSUP: parseInt(document.getElementById('Nuevo_Supervisor').value),
-        TipoDocumento: document.getElementById('tipo_documento').value.trim().toUpperCase()
+        TipoDocumento: document.getElementById('tipo_documento').value.trim().toUpperCase(),
+        Correo: email
     };
 
     console.log(dataToSend);
@@ -77,6 +87,11 @@ function guardarNuevoUsuario() {
                     icon: 'success',
                     title: 'Informacion del asesor',
                     text: response.message,
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        location.reload();
+                    }
                 });
             }
             else {
@@ -88,7 +103,6 @@ function guardarNuevoUsuario() {
             }
         },
         error: function () {
-            // Display an error message if the AJAX request fails
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
