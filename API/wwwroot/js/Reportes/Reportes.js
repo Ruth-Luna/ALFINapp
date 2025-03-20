@@ -1,14 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
-    createGraphicDerivacion();
-    createGraphicTipificaciones();
-    createGraphicDesembolsos();
     initGraphic();
 });
 
 function initGraphic(params) {
-    const asesores = JSON.parse(document.getElementById('asesores-data').textContent);
 
-    let totalClientes = 200;
     let totalGestionados = 156;
     let totalNoGestionados = 44;
 
@@ -39,7 +34,7 @@ function initGraphic(params) {
         },
         series: [totalGestionados, totalNoGestionados],
         labels: ['Gestionados', 'No Gestionados'],
-        colors: ['#00ff00', '#ff0000'],
+        colors: ['#394097', '#5699c2'],
         legend: {
             show: true,
             position: 'bottom'
@@ -68,5 +63,40 @@ function createGraphicDesembolsos(params) {
 }
 
 function cargarReporteAsesor() {
-    
+    let numDerivados = 0;
+    let numListaNegra = 0;
+    let numPendientes = 0;
+    let numRechazados = 0;
+    let numDesembolsados = 0;
+
+    const options = {
+        chart: {
+            type: 'pie',
+            height: 350,
+            animations: {
+                enabled: true,
+                easing: 'easeinout',
+                speed: 800,
+                animateGradually: {
+                    enabled: true,
+                    delay: 150
+                },
+                dynamicAnimation: {
+                    enabled: true,
+                    speed: 350
+                }
+            },
+            events: {
+                dataPointSelection: function (event, chartContext, config) {
+                    if (config.dataPointIndex === 0) {
+                        cargarReporteDerivador();
+                    }
+                }
+            }
+        },
+        series: [{
+            name: 'Derivados',
+            
+        }],
+    };
 }
