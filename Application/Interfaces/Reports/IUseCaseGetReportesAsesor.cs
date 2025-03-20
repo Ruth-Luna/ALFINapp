@@ -6,8 +6,8 @@ using ALFINapp.Domain.Entities;
 
 namespace ALFINapp.Application.Interfaces.Reports
 {
-    public interface IUseCaseGetReportesAdministrador
+    public interface IUseCaseGetReportesAsesor
     {
-        public Task<(bool IsSuccess, string Message, Reporte? Data)> Execute(string? email, int idUsuario);
+        public Task<(bool IsSuccess, string Message, Reporte? Data)> Execute(int idUsuario);
     }
 }

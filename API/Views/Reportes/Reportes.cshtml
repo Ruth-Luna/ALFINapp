@@ -9,7 +9,7 @@
 }
 
 <div class="container mt-4">
-    <h3> Reportes Total Trabajados </h3>
+    <h3> Reportes Totales </h3>
     <div class="mt-4">
         <div class="container mt-3" id="lista-reportes-usuario-asesor">
             <select class="form-control mt-3" name="lista-usuario-asesor" id="lista-usuario-asesor"
@@ -24,31 +24,57 @@
                 }*@
             </select>
 
-            <div class="flex-container mt-3">
-                <div class="flex-item">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5> Reporte de Asesor </h5>
+            <div class="flex-container mt-4">
+                @*Row --- 01*@
+                <div class="row">
+                    <div class="col">
+                        <div class="align-items-center">
+                            <h5>Progreso General</h5>
                         </div>
-                        <div class="card-body">
-                            <div id="chart-asesor">
-                                @*Aca se cargara las graficas del Asesor*@
-                            </div>
+                        <div id="chart-progreso-general">
+                            @*Aca se cargara las graficas del Asesor*@
                         </div>
                     </div>
                 </div>
-
-                @*<div class="flex-item">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5> Reporte de Supervisor </h5>
-                        </div>
-                        <div class="card-body">
-                            <div id="chart-supervisor"></div>
+                @*Row --- 02*@
+                <div class="row">
+                    <div class="col-6">
+                        <h5> Reporte del Supervisor </h5>
+                        <div id="chart-supervisor">
+                            @*Aca se cargara las graficas del Asesor*@
                         </div>
                     </div>
-                </div>*@
-
+                    <div class="col-6" id="div-supervisor-detalle" style="display: none;">
+                        <h5> Reporte de Especifico del Supervisor </h5>
+                        <div id="chart-supervisor-detalle">
+                            @*Aca se cargara las graficas del Supervisor*@
+                        </div>
+                    </div>
+                </div>
+                @*Row --- 03*@
+                <div class="row">
+                    <div class="col-6">
+                        <h5> Reporte de Asesor </h5>
+                        <div id="chart-asesor">
+                            @*Aca se cargara las graficas del Asesor*@
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <h5>Derivaciones por Fecha</h5>
+                        <div id="chart-derivaciones">
+                            @*Aca se cargara las graficas del Asesor*@
+                        </div>
+                    </div>
+                </div>
+                @*Row --- 04*@
+                <div class="row">
+                    <div class="col" id="div-asesor-detalle" style="display: none;">
+                        <h5> Reporte de Especifico del Asesor </h5>
+                        <div id="chart-asesor-detalle">
+                            @*Aca se cargara las graficas del Supervisor*@
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

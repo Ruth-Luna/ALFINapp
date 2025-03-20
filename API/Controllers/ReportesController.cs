@@ -13,6 +13,7 @@ namespace ALFINapp.API.Controllers
     [Route("[controller]")]
     public class ReportesController : Controller
     {
+        
         public ReportesController()
         {
         }

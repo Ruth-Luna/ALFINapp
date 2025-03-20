@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace ALFINapp.Domain.Entities
 {
-    public class Reportes
+    public class Reporte
     {
-        
+        public int IdReporte { get; set; }
     }
 }
