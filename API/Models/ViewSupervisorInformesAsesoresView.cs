@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ALFINapp.API.Models
 {
-    public class ReportesGeneral
+    public class ViewSupervisorInformesAsesores
     {
         
     }

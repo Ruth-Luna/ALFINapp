@@ -31,7 +31,7 @@ namespace ALFINapp.API.Controllers
             return View("Email");
         }
         [HttpPost]
-        public async Task<IActionResult> RegisterEmail([FromBody] RegisterEmailDto request)
+        public async Task<IActionResult> RegisterEmail([FromBody] DtoVRegisterEmail request)
         {
             var idUsuario = Convert.ToInt32(HttpContext.Session.GetInt32("UsuarioId"));
             var result = await _useCaseRegisterEmail.Execute(request.email_update_users, idUsuario);

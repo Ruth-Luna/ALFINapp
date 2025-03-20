@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ALFINapp.API.DTOs
 {
-    public class RegisterEmailDto
+    public class DtoVRegisterEmail
     {
         public string? email_update_users { get; set; }
     }

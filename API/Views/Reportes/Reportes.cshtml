@@ -1,26 +1,64 @@
-@model ALFINapp.API.Models.ReportesGeneral
+@*@model ALFINapp.API.Models.ViewReportesGeneral*@
 @{
-
+    /*var Usuarios = Model.Usuarios;
+    var Supervisores = Model.Supervisores;*/
 }
 
-@section Styles{
+@section Styles {
     <link rel="stylesheet" href="~/css/Reportes.css">
 }
 
 <div class="container mt-4">
-    
-    <div class="row mb-4">
-        <h3>Reportes Derivaciones</h3>
-        <div class="col-6">
-            
-        </div>
-        <div class="col-6">
-            
+    <h3> Reportes Total Trabajados </h3>
+    <div class="mt-4">
+        <div class="container mt-3" id="lista-reportes-usuario-asesor">
+            <select class="form-control mt-3" name="lista-usuario-asesor" id="lista-usuario-asesor"
+                onchange="cargarReporteAsesor()">
+                <option value=""> Seleccion un Asesor de Creditos </option>
+                @*@foreach (var usuario in Usuarios)
+                {
+                    @if (usuario.Usuario.IdRol == 3 && usuario.Usuario.Estado == "ACTIVO")
+                    {
+                        <option value="@usuario.Usuario.IdUsuario"> @usuario.Usuario.NombresCompletos </option>
+                    }
+                }*@
+            </select>
+
+            <div class="flex-container mt-3">
+                <div class="flex-item">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5> Reporte de Asesor </h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-asesor">
+                                @*Aca se cargara las graficas del Asesor*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @*<div class="flex-item">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5> Reporte de Supervisor </h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-supervisor"></div>
+                        </div>
+                    </div>
+                </div>*@
+
+            </div>
         </div>
     </div>
 </div>
 
-@section Scripts{
+@section Scripts {
+
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script type="application/json" id="asesores-data">
+        
+    </script>
     <script src="~/js/Reportes/Reportes.js?v=@DateTime.Now.Ticks"></script>
 }

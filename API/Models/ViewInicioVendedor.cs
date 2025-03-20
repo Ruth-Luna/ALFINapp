@@ -8,7 +8,7 @@ using ALFINapp.Infrastructure.Persistence.Models;
 
 namespace ALFINapp.API.Models
 {
-    public class InicioVendedor
+    public class ViewInicioVendedor
     {
         public List<Cliente>? ClientesA365 { get; set; }
         public Usuario? Vendedor { get; set; }

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using ALFINapp.API.Filters;
+using ALFINapp.API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -20,11 +21,6 @@ namespace ALFINapp.API.Controllers
         public IActionResult Reportes()
         {
             var rol = HttpContext.Session.GetInt32("UsuarioRol");
-            if (rol == null)
-            {
-                TempData["MessageError"] = "No tiene permisos para acceder a esta sección";
-                return RedirectToAction("Index", "Home");
-            }
             if (rol == 1)
             {
                 
@@ -37,6 +33,7 @@ namespace ALFINapp.API.Controllers
             {
                 
             }
+            var reportes = new ViewReportesGeneral { };
             return View("Reportes");
         }
     }

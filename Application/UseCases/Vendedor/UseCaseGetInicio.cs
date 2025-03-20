@@ -12,7 +12,7 @@ namespace Application.UseCases.Vendedor
         {
             _repositoryVendedor = repositoryVendedor;
         }
-        public async Task<(bool IsSuccess, string Message, InicioVendedor? Data)> Execute(int idUsuario)
+        public async Task<(bool IsSuccess, string Message, ViewInicioVendedor? Data)> Execute(int idUsuario)
         {
             int currentYear = DateTime.Now.Year;
             int currentMonth = DateTime.Now.Month;
@@ -49,7 +49,7 @@ namespace Application.UseCases.Vendedor
 
             int totalClientes = convertClientesA365.Count + convertClientesAlfin.Count;
 
-            var convertVarInicio = new InicioVendedor
+            var convertVarInicio = new ViewInicioVendedor
             {
                 ClientesA365 = convertClientesA365,
                 Vendedor = usuario,
