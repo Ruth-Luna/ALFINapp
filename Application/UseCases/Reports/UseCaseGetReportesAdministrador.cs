@@ -13,6 +13,7 @@ namespace ALFINapp.Application.UseCases.Reports
         {
             try
             {
+                
                 return (true, "Reportes obtenidos correctamente", null);
             }
             catch (System.Exception ex)
