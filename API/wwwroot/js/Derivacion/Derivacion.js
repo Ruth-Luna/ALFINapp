@@ -3,11 +3,45 @@ let rowsPerPage = 20;
 let rows = document.querySelectorAll("tbody tr");
 let totalPages = Math.ceil(rows.length / rowsPerPage);
 
-document.addEventListener("click", function () {
+document.addEventListener("DOMContentLoaded", function () {
     var informationTabla = document.getElementById("total-actual");
-    let visibleRows = Array.from(rows).filter(row => row.style.display !== "none");
-    informationTabla.textContent = `Mostrando ${visibleRows.length} registros`;
+    var tables = {
+        "tablaDerivacionesGestion": document.getElementById("tablaDerivacionesGestion"),
+        "tablaDerivacionesSistema": document.getElementById("tablaDerivacionesSistema"),
+        "tablaGeneralGestion": document.getElementById("tablaGeneralGestion"),
+        "tablaGeneralSistema": document.getElementById("tablaGeneralSistema") // La tabla que aparece primero
+    };
+    function updateTableInfo() {
+        let activeTable = Object.values(tables).find(table => isTableVisible(table));
+        if (!activeTable) {
+            informationTabla.textContent = `Mostrando 0 registros`;
+            return;
+        }
+        let tbody = activeTable.querySelector("tbody");
+        let rows = tbody ? tbody.getElementsByTagName("tr") : [];
+        let visibleRows = Array.from(rows).filter(row => row.offsetParent !== null); // Detectar filas visibles
+        let rowCount = visibleRows.length;
+        if (activeTable.id === "tablaGeneralSistema") {
+            rowCount = Math.max(rowCount - 1, 0); // Restar 1 solo en este caso
+        }
+        informationTabla.textContent = `Mostrando ${rowCount} registros`;
+    }
+    function isTableVisible(table) {
+        if (!table) return false;
+        let style = window.getComputedStyle(table);
+        return style.display !== "none" && style.visibility !== "hidden" && style.opacity !== "0";
+    }
+    // Observador para detectar cambios en las tablas
+    var observer = new MutationObserver(updateTableInfo);
+    Object.values(tables).forEach(table => {
+        if (table) {
+            observer.observe(table, { childList: true, subtree: true, attributes: true });
+        }
+    });
+    // Ejecutar la función una vez al inicio
+    setTimeout(updateTableInfo, 10000);
 });
+
 
 document.addEventListener("DOMContentLoaded", function () {
     activatePagination(0);
