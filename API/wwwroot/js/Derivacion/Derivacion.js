@@ -3,6 +3,12 @@ let rowsPerPage = 20;
 let rows = document.querySelectorAll("tbody tr");
 let totalPages = Math.ceil(rows.length / rowsPerPage);
 
+document.addEventListener("click", function () {
+    var informationTabla = document.getElementById("total-actual");
+    let visibleRows = Array.from(rows).filter(row => row.style.display !== "none");
+    informationTabla.textContent = `Mostrando ${visibleRows.length} registros`;
+});
+
 document.addEventListener("DOMContentLoaded", function () {
     activatePagination(0);
 });

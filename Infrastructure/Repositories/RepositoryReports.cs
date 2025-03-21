@@ -137,16 +137,17 @@ namespace ALFINapp.Infrastructure.Repositories
                     .Where(x => x.FechaDerivacion.Year == DateTime.Now.Year
                         && x.FechaDerivacion.Month == DateTime.Now.Month)
                     .ToListAsync();
-                var getDnis = getDerivacionesGral.Select(x => x.DniAsesor).ToHashSet();
+                var getDnisAsesor = getDerivacionesGral.Select(x => x.DniAsesor).ToHashSet();
+                var getDnisCliente = getDerivacionesGral.Select(x => x.DniCliente).ToHashSet();
                 var getGestionDetalles = await _context.GESTION_DETALLE
-                    .Where(x => getDnis.Contains(x.DocCliente)
+                    .Where(x => getDnisCliente.Contains(x.DocCliente)
                         && x.FechaGestion.Year == DateTime.Now.Year
                         && x.FechaGestion.Month == DateTime.Now.Month)
                     .GroupBy(x => x.DocCliente)
                     .Select(g => g.OrderByDescending(x => x.IdFeedback).First())
                     .ToListAsync();
                 var getDesembolsos = await _context.desembolsos
-                    .Where(x => getDnis.Contains(x.DniDesembolso)
+                    .Where(x => getDnisCliente.Contains(x.DniDesembolso)
                         && x.FechaDesembolsos.HasValue
                         && x.FechaDesembolsos.Value.Year == DateTime.Now.Year
                         && x.FechaDesembolsos.Value.Month == DateTime.Now.Month

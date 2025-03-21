@@ -7,6 +7,5 @@ namespace ALFINapp.Domain.Entities
 {
     public class Reporte
     {
-        public int IdReporte { get; set; }
     }
 }

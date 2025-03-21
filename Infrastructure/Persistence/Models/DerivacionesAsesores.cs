@@ -38,5 +38,7 @@ namespace ALFINapp.Infrastructure.Persistence.Models
         public int? IdAsignacion { get; set; }
         [Column("observacion_derivacion")]
         public string? ObservacionDerivacion { get; set; }
+        [Column("fue_enviado_email")]
+        public bool? FueEnviadoEmail { get; set; }
     }
 }

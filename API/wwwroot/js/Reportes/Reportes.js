@@ -1,10 +1,20 @@
+let reportesData;
 document.addEventListener('DOMContentLoaded', function () {
-    initGraphicAsesor();
-    initGraphicSupervisor();
+    var reportesElement = document.getElementById("reportes-data");
+    reportesData = JSON.parse(reportesElement.getAttribute("data-json"));
+    console.log("Datos cargados:", reportesData);
+    /*initGraphicAsesor();
+    initGraphicSupervisor();*/
     cargarParametrosGenerales();
-    cargarReporteAsesor();
-    cargarReporteSupervisor();
+    /*cargarReporteAsesor();
+    cargarReporteSupervisor();*/
     cargarProgreso();
+});
+
+document.addEventListener('click', function () {
+    console.log("Se hizo clic en la pantalla" 
+        + reportesData["totalDerivaciones"]
+        + reportesData["totalClientes"]);
 });
 
 function initGraphicSupervisor(params) {
@@ -219,6 +229,17 @@ function cargarReporteSupervisor() {
 }
 
 function cargarParametrosGenerales() {
+    var derivacionesFecha = reportesData["numDerivacionesXFecha"];
+    console.log("Derivaciones por fecha:", derivacionesFecha);
+    var fechas = [];
+    var contador = [];
+    derivacionesFecha.forEach( item => {
+        fechas.push(item["fecha"]);
+        contador.push(item["contador"]);
+        console.log(item["fecha"]);
+        console.log(item["contador"]);
+    });
+
     var options = {
         chart: {
             height: 350,
@@ -228,19 +249,15 @@ function cargarParametrosGenerales() {
         dataLabels: {
             enabled: false
         },
-        colors: ["#FF1654", "#247BA0"],
+        colors: ["#FF1654"],
         series: [
             {
-                name: "Tipificaciones Por Fecha",
-                data: [111, 220, 250, 150, 238, 281, 380, 460]
-            },
-            {
                 name: "Derivaciones Por Fecha",
-                data: [20, 29, 37, 36, 44, 41, 36, 44]
+                data: contador
             }
         ],
         stroke: {
-            width: [4, 4]
+            width: [4]
         },
         plotOptions: {
             bar: {
@@ -248,7 +265,7 @@ function cargarParametrosGenerales() {
             }
         },
         xaxis: {
-            categories: ['03/Mar', '04/Mar', '05/Mar', '06/Mar', '07/Mar', '08/Mar', '09/Mar', '10/Mar']
+            categories: fechas
         },
         yaxis: [
             {
@@ -268,27 +285,6 @@ function cargarParametrosGenerales() {
                     text: "Num Tipificaciones",
                     style: {
                         color: "#FF1654"
-                    }
-                }
-            },
-            {
-                opposite: true,
-                axisTicks: {
-                    show: true
-                },
-                axisBorder: {
-                    show: true,
-                    color: "#247BA0"
-                },
-                labels: {
-                    style: {
-                        colors: "#247BA0"
-                    }
-                },
-                title: {
-                    text: "Num Derivaciones",
-                    style: {
-                        color: "#247BA0"
                     }
                 }
             }
@@ -317,7 +313,7 @@ function cargarProgreso() {
             type: "radialBar"
         },
 
-        series: [67],
+        series: [Math.floor(reportesData["totalDerivacionesDesembolsadas"] / reportesData["totalDerivaciones"] * 100)],
 
         plotOptions: {
             radialBar: {

@@ -5,7 +5,7 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/Reportes.css">
+    <link rel="stylesheet" href="~/css/main_page.css">
 }
 
 <div class="container mt-4">
@@ -80,7 +80,10 @@
     </div>
 </div>
 
+<div id="reportes-data" data-json='@Html.Raw(Json.Serialize(Model))'></div>
+
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    
     <script src="~/js/Reportes/Reportes.js?v=@DateTime.Now.Ticks"></script>
 }

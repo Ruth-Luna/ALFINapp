@@ -9,8 +9,8 @@ namespace ALFINapp.Application.DTOs
 {
     public class DetallesReportesDerivacionesDTO
     {
-        public List<DerivacionesAsesores>? DerivacionesGral { get; set; }
-        public List<GESTIONDETALLE>? GestionDetalles { get; set; }
-        public List<Desembolsos>? Desembolsos { get; set; }
+        public List<DerivacionesAsesores> DerivacionesGral { get; set; } = new List<DerivacionesAsesores>();
+        public List<GESTIONDETALLE> GestionDetalles { get; set; } = new List<GESTIONDETALLE>();
+        public List<Desembolsos> Desembolsos { get; set; } = new List<Desembolsos>();
     }
 }
