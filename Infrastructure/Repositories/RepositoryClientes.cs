@@ -83,5 +83,26 @@ namespace ALFINapp.Infrastructure.Repositories
                 return null;
             }
         }
+
+        public async Task<DetallesAsignacionesDTO?> GetAsignacion(int idAsignacion)
+        {
+            try
+            {
+                var getAsig = await _context.clientes_asignados
+                    .AsNoTracking()
+                    .Where(x => x.IdAsignacion == idAsignacion)
+                    .FirstOrDefaultAsync();
+                if (getAsig != null)
+                {
+                    return new DetallesAsignacionesDTO(getAsig);
+                }
+                return null;
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+        }
     }
 }

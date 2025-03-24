@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ALFINapp.Infrastructure.Persistence.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,31 @@ namespace ALFINapp.Infrastructure.Repositories
         {
             _context = context;
         }
+
+        public async Task<Usuario?> GetUser(int idUsuario)
+        {
+            try
+            {
+                var usuario = await _context
+                    .usuarios
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.IdUsuario == idUsuario);
+                if (usuario != null)
+                {
+                    return usuario;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
         public async Task<bool> RegisterEmail(string? email, int idUsuario)
         {
             try

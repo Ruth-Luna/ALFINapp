@@ -1,5 +1,6 @@
 using System.Security;
 using System.Text.RegularExpressions;
+using ALFINapp.API.DTOs;
 using ALFINapp.API.Filters;
 using ALFINapp.Application.Interfaces.Vendedor;
 using ALFINapp.Application.UseCases.Tipificacion;
@@ -414,7 +415,7 @@ namespace ALFINapp.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GuardarTipificacionesNumPersonales(List<TipificarClienteDTO> tipificaciones, int IdAsignacionCliente)
+        public async Task<IActionResult> GuardarTipificacionesNumPersonales(List<DtoVTipificarCliente> tipificaciones, int IdAsignacionCliente)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)

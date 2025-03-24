@@ -11,5 +11,6 @@ namespace ALFINapp.Domain.Interfaces
         public Task<List<DetallesAsignacionesDTO>?> GetAllAsignaciones(int idCliente);
         public Task<List<DetallesAsignacionesDTO>?> GetAllAsignaciones();
         public Task<List<DetallesAsignacionesDTO>?> GetAllAsignacionesTrabajadas();
+        public Task<DetallesAsignacionesDTO?> GetAsignacion(int idAsignacion);
     }
 }

@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Services;
-using ALFINapp.API.Filters; // Replace with the correct namespace where DBServicesGeneral is defined
+using ALFINapp.API.Filters;
+using ALFINapp.API.DTOs; // Replace with the correct namespace where DBServicesGeneral is defined
 
 namespace ALFINapp.API.Controllers
 {
@@ -95,7 +96,7 @@ namespace ALFINapp.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> TipificarMotivo(List<TipificarClienteDTO> tipificaciones, int IdAsignacion)
+        public async Task<IActionResult> TipificarMotivo(List<DtoVTipificarCliente> tipificaciones, int IdAsignacion)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)

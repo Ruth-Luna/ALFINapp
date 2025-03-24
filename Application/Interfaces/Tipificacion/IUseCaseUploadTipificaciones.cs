@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using ALFINapp.API.DTOs;
 
 namespace ALFINapp.Application.Interfaces.Tipificacion
 {
     public interface IUseCaseUploadTipificaciones
     {
-        public Task<(bool, string)> execute();
+        public Task<(bool, string)> execute(int idUsuario, List<DtoVTipificarCliente> tipificaciones, int IdAsignacion);
     }
 }
