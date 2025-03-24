@@ -119,7 +119,8 @@ namespace ALFINapp.Infrastructure.Services
                         && x.FechaDesembolsos.HasValue
                         && x.FechaDesembolsos.Value.Year == DateTime.Now.Year
                         && x.FechaDesembolsos.Value.Month == DateTime.Now.Month
-                        && x.Sucursal != null)
+                        && x.Sucursal != null
+                        && x.DocAsesor != null)
                     .OrderByDescending(x => x.FechaDesembolsos)
                     .ToListAsync();
                 var getInformationA365 = await _context.base_clientes
@@ -196,7 +197,18 @@ namespace ALFINapp.Infrastructure.Services
                                             NombreCompletoCliente = cliente.NombreCliente,
                                             Telefono = cliente.TelefonoCliente,
                                             OrigenTelefono = "A365",
+                                            DocAsesorDesembolso = desem != null ? desem.DocAsesor != null ? desem.DocAsesor : "NO SE ENCONTRO": "NO DESEMBOLSADO",
                                         }).ToList();
+                foreach (var item in joinInformation)
+                {
+                    if (item.DocAsesor != item.DocAsesorDesembolso && item.FueDesembolsado == true)
+                    {
+                        item.IdDesembolso = 0;
+                        item.FechaDesembolso = null;
+                        item.FueDesembolsado = false;
+                        item.EstadoDesembolso = $"NO DESEMBOLSADO";
+                    }
+                }
 
                 joinInformation = joinInformation.OrderBy(x => x.FechaDerivacion).ToList();
                 joinInformation = joinInformation

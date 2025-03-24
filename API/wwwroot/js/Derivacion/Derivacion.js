@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", function () {
     var informationTabla = document.getElementById("total-actual");
     var tables = {
         "tablaDerivacionesGestion": document.getElementById("tablaDerivacionesGestion"),
-        "tablaDerivacionesSistema": document.getElementById("tablaDerivacionesSistema"),
         "tablaGeneralGestion": document.getElementById("tablaGeneralGestion"),
         "tablaGeneralSistema": document.getElementById("tablaGeneralSistema") // La tabla que aparece primero
     };
@@ -48,66 +47,54 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function cargarDerivacionesXAsesorSistema(DniAsesor) {
-    tablaDerivacionesSistema = document.getElementById("tablaDerivacionesSistema")
-    tablaDerivacionesGestion = document.getElementById("tablaDerivacionesGestion")
-    tablaGeneralSistema = document.getElementById("tablaGeneralSistema")
-    tablaGeneralGestion = document.getElementById("tablaGeneralGestion")
-    if (DniAsesor == "") {
-        tablaGeneralSistema.style = "display: block;"; // Muestra la tabla general
-        tablaDerivacionesSistema.style = "display: none;"
-        tablaDerivacionesSistema.loadedfield = "false"
-        tablaDerivacionesSistema.currentDni = ""
-        tablaDerivacionesGestion.style = "display: none;"
-        tablaDerivacionesGestion.loadedfield = "false"
-        tablaGeneralGestion.style = "display: none;"
+    const tablaGeneralSistema = document.getElementById("tablaGeneralSistema");
+    const tablaDerivacionesGestion = document.getElementById("tablaDerivacionesGestion");
+    const tablaGeneralGestion = document.getElementById("tablaGeneralGestion");
+
+    if (!tablaGeneralSistema) return;
+
+    const tabla = tablaGeneralSistema.querySelector("table");
+    if (!tabla) return;
+
+    const filas = Array.from(tabla.getElementsByTagName("tr")).slice(3); // Excluye encabezados
+
+    if (DniAsesor === "") {
+        filas.forEach(fila => (fila.style.display = "")); // Muestra todas las filas
+        tablaGeneralSistema.style.display = "block";
+        tablaDerivacionesGestion.style.display = "none";
+        tablaDerivacionesGestion.loadedfield = "false";
+        tablaGeneralGestion.style.display = "none";
+        activatePagination(0);
         return;
-    } else {
-        $.ajax({
-            type: 'GET',
-            url: '/Derivacion/ObtenerDerivacionesXAsesor',
-            data: {
-                DniAsesor: DniAsesor
-            },
-            success: function (response) {
-                if (response.success === false) {
-                    Swal.fire({
-                        title: 'Error al cargar las derivaciones',
-                        text: response.message,
-                        icon: 'error',
-                        confirmButtonText: 'Aceptar'
-                    });
-                    return;
-                } else {
-                    tablaDerivacionesSistema.style = "display: block;"
-                    tablaDerivacionesSistema.loadedfield = "true"
-                    tablaDerivacionesSistema.currentDni = DniAsesor
-                    tablaDerivacionesGestion.style = "display: none;"
-                    tablaGeneralSistema.style = "display: none;"
-                    tablaGeneralGestion.style = "display: none;"
-                    $('#tablaDerivacionesSistema').html(response);
-                }
-            },
-            error: function (error) {
-                Swal.fire({
-                    title: 'Error al cargar las derivaciones',
-                    text: 'Hubo un error inesperado al cargar las derivaciones.',
-                    icon: 'error',
-                    confirmButtonText: 'Aceptar'
-                });
-            }
-        });
+    }
+
+    let tieneCoincidencias = false;
+
+    filas.forEach(fila => {
+        const columnaDni = fila.cells[4]; // Columna 5 (DNI Asesor, índice 4 basado en 0)
+        if (!columnaDni) return;
+
+        const dniFila = columnaDni.textContent.trim();
+        const coincide = dniFila === DniAsesor;
+
+        fila.style.display = coincide ? "" : "none";
+        tieneCoincidencias ||= coincide;
+    });
+
+    // Si no hay coincidencias, podrías ocultar la tabla o mostrar un mensaje
+    if (!tieneCoincidencias) {
+        console.warn("No se encontraron registros para el DNI:", DniAsesor);
     }
 }
 
 function cargarDerivacionesGestion(DniAsesor) {
     tablaGeneralGestion = document.getElementById("tablaGeneralGestion")
     tablaGeneralSistema = document.getElementById("tablaGeneralSistema")
-    tablaDerivacionesSistema = document.getElementById("tablaDerivacionesSistema")
+
     tablaDerivacionesGestion = document.getElementById("tablaDerivacionesGestion")
     if (tablaGeneralGestion.loadedfield === "true") {
         tablaGeneralGestion.style = "display: block;"
         tablaGeneralSistema.style = "display: none;"
-        tablaDerivacionesSistema.style = "display: none;"
         tablaDerivacionesGestion.style = "display: none;"
         return;
     }
@@ -131,7 +118,6 @@ function cargarDerivacionesGestion(DniAsesor) {
                 tablaGeneralGestion.style = "display: block;"
                 tablaGeneralGestion.loadedfield = "true"
                 tablaGeneralSistema.style = "display: none;"
-                tablaDerivacionesSistema.style = "display: none;"
                 tablaDerivacionesGestion.style = "display: none;"
                 return;
             }
@@ -148,18 +134,17 @@ function cargarDerivacionesGestion(DniAsesor) {
 }
 
 function cargarDerivacionesSistema() {
-    tablaDerivacionesSistema = document.getElementById("tablaDerivacionesSistema")
+
     tablaDerivacionesGestion = document.getElementById("tablaDerivacionesGestion")
     tablaGeneralSistema = document.getElementById("tablaGeneralSistema")
     tablaGeneralGestion = document.getElementById("tablaGeneralGestion")
     tablaGeneralSistema.style = "display: block;"
     tablaGeneralGestion.style = "display: none;"
-    tablaDerivacionesSistema.style = "display: none;"
     tablaDerivacionesGestion.style = "display: none;"
 }
 
 function cargarDerivacionesGestionSupervisor(idAsesor) {
-    tablaDerivacionesSistema = document.getElementById("tablaDerivacionesSistema")
+
     tablaDerivacionesGestion = document.getElementById("tablaDerivacionesGestion")
     tablaGeneralSistema = document.getElementById("tablaGeneralSistema")
     tablaGeneralGestion = document.getElementById("tablaGeneralGestion")
@@ -168,7 +153,6 @@ function cargarDerivacionesGestionSupervisor(idAsesor) {
         if (tablaGeneralGestion.innerHTML.trim() !== "") {
             tablaGeneralGestion.style = "display: block;"
             tablaGeneralSistema.style = "display: none;"
-            tablaDerivacionesSistema.style = "display: none;"
             tablaDerivacionesGestion.style = "display: none;"
             return;
         }
@@ -191,7 +175,6 @@ function cargarDerivacionesGestionSupervisor(idAsesor) {
                         $('#tablaGeneralGestion').html(response);
                         tablaGeneralGestion.style = "display: block;"
                         tablaGeneralSistema.style = "display: none;"
-                        tablaDerivacionesSistema.style = "display: none;"
                         tablaDerivacionesGestion.style = "display: none;"
                         return;
                     }
@@ -227,7 +210,6 @@ function cargarDerivacionesGestionSupervisor(idAsesor) {
                     $('#tablaDerivacionesGestion').html(response);
                     tablaGeneralGestion.style = "display: none;"
                     tablaGeneralSistema.style = "display: none;"
-                    tablaDerivacionesSistema.style = "display: none;"
                     tablaDerivacionesGestion.style = "display: block;"
                     return;
                 }
@@ -245,22 +227,20 @@ function cargarDerivacionesGestionSupervisor(idAsesor) {
 }
 
 function cargarDerivacionesSistemaSupervisor(idAsesor) {
-    tablaDerivacionesSistema = document.getElementById("tablaDerivacionesSistema")
+
     tablaDerivacionesGestion = document.getElementById("tablaDerivacionesGestion")
     tablaGeneralSistema = document.getElementById("tablaGeneralSistema")
     tablaGeneralGestion = document.getElementById("tablaGeneralGestion")
     asesorDni = document.getElementById(idAsesor).value.toString();
     if (asesorDni === "") {
         tablaGeneralSistema.style = "display: block;"
-        
+
         tablaGeneralGestion.style = "display: none;"
-        tablaDerivacionesSistema.style = "display: none;"
         tablaDerivacionesGestion.style = "display: none;"
         return;
     } else {
         tablaGeneralSistema.style = "display: none;"
         tablaGeneralGestion.style = "display: none;"
-        tablaDerivacionesSistema.style = "display: block;"
         tablaDerivacionesGestion.style = "display: none;"
         return;
     }
@@ -294,16 +274,16 @@ function sortTableDerivaciones(idTabla, numCol, type) {
         if (type === 'date') {
             const parseDate = (dateStr) => {
                 if (!dateStr || dateStr.trim() === '') return new Date(0);
-                
+
                 const regex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})\s(\d{1,2}):(\d{1,2}):(\d{1,2})$/;
                 const match = dateStr.match(regex);
-                
+
                 if (!match) return new Date(0);
-                
+
                 const [, day, month, year, hours, minutes, seconds] = match.map(Number);
                 return new Date(year, month - 1, day, hours, minutes, seconds);
             };
-        
+
             const aDate = parseDate(aText);
             const bDate = parseDate(bText);
             return isAscending ? aDate - bDate : bDate - aDate;
@@ -321,7 +301,7 @@ function cargarTipoFiltro(filtro) {
     const filtroFecha = document.getElementById("filtroFecha");
     const tablaSistema = document.getElementById("tablaDerivacionesSistema");
     const tablaGestion = document.getElementById("tablaDerivacionesGestion");
-    
+
     // Reset input values
     if (filtroDni.querySelector('input')) {
         filtroDni.querySelector('input').value = '';

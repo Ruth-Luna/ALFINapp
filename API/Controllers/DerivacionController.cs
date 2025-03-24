@@ -88,7 +88,6 @@ namespace ALFINapp.API.Controllers
                     TempData["MessageError"] = "Ocurrio un error al obtener la información de las derivaciones.";
                     return RedirectToAction("Redireccionar", "Error");
                 }
-
                 getInformation.Data = getInformation.Data.OrderByDescending(a => a.FechaEnvio).ToList();
                 ViewData["Asesores"] = getAsesoresAsignados.Data;
                 return View("Derivacion", getInformation.Data);
@@ -177,68 +176,6 @@ namespace ALFINapp.API.Controllers
             }
         }
         
-        [HttpGet]
-        public async Task<IActionResult> ObtenerDerivacionesXAsesor(string DniAsesor)
-        {
-            try
-            {
-                var DniAsesorGet = new Usuario
-                {
-                    Dni = DniAsesor
-                };
-
-                var enviarDni = new List<Usuario>
-                {
-                    DniAsesorGet
-                };
-
-                var getClientesDerivadosGenerales = await _dBServicesDerivacion.GetClientesDerivadosGenerales(enviarDni);
-                if (!getClientesDerivadosGenerales.IsSuccess || getClientesDerivadosGenerales.Data == null)
-                {
-                    return Json(new { success = false, message = getClientesDerivadosGenerales.Message });
-                }
-                var getClientesDatosDTO = new List<GestionDetalleDTO>();
-                foreach (var item in getClientesDerivadosGenerales.Data)
-                {
-                    var newItem = new GestionDetalleDTO
-                    {
-                        IdAsignacion = item.IdDerivacion,
-                        DocCliente = item.DniCliente ?? string.Empty,
-                        Canal = "A365",
-                        FechaEnvio = item.FechaDerivacion,
-                        FechaGestion = item.FechaDerivacion,
-                        Telefono = item.TelefonoCliente,
-                        OrigenTelefono = "A365",
-                        CodTip = 2,
-                        DocAsesor = item.DniAsesor,
-                        FueProcesadaLaDerivacion = item.FueProcesado,
-                        //DATOS QUE DEBEN SER BUSCADOS POR EL ID ASIGNAICON
-                        CodCampaña = item.NombreAgencia,
-                        Oferta = 0,
-                        CodCanal = "DESCONOCIDO",
-                        Origen = "A365",
-                        ArchivoOrigen = "SISTEMA INTERNO",
-                        FechaCarga = item.FechaDerivacion,
-                        IdDerivacion = item.IdDerivacion,
-                        IdSupervisor = 0,
-                        Supervisor = "DESCONOCIDO",
-                        IdDesembolso = 0,
-                        TraidoDe = "SISTEMA INTERNO",
-                        EstadoDerivacion = item.EstadoDerivacion + " - " + item.FueProcesado,
-                        TipoDerivacion = "AUTOMATICA"
-                    };
-                    getClientesDatosDTO.Add(newItem);
-                }
-                getClientesDatosDTO = getClientesDatosDTO.OrderByDescending(a => a.FechaEnvio).ToList();
-                ViewData["Derivaciones"] = getClientesDatosDTO;
-                return PartialView("_DerivacionesAsesor");
-            }
-            catch (System.Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
-        }
-
         public async Task<IActionResult> ObtenerDerivacionesGestion(string DniAsesor)
         {
             try

@@ -79,7 +79,6 @@ app.UseStatusCodePagesWithReExecute("/Home/Error404");
 app.UseSession();
 app.UseHttpsRedirection();
 
-// Configurar archivos estáticos para que los busque en `API/wwwroot`
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(

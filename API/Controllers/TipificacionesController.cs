@@ -36,6 +36,10 @@ namespace ALFINapp.API.Controllers
         [HttpPost]
         public async Task<IActionResult> GenerarDerivacion(string agenciaComercial, DateTime FechaVisita, string Telefono, int idBase)
         {
+            if (agenciaComercial == null || FechaVisita == DateTime.MinValue || Telefono == null)
+            {
+                return Json(new { success = false, message = "Debe llenar todos los campos" });
+            }
             var getClienteBase = await _dbServicesGeneral.GetBaseClienteFunction(idBase);
             if (getClienteBase.data == null || !getClienteBase.IsSuccess)
             {
@@ -53,7 +57,6 @@ namespace ALFINapp.API.Controllers
             }
 
             var getClienteEnriquecido = await _dbServicesGeneral.GetClienteEnriquecidoFunction(idBase);
-
             if (getClienteEnriquecido.data == null || !getClienteEnriquecido.IsSuccess)
             {
                 return Json(new { success = false, message = getClienteEnriquecido.Message });
@@ -92,13 +95,7 @@ namespace ALFINapp.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> TipificarMotivo(int IdAsignacion, int? Tipificacion_1, int? Tipificacion_2,
-                                                int? Tipificacion_3, int? Tipificacion_4, int? Tipificacion_5,
-                                                string? Telefono_1, string? Telefono_2, string? Telefono_3,
-                                                string? Telefono_4, string? Telefono_5, DateTime? DerivacionDb_1,
-                                                DateTime? DerivacionDb_2, DateTime? DerivacionDb_3, DateTime? DerivacionDb_4,
-                                                DateTime? DerivacionDb_5, string AgenciaComercialDb_1, string AgenciaComercialDb_2,
-                                                string AgenciaComercialDb_3, string AgenciaComercialDb_4, string AgenciaComercialDb_5)
+        public async Task<IActionResult> TipificarMotivo(List<TipificarClienteDTO> tipificaciones, int IdAsignacion)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)
@@ -121,11 +118,6 @@ namespace ALFINapp.API.Controllers
                 return RedirectToAction("Redireccionar", "Error");
             }
 
-            var telefonos = new List<string?> { Telefono_1, Telefono_2, Telefono_3, Telefono_4, Telefono_5 };
-            var tipificaciones = new List<int?> { Tipificacion_1, Tipificacion_2, Tipificacion_3, Tipificacion_4, Tipificacion_5 };
-            var derivaciones = new List<DateTime?> { DerivacionDb_1, DerivacionDb_2, DerivacionDb_3, DerivacionDb_4, DerivacionDb_5 };
-            var agenciasComerciales = new List<string> { AgenciaComercialDb_1, AgenciaComercialDb_2, AgenciaComercialDb_3, AgenciaComercialDb_4, AgenciaComercialDb_5 };
-
             // Fecha de tipificación
             var fechaTipificacion = DateTime.Now;
             string? descripcionTipificacionMayorPeso = null;
@@ -140,15 +132,16 @@ namespace ALFINapp.API.Controllers
             var agregado = false;
             int countNonNull = 0;
 
-            for (int i = 0; i < telefonos.Count; i++)
+            for (int i = 0; i < tipificaciones.Count; i++)
             {
-                var telefono = telefonos[i];
-                var tipificacion = tipificaciones[i];
-                var derivacion = derivaciones[i];
+                var telefono = tipificaciones[i].Telefono;
+                var tipificacion = tipificaciones[i].TipificacionId;
+                var derivacion = tipificaciones[i].FechaVisita;
+                var agencia = tipificaciones[i].AgenciaAsignada;
 
-                if (!tipificacion.HasValue)
+                if (tipificacion == 0)
                 {
-                    Console.WriteLine("TipificacionId es NULL, no se revisara este campo.");
+                    Console.WriteLine("TipificacionId es 0, no se revisara este campo.");
                     continue; // Salta al siguiente registro sin hacer la inserción
                 }
 
@@ -165,7 +158,7 @@ namespace ALFINapp.API.Controllers
                     return RedirectToAction("Redireccionar", "Error");
                 }
 
-                if (agenciasComerciales[i] == null && tipificacion == 2)  // Verificamos si el valor no es null
+                if (agencia == null && tipificacion == 2)  // Verificamos si el valor no es null
                 {
                     TempData["MessageError"] = "Debe ingresar una agencia comercial para la tipificación CLIENTE ACEPTO OFERTA DERIVACION (Se obviaron las inserciones).";
                     return RedirectToAction("Redireccionar", "Error");
@@ -202,7 +195,7 @@ namespace ALFINapp.API.Controllers
                     }
                 }
 
-                if (tipificacion == 2 && derivacion != null && agenciasComerciales[i] != null)
+                if (tipificacion == 2 && derivacion != null && agencia != null)
                 {
                     countNonNull++;
                 }
@@ -215,19 +208,19 @@ namespace ALFINapp.API.Controllers
                 return RedirectToAction("Redireccionar", "Error");
             }
 
-            for (int i = 0; i < telefonos.Count; i++)
+            for (int i = 0; i < tipificaciones.Count; i++)
             {
-                var telefono = telefonos[i];
-                var tipificacion = tipificaciones[i];
-                var derivacion = derivaciones[i];
+                var telefono = tipificaciones[i].Telefono;
+                var tipificacion = tipificaciones[i].TipificacionId;
+                var derivacion = tipificaciones[i].FechaVisita;
 
-                if (!tipificacion.HasValue)
+                if (tipificacion == 0)
                 {
                     Console.WriteLine($"Tipificacion {i + 1} es nulo, se omite la inserción.");
                     continue; // Salta al siguiente registro sin hacer la inserción
                 }
                 agregado = true;
-                var tipificacionInfo = await _dbServicesTipificaciones.ObtenerTipificacion(tipificacion.Value);
+                var tipificacionInfo = await _dbServicesTipificaciones.ObtenerTipificacion(tipificacion);
 
                 if (!tipificacionInfo.IsSuccess || tipificacionInfo.Data == null)
                 {
@@ -244,7 +237,7 @@ namespace ALFINapp.API.Controllers
                 var nuevoClienteTipificado = new ClientesTipificado
                 {
                     IdAsignacion = IdAsignacion,
-                    IdTipificacion = tipificacion.Value,
+                    IdTipificacion = tipificacion,
                     FechaTipificacion = fechaTipificacion,
                     Origen = "nuevo",
                     TelefonoTipificado = telefono,
@@ -258,7 +251,7 @@ namespace ALFINapp.API.Controllers
                 }
 
                 // Actualizar última tipificación en clientes_enriquecidos
-                var tipificacion_guardada = _context.tipificaciones.FirstOrDefault(t => t.IdTipificacion == tipificacion.Value);
+                var tipificacion_guardada = _context.tipificaciones.FirstOrDefault(t => t.IdTipificacion == tipificacion);
                 if (tipificacion_guardada == null)
                 {
                     TempData["MessageError"] = "No se ha encontrado la tipificación en la base de datos.";

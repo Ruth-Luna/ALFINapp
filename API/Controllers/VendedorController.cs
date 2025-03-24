@@ -2,6 +2,7 @@ using System.Security;
 using System.Text.RegularExpressions;
 using ALFINapp.API.Filters;
 using ALFINapp.Application.Interfaces.Vendedor;
+using ALFINapp.Application.UseCases.Tipificacion;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,8 @@ namespace ALFINapp.API.Controllers
             DBServicesGeneral dbServicesGeneral,
             DBServicesTipificaciones dbServicesTipificaciones,
             DBServicesConsultasClientes dbServicesConsultasClientes,
-            IUseCaseGetInicio useCaseGetInicio)
+            IUseCaseGetInicio useCaseGetInicio
+            )
         {
             _context = context;
             _dbServicesAsesores = dbServicesAsesores;

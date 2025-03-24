@@ -38,5 +38,6 @@ namespace ALFINapp.Infrastructure.Persistence.Models
         public string? Observacion { get; set; }
         public bool? FueProcesadaLaDerivacion { get; set; }
         public string? NombreCompletoCliente { get; set; }
+        public string? DocAsesorDesembolso { get; set; }
     }
 }
