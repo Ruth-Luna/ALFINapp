@@ -43,5 +43,27 @@ namespace ALFINapp.Application.DTOs
             IdentificadorBase = model.IdentificadorBase;
             Destino = model.Destino;
         }
+        public ClientesAsignado convertToModel ()
+        {
+            return new ClientesAsignado
+            {
+                IdAsignacion = IdAsignacion,
+                IdCliente = IdCliente,
+                IdUsuarioS = IdUsuarioS,
+                FechaAsignacionSup = FechaAsignacionSup,
+                IdUsuarioV = IdUsuarioV,
+                FechaAsignacionVendedor = FechaAsignacionVendedor,
+                FuenteBase = FuenteBase,
+                FinalizarTipificacion = FinalizarTipificacion,
+                ComentarioGeneral = ComentarioGeneral,
+                TipificacionMayorPeso = TipificacionMayorPeso,
+                PesoTipificacionMayor = PesoTipificacionMayor,
+                ClienteDesembolso = ClienteDesembolso,
+                ClienteRetirado = ClienteRetirado,
+                FechaTipificacionMayorPeso = FechaTipificacionMayorPeso,
+                IdentificadorBase = IdentificadorBase,
+                Destino = Destino
+            };
+        }
     }
 }

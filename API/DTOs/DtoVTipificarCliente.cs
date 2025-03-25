@@ -7,5 +7,4 @@ namespace ALFINapp.API.DTOs
         public DateTime? FechaVisita { get; set; }
         public string? AgenciaAsignada { get; set; }
     }
-
 }

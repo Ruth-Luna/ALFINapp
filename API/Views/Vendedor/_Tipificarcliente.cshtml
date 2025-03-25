@@ -276,7 +276,7 @@
     {
         int contadorNumeros = 0;
         <form asp-action="GuardarTipificacionesNumPersonales" asp-controller="Vendedor" method="post" class="mb-4">
-            <input type="hidden" name="IdAsignacionCliente" value="@ViewData["ID_asignacion"]">
+            <input type="hidden" name="IdAsignacionCliente" value="@ViewData["ID_asignacion"]" id="IdAsignacionCliente">
             <h4>Agregue las Tipificaciones a los clientes asignados</h4>
             @foreach (var telefonosVendedor in numerosCreadosPorElUsuario)
             {
@@ -354,7 +354,7 @@
                             <div class="col-auto">
                                 <a class="btn btn-primary" href="javascript:void(0)"
                                     id="buttonDerivacionContainer_@contadorNumeros"
-                                    onclick="enviarFormularioDerivacion('tipificaciones[@contadorNumeros].AgenciaAsignada', 'fechaVisita_@contadorNumeros', @Model.IdBase, 'Telefono_@contadorNumeros')"
+                                    onclick="enviarFormularioDerivacion('tipificaciones[@contadorNumeros].AgenciaAsignada', 'fechaVisita_@contadorNumeros', @Model.IdBase, 'Telefono_@contadorNumeros', 1, 'IdAsignacionCliente')"
                                     style="display: none;">
                                     <i class="fa fa-upload" aria-hidden="true"></i> Envie la Derivacion
                                 </a>
@@ -408,7 +408,7 @@
 <form asp-action="TipificarMotivo" asp-controller="Tipificaciones" method="post">
     <div class="row mb-4">
         <h3 class="label-fortip">Contacto con Cliente - Y Tipificaciones Asignadas:</h3>
-        <input type="hidden" name="IdAsignacion" value="@ViewData["ID_asignacion"]">
+        <input type="hidden" name="IdAsignacion" value="@ViewData["ID_asignacion"]" id="IdAsignacion">
 
         @for (int i = 0; i < Model.Telefonos.Count; i++)
         {
@@ -486,7 +486,7 @@
                             </div>
                             <div class="col-auto">
                                 <a class="btn btn-primary" href="javascript:void(0)" id="buttonDerivacionContainer_db_@j"
-                                    onclick="enviarFormularioDerivacion('AgenciaComercialDb_@j', 'fechaVisita_db_@j', @Model.IdBase, 'Telefono_db_@j' )"
+                                    onclick="enviarFormularioDerivacion('AgenciaComercialDb_@j', 'fechaVisita_db_@j', @Model.IdBase, 'Telefono_db_@j', 2, 'IdAsignacion')"
                                     style="display: none;">
                                     <i class="fa fa-upload" aria-hidden="true"></i> Envie la Derivacion
                                 </a>

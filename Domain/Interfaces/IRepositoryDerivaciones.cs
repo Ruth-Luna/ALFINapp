@@ -10,5 +10,7 @@ namespace ALFINapp.Domain.Interfaces
     {
         public Task<List<DerivacionesAsesores>?> getDerivaciones(int idCliente, string docAsesor);
         public Task<GESTIONDETALLE?> getGestionDerivacion(string docCliente, string docAsesor);
+        public Task<bool> uploadDerivacion(DerivacionesAsesores derivacion);
+        public Task<(bool success,string message)> verDerivacion(string Dni);
     }
 }

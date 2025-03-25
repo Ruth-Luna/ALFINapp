@@ -10,17 +10,25 @@ namespace ALFINapp.Application.UseCases.Tipificacion
         private readonly IRepositoryClientes _repositoryClientes;
         private readonly IRepositoryUsuarios _repositoryUsuarios;
         private readonly IRepositoryDerivaciones _repositoryDerivaciones;
-
+        private readonly IRepositoryTipificaciones _repositoryTipificaciones;
+        private readonly IRepositoryTelefonos _repositoryTelefonos;
         public UseCaseUploadTipificaciones(
-            IRepositoryClientes repositoryClientes, 
+            IRepositoryClientes repositoryClientes,
             IRepositoryUsuarios repositoryUsuarios,
-            IRepositoryDerivaciones repositoryDerivaciones)
+            IRepositoryDerivaciones repositoryDerivaciones,
+            IRepositoryTipificaciones repositoryTipificaciones,
+            IRepositoryTelefonos repositoryTelefonos)
         {
             _repositoryClientes = repositoryClientes;
             _repositoryUsuarios = repositoryUsuarios;
             _repositoryDerivaciones = repositoryDerivaciones;
+            _repositoryTipificaciones = repositoryTipificaciones;
+            _repositoryTelefonos = repositoryTelefonos;
         }
-        public async Task<(bool, string)> execute(int idUsuario, List<DtoVTipificarCliente> tipificaciones, int IdAsignacion)
+        public async Task<(bool success, string message)> execute(int idUsuario,
+            List<DtoVTipificarCliente> tipificaciones,
+            int IdAsignacion,
+            int typeTipificacion)
         {
             try
             {
@@ -41,16 +49,17 @@ namespace ALFINapp.Application.UseCases.Tipificacion
                 {
                     return (false, "No se ha encontrado el usuario.");
                 }
-                
+
                 if (tipificaciones == null || !tipificaciones.Any())
                 {
                     return (false, "No se estan enviando datos para guardar.");
                 }
 
                 int? tipificacionMayorPeso = null;
-                int? pesoMayor = 0;
                 string? descripcionTipificacionMayorPeso = null;
+                int? pesoMayor = 0;
                 var agregado = false;
+                var existeDerivacion = false;
 
                 foreach (var tipificacion in tipificaciones)
                 {
@@ -60,9 +69,46 @@ namespace ALFINapp.Application.UseCases.Tipificacion
                         continue; // Salta al siguiente registro sin hacer la inserción
                     }
 
+                    if (string.IsNullOrEmpty(tipificacion.Telefono) || tipificacion.Telefono == "0")
+                    {
+                        return (false, "No modifique la entrada de los telefonos manualmente.");
+                    }
+
                     if (tipificacion.FechaVisita == null && tipificacion.TipificacionId == 2)
                     {
                         return (false, "Debe ingresar una fecha de derivación para la tipificación CLIENTE ACEPTO OFERTA DERIVACION (Se obviaron las inserciones).");
+                    }
+                    if (tipificacion.TipificacionId == 2)
+                    {
+                        if (tipificacion.FechaVisita == null)
+                        {
+                            return (false, "La fecha de derivación no puede estar vacia.");
+                        }
+                        if (tipificacion.AgenciaAsignada == null)
+                        {
+                            return (false, "La agencia asignada no puede estar vacia.");
+                        }
+
+                        existeDerivacion = true;
+                    }
+                    agregado = true;
+                }
+
+                if (agregado == false)
+                {
+                    return (false, "No se ha llenado ningun campo o se han llenado incorrectamente.");
+                }
+                var clienteEnriquecido = await _repositoryClientes.GetEnriquecido(ClienteAsignado.IdCliente);
+                if (clienteEnriquecido == null)
+                {
+                    return (false, "No se ha encontrado el cliente enriquecido.");
+                }
+                foreach (var tipificacion in tipificaciones)
+                {
+                    if (tipificacion.TipificacionId == 0)
+                    {
+                        Console.WriteLine("TipificacionId es 0, omitiendo inserción.");
+                        continue; // Salta al siguiente registro sin hacer la inserción
                     }
                     if (tipificacion.TipificacionId == 2)
                     {
@@ -74,30 +120,15 @@ namespace ALFINapp.Application.UseCases.Tipificacion
                         }
                         if (verificarDerivacion.Count > 1)
                         {
-                            return (false, "Usted ya ha derivado previamente a este cliente durante este mes, para ver su estado puede dirigirse a la pestana de Derivaciones. No se han subido al sistema ninguna de las tipificaciones.");
+                            continue;
                         }
 
                         var verificarGestion = await _repositoryDerivaciones
                             .getGestionDerivacion(verificarDerivacion[0].DniCliente ?? "", usuarioInfo.Dni ?? "");
                         if (verificarGestion != null)
                         {
-                            return (false, "Usted ya ha derivado previamente a este cliente durante este mes, para ver su estado puede dirigirse a la pestana de Derivaciones. No se han subido al sistema ninguna de las tipificaciones.");
+                            continue;
                         }
-                    }
-                    agregado = true;
-                }
-
-                if (agregado == false)
-                {
-                    return (false, "No se ha llenado ningun campo o se han llenado incorrectamente.");
-                }
-
-                foreach (var tipificacion in tipificaciones)
-                {
-                    if (tipificacion.TipificacionId == 0)
-                    {
-                        Console.WriteLine("TipificacionId es 0, omitiendo inserción.");
-                        continue; // Salta al siguiente registro sin hacer la inserción
                     }
 
                     var nuevaTipificacion = new ClientesTipificado
@@ -110,14 +141,13 @@ namespace ALFINapp.Application.UseCases.Tipificacion
                         DerivacionFecha = tipificacion.FechaVisita
                     };
 
-                    var resultGuardarClienteTipificado = await _dbServicesTipificaciones.GuardarNuevaTipificacion(nuevaTipificacion);
-                    if (!resultGuardarClienteTipificado.IsSuccess)
+                    var resultGuardarClienteTipificado = await _repositoryTipificaciones.UploadTipificacion(nuevaTipificacion);
+                    if (!resultGuardarClienteTipificado)
                     {
-                        TempData["MessageError"] = resultGuardarClienteTipificado.Message;
-                        return RedirectToAction("Redireccionar", "Error");
+                        return (false, "Error al guardar la tipificación.");
                     }
-                    // Verificar si esta tipificación tiene el mayor peso
-                    var tipificacionActual = _context.tipificaciones.FirstOrDefault(t => t.IdTipificacion == tipificacion.TipificacionId);
+
+                    var tipificacionActual = await _repositoryTipificaciones.GetTipificacion(tipificacion.TipificacionId);
                     if (tipificacionActual != null && tipificacionActual.Peso.HasValue)
                     {
                         int pesoActual = tipificacionActual.Peso.Value;
@@ -129,55 +159,95 @@ namespace ALFINapp.Application.UseCases.Tipificacion
                             descripcionTipificacionMayorPeso = tipificacionActual.DescripcionTipificacion;
                         }
                     }
-                    var telefonoTipificado = _context.telefonos_agregados.FirstOrDefault(ta => ta.Telefono == tipificacion.Telefono && ta.IdCliente == ClienteAsignado.Data.IdCliente);
-                    if (telefonoTipificado == null)
-                    {
-                        TempData["MessageError"] = "El Numero de Telefono Agregado no ha sido encontrado.";
-                        return RedirectToAction("Redireccionar", "Error");
-                    }
-                    else
-                    {
-                        var tipificacionUltima = _context.tipificaciones.FirstOrDefault(t => t.IdTipificacion == tipificacion.TipificacionId);
-                        if (tipificacionUltima == null)
-                        {
-                            TempData["MessageError"] = "La tipificacion no ha sido encontrada.";
-                            return RedirectToAction("Redireccionar", "Error");
-                        }
-                        telefonoTipificado.UltimaTipificacion = tipificacionUltima.DescripcionTipificacion;
-                        telefonoTipificado.FechaUltimaTipificacion = DateTime.Now;
-                        telefonoTipificado.IdClienteTip = nuevaTipificacion.IdClientetip;
-                        _context.telefonos_agregados.Update(telefonoTipificado);
-                    }
 
-                    var clienteEnriquecido = await _dbServicesAsesores.ObtenerEnriquecido(ClienteAsignado.Data.IdCliente);
-                    if (!clienteEnriquecido.IsSuccess || clienteEnriquecido.Data == null)
+                    if (typeTipificacion == 2)
                     {
-                        TempData["MessageError"] = clienteEnriquecido.Message;
-                        return RedirectToAction("Redireccionar", "Error");
+                        var telefonos = new List<string> { clienteEnriquecido.Telefono1 ?? "", clienteEnriquecido.Telefono2 ?? "", clienteEnriquecido.Telefono3 ?? "", clienteEnriquecido.Telefono4 ?? "", clienteEnriquecido.Telefono5 ?? "" };
+                        for (int i = 0; i < telefonos.Count; i++)
+                        {
+                            if (telefonos[i] == tipificacion.Telefono)
+                            {
+                                switch (i)
+                                {
+                                    case 0:
+                                        clienteEnriquecido.FechaUltimaTipificacionTelefono1 = DateTime.Now;
+                                        clienteEnriquecido.UltimaTipificacionTelefono1 = tipificacionActual?.DescripcionTipificacion ?? "Descripción no disponible";
+                                        clienteEnriquecido.IdClientetipTelefono1 = nuevaTipificacion.IdClientetip;
+                                        break;
+                                    case 1:
+                                        clienteEnriquecido.FechaUltimaTipificacionTelefono2 = DateTime.Now;
+                                        clienteEnriquecido.UltimaTipificacionTelefono2 = tipificacionActual?.DescripcionTipificacion ?? "Descripción no disponible";
+                                        clienteEnriquecido.IdClientetipTelefono2 = nuevaTipificacion.IdClientetip;
+                                        break;
+                                    case 2:
+                                        clienteEnriquecido.FechaUltimaTipificacionTelefono3 = DateTime.Now;
+                                        clienteEnriquecido.UltimaTipificacionTelefono3 = tipificacionActual?.DescripcionTipificacion ?? "Descripción no disponible";
+                                        clienteEnriquecido.IdClientetipTelefono3 = nuevaTipificacion.IdClientetip;
+                                        break;
+                                    case 3:
+                                        clienteEnriquecido.FechaUltimaTipificacionTelefono4 = DateTime.Now;
+                                        clienteEnriquecido.UltimaTipificacionTelefono4 = tipificacionActual?.DescripcionTipificacion ?? "Descripción no disponible";
+                                        clienteEnriquecido.IdClientetipTelefono4 = nuevaTipificacion.IdClientetip;
+                                        break;
+                                    case 4:
+                                        clienteEnriquecido.FechaUltimaTipificacionTelefono5 = DateTime.Now;
+                                        clienteEnriquecido.UltimaTipificacionTelefono5 = tipificacionActual?.DescripcionTipificacion ?? "Descripción no disponible";
+                                        clienteEnriquecido.IdClientetipTelefono5 = nuevaTipificacion.IdClientetip;
+                                        break;
+                                }
+                                var checkEnriquecido = await _repositoryClientes.UpdateEnriquecido(clienteEnriquecido);
+                                if (!checkEnriquecido)
+                                {
+                                    return (false, "Error al actualizar el cliente enriquecido.");
+                                }
+                                break;
+                            }
+                        }
                     }
-                    var guardarGestionDetalle = await _dbServicesTipificaciones.GuardarGestionDetalle(ClienteAsignado.Data, nuevaTipificacion, clienteEnriquecido.Data, usuarioId.Value);
-                    if (!guardarGestionDetalle.IsSuccess)
+                    if (typeTipificacion == 1)
                     {
-                        TempData["MessageError"] = guardarGestionDetalle.Message;
-                        return RedirectToAction("Redireccionar", "Error");
+                        var telefonoTipificado = await _repositoryTelefonos.GetTelefono(tipificacion.Telefono ?? "", ClienteAsignado.IdCliente);
+                        if (telefonoTipificado == null)
+                        {
+                            return (false, "El Numero de Telefono Agregado no ha sido encontrado.");
+                        }
+                        telefonoTipificado.UltimaTipificacion = tipificacionActual?.DescripcionTipificacion ?? "Descripción no disponible";
+                        telefonoTipificado.FechaUltimaTipificacion = DateTime.Now;
+                        telefonoTipificado.IdClienteTip = tipificacionActual?.IdTipificacion ?? 0;
+                        var checkTelefono = await _repositoryTelefonos.UpdateTelefono(telefonoTipificado);
+                        if (!checkTelefono)
+                        {
+                            return (false, "Error al actualizar el telefono.");
+                        }
                     }
-                    await _context.SaveChangesAsync();
+                    var guardarGestionDetalle = await _repositoryTipificaciones.UploadGestionTip(ClienteAsignado.convertToModel(), nuevaTipificacion, clienteEnriquecido, usuarioId.Value);
+                    if (!guardarGestionDetalle)
+                    {
+                        return (false, "Error al guardar la gestión.");
+                    }
                 }
 
                 if (tipificacionMayorPeso.HasValue && pesoMayor != 0)
                 {
-                    if (pesoMayor > (ClienteAsignado.Data.PesoTipificacionMayor ?? 0))
+                    if (pesoMayor > (ClienteAsignado.PesoTipificacionMayor ?? 0))
                     {
-                        ClienteAsignado.Data.TipificacionMayorPeso = descripcionTipificacionMayorPeso;
-                        ClienteAsignado.Data.PesoTipificacionMayor = pesoMayor;
-                        ClienteAsignado.Data.FechaTipificacionMayorPeso = DateTime.Now;
-                        _context.clientes_asignados.Update(ClienteAsignado.Data);
+                        ClienteAsignado.TipificacionMayorPeso = descripcionTipificacionMayorPeso;
+                        ClienteAsignado.PesoTipificacionMayor = pesoMayor;
+                        ClienteAsignado.FechaTipificacionMayorPeso = DateTime.Now;
+
+                        var checkAsignacion = await _repositoryClientes.UpdateAsignacion(ClienteAsignado.convertToModel());
+                        if (!checkAsignacion)
+                        {
+                            return (false, "Error al actualizar la asignación.");
+                        }
                     }
                 }
-                _context.SaveChanges();
-                TempData["Message"] = "Las tipificaciones se han guardado correctamente (Se han Obviado los campos Vacios y los campos que fueron llenados con datos incorrectos).";
-                return RedirectToAction("Redireccionar", "Error");
-                return (true, "Non Implemented");
+                var message = "No hay tipificaciones de derivacion.";
+                if (existeDerivacion)
+                {
+                    message = "Se proceso la tipificacion de derivacion correctamente.";
+                }
+                return (true, "Se guardaron las Tipificaciones correctamente. " + message);
             }
             catch (System.Exception ex)
             {

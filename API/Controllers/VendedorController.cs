@@ -2,8 +2,8 @@ using System.Security;
 using System.Text.RegularExpressions;
 using ALFINapp.API.DTOs;
 using ALFINapp.API.Filters;
+using ALFINapp.Application.Interfaces.Tipificacion;
 using ALFINapp.Application.Interfaces.Vendedor;
-using ALFINapp.Application.UseCases.Tipificacion;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -18,24 +18,23 @@ namespace ALFINapp.API.Controllers
         private readonly MDbContext _context;
         private readonly IUseCaseGetInicio _useCaseGetInicio;
         private readonly DBServicesGeneral _dbServicesGeneral;
-        private readonly DBServicesConsultasAsesores _dbServicesAsesores;
         private readonly DBServicesTipificaciones _dbServicesTipificaciones;
         private readonly DBServicesConsultasClientes _dbServicesConsultasClientes;
+        private readonly IUseCaseUploadTipificaciones _useCaseUploadTipificaciones;
         public VendedorController(
             MDbContext context,
-            DBServicesConsultasAsesores dbServicesAsesores,
             DBServicesGeneral dbServicesGeneral,
             DBServicesTipificaciones dbServicesTipificaciones,
             DBServicesConsultasClientes dbServicesConsultasClientes,
-            IUseCaseGetInicio useCaseGetInicio
-            )
+            IUseCaseGetInicio useCaseGetInicio,
+            IUseCaseUploadTipificaciones useCaseUploadTipificaciones)
         {
             _context = context;
-            _dbServicesAsesores = dbServicesAsesores;
             _dbServicesGeneral = dbServicesGeneral;
             _dbServicesTipificaciones = dbServicesTipificaciones;
             _dbServicesConsultasClientes = dbServicesConsultasClientes;
             this._useCaseGetInicio = useCaseGetInicio;
+            this._useCaseUploadTipificaciones = useCaseUploadTipificaciones;
         }
 
         [HttpPost]
@@ -424,169 +423,13 @@ namespace ALFINapp.API.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var ClienteAsignado = await _dbServicesAsesores.ObtenerAsignacion(usuarioId.Value, IdAsignacionCliente);
-            if (!ClienteAsignado.IsSuccess || ClienteAsignado.Data == null)
+            var getUseCase = await _useCaseUploadTipificaciones.execute(usuarioId.Value, tipificaciones, IdAsignacionCliente, 1);
+            if (!getUseCase.success)
             {
-                TempData["MessageError"] = ClienteAsignado.Message;
+                TempData["MessageError"] = getUseCase.message;
                 return RedirectToAction("Redireccionar", "Error");
             }
 
-            var obtenerDataUsuario = await _dbServicesGeneral.GetUserInformation(usuarioId.Value);
-            if (!obtenerDataUsuario.IsSuccess || obtenerDataUsuario.Data == null)
-            {
-                TempData["MessageError"] = obtenerDataUsuario.Message;
-                return RedirectToAction("Redireccionar", "Error");
-            }
-
-            if (tipificaciones == null || !tipificaciones.Any())
-            {
-                TempData["MessageError"] = "No se estan enviando datos para guardar.";
-                return RedirectToAction("Redireccionar", "Error");
-            }
-
-            int? tipificacionMayorPeso = null;
-            int? pesoMayor = 0;
-            string? descripcionTipificacionMayorPeso = null;
-            var agregado = false;
-
-            foreach (var tipificacion in tipificaciones)
-            {
-                if (tipificacion.TipificacionId == 0)
-                {
-                    Console.WriteLine("TipificacionId es 0, no se revisara este campo.");
-                    continue; // Salta al siguiente registro sin hacer la inserción
-                }
-
-                if (tipificacion.FechaVisita == null && tipificacion.TipificacionId == 2)
-                {
-
-                    TempData["MessageError"] = "Debe ingresar una fecha de derivación para la tipificación CLIENTE ACEPTO OFERTA DERIVACION (Se obviaron las inserciones).";
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                if (tipificacion.TipificacionId == 2)
-                {
-                    var verificarTipificacion = _context.derivaciones_asesores
-                        .Where(d => d.DniAsesor == obtenerDataUsuario.Data.Dni
-                            && d.IdCliente == ClienteAsignado.Data.IdCliente
-                            && d.FechaDerivacion.Year == DateTime.Now.Year
-                            && d.FechaDerivacion.Month == DateTime.Now.Month)
-                        .ToList();
-
-                    if (verificarTipificacion == null || verificarTipificacion.Count == 0)
-                    {
-                        TempData["MessageError"] = "No ha enviado la derivacion correspondiente. No se guardara ninguna Tipificacion";
-                        return RedirectToAction("Redireccionar", "Error");
-                    }
-                    if (verificarTipificacion.Count > 1)
-                    {
-                        TempData["MessageError"] = "Usted ya ha derivado previamente a este cliente durante este mes, para ver su estado puede dirigirse a la pestana de Derivaciones. No se han subido al sistema ninguna de las tipificaciones.";
-                        return RedirectToAction("Redireccionar", "Error");
-                    }
-
-                    var checkGestionDetalle = _context.GESTION_DETALLE
-                        .Where(gd => gd.DocCliente == verificarTipificacion[0].DniCliente
-                            && gd.FechaGestion.Year == DateTime.Now.Year
-                            && gd.FechaGestion.Month == DateTime.Now.Month
-                            && gd.DocAsesor == obtenerDataUsuario.Data.Dni)
-                        .ToList();
-                    if (checkGestionDetalle.Count > 0 || checkGestionDetalle != null)
-                    {
-                        TempData["MessageError"] = "Usted ya ha derivado previamente a este cliente durante este mes, para ver su estado puede dirigirse a la pestana de Derivaciones. No se han subido al sistema ninguna de las tipificaciones.";
-                        return RedirectToAction("Redireccionar", "Error");
-                    }
-                }
-                agregado = true;
-            }
-
-            if (agregado == false)
-            {
-                TempData["MessageError"] = "No se ha llenado ningun campo o se han llenado incorrectamente.";
-                return RedirectToAction("Redireccionar", "Error");
-            }
-
-            foreach (var tipificacion in tipificaciones)
-            {
-                if (tipificacion.TipificacionId == 0)
-                {
-                    Console.WriteLine("TipificacionId es 0, omitiendo inserción.");
-                    continue; // Salta al siguiente registro sin hacer la inserción
-                }
-
-                var nuevaTipificacion = new ClientesTipificado
-                {
-                    IdAsignacion = IdAsignacionCliente,
-                    IdTipificacion = tipificacion.TipificacionId,
-                    FechaTipificacion = DateTime.Now,
-                    Origen = "nuevo",
-                    TelefonoTipificado = tipificacion.Telefono,
-                    DerivacionFecha = tipificacion.FechaVisita
-                };
-
-                var resultGuardarClienteTipificado = await _dbServicesTipificaciones.GuardarNuevaTipificacion(nuevaTipificacion);
-                if (!resultGuardarClienteTipificado.IsSuccess)
-                {
-                    TempData["MessageError"] = resultGuardarClienteTipificado.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                // Verificar si esta tipificación tiene el mayor peso
-                var tipificacionActual = _context.tipificaciones.FirstOrDefault(t => t.IdTipificacion == tipificacion.TipificacionId);
-                if (tipificacionActual != null && tipificacionActual.Peso.HasValue)
-                {
-                    int pesoActual = tipificacionActual.Peso.Value;
-
-                    if (pesoMayor == 0 || pesoActual > pesoMayor)
-                    {
-                        pesoMayor = pesoActual;
-                        tipificacionMayorPeso = tipificacion.TipificacionId;
-                        descripcionTipificacionMayorPeso = tipificacionActual.DescripcionTipificacion;
-                    }
-                }
-                var telefonoTipificado = _context.telefonos_agregados.FirstOrDefault(ta => ta.Telefono == tipificacion.Telefono && ta.IdCliente == ClienteAsignado.Data.IdCliente);
-                if (telefonoTipificado == null)
-                {
-                    TempData["MessageError"] = "El Numero de Telefono Agregado no ha sido encontrado.";
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                else
-                {
-                    var tipificacionUltima = _context.tipificaciones.FirstOrDefault(t => t.IdTipificacion == tipificacion.TipificacionId);
-                    if (tipificacionUltima == null)
-                    {
-                        TempData["MessageError"] = "La tipificacion no ha sido encontrada.";
-                        return RedirectToAction("Redireccionar", "Error");
-                    }
-                    telefonoTipificado.UltimaTipificacion = tipificacionUltima.DescripcionTipificacion;
-                    telefonoTipificado.FechaUltimaTipificacion = DateTime.Now;
-                    telefonoTipificado.IdClienteTip = nuevaTipificacion.IdClientetip;
-                    _context.telefonos_agregados.Update(telefonoTipificado);
-                }
-
-                var clienteEnriquecido = await _dbServicesAsesores.ObtenerEnriquecido(ClienteAsignado.Data.IdCliente);
-                if (!clienteEnriquecido.IsSuccess || clienteEnriquecido.Data == null)
-                {
-                    TempData["MessageError"] = clienteEnriquecido.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                var guardarGestionDetalle = await _dbServicesTipificaciones.GuardarGestionDetalle(ClienteAsignado.Data, nuevaTipificacion, clienteEnriquecido.Data, usuarioId.Value);
-                if (!guardarGestionDetalle.IsSuccess)
-                {
-                    TempData["MessageError"] = guardarGestionDetalle.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                await _context.SaveChangesAsync();
-            }
-
-            if (tipificacionMayorPeso.HasValue && pesoMayor != 0)
-            {
-                if (pesoMayor > (ClienteAsignado.Data.PesoTipificacionMayor ?? 0))
-                {
-                    ClienteAsignado.Data.TipificacionMayorPeso = descripcionTipificacionMayorPeso;
-                    ClienteAsignado.Data.PesoTipificacionMayor = pesoMayor;
-                    ClienteAsignado.Data.FechaTipificacionMayorPeso = DateTime.Now;
-                    _context.clientes_asignados.Update(ClienteAsignado.Data);
-                }
-            }
-            _context.SaveChanges();
             TempData["Message"] = "Las tipificaciones se han guardado correctamente (Se han Obviado los campos Vacios y los campos que fueron llenados con datos incorrectos).";
             return RedirectToAction("Redireccionar", "Error");
         }

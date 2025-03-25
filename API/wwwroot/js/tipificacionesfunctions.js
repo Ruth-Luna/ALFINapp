@@ -89,10 +89,18 @@ function guardarCambiosPorAsesor() {
     });
 }
 
-function enviarFormularioDerivacion(idAgenciaComercial, idFechaDeVisita, idBase, idTelefonoEnviado) {
+function enviarFormularioDerivacion(
+    idAgenciaComercial, 
+    idFechaDeVisita, 
+    idBase, 
+    idTelefonoEnviado,
+    typeTip,
+    IdAsignacion
+    ) {
     agenciaComercial = document.getElementById(idAgenciaComercial).value;
     FechaVisita = document.getElementById(idFechaDeVisita).value;
     Telefono = document.getElementById(idTelefonoEnviado).value;
+    Asignacion = document.getElementById(IdAsignacion).value;
     Swal.fire({
         title: 'Derivaciones',
         text: 'Al enviar la derivación, el cliente será contactado por el banco y se dara el seguimiento correspondiente. Procure no cerrar esta pagina. Este proceso puede durar varios segundos.',
@@ -118,6 +126,8 @@ function enviarFormularioDerivacion(idAgenciaComercial, idFechaDeVisita, idBase,
                     FechaVisita: FechaVisita,
                     Telefono: Telefono,
                     idBase: idBase,
+                    type: typeTip,
+                    idAsignacion: Asignacion
                 },
                 success: function (result) {
                     Swal.close();
