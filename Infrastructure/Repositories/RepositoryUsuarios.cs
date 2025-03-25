@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ALFINapp.Application.DTOs;
 using ALFINapp.Infrastructure.Persistence.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,65 @@ namespace ALFINapp.Infrastructure.Repositories
         public RepositoryUsuarios(MDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<List<DetallesUsuarioDTO>> GetAllAsesores()
+        {
+            try
+            {
+                var asesores = await _context
+                    .usuarios
+                    .AsNoTracking()
+                    .Where(x => x.IdRol == 3)
+                    .ToListAsync();
+                var asesoresDTO = new List<DetallesUsuarioDTO>();
+                foreach (var item in asesores)
+                {
+                    asesoresDTO.Add(new DetallesUsuarioDTO(item));
+                }
+                if (asesores != null)
+                {
+                    return asesoresDTO;
+                }
+                else
+                {
+                    return new List<DetallesUsuarioDTO>();
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new List<DetallesUsuarioDTO>();
+            }
+        }
+
+        public async Task<List<DetallesUsuarioDTO>> GetAllUsers()
+        {
+            try
+            {
+                var usuarios = await _context
+                    .usuarios
+                    .AsNoTracking()
+                    .ToListAsync();
+                var usuariosDTO = new List<DetallesUsuarioDTO>();
+                foreach (var item in usuarios)
+                {
+                    usuariosDTO.Add(new DetallesUsuarioDTO(item));
+                }
+                if (usuarios != null)
+                {
+                    return usuariosDTO;
+                }
+                else
+                {
+                    return new List<DetallesUsuarioDTO>();
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new List<DetallesUsuarioDTO>();
+            }
         }
 
         public async Task<Usuario?> GetUser(int idUsuario)

@@ -11,12 +11,15 @@ namespace ALFINapp.Application.UseCases.Reports
     {
         private readonly IRepositoryReports _repositoryReports;
         private readonly IRepositoryClientes _repositoryClientes;
+        private readonly IRepositoryUsuarios _repositoryUsuarios;
         public UseCaseGetReportesAdministrador(
             IRepositoryReports repositoryReports, 
-            IRepositoryClientes repositoryClientes)
+            IRepositoryClientes repositoryClientes,
+            IRepositoryUsuarios repositoryUsuarios)
         {
             _repositoryReports = repositoryReports;
             _repositoryClientes = repositoryClientes;
+            _repositoryUsuarios = repositoryUsuarios;
         }
         public async Task<(bool IsSuccess, string Message, ViewReportesGeneral? Data)> Execute()
         {
@@ -46,7 +49,10 @@ namespace ALFINapp.Application.UseCases.Reports
                         de
                     }
                 ).ToList();
-                createReport = createReport.GroupBy(x => x.dr.DniCliente).Select(x => x.FirstOrDefault()).ToList();
+                createReport = createReport
+                    .GroupBy(x => x.dr.DniCliente)
+                    .Select(x => x.FirstOrDefault())
+                    .ToList();
                 var reporteGeneral = new ViewReportesGeneral();
                 var reporteDerivaciones = new List<ViewReporteDerivaciones>();
                 foreach (var item in createReport)
@@ -78,6 +84,18 @@ namespace ALFINapp.Application.UseCases.Reports
                 reporteGeneral.TotalDerivacionesEnvioEmailAutomatico = reporteDerivaciones.Count(x => x.derivacion.FueEnviadoEmail == true);
                 reporteGeneral.TotalDerivacionesEnvioForm = reporteDerivaciones.Count(x => x.derivacion.FueProcesado == true);
                 reporteGeneral.TotalDerivacionesNoProcesadas = reporteGeneral.TotalDerivaciones - reporteGeneral.TotalDerivacionesEnvioEmailAutomatico;
+
+                var usuarios = await _repositoryUsuarios.GetAllAsesores();
+                var usuariosViews = new List<ViewUsuario>();
+
+                foreach (var item in usuarios)
+                {
+                    var usuarioView = new ViewUsuario();
+                    usuarioView = item.ToView();
+                    usuariosViews.Add(usuarioView);
+                }
+
+                reporteGeneral.Asesores = usuariosViews;
                 return (true, "Reportes obtenidos correctamente", reporteGeneral);
             }
             catch (System.Exception ex)

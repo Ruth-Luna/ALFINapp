@@ -81,7 +81,7 @@ namespace ALFINapp.Infrastructure.Repositories
             }
         }
 
-        public async Task<DetallesReportesAsesorDTO?> GetReportesAsesor(int idUsuario)
+        public async Task<DetallesReportesAsesorDTO> GetReportesAsesor(int idUsuario)
         {
             try
             {
@@ -91,7 +91,7 @@ namespace ALFINapp.Infrastructure.Repositories
                 if (getUsuario == null)
                 {
                     Console.WriteLine("Usuario no encontrado");
-                    return null;
+                    return new DetallesReportesAsesorDTO();
                 }
                 var getAllAsignaciones = await _context.clientes_asignados
                     .Where(x => x.IdUsuarioV == idUsuario
@@ -125,7 +125,7 @@ namespace ALFINapp.Infrastructure.Repositories
             catch (System.Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return null;
+                return new DetallesReportesAsesorDTO();
             }
         }
 

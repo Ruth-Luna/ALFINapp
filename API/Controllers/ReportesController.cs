@@ -15,11 +15,14 @@ namespace ALFINapp.API.Controllers
     public class ReportesController : Controller
     {
         private readonly IUseCaseGetReportesAdministrador _useCaseGetReportesAdministrador;
+        private readonly IUseCaseGetReportesAsesor _useCaseGetReportesAsesor;
         public ReportesController(
-            IUseCaseGetReportesAdministrador useCaseGetReportesAdministrador
+            IUseCaseGetReportesAdministrador useCaseGetReportesAdministrador,
+            IUseCaseGetReportesAsesor useCaseGetReportesAsesor
         )
         {
             _useCaseGetReportesAdministrador = useCaseGetReportesAdministrador;
+            _useCaseGetReportesAsesor = useCaseGetReportesAsesor;
         }
         [HttpGet]
         [PermissionAuthorization("Reportes", "Reportes")]
@@ -36,20 +39,22 @@ namespace ALFINapp.API.Controllers
                 TempData["MessageError"] = reportesAdministrador.Message;
                 return RedirectToAction("Redireccionar", "Error");
             }
-            if (rol == 1)
-            {
-                
-            }
-            else if (rol == 2)
-            {
-                
-            }
-            else if (rol == 3)
-            {
-                
-            }
             var reportes = new ViewReportesGeneral { };
             return View("Reportes", reportesAdministrador.Data);
+        }
+        public async Task<IActionResult> AsesorReportes(int idAsesor)
+        {
+            var rol = HttpContext.Session.GetInt32("RolUser");
+            if (rol == null)
+            {
+                return Json(new { success = false, message = "No se ha iniciado sesión" });
+            }
+            var reportesAdministrador = await _useCaseGetReportesAsesor.Execute(idAsesor);
+            if (!reportesAdministrador.IsSuccess)
+            {
+                return Json(new { success = false, message = reportesAdministrador.Message });
+            }
+            return PartialView("_ReportesAsesor", reportesAdministrador.Data);
         }
     }
 }

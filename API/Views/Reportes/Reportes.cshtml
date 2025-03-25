@@ -1,7 +1,6 @@
 @model ALFINapp.API.Models.ViewReportesGeneral
 @{
-    /*var Usuarios = Model.Usuarios;
-    var Supervisores = Model.Supervisores;*/
+    var usuarios = Model.Asesores as List<ALFINapp.API.Models.ViewUsuario>;
 }
 
 @section Styles {
@@ -13,15 +12,15 @@
     <div class="mt-4">
         <div class="container mt-3" id="lista-reportes-usuario-asesor">
             <select class="form-control mt-3" name="lista-usuario-asesor" id="lista-usuario-asesor"
-                onchange="cargarReporteAsesor()">
+                onchange="cargarReporteAsesor(this.value)">
                 <option value=""> Seleccion un Asesor de Creditos </option>
-                @*@foreach (var usuario in Usuarios)
+                @if (usuarios != null)
                 {
-                    @if (usuario.Usuario.IdRol == 3 && usuario.Usuario.Estado == "ACTIVO")
+                    @foreach (var usuario in usuarios)
                     {
-                        <option value="@usuario.Usuario.IdUsuario"> @usuario.Usuario.NombresCompletos </option>
+                        <option value="@usuario.IdUsuario"> @usuario.NombresCompletos </option>
                     }
-                }*@
+                }
             </select>
 
             <div class="flex-container mt-4">
@@ -38,7 +37,7 @@
                 </div>
                 @*Row --- 02*@
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-6" id="div-supervisor" style="display: none;">
                         <h5> Reporte del Supervisor </h5>
                         <div id="chart-supervisor">
                             @*Aca se cargara las graficas del Asesor*@
@@ -53,15 +52,15 @@
                 </div>
                 @*Row --- 03*@
                 <div class="row">
-                    <div class="col-6">
-                        <h5> Reporte de Asesor </h5>
-                        <div id="chart-asesor">
+                    <div class="col" id="div-derivaciones" style="display: none;">
+                        <h5>Derivaciones por Fecha</h5>
+                        <div id="chart-derivaciones">
                             @*Aca se cargara las graficas del Asesor*@
                         </div>
                     </div>
-                    <div class="col-6">
-                        <h5>Derivaciones por Fecha</h5>
-                        <div id="chart-derivaciones">
+                    <div class="col-6" id="div-asesor" style="display: none;">
+                        <h5> Reporte de Asesor </h5>
+                        <div id="chart-asesor">
                             @*Aca se cargara las graficas del Asesor*@
                         </div>
                     </div>
