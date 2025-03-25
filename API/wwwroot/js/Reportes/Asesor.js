@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function cargarDerivacionesAsesorFecha() {
+    const reportes = document.getElementById("div-reporte-derivacion-asesor");
     var options = {
         series: [
             {
@@ -137,6 +138,6 @@ function cargarDerivacionesAsesorFecha() {
         }
     };
 
-    var chart = new ApexCharts(document.querySelector("#chart"), options);
+    var chart = new ApexCharts(document.querySelector("#div-reporte-derivacion-asesor"), options);
     chart.render();
 }

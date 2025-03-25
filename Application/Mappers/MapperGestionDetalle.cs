@@ -34,7 +34,6 @@ namespace ALFINapp.Application.Mappers
                 IdDerivacion = model.IdDerivacion,
                 IdSupervisor = model.IdSupervisor,
                 Supervisor = model.Supervisor,
-                IdDesembolso = model.IdDesembolso
             };
         }
     }

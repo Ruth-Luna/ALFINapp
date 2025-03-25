@@ -73,8 +73,5 @@ namespace ALFINapp.Infrastructure.Persistence.Models
 
         [Column("supervisor")]
         public string? Supervisor { get; set; }
-
-        [Column("id_desembolso")]
-        public int? IdDesembolso { get; set; }
     }
 }
