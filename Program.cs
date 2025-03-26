@@ -22,8 +22,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.Configure<Microsoft.AspNetCore.Mvc.Razor.RazorViewEngineOptions>(options =>
 {
     options.ViewLocationFormats.Clear();
-    options.ViewLocationFormats.Add("~/API/Views/{1}/{0}.cshtml");
-    options.ViewLocationFormats.Add("~/API/Views/Shared/{0}.cshtml");
+    options.ViewLocationFormats.Add("~/Views/{1}/{0}.cshtml"); // Directorio estándar
+    options.ViewLocationFormats.Add("~/Views/Shared/{0}.cshtml"); // Vistas compartidas
 });
 
 builder.Services.AddDistributedMemoryCache();
@@ -82,7 +82,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
-        Path.Combine(Directory.GetCurrentDirectory(), "API", "wwwroot")),
+        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")),
     RequestPath = ""
 });
 
