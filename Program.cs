@@ -29,7 +29,7 @@ builder.Services.Configure<Microsoft.AspNetCore.Mvc.Razor.RazorViewEngineOptions
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(80);
+    options.IdleTimeout = TimeSpan.FromHours(2);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });

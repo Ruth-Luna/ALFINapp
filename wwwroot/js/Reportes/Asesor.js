@@ -20,68 +20,46 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function cargarDerivacionesAsesorFecha() {
     var reportesAsesor = document.getElementById('reportes-asesor');
-    reportesData = JSON.parse(reportesElement.getAttribute("data-json"));
+    var reportesData = JSON.parse(reportesAsesor.getAttribute("data-json"));
+    var derivacionesFecha = reportesData["derivacionesFecha"];
+
+    var fechas = [];
+    var contador = [];
+    var contadorEsperado = [];
+
+    derivacionesFecha.forEach(item => {
+        fechas.push(item["fecha"]);
+        contador.push(item["contador"]);
+        contadorEsperado.push(10); // Línea constante de referencia
+    });
+
     var options = {
         series: [
             {
-                name: 'Actual',
-                data: [
-                    {
-                        x: '2011',
-                        y: 1292,
-                    },
-                    {
-                        x: '2012',
-                        y: 4432,
-                    },
-                    {
-                        x: '2013',
-                        y: 5423,
-                    },
-                    {
-                        x: '2014',
-                        y: 6653,
-                    },
-                    {
-                        x: '2015',
-                        y: 8133,
-                    },
-                    {
-                        x: '2016',
-                        y: 7132,
-                    },
-                    {
-                        x: '2017',
-                        y: 7332,
-                    },
-                    {
-                        x: '2018',
-                        y: 6553
-                    }
-                ]
+                name: 'Derivaciones',
+                type: 'bar',
+                data: contador
+            },
+            {
+                name: 'Esperado',
+                type: 'line',
+                data: contadorEsperado
             }
         ],
         chart: {
             height: 350,
-            type: 'bar'
+            type: 'line'  // Se usa 'line' para que soporte tanto barras como líneas
         },
         plotOptions: {
-            bar: {
-                columnWidth: '60%'
-            }
+            bar: { columnWidth: '60%' }
         },
-        colors: ['#00E396'],
-        dataLabels: {
-            enabled: false
+        stroke: {
+            width: [0, 4] // Grosor de la barra (0) y de la línea (4)
         },
-        legend: {
-            show: true,
-            showForSingleSeries: true,
-            customLegendItems: ['Actual', 'Expected'],
-            markers: {
-                fillColors: ['#00E396', '#775DD0']
-            }
-        }
+        colors: ['#00E396', '#FF4560'], // Verde para las barras, rojo para la línea
+        xaxis: { categories: fechas },
+        dataLabels: { enabled: false },
+        legend: { position: 'top' }
     };
 
     var chart = new ApexCharts(document.querySelector("#div-reporte-derivacion-asesor"), options);

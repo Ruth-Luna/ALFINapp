@@ -16,13 +16,15 @@ namespace ALFINapp.API.Controllers
     {
         private readonly IUseCaseGetReportesAdministrador _useCaseGetReportesAdministrador;
         private readonly IUseCaseGetReportesAsesor _useCaseGetReportesAsesor;
+        private readonly IUseCaseGetReportesSupervisor _useCaseGetReportesSupervisor;
         public ReportesController(
             IUseCaseGetReportesAdministrador useCaseGetReportesAdministrador,
-            IUseCaseGetReportesAsesor useCaseGetReportesAsesor
-        )
+            IUseCaseGetReportesAsesor useCaseGetReportesAsesor,
+            IUseCaseGetReportesSupervisor useCaseGetReportesSupervisor)
         {
             _useCaseGetReportesAdministrador = useCaseGetReportesAdministrador;
             _useCaseGetReportesAsesor = useCaseGetReportesAsesor;
+            _useCaseGetReportesSupervisor = useCaseGetReportesSupervisor;
         }
         [HttpGet]
         [PermissionAuthorization("Reportes", "Reportes")]
@@ -56,6 +58,21 @@ namespace ALFINapp.API.Controllers
                 return Json(new { success = false, message = reportesAdministrador.Message });
             }
             return PartialView("_ReportesAsesor", reportesAdministrador.Data);
+        }
+        [HttpGet]
+        public async Task<IActionResult> SupervisorReportes(int idSupervisor)
+        {
+            var rol = HttpContext.Session.GetInt32("RolUser");
+            if (rol == null)
+            {
+                return Json(new { success = false, message = "No se ha iniciado sesión" });
+            }
+            var reportesAdministrador = await _useCaseGetReportesSupervisor.Execute(idSupervisor);
+            if (!reportesAdministrador.IsSuccess)
+            {
+                return Json(new { success = false, message = reportesAdministrador.Message });
+            }
+            return PartialView("_ReportesSupervisor", reportesAdministrador.Data);
         }
     }
 }

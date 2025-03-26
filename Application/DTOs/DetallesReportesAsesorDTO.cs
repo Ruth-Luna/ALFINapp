@@ -12,5 +12,6 @@ namespace ALFINapp.Application.DTOs
         public List<ClientesAsignado> ClientesAsignados { get; set; } = new List<ClientesAsignado>();
         public List<DerivacionesAsesores> DerivacionesDelAsesor { get; set; } = new List<DerivacionesAsesores>();
         public List<ClientesTipificado> UltimaTipificacionXAsignacion { get; set; } = new List<ClientesTipificado>();
+        public List<Desembolsos> Desembolsos { get; set; } = new List<Desembolsos>();
     }
 }
