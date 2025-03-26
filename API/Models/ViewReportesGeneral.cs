@@ -8,6 +8,7 @@ namespace ALFINapp.API.Models
     public class ViewReportesGeneral
     {
         public List<ViewUsuario>? Asesores { get; set; }
+        public List<ViewUsuario>? Supervisores { get; set; }
         public List<ViewReporteDerivaciones>? Derivaciones { get; set; }
         public int? TotalDerivaciones { get; set; }
         public int? TotalDerivacionesDesembolsadas { get; set; }

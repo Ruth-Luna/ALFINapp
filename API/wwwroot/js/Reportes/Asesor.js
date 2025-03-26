@@ -1,13 +1,24 @@
-let asesorReporteData;
-document.addEventListener('DOMContentLoaded', function () {
-    var reportesElement = document.getElementById("reportes-data");
-    reportesData = JSON.parse(reportesElement.getAttribute("data-json"));
-    console.log("Datos cargados:", reportesData);
-    cargarDerivacionesAsesorFecha();
+document.addEventListener("DOMContentLoaded", function () {
+    var targetNode = document.getElementById("div-derivaciones-asesor");
+
+    var observer = new MutationObserver(function (mutationsList) {
+        for (var mutation of mutationsList) {
+            if (mutation.attributeName === "style") {
+                var displayValue = window.getComputedStyle(targetNode).display;
+                if (displayValue === "block") {
+                    console.log("El div ahora es visible. Iniciando gráfico...");
+                    cargarDerivacionesAsesorFecha();
+                    observer.disconnect(); // Detenemos el observer después de la primera ejecución
+                }
+            }
+        }
+    });
+
+    observer.observe(targetNode, { attributes: true, attributeFilter: ["style"] });
 });
 
+
 function cargarDerivacionesAsesorFecha() {
-    const reportes = document.getElementById("div-reporte-derivacion-asesor");
     var options = {
         series: [
             {

@@ -42,6 +42,7 @@ namespace ALFINapp.API.Controllers
             var reportes = new ViewReportesGeneral { };
             return View("Reportes", reportesAdministrador.Data);
         }
+        [HttpGet]
         public async Task<IActionResult> AsesorReportes(int idAsesor)
         {
             var rol = HttpContext.Session.GetInt32("RolUser");

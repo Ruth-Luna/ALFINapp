@@ -2,15 +2,8 @@ let reportesData;
 document.addEventListener('DOMContentLoaded', function () {
     var reportesElement = document.getElementById("reportes-data");
     reportesData = JSON.parse(reportesElement.getAttribute("data-json"));
-    console.log("Datos cargados:", reportesData);
     cargarDerivacionesGenerales();
     cargarProgreso();
-});
-
-document.addEventListener('click', function () {
-    console.log("Se hizo clic en la pantalla" 
-        + reportesData["totalDerivaciones"]
-        + reportesData["totalClientes"]);
 });
 
 function cargarDerivacionesGenerales() {
@@ -18,15 +11,12 @@ function cargarDerivacionesGenerales() {
     derivaciones.style.display = 'block';
     var derivacionesFecha = reportesData["numDerivacionesXFecha"];
     
-    console.log("Derivaciones por fecha:", derivacionesFecha);
-
     var fechas = [];
     var contador = [];
     
     derivacionesFecha.forEach(item => {
         fechas.push(item["fecha"]);
         contador.push(item["contador"]);
-        console.log(item["fecha"], item["contador"]);
     });
 
     var options = {

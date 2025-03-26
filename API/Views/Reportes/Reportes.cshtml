@@ -1,6 +1,7 @@
 @model ALFINapp.API.Models.ViewReportesGeneral
 @{
-    var usuarios = Model.Asesores as List<ALFINapp.API.Models.ViewUsuario>;
+    var asesores = Model.Asesores as List<ALFINapp.API.Models.ViewUsuario>;
+    var supervisores = Model.Supervisores as List<ALFINapp.API.Models.ViewUsuario>;
 }
 
 @section Styles {
@@ -10,72 +11,67 @@
 <div class="container mt-4">
     <h3> Reportes Totales </h3>
     <div class="mt-4">
-        <div class="container mt-3" id="lista-reportes-usuario-asesor">
-            <select class="form-control mt-3" name="lista-usuario-asesor" id="lista-usuario-asesor"
-                onchange="cargarReporteAsesor(this.value)">
-                <option value=""> Seleccion un Asesor de Creditos </option>
-                @if (usuarios != null)
-                {
-                    @foreach (var usuario in usuarios)
+        <div class="row mt-3">
+            <div class="container col" id="lista-reportes-usuario-asesor">
+                <select class="form-control mt-3" name="lista-usuario-asesor" id="lista-usuario-asesor"
+                    onchange="cargarReporteAsesor(this.value)">
+                    <option value=""> Seleccione un Asesor de Creditos </option>
+                    @if (asesores != null)
                     {
-                        <option value="@usuario.IdUsuario"> @usuario.NombresCompletos </option>
+                        @foreach (var usuario in asesores)
+                        {
+                            <option value="@usuario.IdUsuario"> @usuario.NombresCompletos </option>
+                        }
                     }
-                }
-            </select>
+                </select>
+            </div>
+            <div class="container col" id="lista-reportes-usuario-supervisor">
+                <select class="form-control mt-3" name="lista-usuario-supervisor" id="lista-usuario-supervisor"
+                    onchange="cargarReporteSupervisor(this.value)">
+                    <option value=""> Seleccione un Supervisor </option>
+                    @if (supervisores != null)
+                    {
+                        @foreach (var usuario in supervisores)
+                        {
+                            <option value="@usuario.IdUsuario"> @usuario.NombresCompletos </option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
 
-            <div class="flex-container mt-4">
-                @*Row --- 01*@
-                <div class="row">
-                    <div class="col">
-                        <div class="align-items-center">
-                            <h5>Progreso General</h5>
-                        </div>
-                        <div id="chart-progreso-general">
-                            @*Aca se cargara las graficas del Asesor*@
-                        </div>
+        <div class="flex-container mt-4">
+            @*Row --- 01*@
+            <div class="row">
+                <div class="col">
+                    <div class="align-items-center">
+                        <h5>Progreso General</h5>
                     </div>
-                </div>
-                @*Row --- 02*@
-                <div class="row">
-                    <div class="col-6" id="div-supervisor" style="display: none;">
-                        <h5> Reporte del Supervisor </h5>
-                        <div id="chart-supervisor">
-                            @*Aca se cargara las graficas del Asesor*@
-                        </div>
-                    </div>
-                    <div class="col-6" id="div-supervisor-detalle" style="display: none;">
-                        <h5> Reporte de Especifico del Supervisor </h5>
-                        <div id="chart-supervisor-detalle">
-                            @*Aca se cargara las graficas del Supervisor*@
-                        </div>
-                    </div>
-                </div>
-                @*Row --- 03*@
-                <div class="row">
-                    <div class="col" id="div-derivaciones" style="display: none;">
-                        <h5>Derivaciones por Fecha</h5>
-                        <div id="chart-derivaciones">
-                            @*Aca se cargara las graficas del Asesor*@
-                        </div>
-                    </div>
-                    <div class="col-6" id="div-asesor" style="display: none;">
-                        <h5> Reporte de Asesor </h5>
-                        <div id="chart-asesor">
-                            @*Aca se cargara las graficas del Asesor*@
-                        </div>
-                    </div>
-                </div>
-                @*Row --- 04*@
-                <div class="row">
-                    <div class="col" id="div-asesor-detalle" style="display: none;">
-                        <h5> Reporte de Especifico del Asesor </h5>
-                        <div id="chart-asesor-detalle">
-                            @*Aca se cargara las graficas del Supervisor*@
-                        </div>
+                    <div id="chart-progreso-general">
+                        @*Aca se cargara las graficas del Asesor*@
                     </div>
                 </div>
             </div>
+            @*Row --- 02*@
+            <div class="row">
+                <div class="col" id="div-derivaciones" style="display: none;">
+                    <h5>Derivaciones por Fecha</h5>
+                    <div id="chart-derivaciones">
+                        @*Aca se cargara las graficas del Asesor*@
+                    </div>
+                </div>
+            </div>
+            @*Row --- 03*@
+            <div class="row">
+                <div class="col" id="div-derivaciones-supervisor" style="display: none;">
+                    
+                </div>
+                <div class="col" id="div-derivaciones-asesor" style="display: none;">
+
+                </div>
+            </div>
         </div>
+
     </div>
 </div>
 
@@ -84,4 +80,6 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="~/js/Reportes/Reportes.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/js/Reportes/ReportesBusqueda.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/js/Reportes/Asesor.js?v=@DateTime.Now.Ticks"></script>
 }

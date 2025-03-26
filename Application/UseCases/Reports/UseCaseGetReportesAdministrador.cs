@@ -95,6 +95,17 @@ namespace ALFINapp.Application.UseCases.Reports
                     usuariosViews.Add(usuarioView);
                 }
 
+                var supervisores = await _repositoryUsuarios.GetAllSupervisores();
+                var supervisoresViews = new List<ViewUsuario>();
+
+                foreach (var item in supervisores)
+                {
+                    var supervisorView = new ViewUsuario();
+                    supervisorView = item.ToView();
+                    supervisoresViews.Add(supervisorView);
+                }
+
+                reporteGeneral.Supervisores = supervisoresViews;
                 reporteGeneral.Asesores = usuariosViews;
                 return (true, "Reportes obtenidos correctamente", reporteGeneral);
             }

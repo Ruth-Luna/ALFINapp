@@ -47,6 +47,36 @@ namespace ALFINapp.Infrastructure.Repositories
             }
         }
 
+        public async Task<List<DetallesUsuarioDTO>> GetAllSupervisores()
+        {
+            try
+            {
+                var supervisores = await _context
+                    .usuarios
+                    .AsNoTracking()
+                    .Where(x => x.IdRol == 2)
+                    .ToListAsync();
+                var supervisoresDTO = new List<DetallesUsuarioDTO>();
+                foreach (var item in supervisores)
+                {
+                    supervisoresDTO.Add(new DetallesUsuarioDTO(item));
+                }
+                if (supervisores != null)
+                {
+                    return supervisoresDTO;
+                }
+                else
+                {
+                    return new List<DetallesUsuarioDTO>();
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);                
+                return new List<DetallesUsuarioDTO>();
+            }
+        }
+
         public async Task<List<DetallesUsuarioDTO>> GetAllUsers()
         {
             try

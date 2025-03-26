@@ -1,20 +1,14 @@
 @model ALFINapp.API.Models.ViewReportesAsesores
-@{
-}
 
 <div>
     <div class="row">
         <div class="col-md-12">
-            <h2>Derivaciones de Asesores</h2>
+            <h4>Derivaciones de Asesores</h4>
             <div id="div-reporte-derivacion-asesor">
 
             </div>
         </div>
 
     </div>
-    <div id="reportes-data-asesores" data-json='@Html.Raw(Json.Serialize(Model))'></div>
 </div>
-
-@section scripts{
-    <script src="~/js/Reportes/Asesor.js"></script>
-}
+<div id="reportes-asesor" data-json='@Html.Raw(Json.Serialize(Model))'></div>
