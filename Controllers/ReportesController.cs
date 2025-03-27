@@ -33,16 +33,51 @@ namespace ALFINapp.API.Controllers
             var rol = HttpContext.Session.GetInt32("RolUser");
             if (rol == null)
             {
+                TempData["MessageError"] = "Rol no valido.";
                 return RedirectToAction("Index", "Home");
             }
-            var reportesAdministrador = await _useCaseGetReportesAdministrador.Execute();
-            if (!reportesAdministrador.IsSuccess)
+            ViewData["RolUser"] = rol.Value;
+            var idUsuario = HttpContext.Session.GetInt32("IdUser");
+            if (idUsuario == null)
             {
-                TempData["MessageError"] = reportesAdministrador.Message;
-                return RedirectToAction("Redireccionar", "Error");
+                TempData["MessageError"] = "Id de usuario no valido.";
+                return RedirectToAction("Index", "Home");
             }
-            var reportes = new ViewReportesGeneral { };
-            return View("Reportes", reportesAdministrador.Data);
+            if (rol == 1 || rol == 4)
+            {
+                var reportesAdministrador = await _useCaseGetReportesAdministrador.Execute();
+                if (!reportesAdministrador.IsSuccess)
+                {
+                    TempData["MessageError"] = reportesAdministrador.Message;
+                    return RedirectToAction("Redireccionar", "Error");
+                }
+                return View("Reportes", reportesAdministrador.Data);
+            }
+            else if (rol == 2)
+            {
+                var reportesSupervisor = await _useCaseGetReportesSupervisor.Execute(idUsuario.Value);
+                if (!reportesSupervisor.IsSuccess)
+                {
+                    TempData["MessageError"] = reportesSupervisor.Message;
+                    return RedirectToAction("Redireccionar", "Error");
+                }
+                return View("Reportes", reportesSupervisor.Data);
+            }
+            else if (rol == 3)
+            {
+                var reportesAsesor = await _useCaseGetReportesAsesor.Execute(idUsuario.Value);
+                if (!reportesAsesor.IsSuccess)
+                {
+                    TempData["MessageError"] = reportesAsesor.Message;
+                    return RedirectToAction("Redireccionar", "Error");
+                }
+                return View("Reportes", reportesAsesor.Data);
+            }
+            else
+            {
+                TempData["MessageError"] = "Rol no valido.";
+                return RedirectToAction("Index", "Home");
+            }
         }
         [HttpGet]
         public async Task<IActionResult> AsesorReportes(int idAsesor)

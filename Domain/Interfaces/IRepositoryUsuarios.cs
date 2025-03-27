@@ -15,5 +15,6 @@ namespace ALFINapp.Domain.Interfaces
         public Task<List<DetallesUsuarioDTO>> GetAllUsers();
         public Task<List<DetallesUsuarioDTO>> GetAllAsesores();
         public Task<List<DetallesUsuarioDTO>> GetAllSupervisores();
+        public Task<List<DetallesUsuarioDTO>> GetAllAsesoresBySupervisor(int idSupervisor);
     }
 }

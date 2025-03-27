@@ -18,6 +18,7 @@ namespace ALFINapp.API.Models
         public int? TotalDerivacionesEnvioForm { get; set; }
         public List<DerivacionesFecha>? NumDerivacionesXFecha { get; set; }
         public List<DerivacionesFecha>? NumDesembolsosXFecha { get; set; }
+        public List<ViewTipificacionesAsesor>? NumDerivacionesXAsesor { get; set; }
     }
     public class DerivacionesFecha
     {

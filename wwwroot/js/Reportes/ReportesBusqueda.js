@@ -6,13 +6,20 @@ async function cargarReporteAsesor(idUsuario) {
     const baseUrl = window.location.origin;
     const userId = parseInt(idUsuario, 10);
     const url = `${baseUrl}/Reportes/AsesorReportes?idAsesor=${encodeURIComponent(userId)}`;
-
+    let loadingSwal = Swal.fire({
+        title: 'Enviando...',
+        text: 'Por favor, espera mientras se procesa la solicitud.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading(); // Activa la animación de carga
+        }
+    });
     try {
         const response = await fetch(url, {
             method: 'GET'
         });
         const contentType = response.headers.get("content-type");
-
+        Swal.close();
         if (contentType && contentType.includes("application/json")) {
             const result = await response.json();
             if (!result.success) {

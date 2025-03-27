@@ -26,7 +26,7 @@ namespace ALFINapp.Infrastructure.Repositories
                     .ToListAsync();
                 var getDnis = AllAsesores.Select(x => x.Dni).ToHashSet();
                 var Derivaciones = await _context.derivaciones_asesores
-                    .Where(x => getDnis.Contains(x.DniAsesor) 
+                    .Where(x => getDnis.Contains(x.DniAsesor)
                         && x.FechaDerivacion.Year == actualYear
                         && x.FechaDerivacion.Month == actualMonth)
                     .ToListAsync();
@@ -37,7 +37,7 @@ namespace ALFINapp.Infrastructure.Repositories
                         && x.FechaDesembolsos.Value.Year == DateTime.Now.Year
                         && x.FechaDesembolsos.Value.Month == DateTime.Now.Month)
                     .ToListAsync();
-                var DerivacionesAllInfo = new DetallesReportesAdministradorDTO ();
+                var DerivacionesAllInfo = new DetallesReportesAdministradorDTO();
                 foreach (var asesor in AllAsesores)
                 {
                     var DerivacionesAsesores = new DerivacionesAsesoresList();
@@ -117,9 +117,12 @@ namespace ALFINapp.Infrastructure.Repositories
                     .ToListAsync();
 
                 var getAllGestionDetalle = await _context.GESTION_DETALLE
-                    .Where( x => x.DocAsesor == getUsuario.Dni
+                    .AsNoTracking()
+                    .Where(x => x.DocAsesor == getUsuario.Dni
                         && x.FechaGestion.Year == DateTime.Now.Year
                         && x.FechaGestion.Month == DateTime.Now.Month)
+                    .GroupBy(x => x.DocCliente)
+                    .Select(g => g.OrderByDescending(x => x.FechaGestion).First())
                     .ToListAsync();
 
                 var getAllDesembolsos = await _context.desembolsos
@@ -145,7 +148,7 @@ namespace ALFINapp.Infrastructure.Repositories
             }
         }
 
-        public async Task<DetallesReportesDerivacionesDTO?> GetReportesDerivacionGral ()
+        public async Task<DetallesReportesDerivacionesDTO?> GetReportesDerivacionGral()
         {
             try
             {
@@ -182,6 +185,46 @@ namespace ALFINapp.Infrastructure.Repositories
             }
         }
 
+        public async Task<DetallesReportesDerivacionesDTO?> GetReportesGralSupervisor(int idSupervisor)
+        {
+            try
+            {
+                var getAsesores = await _context
+                    .usuarios
+                    .Where(x => x.IDUSUARIOSUP == idSupervisor)
+                    .ToListAsync();
+                var dniAsesores = getAsesores.Select(x => x.Dni).ToHashSet();
+                var getDerivacionesGral = await _context.derivaciones_asesores
+                    .Where(x => dniAsesores.Contains(x.DniAsesor)
+                        && x.FechaDerivacion.Year == DateTime.Now.Year
+                        && x.FechaDerivacion.Month == DateTime.Now.Month)
+                    .ToListAsync();
+                var getGestionDetalles = await _context.GESTION_DETALLE
+                    .Where(x => dniAsesores.Contains(x.DocAsesor)
+                        && x.FechaGestion.Year == DateTime.Now.Year
+                        && x.FechaGestion.Month == DateTime.Now.Month)
+                    .GroupBy(x => x.DocCliente)
+                    .Select(g => g.OrderByDescending(x => x.IdFeedback).First())
+                    .ToListAsync();
+                var getDesembolsos = await _context.desembolsos
+                    .Where(x => dniAsesores.Contains(x.DocAsesor)
+                        && x.FechaDesembolsos.HasValue
+                        && x.FechaDesembolsos.Value.Year == DateTime.Now.Year
+                        && x.FechaDesembolsos.Value.Month == DateTime.Now.Month
+                        && x.Sucursal != null)
+                    .ToListAsync();
+                var detallesReporte = new DetallesReportesDerivacionesDTO();
+                detallesReporte.DerivacionesGral = getDerivacionesGral;
+                detallesReporte.GestionDetalles = getGestionDetalles;
+                detallesReporte.Desembolsos = getDesembolsos;
+                return await GetReportesDerivacionGral();
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+        }
         public async Task<DetallesReportesSupervisorDTO> GetReportesDerivacionSupervisor(int idUsuario)
         {
             try

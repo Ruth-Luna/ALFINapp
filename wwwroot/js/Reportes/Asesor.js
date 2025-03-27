@@ -63,7 +63,7 @@ function cargarDerivacionesAsesorFecha() {
         legend: { position: 'top' }
     };
 
-    var chart = new ApexCharts(document.querySelector("#div-reporte-derivacion-asesor"), options);
+    var chart = new ApexCharts(document.querySelector("#div-reporte-derivacion-asesor-fecha"), options);
     chart.render();
 }
 
@@ -71,45 +71,129 @@ function cargarGestionInforme() {
     var reportesAsesor = document.getElementById('reportes-asesor');
     var reportesData = JSON.parse(reportesAsesor.getAttribute("data-json"));
     var GestionInformes = reportesData["tipificacionesGestion"];
+
     var tipificacion = [];
-    var descripcion = [];
+    var descripcionMap = {}; // Para la leyenda y tooltip
     var contador = [];
+    var contadorReal = [];
+
     GestionInformes.forEach(item => {
-        tipificacion.push(item["IdTipificacion"]);
-        descripcion.push(item["DescripcionTipificaciones"]);
-        contador.push(item["ContadorTipificaciones"]);
+        let id = item["idTipificacion"];
+        let count = item["contadorTipificaciones"];
+
+        tipificacion.push(id);
+        descripcionMap[id] = item["descripcionTipificaciones"]; // Guardar descripciones
+        contadorReal.push(count);
+        contador.push(count > 200 ? 200 : count); // Limitar a 200
     });
+
     var options = {
         series: [{
             name: 'Gestión',
             data: contador
         }],
         chart: {
-            type: 'area',
+            type: 'bar',
             height: 350
         },
         xaxis: {
-            categories: descripcion,
+            categories: tipificacion, // Mostrar solo los IDs
             title: {
-                text: 'Descripción Tipificaciones'
+                text: 'ID Tipificaciones'
+            }
+        },
+        yaxis: {
+            title: {
+                text: 'Número de Tipificaciones'
+            }
+        },
+        plotOptions: {
+            bar: {
+                columnWidth: '50%'
             }
         },
         dataLabels: {
             enabled: false
         },
-        stroke: {
-            curve: 'smooth'
-        },
-        colors: ['#008FFB'], // Azul para el área
+        colors: ['#008FFB'], // Azul para las barras
         title: {
             text: 'Gestión de Informes',
             align: 'center'
         },
         legend: {
             position: 'top'
+        },
+        tooltip: {
+            intersect: false, // Permite que el tooltip aparezca en el eje X
+            y: {
+                formatter: function (value, { dataPointIndex }) {
+                    let id = tipificacion[dataPointIndex]; // Obtener ID
+                    let descripcion = descripcionMap[id] || "Desconocido"; // Obtener descripción
+                    let countReal = contadorReal[dataPointIndex]; // Obtener número real
+                    return `${id} ${descripcion}\nTotal: ${countReal}`; // Formato corregido
+                }
+            }
         }
     };
 
     var chart = new ApexCharts(document.querySelector("#div-reporte-gestion-asesor"), options);
     chart.render();
+
+    // Crear botón de leyenda con ícono
+    var legendContainer = document.getElementById('leyenda-tipificaciones');
+    legendContainer.innerHTML = ""; // Limpiar antes de añadir
+
+    let legendButton = document.createElement('button');
+    legendButton.className = "btn btn-info";
+    legendButton.style.marginBottom = "10px";
+
+    // Agregar ícono de Bootstrap
+    let icon = document.createElement("i");
+    icon.className = "bi bi-list"; // Icono de lista
+    legendButton.appendChild(icon);
+
+    // Contenedor flotante de la leyenda
+    let legendPopup = document.createElement('div');
+    legendPopup.className = "legend-popup";
+    legendPopup.style.display = "none"; // Ocultar inicialmente
+    legendPopup.style.position = "absolute";
+    legendPopup.style.background = "white";
+    legendPopup.style.border = "1px solid #ccc";
+    legendPopup.style.boxShadow = "2px 2px 10px rgba(0, 0, 0, 0.2)";
+    legendPopup.style.padding = "10px";
+    legendPopup.style.borderRadius = "8px";
+    legendPopup.style.top = "50px"; // Ajusta la posición según necesidad
+    legendPopup.style.right = "20px"; // Ajusta la posición según necesidad
+    legendPopup.style.zIndex = "1000";
+    legendPopup.style.maxHeight = "200px";
+    legendPopup.style.overflowY = "auto";
+
+    let legendList = document.createElement('ul');
+    legendList.style.listStyle = "none";
+    legendList.style.padding = "0";
+    legendList.style.margin = "0";
+
+    for (let id in descripcionMap) {
+        let li = document.createElement('li');
+        li.innerHTML = `<strong>${id}:</strong> ${descripcionMap[id]}`;
+        legendList.appendChild(li);
+    }
+
+    legendPopup.appendChild(legendList);
+    document.body.appendChild(legendPopup); // Añadir al `body` para que flote correctamente
+
+    // Mostrar/ocultar la leyenda emergente
+    legendButton.onclick = function (event) {
+        event.stopPropagation(); // Evita que el clic cierre inmediatamente la ventana
+        legendPopup.style.display = (legendPopup.style.display === "none") ? "block" : "none";
+    };
+
+    // Cerrar la ventana emergente si se hace clic fuera
+    document.addEventListener('click', function (event) {
+        if (!legendPopup.contains(event.target) && event.target !== legendButton) {
+            legendPopup.style.display = "none";
+        }
+    });
+
+    legendContainer.appendChild(legendButton);
 }

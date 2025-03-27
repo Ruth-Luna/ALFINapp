@@ -9,5 +9,6 @@ namespace ALFINapp.Domain.Interfaces
         public Task<DetallesReportesAsesorDTO> GetReportesAsesor(int idUsuario);
         public Task<DetallesReportesDerivacionesDTO?> GetReportesDerivacionGral();
         public Task<DetallesReportesSupervisorDTO> GetReportesDerivacionSupervisor(int idUsuario);
+        public Task<DetallesReportesDerivacionesDTO?> GetReportesGralSupervisor(int idSupervisor);
     }
 }
