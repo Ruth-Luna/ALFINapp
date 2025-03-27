@@ -37,6 +37,20 @@ namespace ALFINapp.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
+        public async Task<List<Tipificaciones>> GetTipificacionesDescripcion()
+        {
+            try
+            {
+                var tipificaciones = await _context.tipificaciones.ToListAsync();
+                return tipificaciones;
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new List<Tipificaciones>();
+            }
+        }
+
         public async Task<bool> UploadGestionTip(ClientesAsignado clienteA, ClientesTipificado clienteT, ClientesEnriquecido clienteE, int idUsuario)
         {
             try

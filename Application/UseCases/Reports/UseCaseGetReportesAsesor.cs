@@ -12,12 +12,15 @@ namespace ALFINapp.Application.UseCases.Reports
     {
         private readonly IRepositoryReports _repositoryReports;
         private readonly IRepositoryUsuarios _repositoryUsuarios;
+        private readonly IRepositoryTipificaciones _repositoryTipificaciones;
         public UseCaseGetReportesAsesor(
             IRepositoryReports repositoryReports,
-            IRepositoryUsuarios repositoryUsuarios)
+            IRepositoryUsuarios repositoryUsuarios,
+            IRepositoryTipificaciones repositoryTipificaciones)
         {
             _repositoryReports = repositoryReports;
             _repositoryUsuarios = repositoryUsuarios;
+            _repositoryTipificaciones = repositoryTipificaciones;
         }
         public async Task<(bool IsSuccess, string Message, ViewReportesAsesores? Data)> Execute(int idUsuario)
         {
@@ -33,6 +36,7 @@ namespace ALFINapp.Application.UseCases.Reports
                 var detallesUsuarioDTO = new DetallesUsuarioDTO(usuario);
                 viewReportes.asesor = detallesUsuarioDTO.ToView();
                 viewReportes.numDerivaciones = reportes.DerivacionesDelAsesor.Count;
+                viewReportes.numDerivacionesProcesadas = reportes.DerivacionesDelAsesor.Count(x => x.FueProcesado == true);
                 viewReportes.numDesembolsos = reportes.DerivacionesDelAsesor.Count;
                 viewReportes.numClientesAsignados = reportes.ClientesAsignados.Count;
                 viewReportes.numClientesTipificados = reportes.UltimaTipificacionXAsignacion.Count;
@@ -40,9 +44,26 @@ namespace ALFINapp.Application.UseCases.Reports
                 var createDerivacionesFecha = reportes
                     .DerivacionesDelAsesor
                     .GroupBy(x => x.FechaDerivacion.ToString("%d/%M/%y"))
-                    .Select(x => new DerivacionesFecha {Fecha = x.Key, Contador = x.Count()})
+                    .Select(x => new DerivacionesFecha { Fecha = x.Key, Contador = x.Count() })
                     .ToList();
                 viewReportes.derivacionesFecha = createDerivacionesFecha;
+                viewReportes.gestionDetalles = reportes.gESTIONDETALLEs.Select(x => new DetallesGestionDetalleDTO(x).toView()).ToList();
+                var TipificacionesGestion = new List<ViewTipificacionesGestion>();
+                var TipificacionesDescripcion = await _repositoryTipificaciones.GetTipificacionesDescripcion();
+                var dicTipificaciones = TipificacionesDescripcion
+                    .ToDictionary(y => y.IdTipificacion, y => y.DescripcionTipificacion);
+
+                var agruparTipificaciones = viewReportes
+                    .gestionDetalles
+                    .GroupBy(x => x.CodTip)
+                    .Select(g => new ViewTipificacionesGestion
+                    {
+                        IdTipificacion = g.Key,
+                        DescripcionTipificaciones = dicTipificaciones.TryGetValue(g.Key, out var descripcion) ? descripcion : "",
+                        ContadorTipificaciones = g.Count()
+                    })
+                    .ToList();
+                viewReportes.tipificacionesGestion = agruparTipificaciones;
                 return (true, "Reportes obtenidos correctamente", viewReportes);
             }
             catch (System.Exception ex)

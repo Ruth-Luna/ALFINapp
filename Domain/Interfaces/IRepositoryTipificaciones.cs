@@ -12,5 +12,6 @@ namespace ALFINapp.Domain.Interfaces
         public Task<bool> UploadTipificacion(ClientesTipificado clientesTipificado);
         public Task<Tipificaciones?> GetTipificacion (int id);
         public Task<bool> UploadGestionTip(ClientesAsignado clienteA, ClientesTipificado clienteT, ClientesEnriquecido clienteE, int idUsuario);
+        public Task<List<Tipificaciones>> GetTipificacionesDescripcion();
     }
 }

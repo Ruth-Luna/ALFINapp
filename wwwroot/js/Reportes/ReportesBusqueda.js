@@ -1,4 +1,7 @@
 async function cargarReporteAsesor(idUsuario) {
+    if (idUsuario === undefined || idUsuario === null || idUsuario === '') {
+        return;
+    }
     var asesorElement = document.getElementById('div-derivaciones-asesor');
     const baseUrl = window.location.origin;
     const userId = parseInt(idUsuario, 10);
@@ -36,6 +39,9 @@ async function cargarReporteAsesor(idUsuario) {
 }
 
 async function cargarReporteSupervisor(idUsuario) {
+    if (idUsuario === undefined || idUsuario === null || idUsuario === '') {
+        return;
+    }
     var supervisorElement = document.getElementById('div-derivaciones-supervisor');
     const baseUrl = window.location.origin;
     const userId = parseInt(idUsuario, 10);

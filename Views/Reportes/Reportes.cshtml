@@ -6,72 +6,96 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/main_page.css">
+    <link rel="stylesheet" href="~/css/Reportes/Reportes.css?v=@DateTime.Now.Ticks">
 }
 
 <div class="container mt-4">
-    <h3> Reportes Totales </h3>
-    <div class="mt-4">
-        <div class="row mt-3">
-            <div class="container col" id="lista-reportes-usuario-asesor">
-                <select class="form-control mt-3" name="lista-usuario-asesor" id="lista-usuario-asesor"
-                    onchange="cargarReporteAsesor(this.value)">
-                    <option value=""> Seleccione un Asesor de Creditos </option>
-                    @if (asesores != null)
-                    {
-                        @foreach (var usuario in asesores)
-                        {
-                            <option value="@usuario.IdUsuario"> @usuario.NombresCompletos </option>
-                        }
-                    }
-                </select>
-            </div>
-            <div class="container col" id="lista-reportes-usuario-supervisor">
-                <select class="form-control mt-3" name="lista-usuario-supervisor" id="lista-usuario-supervisor"
-                    onchange="cargarReporteSupervisor(this.value)">
-                    <option value=""> Seleccione un Supervisor </option>
-                    @if (supervisores != null)
-                    {
-                        @foreach (var usuario in supervisores)
-                        {
-                            <option value="@usuario.IdUsuario"> @usuario.NombresCompletos </option>
-                        }
-                    }
-                </select>
-            </div>
-        </div>
-
-        <div class="flex-container mt-4">
-            @*Row --- 01*@
-            <div class="row">
-                <div class="col">
-                    <div class="align-items-center">
-                        <h5>Progreso General</h5>
-                    </div>
-                    <div id="chart-progreso-general">
-                        @*Aca se cargara las graficas del Asesor*@
-                    </div>
+    <div class="align-center">
+        <h2> Reportes Totales </h2>
+    </div>
+    <div class="flex-container mt-4">
+        <div class="card mt-4">
+            <div class="card-header">
+                <div class="alert alert-info">
+                    Seleccione un Asesor o Supervisor para ver sus reportes
                 </div>
             </div>
-            @*Row --- 02*@
-            <div class="row">
-                <div class="col" id="div-derivaciones" style="display: none;">
-                    <h5>Derivaciones por Fecha</h5>
-                    <div id="chart-derivaciones">
-                        @*Aca se cargara las graficas del Asesor*@
+            <div class="card-body">
+                <div class="row mt-3">
+                    <div class="container col" id="lista-reportes-usuario-asesor">
+                        <label for="lista-usuario-asesor" class="form-label">Filtro Por Asesor de Creditos</label>
+                        <select class="form-control mt-3" name="lista-usuario-asesor" id="lista-usuario-asesor"
+                            onchange="cargarReporteAsesor(this.value)">
+                            <option value=""> Seleccione un Asesor de Creditos </option>
+                            @if (asesores != null)
+                            {
+                                @foreach (var usuario in asesores)
+                                {
+                                    <option value="@usuario.IdUsuario"> @usuario.NombresCompletos </option>
+                                }
+                            }
+                        </select>
                     </div>
-                </div>
-            </div>
-            @*Row --- 03*@
-            <div class="row">
-                <div class="col" id="div-derivaciones-supervisor" style="display: none;">
-                    
-                </div>
-                <div class="col" id="div-derivaciones-asesor" style="display: none;">
-
+                    <div class="container col" id="lista-reportes-usuario-supervisor">
+                        <label for="lista-usuario-supervisor" class="form-label">Filtro Por Supervisor</label>
+                        <select class="form-control mt-3" name="lista-usuario-supervisor" id="lista-usuario-supervisor"
+                            onchange="cargarReporteSupervisor(this.value)">
+                            <option value=""> Seleccione un Supervisor </option>
+                            @if (supervisores != null)
+                            {
+                                @foreach (var usuario in supervisores)
+                                {
+                                    <option value="@usuario.IdUsuario"> @usuario.NombresCompletos </option>
+                                }
+                            }
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
 
+    <div class="flex-container mt-4">
+        @*Row --- 03*@
+        <div class="row">
+            <div class="col" id="div-derivaciones-supervisor" style="display: none;">
+
+            </div>
+            <div class="col" id="div-derivaciones-asesor" style="display: none;">
+
+            </div>
+        </div>
+        <hr>
+        @*Row --- 01*@
+        <div class="card">
+            <div class="card-header">
+                <h4>Resumen de Progreso</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card-header">
+                            <h5>Progreso General</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-progreso-general">
+                                @*Aca se cargara las graficas del Asesor*@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-9" id="div-derivaciones" style="display: none;">
+                        <div class="card-header">
+                            <h5>Derivaciones Generales</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-derivaciones">
+                                @*Aca se cargara las graficas del Asesor*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

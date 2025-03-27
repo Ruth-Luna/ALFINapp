@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (displayValue === "block") {
                     console.log("El div ahora es visible. Iniciando gráfico...");
                     cargarDerivacionesAsesorFecha();
+                    cargarGestionInforme();
                     observer.disconnect();
                 }
             }
@@ -63,5 +64,52 @@ function cargarDerivacionesAsesorFecha() {
     };
 
     var chart = new ApexCharts(document.querySelector("#div-reporte-derivacion-asesor"), options);
+    chart.render();
+}
+
+function cargarGestionInforme() {
+    var reportesAsesor = document.getElementById('reportes-asesor');
+    var reportesData = JSON.parse(reportesAsesor.getAttribute("data-json"));
+    var GestionInformes = reportesData["tipificacionesGestion"];
+    var tipificacion = [];
+    var descripcion = [];
+    var contador = [];
+    GestionInformes.forEach(item => {
+        tipificacion.push(item["IdTipificacion"]);
+        descripcion.push(item["DescripcionTipificaciones"]);
+        contador.push(item["ContadorTipificaciones"]);
+    });
+    var options = {
+        series: [{
+            name: 'Gestión',
+            data: contador
+        }],
+        chart: {
+            type: 'area',
+            height: 350
+        },
+        xaxis: {
+            categories: descripcion,
+            title: {
+                text: 'Descripción Tipificaciones'
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth'
+        },
+        colors: ['#008FFB'], // Azul para el área
+        title: {
+            text: 'Gestión de Informes',
+            align: 'center'
+        },
+        legend: {
+            position: 'top'
+        }
+    };
+
+    var chart = new ApexCharts(document.querySelector("#div-reporte-gestion-asesor"), options);
     chart.render();
 }

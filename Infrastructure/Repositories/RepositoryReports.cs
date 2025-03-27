@@ -116,11 +116,26 @@ namespace ALFINapp.Infrastructure.Repositories
                     .Select(g => g.OrderByDescending(x => x.IdClientetip).First())
                     .ToListAsync();
 
+                var getAllGestionDetalle = await _context.GESTION_DETALLE
+                    .Where( x => x.DocAsesor == getUsuario.Dni
+                        && x.FechaGestion.Year == DateTime.Now.Year
+                        && x.FechaGestion.Month == DateTime.Now.Month)
+                    .ToListAsync();
+
+                var getAllDesembolsos = await _context.desembolsos
+                    .Where(x => x.DocAsesor == getUsuario.Dni
+                        && x.FechaDesembolsos.HasValue
+                        && x.FechaDesembolsos.Value.Year == DateTime.Now.Year
+                        && x.FechaDesembolsos.Value.Month == DateTime.Now.Month)
+                    .ToListAsync();
+
                 var detallesReporte = new DetallesReportesAsesorDTO();
                 detallesReporte.Usuario = getUsuario;
                 detallesReporte.ClientesAsignados = getAllAsignaciones;
                 detallesReporte.DerivacionesDelAsesor = getAllDerivaciones;
                 detallesReporte.UltimaTipificacionXAsignacion = getAllClientesTipificados;
+                detallesReporte.gESTIONDETALLEs = getAllGestionDetalle;
+                detallesReporte.Desembolsos = getAllDesembolsos;
                 return detallesReporte;
             }
             catch (System.Exception ex)
