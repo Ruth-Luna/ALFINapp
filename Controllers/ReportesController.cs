@@ -17,14 +17,20 @@ namespace ALFINapp.API.Controllers
         private readonly IUseCaseGetReportesAdministrador _useCaseGetReportesAdministrador;
         private readonly IUseCaseGetReportesAsesor _useCaseGetReportesAsesor;
         private readonly IUseCaseGetReportesSupervisor _useCaseGetReportesSupervisor;
+        private readonly IUseCaseGetReportesGeneralSupervisor _useCaseGetReportesGeneralSupervisor;
+        private readonly IUseCaseGetReportesGeneralAsesor _useCaseGetReportesGeneralAsesor;
         public ReportesController(
             IUseCaseGetReportesAdministrador useCaseGetReportesAdministrador,
             IUseCaseGetReportesAsesor useCaseGetReportesAsesor,
-            IUseCaseGetReportesSupervisor useCaseGetReportesSupervisor)
+            IUseCaseGetReportesSupervisor useCaseGetReportesSupervisor,
+            IUseCaseGetReportesGeneralSupervisor useCaseGetReportesGeneralSupervisor,
+            IUseCaseGetReportesGeneralAsesor useCaseGetReportesGeneralAsesor)
         {
             _useCaseGetReportesAdministrador = useCaseGetReportesAdministrador;
             _useCaseGetReportesAsesor = useCaseGetReportesAsesor;
             _useCaseGetReportesSupervisor = useCaseGetReportesSupervisor;
+            _useCaseGetReportesGeneralSupervisor = useCaseGetReportesGeneralSupervisor;
+            _useCaseGetReportesGeneralAsesor = useCaseGetReportesGeneralAsesor;
         }
         [HttpGet]
         [PermissionAuthorization("Reportes", "Reportes")]
@@ -37,7 +43,7 @@ namespace ALFINapp.API.Controllers
                 return RedirectToAction("Index", "Home");
             }
             ViewData["RolUser"] = rol.Value;
-            var idUsuario = HttpContext.Session.GetInt32("IdUser");
+            var idUsuario = HttpContext.Session.GetInt32("UsuarioId");
             if (idUsuario == null)
             {
                 TempData["MessageError"] = "Id de usuario no valido.";
@@ -55,23 +61,24 @@ namespace ALFINapp.API.Controllers
             }
             else if (rol == 2)
             {
-                var reportesSupervisor = await _useCaseGetReportesSupervisor.Execute(idUsuario.Value);
-                if (!reportesSupervisor.IsSuccess)
+                var reportesSupervisor = await _useCaseGetReportesGeneralSupervisor.Execute(idUsuario.Value);
+                if (!reportesSupervisor.success)
                 {
-                    TempData["MessageError"] = reportesSupervisor.Message;
+                    TempData["MessageError"] = reportesSupervisor.message;
                     return RedirectToAction("Redireccionar", "Error");
                 }
-                return View("Reportes", reportesSupervisor.Data);
+                return View("Reportes", reportesSupervisor.data);
             }
             else if (rol == 3)
             {
-                var reportesAsesor = await _useCaseGetReportesAsesor.Execute(idUsuario.Value);
-                if (!reportesAsesor.IsSuccess)
+                var reportesAsesor = await _useCaseGetReportesGeneralAsesor.Execute(idUsuario.Value);
+                if (!reportesAsesor.success)
                 {
-                    TempData["MessageError"] = reportesAsesor.Message;
+                    TempData["MessageError"] = reportesAsesor.message;
                     return RedirectToAction("Redireccionar", "Error");
                 }
-                return View("Reportes", reportesAsesor.Data);
+                
+                return View("Reportes", reportesAsesor.data);
             }
             else
             {

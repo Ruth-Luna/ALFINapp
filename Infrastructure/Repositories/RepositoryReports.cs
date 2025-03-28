@@ -107,14 +107,6 @@ namespace ALFINapp.Infrastructure.Repositories
                         && x.FechaDerivacion.Year == DateTime.Now.Year
                         && x.FechaDerivacion.Month == DateTime.Now.Month)
                     .ToListAsync();
-                var getAllClientesTipificados = await _context.clientes_tipificados
-                    .Where(x => getAllIds.Contains(x.IdAsignacion)
-                        && x.FechaTipificacion.HasValue
-                        && x.FechaTipificacion.Value.Year == DateTime.Now.Year
-                        && x.FechaTipificacion.Value.Month == DateTime.Now.Month)
-                    .GroupBy(x => x.IdAsignacion)
-                    .Select(g => g.OrderByDescending(x => x.IdClientetip).First())
-                    .ToListAsync();
 
                 var getAllGestionDetalle = await _context.GESTION_DETALLE
                     .AsNoTracking()
@@ -136,7 +128,6 @@ namespace ALFINapp.Infrastructure.Repositories
                 detallesReporte.Usuario = getUsuario;
                 detallesReporte.ClientesAsignados = getAllAsignaciones;
                 detallesReporte.DerivacionesDelAsesor = getAllDerivaciones;
-                detallesReporte.UltimaTipificacionXAsignacion = getAllClientesTipificados;
                 detallesReporte.gESTIONDETALLEs = getAllGestionDetalle;
                 detallesReporte.Desembolsos = getAllDesembolsos;
                 return detallesReporte;
@@ -217,7 +208,7 @@ namespace ALFINapp.Infrastructure.Repositories
                 detallesReporte.DerivacionesGral = getDerivacionesGral;
                 detallesReporte.GestionDetalles = getGestionDetalles;
                 detallesReporte.Desembolsos = getDesembolsos;
-                return await GetReportesDerivacionGral();
+                return detallesReporte;
             }
             catch (System.Exception ex)
             {
@@ -225,7 +216,7 @@ namespace ALFINapp.Infrastructure.Repositories
                 return null;
             }
         }
-        public async Task<DetallesReportesSupervisorDTO> GetReportesDerivacionSupervisor(int idUsuario)
+        public async Task<DetallesReportesSupervisorDTO> GetReportesEspecificoSupervisor(int idUsuario)
         {
             try
             {
@@ -237,13 +228,20 @@ namespace ALFINapp.Infrastructure.Repositories
                     .Where(x => x.IdUsuarioS == idUsuario
                         && x.FechaAsignacionSup.HasValue
                         && x.FechaAsignacionSup.Value.Year == year
-                        && x.FechaAsignacionSup.Value.Month == month
-                        && x.IdUsuarioV != null)
+                        && x.FechaAsignacionSup.Value.Month == month)
                     .ToListAsync();
                 var idsAsignaciones = getAsignaciones.Select(x => x.IdAsignacion).ToHashSet();
                 var getAsesores = await _context
                     .usuarios
                     .Where(x => x.IDUSUARIOSUP == idUsuario)
+                    .ToListAsync();
+                var getGestionDetalles = await _context
+                    .GESTION_DETALLE
+                    .Where(x => x.IdSupervisor == idUsuario
+                        && x.FechaGestion.Year == year
+                        && x.FechaGestion.Month == month)
+                    .GroupBy(x => x.DocCliente)
+                    .Select(g => g.OrderByDescending(x => x.IdFeedback).First())
                     .ToListAsync();
                 var dniAsesores = getAsesores.Select(x => x.Dni).ToHashSet();
                 var getDerivaciones = await _context
@@ -259,22 +257,62 @@ namespace ALFINapp.Infrastructure.Repositories
                         && x.FechaDesembolsos.Value.Year == year
                         && x.FechaDesembolsos.Value.Month == month)
                     .ToListAsync();
-                var getAllClientesTipificados = await _context
-                    .clientes_tipificados
-                    .Where(x => idsAsignaciones.Contains(x.IdAsignacion))
-                    .ToListAsync();
                 var detallesReporte = new DetallesReportesSupervisorDTO();
                 detallesReporte.Asesores = getAsesores;
                 detallesReporte.ClientesAsignados = getAsignaciones;
                 detallesReporte.DerivacionesSupervisor = getDerivaciones;
                 detallesReporte.Desembolsos = getDesembolsos;
-                detallesReporte.HistorialTipificaciones = getAllClientesTipificados;
+                detallesReporte.gESTIONDETALLEs = getGestionDetalles;
                 return detallesReporte;
             }
             catch (System.Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return new DetallesReportesSupervisorDTO();
+            }
+        }
+
+        public async Task<DetallesReportesDerivacionesDTO> GetReportesGralAsesor(int idAsesor)
+        {
+            try
+            {
+                var getAsesor = await _context.usuarios
+                    .Where(x => x.IdUsuario == idAsesor)
+                    .FirstOrDefaultAsync();
+                if (getAsesor == null)
+                {
+                    Console.WriteLine("Asesor no encontrado");
+                    return new DetallesReportesDerivacionesDTO();
+                }
+                var getDerivacionesGral = await _context.derivaciones_asesores
+                    .Where(x => x.DniAsesor == getAsesor.Dni
+                        && x.FechaDerivacion.Year == DateTime.Now.Year
+                        && x.FechaDerivacion.Month == DateTime.Now.Month)
+                    .ToListAsync();
+                var getGestionDetalles = await _context.GESTION_DETALLE
+                    .Where(x => x.DocAsesor == getAsesor.Dni
+                        && x.FechaGestion.Year == DateTime.Now.Year
+                        && x.FechaGestion.Month == DateTime.Now.Month)
+                    .GroupBy(x => x.DocCliente)
+                    .Select(g => g.OrderByDescending(x => x.IdFeedback).First())
+                    .ToListAsync();
+                var getDesembolsos = await _context.desembolsos
+                    .Where(x => x.DocAsesor == getAsesor.Dni
+                        && x.FechaDesembolsos.HasValue
+                        && x.FechaDesembolsos.Value.Year == DateTime.Now.Year
+                        && x.FechaDesembolsos.Value.Month == DateTime.Now.Month
+                        && x.Sucursal != null)
+                    .ToListAsync();
+                var detallesReporte = new DetallesReportesDerivacionesDTO();
+                detallesReporte.DerivacionesGral = getDerivacionesGral;
+                detallesReporte.GestionDetalles = getGestionDetalles;
+                detallesReporte.Desembolsos = getDesembolsos;
+                return detallesReporte;
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new DetallesReportesDerivacionesDTO();
             }
         }
     }

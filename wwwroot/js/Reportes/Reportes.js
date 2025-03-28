@@ -102,46 +102,61 @@ function cargarProgreso() {
 
     var options = {
         chart: {
-            height: 280,
-            type: "radialBar"
+            type: "donut",
+            height: 350 // Aumentamos el tamaño
         },
-        series: [porcentaje],
+        series: [totalDesembolsadas, totalDerivaciones - totalDesembolsadas], // Parte desembolsada vs resto
+        labels: ["Desembolsadas", "Pendientes"],
+        colors: ["#008FFB", "#9e9e9e"], // Azul para desembolsadas, gris para fondo
         plotOptions: {
-            radialBar: {
-                hollow: {
-                    margin: 15,
-                    size: "20%"
-                },
-                dataLabels: {
-                    showOn: "always",
-                    name: {
-                        offsetY: -10,
+            pie: {
+                donut: {
+                    size: "65%", // Hace el círculo más grande
+                    labels: {
                         show: true,
-                        color: "#888",
-                        fontSize: "13px"
-                    },
-                    value: {
-                        color: "#111",
-                        fontSize: "30px",
-                        show: true
+                        name: {
+                            show: true,
+                            fontSize: "16px",
+                            color: "#888",
+                            offsetY: -10,
+                            formatter: function () {
+                                return "Desembolsos\nvs\nDerivaciones"; // Texto con saltos de línea
+                            }
+                        },
+                        value: {
+                            show: true,
+                            fontSize: "30px",
+                            fontWeight: "bold",
+                            color: "#111",
+                            formatter: function (val) {
+                                return `${porcentaje}%`;
+                            }
+                        }
                     }
                 }
             }
         },
         stroke: {
-            lineCap: "round",
+            show: true,
+            width: 2,
+            colors: ["#fff"]
         },
-        labels: ["Progress"],
         tooltip: {
             enabled: true,
             y: {
-                formatter: function (val) {
-                    return `${val}% (${totalDesembolsadas} de ${totalDerivaciones})`;
+                formatter: function (val, { seriesIndex }) {
+                    if (seriesIndex === 0) {
+                        return `${totalDesembolsadas} de ${totalDerivaciones} desembolsadas`;
+                    } else {
+                        return `${totalDerivaciones - totalDesembolsadas} pendientes`;
+                    }
                 }
             }
+        },
+        legend: {
+            position: "bottom"
         }
     };
-
     var chart = new ApexCharts(document.querySelector("#chart-progreso-general"), options);
     chart.render();
 }

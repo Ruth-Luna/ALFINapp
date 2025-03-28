@@ -9,12 +9,13 @@ namespace ALFINapp.API.Models
     {
         public ViewUsuario? supervisor { get; set; }
         public List<ViewUsuario>? asesores { get; set; }
-        public List<ViewReporteDerivaciones>? derivaciones { get; set; }
         public int? totalDerivaciones { get; set; }
         public int? totalDerivacionesDesembolsadas { get; set; }
         public int? totalDerivacionesNoDesembolsadas { get; set; }
         public int? totalAsignaciones { get; set; }
+        public int? totalAsignacionesConVendedor { get; set; }
         public int? totalAsignacionesProcesadas { get; set; }
+        public int? totalGestionProcesada { get; set; }
         public List<ViewTipificacionesAsesor>? tipificacionesAsesores { get; set; }
         public List<ViewTipificacionesCantidad>? tipificacionesCantidad { get; set; }
     }
@@ -32,6 +33,7 @@ namespace ALFINapp.API.Models
     public class ViewTipificacionesCantidad
     {
         public string? TipoTipificacion { get; set; }
+        public int? IdTipificacion { get; set; }
         public int? Cantidad { get; set; }
     }
 }

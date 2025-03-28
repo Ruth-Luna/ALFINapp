@@ -13,6 +13,6 @@ namespace ALFINapp.Application.DTOs
         public List<DerivacionesAsesores> DerivacionesSupervisor { get; set; } = new List<DerivacionesAsesores>();
         public List<Desembolsos> Desembolsos { get; set; } = new List<Desembolsos>();
         public List<DetallesReportesAsesorDTO> ReportesXAsesor { get; set; } = new List<DetallesReportesAsesorDTO>();
-        public List<ClientesTipificado> HistorialTipificaciones { get; set; } = new List<ClientesTipificado>();
+        public List<GESTIONDETALLE> gESTIONDETALLEs { get; set; } = new List<GESTIONDETALLE>();
     }
 }
