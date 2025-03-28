@@ -14,12 +14,15 @@ namespace ALFINapp.Application.UseCases.Reports
     {
         private readonly IRepositoryReports _repositoryReports;
         private readonly IRepositoryUsuarios _repositoryUsuarios;
+        private readonly IRepositoryTipificaciones _repositoryTipificaciones;
         public UseCaseGetReportesSupervisor(
             IRepositoryReports repositoryReports,
-            IRepositoryUsuarios repositoryUsuarios)
+            IRepositoryUsuarios repositoryUsuarios,
+            IRepositoryTipificaciones repositoryTipificaciones)
         {
             _repositoryReports = repositoryReports;
             _repositoryUsuarios = repositoryUsuarios;
+            _repositoryTipificaciones = repositoryTipificaciones;
         }
         public async Task<(bool IsSuccess, string Message, ViewReportesSupervisor? Data)> Execute(int idUsuario)
         {
@@ -55,12 +58,13 @@ namespace ALFINapp.Application.UseCases.Reports
                     })
                     .ToList() ?? new List<ViewTipificacionesAsesor>();
                 reportesSupervisor.tipificacionesAsesores = reporteTipificaciones;
-                var tipificacionesCantidad = new ViewTipificacionesCantidad();
+                var tipificacionesDescrp = await _repositoryTipificaciones.GetTipificacionesDescripcion();
                 var tipificaciones = supervisorReportes?.gESTIONDETALLEs
                     .GroupBy(x => x.CodTip)
                     .Select(g => new ViewTipificacionesCantidad
                     {
-                        TipoTipificacion = g.Key,
+                        IdTipificacion = g.Key,
+                        TipoTipificacion = tipificacionesDescrp.FirstOrDefault(t => t.IdTipificacion == g.Key)?.DescripcionTipificacion,
                         Cantidad = g.Count()
                     }).ToList() ?? new List<ViewTipificacionesCantidad>();
                 return (true, "Reportes de supervisor obtenidos", reportesSupervisor);
