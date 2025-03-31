@@ -35,7 +35,15 @@ function cargarReportesSupervisor() {
         colors: ['#00E396', '#775DD0', '#FF4560', '#008FFB'],
         xaxis: { categories: asesoresNombres },
         dataLabels: { enabled: false },
-        legend: { position: 'top' }
+        legend: { position: 'top' },
+        tooltip: {
+            shared: true,
+            intersect: false
+        },
+        title: {
+            text: 'Reporte de Supervisores',
+            align: 'center'
+        },
     };
 
     var chart = new ApexCharts(document.querySelector("#div-reporte-general-supervisor"), options);
@@ -209,6 +217,6 @@ function cargarDesembolsosSupervisorFecha() {
         }
     };
 
-    var chart = new ApexCharts(document.querySelector("#div-derivaciones-por-fecha-supervisor"), options);
+    var chart = new ApexCharts(document.querySelector("#div-desembolsos-por-fecha-supervisor"), options);
     chart.render();
 }

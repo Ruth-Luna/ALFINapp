@@ -38,6 +38,7 @@ async function cargarReporteAsesor(idUsuario) {
             asesorElement.style.display = 'block';
             cargarDerivacionesAsesorFecha();
             cargarGestionInforme();
+            cargarReporteGeneralAsesor();
         }
     } catch (error) {
         Swal.fire({

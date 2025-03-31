@@ -5,23 +5,38 @@
         <h4>Reportes de Asesor</h4>
     </div>
     <div class="card-body">
-        <div class="row">
-            <div class="col-md-12">
-                <h5>Derivaciones Por Fecha</h5>
-                <div id="div-reporte-derivacion-asesor-fecha">
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card-header">
+                    <h5>Asignaciones Derivadas</h5>
+                </div>
+                <div class="card-body">
+                    <div id="div-reporte-general-asesor">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card-header">
+                    <h5>Informe de Gestion</h5>
+                </div>
+                <div class="card-body">
+                    <div id="div-reporte-gestion-asesor">
+                    </div>
                 </div>
             </div>
         </div>
         <hr>
-        <div class="row mt-4">
-            <div class="col-md-11">
-                <h5>Informe de Gestion</h5>
-                <div id="div-reporte-gestion-asesor">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card-header">
+                    <h5>Derivaciones Por Fecha</h5>
                 </div>
-            </div>
-            <div class="col-md-1" id="leyenda-tipificaciones">
+                <div class="card-body">
+                    <div id="div-reporte-derivacion-asesor-fecha">
+                        @*Aca se cargara las graficas del Asesor*@
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div id="reportes-asesor" data-json='@Html.Raw(Json.Serialize(Model))'></div>
+    <div id="reportes-asesor" data-json='@Html.Raw(Json.Serialize(Model))'></div>
