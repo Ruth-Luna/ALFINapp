@@ -40,17 +40,33 @@ namespace ALFINapp.Application.UseCases.Reports
                 reportesSupervisor.totalDerivaciones = supervisorReportes?.DerivacionesSupervisor.Count();
                 reportesSupervisor.totalDerivacionesDesembolsadas = supervisorReportes?.Desembolsos.Count();
                 reportesSupervisor.totalDerivacionesNoDesembolsadas = supervisorReportes?.DerivacionesSupervisor.Count() - supervisorReportes?.Desembolsos.Count();
-                reportesSupervisor.totalAsignaciones = supervisorReportes?.ClientesAsignados.Count();
+                reportesSupervisor.totalAsignaciones = supervisorReportes?.ClientesAsignados.Count(x => x.IdUsuarioV != null);
                 reportesSupervisor.totalAsignacionesConVendedor = supervisorReportes?.ClientesAsignados.Count(x => x.IdUsuarioV != null);
                 reportesSupervisor.totalAsignacionesProcesadas = supervisorReportes?.ClientesAsignados.Count(x => x.PesoTipificacionMayor != null);
                 reportesSupervisor.totalGestionProcesada = supervisorReportes?.gESTIONDETALLEs.Count();
+                var createDerivacionesFecha = supervisorReportes?.DerivacionesSupervisor
+                    .GroupBy(x => x.FechaDerivacion.ToString("%d/%M/%y"))
+                    .Select(x => new DerivacionesFecha 
+                    { 
+                        Fecha = x.Key, 
+                        Contador = x.Count() 
+                    })
+                    .OrderBy(x => DateTime.TryParseExact(x.Fecha, "d/M/yy", null, System.Globalization.DateTimeStyles.None, out var parsedDate) ? parsedDate : DateTime.MinValue)
+                    .ToList() ?? new List<DerivacionesFecha>();
+                reportesSupervisor.derivacionesFecha = createDerivacionesFecha;
+                var createDesembolsosFecha = supervisorReportes?.Desembolsos
+                    .GroupBy(x => x.FechaDesembolsos!=null?x.FechaDesembolsos.Value.ToString("%d/%M/%y"):"")
+                    .Select(x => new DerivacionesFecha { Fecha = x.Key, Contador = x.Count() })
+                    .OrderBy(x => DateTime.TryParseExact(x.Fecha, "d/M/yy", null, System.Globalization.DateTimeStyles.None, out var parsedDate) ? parsedDate : DateTime.MinValue)
+                    .ToList() ?? new List<DerivacionesFecha>();
+                reportesSupervisor.desembolsosFecha = createDesembolsosFecha;
                 var reporteTipificaciones = supervisorReportes?.Asesores?
                     .Select(asesor => new ViewTipificacionesAsesor
                     {
                         DniAsesor = asesor.Dni,
                         NombreAsesor = asesor.NombresCompletos,
                         totalAsignaciones = supervisorReportes.ClientesAsignados.Count(x => x.IdUsuarioV == asesor.IdUsuario),
-                        totalTipificados = supervisorReportes.gESTIONDETALLEs.Count(x => x.DocAsesor == asesor.Dni),
+                        totalTipificados = supervisorReportes.ClientesAsignados.Count(x => x.IdUsuarioV == asesor.IdUsuario),
                         totalDesembolsos = supervisorReportes.Desembolsos.Count(x => x.DocAsesor == asesor.Dni),
                         totalDerivaciones = supervisorReportes.DerivacionesSupervisor.Count(x => x.DniAsesor == asesor.Dni),
                         totalDerivacionesProcesadas = supervisorReportes.DerivacionesSupervisor.Count(x => x.DniAsesor == asesor.Dni && x.FueProcesado == true),

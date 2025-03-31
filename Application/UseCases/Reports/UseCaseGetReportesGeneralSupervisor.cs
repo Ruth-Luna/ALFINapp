@@ -46,14 +46,18 @@ namespace ALFINapp.Application.UseCases.Reports
                     {
                         Fecha = g.Key,
                         Contador = g.Count()
-                    }).ToList();
+                    })
+                    .OrderByDescending(x => x.Fecha)
+                    .ToList();
                 reportesGeneral.NumDesembolsosXFecha = reportes.Desembolsos
                     .GroupBy(x => x.FechaDesembolsos?.ToString("yyyy-MM-dd") ?? "Unknown")
                     .Select(g => new DerivacionesFecha
                     {
                         Fecha = g.Key,
                         Contador = g.Count()
-                    }).ToList();
+                    })
+                    .OrderByDescending(x => x.Fecha)
+                    .ToList();
                 return (true, "Reportes obtenidos correctamente", reportesGeneral);
             }
             catch (System.Exception ex)

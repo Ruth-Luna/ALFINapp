@@ -3,6 +3,8 @@ async function cargarReporteAsesor(idUsuario) {
         return;
     }
     var asesorElement = document.getElementById('div-derivaciones-asesor');
+    asesorElement.innerHTML = ''; // Limpiar el contenido previo
+    asesorElement.style.display = 'none'; // Ocultar el elemento inicialmente
     const baseUrl = window.location.origin;
     const userId = parseInt(idUsuario, 10);
     const url = `${baseUrl}/Reportes/AsesorReportes?idAsesor=${encodeURIComponent(userId)}`;
@@ -34,6 +36,8 @@ async function cargarReporteAsesor(idUsuario) {
             const html = await response.text();
             asesorElement.innerHTML = html;
             asesorElement.style.display = 'block';
+            cargarDerivacionesAsesorFecha();
+            cargarGestionInforme();
         }
     } catch (error) {
         Swal.fire({
@@ -50,6 +54,8 @@ async function cargarReporteSupervisor(idUsuario) {
         return;
     }
     var supervisorElement = document.getElementById('div-derivaciones-supervisor');
+    supervisorElement.innerHTML = ''; // Limpiar el contenido previo
+    supervisorElement.style.display = 'none'; // Ocultar el elemento inicialmente
     const baseUrl = window.location.origin;
     const userId = parseInt(idUsuario, 10);
     const url = `${baseUrl}/Reportes/SupervisorReportes?idSupervisor=${encodeURIComponent(userId)}`;
@@ -81,6 +87,11 @@ async function cargarReporteSupervisor(idUsuario) {
             const html = await response.text();
             supervisorElement.innerHTML = html;
             supervisorElement.style.display = 'block';
+            cargarReportesSupervisor();
+            cargarReportesDerivacionesSupervisor();
+            cargarGraficoDerivacionesVsDesembolsos();
+            cargarDerivacionesSupervisorFecha();
+            cargarDesembolsosSupervisorFecha();
         }
     } catch (error) {
         Swal.close();

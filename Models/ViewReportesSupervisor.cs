@@ -18,6 +18,8 @@ namespace ALFINapp.API.Models
         public int? totalGestionProcesada { get; set; }
         public List<ViewTipificacionesAsesor>? tipificacionesAsesores { get; set; }
         public List<ViewTipificacionesCantidad>? tipificacionesCantidad { get; set; }
+        public List<DerivacionesFecha>? derivacionesFecha { get; set; }
+        public List<DerivacionesFecha>? desembolsosFecha { get; set; }
     }
     public class ViewTipificacionesAsesor
     {

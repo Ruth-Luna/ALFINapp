@@ -1,24 +1,3 @@
-document.addEventListener("DOMContentLoaded", function () {
-    var targetNode = document.getElementById("div-derivaciones-asesor");
-
-    var observer = new MutationObserver(function (mutationsList) {
-        for (var mutation of mutationsList) {
-            if (mutation.attributeName === "style") {
-                var displayValue = window.getComputedStyle(targetNode).display;
-                if (displayValue === "block") {
-                    console.log("El div ahora es visible. Iniciando gráfico...");
-                    cargarDerivacionesAsesorFecha();
-                    cargarGestionInforme();
-                    observer.disconnect();
-                }
-            }
-        }
-    });
-
-    observer.observe(targetNode, { attributes: true, attributeFilter: ["style"] });
-});
-
-
 function cargarDerivacionesAsesorFecha() {
     var reportesAsesor = document.getElementById('reportes-asesor');
     var reportesData = JSON.parse(reportesAsesor.getAttribute("data-json"));

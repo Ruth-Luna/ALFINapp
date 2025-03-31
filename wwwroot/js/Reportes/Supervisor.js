@@ -1,25 +1,3 @@
-document.addEventListener("DOMContentLoaded", function () {
-    var targetNode = document.getElementById("div-derivaciones-supervisor");
-
-    var observer = new MutationObserver(function (mutationsList) {
-        for (var mutation of mutationsList) {
-            if (mutation.attributeName === "style") {
-                var displayValue = window.getComputedStyle(targetNode).display;
-                if (displayValue === "block") {
-                    console.log("El div ahora es visible. Iniciando gráfico...");
-                    cargarReportesSupervisor();
-                    cargarReportesDerivacionesSupervisor();
-                    cargarGraficoDerivacionesVsDesembolsos();
-                    observer.disconnect();
-                }
-            }
-        }
-    });
-
-    observer.observe(targetNode, { attributes: true, attributeFilter: ["style"] });
-});
-
-
 function cargarReportesSupervisor() {
     var reportesElement = document.getElementById('reportes-supervisor');
     var reportesData = JSON.parse(reportesElement.getAttribute("data-json"));
@@ -120,5 +98,117 @@ function cargarGraficoDerivacionesVsDesembolsos() {
     };
 
     var chart = new ApexCharts(document.querySelector("#div-asignaciones-derivadas-supervisor"), options);
+    chart.render();
+}
+
+function cargarDerivacionesSupervisorFecha() {
+    var reportesAsesor = document.getElementById('reportes-supervisor');
+    var reportesData = JSON.parse(reportesAsesor.getAttribute("data-json"));
+    var derivacionesFecha = reportesData["derivacionesFecha"];
+
+    var fechas = [];
+    var contador = [];
+
+    derivacionesFecha.forEach(item => {
+        fechas.push(item["fecha"]);
+        contador.push(item["contador"]);
+    });
+
+    var options = {
+        series: [
+            {
+                name: 'Derivaciones',
+                data: contador
+            }
+        ],
+        chart: {
+            height: 350,
+            type: 'area'  
+        },
+        stroke: {
+            curve: 'smooth'
+        },
+        colors: ['#00E396'], 
+        xaxis: { 
+            categories: fechas,
+            title: {
+                text: 'Fechas'
+            }
+        },
+        yaxis: {
+            title: {
+                text: 'Número de Derivaciones'
+            }
+        },
+        dataLabels: { enabled: false },
+        legend: { position: 'top' },
+        title: {
+            text: 'Derivaciones por Fecha',
+            align: 'center'
+        },
+        tooltip: {
+            x: {
+                format: 'dd/MM/yyyy'
+            }
+        }
+    };
+
+    var chart = new ApexCharts(document.querySelector("#div-derivaciones-por-fecha-supervisor"), options);
+    chart.render();
+}
+
+function cargarDesembolsosSupervisorFecha() {
+    var reportesAsesor = document.getElementById('reportes-supervisor');
+    var reportesData = JSON.parse(reportesAsesor.getAttribute("data-json"));
+    var derivacionesFecha = reportesData["desembolsosFecha"];
+
+    var fechas = [];
+    var contador = [];
+
+    derivacionesFecha.forEach(item => {
+        fechas.push(item["fecha"]);
+        contador.push(item["contador"]);
+    });
+
+    var options = {
+        series: [
+            {
+                name: 'Desembolsos',
+                data: contador
+            }
+        ],
+        chart: {
+            height: 350,
+            type: 'area'  
+        },
+        stroke: {
+            curve: 'smooth'
+        },
+        colors: ['#d64339'], 
+        xaxis: { 
+            categories: fechas,
+            title: {
+                text: 'Fechas'
+            }
+        },
+        yaxis: {
+            title: {
+                text: 'Número de Derivaciones'
+            }
+        },
+        dataLabels: { enabled: false },
+        legend: { position: 'top' },
+        title: {
+            text: 'Desembolsos por Fecha',
+            align: 'center'
+        },
+        tooltip: {
+            x: {
+                format: 'dd/MM/yyyy'
+            }
+        }
+    };
+
+    var chart = new ApexCharts(document.querySelector("#div-derivaciones-por-fecha-supervisor"), options);
     chart.render();
 }
