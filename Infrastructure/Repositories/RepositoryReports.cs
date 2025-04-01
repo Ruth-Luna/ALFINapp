@@ -1,6 +1,7 @@
 using ALFINapp.Application.DTOs;
 using ALFINapp.Domain.Interfaces;
 using ALFINapp.Infrastructure.Persistence.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 
@@ -95,17 +96,17 @@ namespace ALFINapp.Infrastructure.Repositories
                     return new DetallesReportesAsesorDTO();
                 }
                 var getAllAsignaciones = await _context.clientes_asignados
-                    .Where(x => x.IdUsuarioV == idUsuario
-                        && x.FechaAsignacionVendedor.HasValue
-                        && x.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
-                        && x.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month)
+                    .FromSqlRaw(
+                        "EXEC SP_Reportes_Asesor_asignaciones @DniAsesor",
+                        new SqlParameter("@DniAsesor", getUsuario.Dni))
                     .ToListAsync();
 
                 var getAllIds = getAllAsignaciones.Select(x => x.IdAsignacion).ToHashSet();
                 var getAllDerivaciones = await _context.derivaciones_asesores
-                    .Where(x => x.DniAsesor == getUsuario.Dni
-                        && x.FechaDerivacion.Year == DateTime.Now.Year
-                        && x.FechaDerivacion.Month == DateTime.Now.Month)
+                    .FromSqlRaw(
+                        "EXEC SP_Reportes_Asesor_derivacion @DniAsesor",
+                        new SqlParameter("@DniAsesor", getUsuario.Dni))
+                    .AsNoTracking()
                     .ToListAsync();
 
                 var getAllGestionDetalle = await _context.GESTION_DETALLE
@@ -118,10 +119,10 @@ namespace ALFINapp.Infrastructure.Repositories
                     .ToListAsync();
 
                 var getAllDesembolsos = await _context.desembolsos
-                    .Where(x => x.DocAsesor == getUsuario.Dni
-                        && x.FechaDesembolsos.HasValue
-                        && x.FechaDesembolsos.Value.Year == DateTime.Now.Year
-                        && x.FechaDesembolsos.Value.Month == DateTime.Now.Month)
+                    .FromSqlRaw(
+                        "EXEC SP_Reportes_Asesor_desembolsos @DniAsesor",
+                        new SqlParameter("@DniAsesor", getUsuario.Dni))
+                    .AsNoTracking()
                     .ToListAsync();
 
                 var detallesReporte = new DetallesReportesAsesorDTO();
@@ -220,43 +221,58 @@ namespace ALFINapp.Infrastructure.Repositories
         {
             try
             {
+                var usuario = await _context.usuarios
+                    .Where(x => x.IdUsuario == idUsuario)
+                    .FirstOrDefaultAsync();
+                if (usuario == null)
+                {
+                    Console.WriteLine("Usuario no encontrado");
+                    return new DetallesReportesSupervisorDTO();
+                }
                 var year = DateTime.Now.Year;
                 var month = DateTime.Now.Month;
-                var getAsignaciones = await _context
-                    .clientes_asignados
+
+                var getAsignaciones = await _context.clientes_asignados.FromSqlRaw(
+                    "EXEC SP_Reportes_Supervisor_asignaciones @DniSupervisor",
+                    new SqlParameter("@DniSupervisor", usuario.Dni))
                     .AsNoTracking()
-                    .Where(x => x.IdUsuarioS == idUsuario
-                        && x.FechaAsignacionSup.HasValue
-                        && x.FechaAsignacionSup.Value.Year == year
-                        && x.FechaAsignacionSup.Value.Month == month)
                     .ToListAsync();
+
                 var idsAsignaciones = getAsignaciones.Select(x => x.IdAsignacion).ToHashSet();
                 var getAsesores = await _context
                     .usuarios
                     .Where(x => x.IDUSUARIOSUP == idUsuario)
                     .ToListAsync();
-                var getGestionDetalles = await _context
-                    .GESTION_DETALLE
-                    .Where(x => x.IdSupervisor == idUsuario
-                        && x.FechaGestion.Year == year
-                        && x.FechaGestion.Month == month)
-                    .GroupBy(x => x.DocCliente)
-                    .Select(g => g.OrderByDescending(x => x.IdFeedback).First())
+                
+                var getGestionDetalles = await _context.GESTION_DETALLE.FromSqlRaw(
+                    "EXEC SP_Reportes_Supervisor_gestion @DniSupervisor",
+                    new SqlParameter("@DniSupervisor", usuario.Dni))
+                    .AsNoTracking()
                     .ToListAsync();
+
                 var dniAsesores = getAsesores.Select(x => x.Dni).ToHashSet();
                 var getDerivaciones = await _context
                     .derivaciones_asesores
-                    .Where(x => dniAsesores.Contains(x.DniAsesor)
-                        && x.FechaDerivacion.Year == year
-                        && x.FechaDerivacion.Month == month)
+                    .FromSqlRaw(
+                        "EXEC SP_Reportes_Supervisor_derivacion @DniSupervisor",
+                        new SqlParameter("@DniSupervisor", usuario.Dni))
                     .ToListAsync();
+
                 var getDesembolsos = await _context
                     .desembolsos
-                    .Where(x => dniAsesores.Contains(x.DocAsesor)
-                        && x.FechaDesembolsos.HasValue
-                        && x.FechaDesembolsos.Value.Year == year
-                        && x.FechaDesembolsos.Value.Month == month)
+                    .FromSqlRaw(
+                        "EXEC SP_Reportes_Supervisor_desembolso @DniSupervisor",
+                        new SqlParameter("@DniSupervisor", usuario.Dni))
+                    .AsNoTracking()
                     .ToListAsync();
+
+                var getDerivacionesFecha = await _context.reportes_derivacion_fecha
+                    .FromSqlRaw(
+                        "EXEC SP_Reportes_Supervisor_derivacion_fecha @DniSupervisor",
+                        new SqlParameter("@DniSupervisor", usuario.Dni))
+                    .AsNoTracking()
+                    .ToListAsync();
+                    
                 var detallesReporte = new DetallesReportesSupervisorDTO();
                 detallesReporte.Asesores = getAsesores;
                 detallesReporte.ClientesAsignados = getAsignaciones;
