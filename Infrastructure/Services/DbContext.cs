@@ -53,6 +53,7 @@ public class MDbContext : DbContext
     public DbSet<DerivacionesAsesoresDTO> derivaciones_asesores_dto { get; set; }
     public DbSet<InicioDetallesClientesFromAsesor> inicio_detalles_clientes_from_asesor { get; set; }
     public DbSet<ReportsSupervisorDerivacionFecha> reportes_derivacion_fecha { get; set; }
+    public DbSet<ReportsSupervisorGestion> reportes_supervisor_gestion { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -102,6 +103,10 @@ public class MDbContext : DbContext
             .ToView(null);
         
         modelBuilder.Entity<ReportsSupervisorDerivacionFecha>()
+            .HasNoKey()
+            .ToView(null);
+        
+        modelBuilder.Entity<ReportsSupervisorGestion>()
             .HasNoKey()
             .ToView(null);
     }

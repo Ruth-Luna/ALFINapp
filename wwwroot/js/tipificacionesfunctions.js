@@ -90,13 +90,13 @@ function guardarCambiosPorAsesor() {
 }
 
 function enviarFormularioDerivacion(
-    idAgenciaComercial, 
-    idFechaDeVisita, 
-    idBase, 
+    idAgenciaComercial,
+    idFechaDeVisita,
+    idBase,
     idTelefonoEnviado,
     typeTip,
     IdAsignacion
-    ) {
+) {
     agenciaComercial = document.getElementById(idAgenciaComercial).value;
     FechaVisita = document.getElementById(idFechaDeVisita).value;
     Telefono = document.getElementById(idTelefonoEnviado).value;
@@ -110,56 +110,113 @@ function enviarFormularioDerivacion(
         cancelButtonText: 'Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            let loadingSwal = Swal.fire({
-                title: 'Enviando...',
-                text: 'Por favor, espera mientras se procesa la solicitud.',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading(); // Activa la animación de carga
-                }
-            });
-            $.ajax({
-                url: '/Tipificaciones/GenerarDerivacion',
-                type: 'POST',
-                data: {
-                    agenciaComercial: agenciaComercial,
-                    FechaVisita: FechaVisita,
-                    Telefono: Telefono,
-                    idBase: idBase,
-                    type: typeTip,
-                    idAsignacion: Asignacion
-                },
-                success: function (result) {
-                    Swal.close();
-                    if (result.success === true) {
-                        Swal.fire({
-                            title: 'Derivación enviada',
-                            text: result.message,
-                            icon: 'success',
-                            confirmButtonText: 'Aceptar'
-                        });
+            // Verificar si tiene Nombre el cliente
+            
+            if (document.getElementById("X_APPATERNO").value == "" && document.getElementById("X_APMATERNO").value == "" && document.getElementById("X_NOMBRE").value == "") {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'El cliente no tiene nombre. Ingrese el nombre a continuación (Este nombre no será guardado en la Base de datos pero será usado para la derivación).',
+                    icon: 'warning',
+                    input: 'text',  // Genera un cuadro de texto
+                    inputPlaceholder: 'Ingrese el nombre del cliente',
+                    showCancelButton: true,
+                    confirmButtonText: 'Aceptar',
+                    cancelButtonText: 'Cancelar',
+                    inputValidator: (value) => {
+                        if (!value.trim()) {
+                            return 'Por favor, ingrese un nombre válido.';
+                        }
                     }
-                    else {
-                        Swal.fire({
-                            title: 'Error en la operación. Lea con cuidado',
-                            text: result.message,
-                            icon: 'warning',
-                            confirmButtonText: 'Aceptar'
-                        });
+                }).then((inputResult) => {
+                    if (inputResult.isConfirmed) {
+                        let nombreIngresado = inputResult.value;
+                        if (nombreIngresado) {
+                            document.getElementById("X_NOMBRE").value = nombreIngresado;
+                            Swal.fire({
+                                title: 'Éxito',
+                                text: 'Nombre ingresado correctamente. Ahora puede continuar con la derivación.',
+                                icon: 'info',
+                                confirmButtonText: 'Aceptar'
+                            }).then(() => {
+                                enviarDerivacion( 
+                                    agenciaComercial,
+                                    FechaVisita,
+                                    Telefono,
+                                    idBase,
+                                    typeTip,
+                                    Asignacion,
+                                    nombreIngresado
+                                );
+                            });
+                        }
                     }
+                });
+            } else {
+                // Si el cliente tiene nombre, proceder con la derivación
+                enviarDerivacion( 
+                    agenciaComercial,
+                    FechaVisita,
+                    Telefono,
+                    idBase,
+                    typeTip,
+                    Asignacion
+                );
+            }
+        }
+    });
+}
 
-                },
-                error: function (xhr, status, error) {
-                    Swal.close();
-                    Swal.fire({
-                        title: 'Error al enviar la derivación',
-                        text: 'Hubo un error al intentar enviar la derivación. Por favor, inténtalo nuevamente.',
-                        icon: 'error',
-                        confirmButtonText: 'Aceptar'
-                    });
-                    console.error('Error al enviar la derivación:', error);
-                }
+function enviarDerivacion(agenciaComercial, FechaVisita, Telefono, idBase, typeTip, Asignacion, NombresCompletos = null) {
+    console.log('Enviando derivación...');
+    let loadingSwal = Swal.fire({
+        title: 'Enviando...',
+        text: 'Por favor, espera mientras se procesa la solicitud.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading(); // Activa la animación de carga
+        }
+    });
+    $.ajax({
+        url: '/Tipificaciones/GenerarDerivacion',
+        type: 'POST',
+        data: {
+            agenciaComercial: agenciaComercial,
+            FechaVisita: FechaVisita,
+            Telefono: Telefono,
+            idBase: idBase,
+            type: typeTip,
+            idAsignacion: Asignacion,
+            NombresCompletos: NombresCompletos
+        },
+        success: function (result) {
+            Swal.close();
+            if (result.success === true) {
+                Swal.fire({
+                    title: 'Derivación enviada',
+                    text: result.message,
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+            else {
+                Swal.fire({
+                    title: 'Error en la operación. Lea con cuidado',
+                    text: result.message,
+                    icon: 'warning',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+
+        },
+        error: function (xhr, status, error) {
+            Swal.close();
+            Swal.fire({
+                title: 'Error al enviar la derivación',
+                text: 'Hubo un error al intentar enviar la derivación. Por favor, inténtalo nuevamente.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
             });
+            console.error('Error al enviar la derivación:', error);
         }
     });
 }

@@ -233,7 +233,7 @@
                             <td>@ClienteDTO.Dni</td>
                             <td>@(ClienteDTO.XAppaterno?.ToUpper() ?? "") @(ClienteDTO.XApmaterno?.ToUpper() ?? "")
                                 @(ClienteDTO.XNombre?.ToUpper() ?? "")
-                            <td>@ClienteDTO.OfertaMax</td>
+                            <td>@(ClienteDTO.OfertaMax * 100)</td>
                             <td>@(ClienteDTO.Campaña?.ToUpper() ?? "N/A")</td>
                             <td>@ClienteDTO.FechaAsignacionVendedor</td>
                             <td><textarea name=""
@@ -254,7 +254,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+<div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true" data-bs-focus="false">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
         <div class="modal-content">
             <div class="modal-header">

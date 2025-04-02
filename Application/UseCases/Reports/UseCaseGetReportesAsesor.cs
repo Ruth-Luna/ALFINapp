@@ -35,24 +35,32 @@ namespace ALFINapp.Application.UseCases.Reports
                 var viewReportes = new ViewReportesAsesores();
                 var detallesUsuarioDTO = new DetallesUsuarioDTO(usuario);
                 viewReportes.asesor = detallesUsuarioDTO.ToView();
-                viewReportes.numDerivaciones = reportes.DerivacionesDelAsesor.Count;
-                viewReportes.numDerivacionesProcesadas = reportes.DerivacionesDelAsesor.Count(x => x.FueProcesado == true);
-                viewReportes.numDesembolsos = reportes.DerivacionesDelAsesor.Count;
-                viewReportes.numClientesAsignados = reportes.ClientesAsignados.Count;
-                viewReportes.numClientesTipificados = reportes.UltimaTipificacionXAsignacion.Count;
-                viewReportes.numClientesNoTipificados = reportes.ClientesAsignados.Count - reportes.UltimaTipificacionXAsignacion.Count;
+                viewReportes.totalDerivaciones = reportes.gESTIONDETALLEs.Count(x => x.CodTip == 2);
+                viewReportes.totalDesembolsos = reportes.Desembolsos.Count();
+                viewReportes.totalAsignado = reportes.ClientesAsignados.Count();
+                viewReportes.totalGestionado = reportes.gESTIONDETALLEs.Count();
+                viewReportes.totalSinGestionar = reportes.ClientesAsignados.Count - reportes.gESTIONDETALLEs
+                    .Where(x => x.IdAsignacion != null)
+                    .Count();
                 var createDerivacionesFecha = reportes
-                    .DerivacionesDelAsesor
-                    .GroupBy(x => x.FechaDerivacion.ToString("%d/%M/%y"))
+                    .gESTIONDETALLEs
+                    .Where(x => x.CodTip == 2)
+                    .GroupBy(x => x.FechaGestion.ToString("%d/%M/%y"))
                     .Select(x => new DerivacionesFecha { Fecha = x.Key, Contador = x.Count() })
+                    .OrderBy(x => DateTime.TryParseExact(x.Fecha, "d/M/yy", null, System.Globalization.DateTimeStyles.None, out var parsedDate) ? parsedDate : DateTime.MinValue)
                     .ToList();
                 viewReportes.derivacionesFecha = createDerivacionesFecha;
+                var createDesembolsosFecha = reportes
+                    .Desembolsos
+                    .GroupBy(x => x.FechaDesembolsos!=null?x.FechaDesembolsos.Value.ToString("%d/%M/%y"):"")
+                    .Select(x => new DerivacionesFecha { Fecha = x.Key, Contador = x.Count() })
+                    .OrderBy(x => DateTime.TryParseExact(x.Fecha, "d/M/yy", null, System.Globalization.DateTimeStyles.None, out var parsedDate) ? parsedDate : DateTime.MinValue)
+                    .ToList();
                 viewReportes.gestionDetalles = reportes.gESTIONDETALLEs.Select(x => new DetallesGestionDetalleDTO(x).toView()).ToList();
                 var TipificacionesGestion = new List<ViewTipificacionesGestion>();
                 var TipificacionesDescripcion = await _repositoryTipificaciones.GetTipificacionesDescripcion();
                 var dicTipificaciones = TipificacionesDescripcion
                     .ToDictionary(y => y.IdTipificacion, y => y.DescripcionTipificacion);
-
                 var agruparTipificaciones = viewReportes
                     .gestionDetalles
                     .GroupBy(x => x.CodTip)

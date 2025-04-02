@@ -49,7 +49,8 @@ namespace ALFINapp.API.Controllers
             string Telefono, 
             int idBase,
             int type,
-            int idAsignacion)
+            int idAsignacion,
+            string? NombresCompletos)
         {
             var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)
@@ -68,7 +69,8 @@ namespace ALFINapp.API.Controllers
                 idBase, 
                 usuarioId.Value, 
                 idAsignacion, 
-                type);
+                type,
+                NombresCompletos);
             if (!executeUseCase.success)
             {
                 return Json(new { success = false, message = executeUseCase.message });

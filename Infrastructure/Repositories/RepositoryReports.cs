@@ -110,13 +110,17 @@ namespace ALFINapp.Infrastructure.Repositories
                     .ToListAsync();
 
                 var getAllGestionDetalle = await _context.GESTION_DETALLE
+                    .FromSqlRaw(
+                        "EXEC SP_Reportes_Asesor_gestion @DniAsesor",
+                        new SqlParameter("@DniAsesor", getUsuario.Dni))
                     .AsNoTracking()
-                    .Where(x => x.DocAsesor == getUsuario.Dni
-                        && x.FechaGestion.Year == DateTime.Now.Year
-                        && x.FechaGestion.Month == DateTime.Now.Month)
-                    .GroupBy(x => x.DocCliente)
-                    .Select(g => g.OrderByDescending(x => x.FechaGestion).First())
                     .ToListAsync();
+
+                getAllGestionDetalle = getAllGestionDetalle.GroupBy(g => g.DocCliente)
+                    .Select(g => g.OrderByDescending(d => d.CodTip == 2)
+                        .ThenByDescending(d => d.FechaGestion)
+                        .First())
+                    .ToList();
 
                 var getAllDesembolsos = await _context.desembolsos
                     .FromSqlRaw(
@@ -232,13 +236,15 @@ namespace ALFINapp.Infrastructure.Repositories
                 var year = DateTime.Now.Year;
                 var month = DateTime.Now.Month;
 
-                var getAsignaciones = await _context.clientes_asignados.FromSqlRaw(
-                    "EXEC SP_Reportes_Supervisor_asignaciones @DniSupervisor",
-                    new SqlParameter("@DniSupervisor", usuario.Dni))
+                var getAsignaciones = await _context.clientes_asignados
                     .AsNoTracking()
+                    .Where(x => x.IdUsuarioS == idUsuario
+                        && x.FechaAsignacionSup.HasValue
+                        && x.FechaAsignacionSup.Value.Year == year
+                        && x.FechaAsignacionSup.Value.Month == month)
+                    .Select(x => new ClientesAsignado {IdCliente = x.IdCliente, IdUsuarioV = x.IdUsuarioV} )
                     .ToListAsync();
 
-                var idsAsignaciones = getAsignaciones.Select(x => x.IdAsignacion).ToHashSet();
                 var getAsesores = await _context
                     .usuarios
                     .Where(x => x.IDUSUARIOSUP == idUsuario)
@@ -249,6 +255,17 @@ namespace ALFINapp.Infrastructure.Repositories
                     new SqlParameter("@DniSupervisor", usuario.Dni))
                     .AsNoTracking()
                     .ToListAsync();
+
+                getGestionDetalles = getGestionDetalles
+                    .GroupBy(x => x.DocCliente)
+                    .Select(g => g.GroupBy(y => y.DocAsesor)
+                        .Select(y => y.OrderByDescending(z => z.CodTip == 2)
+                            .ThenByDescending(z => z.FechaGestion)
+                            .First())
+                        .OrderByDescending(z => z.FechaGestion)
+                        .First())
+                    .OrderBy(x => x.DocAsesor)
+                    .ToList();
 
                 var dniAsesores = getAsesores.Select(x => x.Dni).ToHashSet();
                 var getDerivaciones = await _context
@@ -266,13 +283,6 @@ namespace ALFINapp.Infrastructure.Repositories
                     .AsNoTracking()
                     .ToListAsync();
 
-                var getDerivacionesFecha = await _context.reportes_derivacion_fecha
-                    .FromSqlRaw(
-                        "EXEC SP_Reportes_Supervisor_derivacion_fecha @DniSupervisor",
-                        new SqlParameter("@DniSupervisor", usuario.Dni))
-                    .AsNoTracking()
-                    .ToListAsync();
-                    
                 var detallesReporte = new DetallesReportesSupervisorDTO();
                 detallesReporte.Asesores = getAsesores;
                 detallesReporte.ClientesAsignados = getAsignaciones;

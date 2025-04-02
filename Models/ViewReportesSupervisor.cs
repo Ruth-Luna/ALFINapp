@@ -4,13 +4,11 @@ namespace ALFINapp.API.Models
     {
         public ViewUsuario? supervisor { get; set; }
         public List<ViewUsuario>? asesores { get; set; }
-        public int? totalDerivaciones { get; set; }
-        public int? totalDerivacionesDesembolsadas { get; set; }
-        public int? totalDerivacionesNoDesembolsadas { get; set; }
+        public int? totalGestionado { get; set; }
+        public int? totalSinGestionar { get; set; }
+        public int? totalDerivado { get; set; }
+        public int? totalDesembolsado { get; set; }
         public int? totalAsignaciones { get; set; }
-        public int? totalAsignacionesConVendedor { get; set; }
-        public int? totalAsignacionesProcesadas { get; set; }
-        public int? totalGestionProcesada { get; set; }
         public List<ViewTipificacionesAsesor>? tipificacionesAsesores { get; set; }
         public List<ViewTipificacionesCantidad>? tipificacionesCantidad { get; set; }
         public List<DerivacionesFecha>? derivacionesFecha { get; set; }
@@ -20,8 +18,8 @@ namespace ALFINapp.API.Models
     {
         public string? DniAsesor { get; set; }
         public string? NombreAsesor { get; set; }
-        public int? totalAsignaciones { get; set; }
-        public int? totalTipificados { get; set; }
+        public int? totalSinGestionar { get; set; }
+        public int? totalGestionado { get; set; }
         public int? totalDesembolsos { get; set; }
         public int? totalDerivaciones { get; set; }
         public int? totalDerivacionesProcesadas { get; set; }

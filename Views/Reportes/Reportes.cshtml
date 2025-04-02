@@ -3,6 +3,7 @@
     var rol = (int?)ViewData["RolUser"];
     var asesores = Model.Asesores as List<ALFINapp.API.Models.ViewUsuario>;
     var supervisores = Model.Supervisores as List<ALFINapp.API.Models.ViewUsuario>;
+    var idUsuario = (int?)ViewData["UsuarioId"];
 }
 
 @section Styles {
@@ -10,10 +11,46 @@
     <link rel="stylesheet" href="~/css/Reportes/Reportes.css?v=@DateTime.Now.Ticks">
 }
 
-<div class="container mt-4">
+<div class="container-fluid mt-4">
     <div class="align-center">
-        <h2> Reportes Totales </h2>
+        <h2> Reporteria </h2>
     </div>
+
+    <div class="flex-container mt-4">
+        @*Row --- 01*@
+        <div class="card">
+            <div class="card-header">
+                <h4>Resumen de Progreso</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card-header">
+                            <h5>Progreso General</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-progreso-general">
+                                @*Aca se cargara las graficas del Asesor*@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-9" id="div-derivaciones" style="display: none;">
+                        <div class="card-header">
+                            <h5>Derivaciones Generales</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-derivaciones">
+                                @*Aca se cargara las graficas del Asesor*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
     <div class="flex-container mt-4">
         <div class="card mt-4">
             @if (rol == 1 || rol == 4)
@@ -93,47 +130,13 @@
             }
         </div>
     </div>
+    @*Row --- 03*@
+    <div class="row">
+        <div class="col" id="div-derivaciones-supervisor" style="display: none;">
 
-    <div class="flex-container mt-4">
-        @*Row --- 03*@
-        <div class="row">
-            <div class="col" id="div-derivaciones-supervisor" style="display: none;">
-
-            </div>
-            <div class="col" id="div-derivaciones-asesor" style="display: none;">
-
-            </div>
         </div>
-        <hr>
-        @*Row --- 01*@
-        <div class="card">
-            <div class="card-header">
-                <h4>Resumen de Progreso</h4>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="card-header">
-                            <h5>Progreso General</h5>
-                        </div>
-                        <div class="card-body">
-                            <div id="chart-progreso-general">
-                                @*Aca se cargara las graficas del Asesor*@
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-9" id="div-derivaciones" style="display: none;">
-                        <div class="card-header">
-                            <h5>Derivaciones Generales</h5>
-                        </div>
-                        <div class="card-body">
-                            <div id="chart-derivaciones">
-                                @*Aca se cargara las graficas del Asesor*@
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="col" id="div-derivaciones-asesor" style="display: none;">
+
         </div>
     </div>
 </div>
@@ -146,4 +149,17 @@
     <script src="~/js/Reportes/ReportesBusqueda.js?v=@DateTime.Now.Ticks"></script>
     <script src="~/js/Reportes/Asesor.js?v=@DateTime.Now.Ticks"></script>
     <script src="~/js/Reportes/Supervisor.js?v=@DateTime.Now.Ticks"></script>
+
+    <script>
+        var rol = @(rol.HasValue ? rol.Value.ToString() : "null");
+        var idUsuario = @(idUsuario.HasValue ? idUsuario.Value.ToString() : "null");
+
+        document.addEventListener("DOMContentLoaded", function () {
+            if (rol === 3) {
+                cargarReporteAsesor(idUsuario);
+            } else if (rol === 2) {
+                cargarReporteSupervisor(idUsuario);
+            }
+        });
+    </script>
 }

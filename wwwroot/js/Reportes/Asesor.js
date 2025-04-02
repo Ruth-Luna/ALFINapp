@@ -130,19 +130,14 @@ function cargarGestionInforme() {
 function cargarReporteGeneralAsesor() {
     var reportesAsesor = document.getElementById('reportes-asesor');
     var reportesData = JSON.parse(reportesAsesor.getAttribute("data-json"));
-    var nderivaciones = reportesData["numDerivaciones"];
-    var ndesembolsos = reportesData["numDesembolsos"];
-    var nclientesasignados = reportesData["numClientesAsignados"];
-    var nclientestipificados = reportesData["numClientesTipificados"];
-    var nclientesnotipificados = reportesData["numClientesNoTipificados"];
     
     var options = {
         series: [
-            nderivaciones,
-            ndesembolsos,
-            nclientesasignados,
-            nclientestipificados,
-            nclientesnotipificados
+            reportesData["totalDerivaciones"],
+            reportesData["totalDesembolsos"],
+            reportesData["totalAsignado"],
+            reportesData["totalGestionado"],
+            reportesData["totalSinGestionar"]
         ],
         chart: {
             type: 'pie',

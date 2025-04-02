@@ -80,19 +80,18 @@ namespace ALFINapp.Infrastructure.Services
                     {
                         return (false, "El cliente no tiene Detalle Base en la Base de Datos de A365, si el cliente tiene Datos en la base de Datos del banco Alfin puede hacer la consulta con los datos correspondientes");
                     }
-
                     
                     var EnriquecidoClienteA365 = await _context.clientes_enriquecidos.FirstOrDefaultAsync(ce => ce.IdBase == ClienteDBA365.bc.IdBase);
                     if (EnriquecidoClienteA365 != null)
                     {
                         var checkAsignacion = await _context.clientes_asignados
-                        .Where(c => c.IdCliente == EnriquecidoClienteA365.IdCliente &&
-                                    c.IdUsuarioS == supervisorAsignado &&
-                                    c.IdUsuarioV == null &&
-                                    c.FechaAsignacionVendedor.HasValue &&
-                                    c.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year &&
-                                    c.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month)
-                        .FirstOrDefaultAsync();
+                            .Where(c => c.IdCliente == EnriquecidoClienteA365.IdCliente &&
+                                        c.IdUsuarioS == supervisorAsignado &&
+                                        c.IdUsuarioV == null &&
+                                        c.FechaAsignacionVendedor.HasValue &&
+                                        c.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year &&
+                                        c.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month)
+                            .FirstOrDefaultAsync();
                         if (checkAsignacion != null)
                         {
                             //El supervisor tiene base creada unicamente mover la asignacion al vendedor

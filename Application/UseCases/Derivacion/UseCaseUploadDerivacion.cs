@@ -33,7 +33,8 @@ namespace ALFINapp.Application.UseCases.Derivacion
             int idBase,
             int idUsuario,
             int idAsignacion,
-            int type)
+            int type,
+            string? NombresCompletos)
         {
             try
             {
@@ -78,6 +79,10 @@ namespace ALFINapp.Application.UseCases.Derivacion
                     FueProcesado = false,
                     EstadoDerivacion = "DERIVACION PENDIENTE"
                 };
+                if (NombresCompletos != null)
+                {
+                    derivacion.NombreCliente = NombresCompletos;
+                }
                 var uploadDerivacion = await _repositoryDerivaciones.uploadDerivacion(derivacion);
                 if (!uploadDerivacion)
                 {

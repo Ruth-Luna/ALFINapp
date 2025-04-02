@@ -4,24 +4,29 @@ function cargarReportesSupervisor() {
 
     var tipificacionesAsesor = reportesData["tipificacionesAsesores"];
     var asesoresNombres = [];
-    var totalTipificados = [];
+    var totalSinGestionar = [];
     var totalDerivaciones = [];
-    var totalDerProcesadas = [];
+    var totalGestionado = [];
+    var totalGestionadoTrunc = [];
     var totalDesembolsos = [];
 
     tipificacionesAsesor.forEach(item => {
         asesoresNombres.push(item["nombreAsesor"]);
-        totalTipificados.push(item["totalTipificados"]);
+        totalSinGestionar.push(item["totalSinGestionar"]);
+        totalGestionado.push(item["totalGestionado"]);
+        
+        // 🔹 Truncar valores mayores a 120
+        totalGestionadoTrunc.push(item["totalGestionado"] > 120 ? 120 : item["totalGestionado"]);
+
         totalDerivaciones.push(item["totalDerivaciones"]);
-        totalDerProcesadas.push(item["totalDerivacionesProcesadas"]);
         totalDesembolsos.push(item["totalDesembolsos"]);
     });
 
     var options = {
         series: [
-            { name: 'Tipificaciones', data: totalTipificados },
+            { name: 'Sin Gestionar', data: totalSinGestionar },
+            { name: 'Gestionado (Máx 120)', data: totalGestionadoTrunc },
             { name: 'Derivaciones', data: totalDerivaciones },
-            { name: 'Derivaciones Procesadas', data: totalDerProcesadas },
             { name: 'Desembolsos', data: totalDesembolsos }
         ],
         chart: {
@@ -38,7 +43,25 @@ function cargarReportesSupervisor() {
         legend: { position: 'top' },
         tooltip: {
             shared: true,
-            intersect: false
+            intersect: false,
+            custom: function({ series, seriesIndex, dataPointIndex, w }) {
+                var totalRealGestionado = totalGestionado[dataPointIndex]; // 🔹 Obtener el total real
+
+                var tooltipHTML = `<div style="padding: 10px; background: #fff; border-radius: 5px; box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);">
+                        <strong style="color: #333;">${w.globals.labels[dataPointIndex]}</strong><br>`;
+
+                w.globals.series.forEach((serie, i) => {
+                    tooltipHTML += `<span style="color: ${w.globals.colors[i]}; font-weight: bold;">●</span> 
+                                    ${w.globals.seriesNames[i]}: <strong>${serie[dataPointIndex]}</strong><br>`;
+                });
+
+                // 🔹 Agregar el total real de "Gestionado" aunque esté truncado en el gráfico
+                tooltipHTML += `<hr style="margin: 5px 0;">
+                                <strong style="color: #FF9800;">Total Gestionado Real:</strong> ${totalRealGestionado}
+                            </div>`;
+                
+                return tooltipHTML;
+            }
         },
         title: {
             text: 'Reporte de Supervisores',
@@ -50,30 +73,48 @@ function cargarReportesSupervisor() {
     chart.render();
 }
 
+
 function cargarReportesDerivacionesSupervisor() {
     var reportesElement = document.getElementById('reportes-supervisor');
     var reportesData = JSON.parse(reportesElement.getAttribute("data-json"));
 
     var options = {
         series: [
-            reportesData["totalDerivacionesDesembolsadas"],
-            reportesData["totalDerivacionesNoDesembolsadas"],
-            reportesData["totalAsignacionesProcesadas"],
-            reportesData["totalAsignaciones"] - reportesData["totalAsignacionesProcesadas"]
+            reportesData["totalDerivado"],
+            reportesData["totalDesembolsado"],
+            reportesData["totalGestionado"]
         ],
         chart: {
             type: 'pie',
             height: 350
         },
         labels: [
-            "Derivaciones Desembolsadas",
-            "Derivaciones No Desembolsadas",
-            "Asignaciones Procesadas",
-            "Asignaciones Pendientes"
+            "Derivaciones",
+            "Desembolsos",
+            "Gestionado"
         ],
-        colors: ["#00E396", "#FF4560", "#008FFB", "#FEB019"],
+        colors: ["#00E396", "#FF4560", "#008FFB"],
         legend: {
             position: 'bottom'
+        },
+        annotations: {
+            position: 'front',
+            texts: [
+                {
+                    x: '10%', 
+                    y: '10%', 
+                    text: `Asignaciones: ${reportesData["totalAsignaciones"]}`,
+                    textAnchor: 'middle',
+                    style: { color: "#333", fontSize: '12px', fontWeight: 'bold' }
+                },
+                {
+                    x: '10%', 
+                    y: '15%', 
+                    text: `Sin Gestionar: ${reportesData["totalSinGestionar"]}`,
+                    textAnchor: 'middle',
+                    style: { color: "#333", fontSize: '12px', fontWeight: 'bold' }
+                }
+            ]
         }
     };
 
@@ -82,14 +123,15 @@ function cargarReportesDerivacionesSupervisor() {
 }
 
 
+
 function cargarGraficoDerivacionesVsDesembolsos() {
     var reportesElement = document.getElementById('reportes-supervisor');
     var reportesData = JSON.parse(reportesElement.getAttribute("data-json"));
 
     var options = {
         series: [
-            reportesData["totalDerivaciones"],
-            reportesData["totalDerivacionesDesembolsadas"]
+            reportesData["totalDerivado"],
+            reportesData["totalDesembolsado"]
         ],
         chart: {
             type: 'pie',
@@ -168,12 +210,12 @@ function cargarDerivacionesSupervisorFecha() {
 function cargarDesembolsosSupervisorFecha() {
     var reportesAsesor = document.getElementById('reportes-supervisor');
     var reportesData = JSON.parse(reportesAsesor.getAttribute("data-json"));
-    var derivacionesFecha = reportesData["desembolsosFecha"];
+    var desembolsosFecha = reportesData["desembolsosFecha"];
 
     var fechas = [];
     var contador = [];
 
-    derivacionesFecha.forEach(item => {
+    desembolsosFecha.forEach(item => {
         fechas.push(item["fecha"]);
         contador.push(item["contador"]);
     });

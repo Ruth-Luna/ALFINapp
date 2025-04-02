@@ -9,13 +9,13 @@ namespace ALFINapp.API.Models
     public class ViewReportesAsesores
     {
         public ViewUsuario asesor { get; set; } = new ViewUsuario();
-        public int numDerivaciones { get; set; }
-        public int numDerivacionesProcesadas { get; set; }
-        public int numDesembolsos { get; set; }
-        public int numClientesAsignados { get; set; }
-        public int numClientesTipificados { get; set; }
-        public int numClientesNoTipificados { get; set; }
+        public int totalDerivaciones { get; set; }
+        public int totalDesembolsos { get; set; }
+        public int totalAsignado { get; set; }
+        public int totalGestionado { get; set; }
+        public int totalSinGestionar { get; set; }
         public List<DerivacionesFecha> derivacionesFecha { get; set; } = new List<DerivacionesFecha>();
+        public List<DerivacionesFecha> desembolsosFecha { get; set; } = new List<DerivacionesFecha>();
         public List<ViewGestionDetalle> gestionDetalles { get; set; } = new List<ViewGestionDetalle>();
         public List<ViewTipificacionesGestion> tipificacionesGestion { get; set; } = new List<ViewTipificacionesGestion>();
     }

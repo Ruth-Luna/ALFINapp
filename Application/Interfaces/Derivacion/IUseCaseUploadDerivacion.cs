@@ -14,6 +14,7 @@ namespace ALFINapp.Application.Interfaces.Derivacion
             int idBase, 
             int idUsuario,
             int idAsignacion,
-            int type);
+            int type,
+            string? NombresCompletos);
     }
 }

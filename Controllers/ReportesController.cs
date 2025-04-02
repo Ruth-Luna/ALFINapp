@@ -49,6 +49,7 @@ namespace ALFINapp.API.Controllers
                 TempData["MessageError"] = "Id de usuario no valido.";
                 return RedirectToAction("Index", "Home");
             }
+            ViewData["UsuarioId"] = idUsuario.Value;
             if (rol == 1 || rol == 4)
             {
                 var reportesAdministrador = await _useCaseGetReportesAdministrador.Execute();
