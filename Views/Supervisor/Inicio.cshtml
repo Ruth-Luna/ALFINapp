@@ -1,10 +1,12 @@
-@model IEnumerable<ALFINapp.Infrastructure.Persistence.Models.SupervisorDTO>
+@model ALFINapp.API.Models.ViewInicioSupervisor
 
 @{
-    var usuarioNombre = ViewData["UsuarioNombre"];
+    var usuarioNombre = Model.nombreSupervisor;
 
-    var clientesPendientesSupervisor = (int)(ViewData["ClientesPendientesSupervisor"] ?? 0);
-    var destinoBases = ViewData["DestinoBases"] as List<string>;
+    var clientesPendientesSupervisor = Model.clientesPendientesSupervisor;
+    var totalClientes = Model.totalClientes;
+    var clientesAsignadosSupervisor = Model.clientesAsignadosSupervisor;
+    var destinoBases = Model.DestinoBases;
 }
 
 @section Styles {
@@ -28,9 +30,9 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>@ViewData["totalClientes"]</td>
-                                <td>@ViewData["clientesAsignadosSupervisor"]</td>
-                                <td>@ViewData["ClientesPendientesSupervisor"]</td>
+                                <td>@totalClientes</td>
+                                <td>@clientesAsignadosSupervisor</td>
+                                <td>@clientesPendientesSupervisor</td>
                             </tr>
                         </tbody>
                     </table>
@@ -47,9 +49,12 @@
                             <label for="BaseDestino">Destino</label>
                             <select class="form-control" name="BaseDestino" id="BaseDestino">
                                 <option value="">Seleccione una Base de Destino</option>
-                                @foreach (var destinoBase in destinoBases)
+                                @if (destinoBases != null)
                                 {
-                                    <option value="@destinoBase">@destinoBase</option>
+                                    @foreach (var destinoBase in destinoBases)
+                                    {
+                                        <option value="@destinoBase">@destinoBase</option>
+                                    }
                                 }
                             </select>
                         </div>
@@ -95,15 +100,9 @@
                 </tr>
             </thead>
             <tbody id="data-table">
-                @{
-                    int contr = 1;
-                }
-                @foreach (var SupervisorDTO in Model)
+                @foreach (var SupervisorDTO in Model.DetallesClientes)
                 {
                     <tr>
-                        @{
-                            contr++;
-                        }
                         <td>@SupervisorDTO.Dni</td>
                         <td>@SupervisorDTO.XNombre.ToUpper() @SupervisorDTO.XAppaterno.ToUpper()
                             @SupervisorDTO.XApmaterno.ToUpper()</td>

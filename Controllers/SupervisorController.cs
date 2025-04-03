@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using ALFINapp.Infrastructure.Services;
+using ALFINapp.Application.Interfaces.Supervisor;
 
 namespace ALFINapp.API.Controllers
 {
@@ -16,11 +17,17 @@ namespace ALFINapp.API.Controllers
         private readonly MDbContext _context;
         private readonly DBServicesConsultasSupervisores _dbServicesConsultasSupervisores;
         private readonly DBServicesGeneral _dbServicesGeneral;
-        public SupervisorController(MDbContext context, DBServicesConsultasSupervisores dbServicesConsultasSupervisores, DBServicesGeneral dbServicesGeneral)
+        private readonly IUseCaseGetInicio _useCaseGetInicioSup;
+        public SupervisorController(
+            MDbContext context, 
+            DBServicesConsultasSupervisores dbServicesConsultasSupervisores, 
+            DBServicesGeneral dbServicesGeneral,
+            IUseCaseGetInicio useCaseGetInicioSup)
         {
             _context = context;
             _dbServicesConsultasSupervisores = dbServicesConsultasSupervisores;
             _dbServicesGeneral = dbServicesGeneral;
+            _useCaseGetInicioSup = useCaseGetInicioSup;
         }
         /// <summary>
         /// Obtiene y muestra la página de inicio del supervisor con información sobre los leads y clientes asignados.
@@ -73,29 +80,14 @@ namespace ALFINapp.API.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var supervisorData = await _dbServicesConsultasSupervisores.ConsultaLeadsDelSupervisor(usuarioId.Value);
+            var supervisorData = await _useCaseGetInicioSup.Execute(usuarioId.Value);
             if (supervisorData.IsSuccess == false)
             {
                 TempData["MessageError"] = supervisorData.Message;
                 return RedirectToAction("Index", "Home");
             }
-            int clientesPendientesSupervisor = supervisorData.Data != null ? supervisorData.Data.Count(cliente => cliente.idUsuarioV == 0) : 0;
-            int totalClientes = supervisorData.Data != null ? supervisorData.Data.Count() : 0;
-            int clientesAsignadosSupervisor = supervisorData.Data != null ? supervisorData.Data.Count(cliente => cliente.idUsuarioV != 0) : 0;
-            var usuario = await _context.usuarios.FirstOrDefaultAsync(u => u.IdUsuario == usuarioId);
-            var DestinoBases = await _context.clientes_asignados
-                                    .Where(ca => ca.IdUsuarioS == usuarioId && ca.Destino != null)
-                                    .Select(ca => ca.Destino)
-                                    .Distinct()
-                                    .ToListAsync();
 
-            var supervisorList = supervisorData.Data != null ? supervisorData.Data.Take(200).ToList() : new List<SupervisorDTO>();
-            ViewData["UsuarioNombre"] = usuario != null ? usuario.NombresCompletos : "Usuario No Encontrado";
-            ViewData["ClientesPendientesSupervisor"] = clientesPendientesSupervisor;
-            ViewData["DestinoBases"] = DestinoBases;
-            ViewData["clientesAsignadosSupervisor"] = clientesAsignadosSupervisor;
-            ViewData["totalClientes"] = totalClientes;
-            return View("Inicio", supervisorList);
+            return View("Inicio", supervisorData.Data);
         }
 
         [HttpPost]
