@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using ALFINapp.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using ALFINapp.API.Filters;
+using ALFINapp.Application.Interfaces.Asignacion;
 
 namespace ALFINapp.API.Controllers
 {
@@ -16,22 +17,26 @@ namespace ALFINapp.API.Controllers
     public class AsignacionController : Controller
     {
         private MDbContext _context;
+        private IUseCaseGetAsignacion _useCaseGetAsignacion;
         private DBServicesConsultasSupervisores _dbServicesConsultasSupervisores;
         private DBServicesGeneral _dbServicesGeneral;
         private DBServicesConsultasAdministrador _dbServicesConsultasAdministrador;
         private DBServicesAsignacionesAdministrador _dbServicesAsignacionesAdministrador;
 
-        public AsignacionController(MDbContext context,
-                        DBServicesConsultasSupervisores dbServicesConsultasSupervisores,
-                        DBServicesGeneral dbServicesGeneral,
-                        DBServicesConsultasAdministrador dbServicesConsultasAdministrador,
-                        DBServicesAsignacionesAdministrador dbServicesAsignacionesAdministrador)
+        public AsignacionController(
+            MDbContext context,
+            DBServicesConsultasSupervisores dbServicesConsultasSupervisores,
+            DBServicesGeneral dbServicesGeneral,
+            DBServicesConsultasAdministrador dbServicesConsultasAdministrador,
+            DBServicesAsignacionesAdministrador dbServicesAsignacionesAdministrador,
+            IUseCaseGetAsignacion useCaseGetAsignacion)
         {
             _context = context;
             _dbServicesConsultasSupervisores = dbServicesConsultasSupervisores;
             _dbServicesGeneral = dbServicesGeneral;
             _dbServicesConsultasAdministrador = dbServicesConsultasAdministrador;
             _dbServicesAsignacionesAdministrador = dbServicesAsignacionesAdministrador;
+            _useCaseGetAsignacion = useCaseGetAsignacion;
         }
 
         [HttpGet]
@@ -45,65 +50,18 @@ namespace ALFINapp.API.Controllers
                 TempData["MessageError"] = "No se ha iniciado sesión";
                 return RedirectToAction("Index", "Home");
             }
-            var GetVendedoresAsignados = await _dbServicesConsultasSupervisores.GetAsesorsFromSupervisor(usuarioId.Value);
 
-            if (GetVendedoresAsignados.IsSuccess == false || GetVendedoresAsignados.Data == null)
+            var executeUseCase = await _useCaseGetAsignacion.Execute(usuarioId.Value);
+            if (executeUseCase.IsSuccess == false)
             {
-                TempData["MessageError"] = GetVendedoresAsignados.Message;
-                return RedirectToAction("Redireccionar", "Error");
-            }
-            var vendedoresAsignados = GetVendedoresAsignados.Data;
-
-            // Inicializar la lista de VendedorConClientesDTO
-            var vendedoresConClientes = new List<VendedorConClientesDTO>();
-
-            foreach (var vendedorIndividual in GetVendedoresAsignados.Data)
-            {
-                // Llamada al servicio para obtener el número de clientes y el mapeo de datos
-                var vendedorIndividualMapeado = await _dbServicesConsultasSupervisores.GetNumberTipificacionesPlotedOnDTO(vendedorIndividual, usuarioId.Value);
-                if (vendedorIndividualMapeado.IsSuccess == false || vendedorIndividualMapeado.Data == null)
-                {
-                    TempData["MessageError"] = GetVendedoresAsignados.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-
-                // Agregar el VendedorConClientesDTO mapeado a la lista
-                vendedoresConClientes.Add(vendedorIndividualMapeado.Data);
-            }
-
-            if (vendedoresConClientes == null)
-            {
-                TempData["MessageError"] = GetVendedoresAsignados.Message;
+                TempData["MessageError"] = executeUseCase.Message;
                 return RedirectToAction("Redireccionar", "Error");
             }
 
-            var DestinoBases = await _context.clientes_asignados
-                                                            .Where(ca => ca.IdUsuarioS == usuarioId && ca.Destino != null) // Filtrar por usuarioId
-                                                            .Select(ca => ca.Destino)                        // Seleccionar solo la columna destino
-                                                            .Distinct()                              // Obtener solo valores distintos
-                                                            .ToListAsync();                          // Convertir a lista
-
-            if (DestinoBases == null)
-            {
-                TempData["MessageError"] = "No hay bases de destino disponibles para asignar.";
-                return RedirectToAction("Redireccionar", "Error");
-            }
-            var supervisorData = await _dbServicesConsultasSupervisores.ConsultaLeadsDelSupervisor(usuarioId.Value);
-
-            if (supervisorData.IsSuccess == false)
-            {
-                TempData["MessageError"] = supervisorData.Message;
-                return RedirectToAction("Redireccionar", "Error");
-            }
-
-            int totalClientes = supervisorData.Data != null ? supervisorData.Data.Count() : 0;
-            int clientesPendientesSupervisor = supervisorData.Data != null ? supervisorData.Data.Count(cliente => cliente.idUsuarioV == 0) : 0;
-            int clientesAsignadosSupervisor = supervisorData.Data != null ? supervisorData.Data.Count(cliente => cliente.idUsuarioV != 0) : 0;
-
-            var NumLeads = new List<int> { totalClientes, clientesPendientesSupervisor, clientesAsignadosSupervisor };
+            var NumLeads = new List<int> { executeUseCase.Data.TotalClientes, executeUseCase.Data.TotalClientesPendientes, executeUseCase.Data.TotalClientesAsignados };
             ViewData["NumLeads"] = NumLeads;
-            ViewData["DestinoBases"] = DestinoBases;
-            return View("Asignacion", vendedoresConClientes);
+            ViewData["DestinoBases"] = executeUseCase.Data.Destinos;
+            return View("Asignacion", executeUseCase.Data);
         }
 
         [HttpGet]

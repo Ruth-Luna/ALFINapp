@@ -13,5 +13,6 @@ namespace ALFINapp.Domain.Interfaces
         public List<ALFINapp.Application.DTOs.DetalleBaseClienteDTO>? GetClientesFromVendedor(int IdUsuarioVendedor);
         public Task<Usuario?> GetVendedor(int IdUsuario);
         public List<ALFINapp.Application.DTOs.DetalleBaseClienteDTO>? GetClientesAlfinFromVendedor(int IdUsuarioVendedor);
+        
     }
 }

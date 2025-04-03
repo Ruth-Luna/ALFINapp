@@ -1,8 +1,10 @@
-@model List<VendedorConClientesDTO>
+@model ALFINapp.API.Models.ViewAsignacionSupervisor
 
 @{
-    var destinoBases = ViewData["DestinoBases"] as List<string>;
-    var NumLeads = ViewData["NumLeads"] as List<int>;
+    var destinoBases = Model.Destinos;
+    var totalClientes = Model.TotalClientes;
+    var totalClientesAsignados = Model.TotalClientesAsignados;
+    var totalClientesPendientes = Model.TotalClientesPendientes;
 }
 
 @section Styles {
@@ -14,24 +16,22 @@
         <h3>Seccion Asignaciones del Asesor de Creditos</h3>
         <div class="form-group mb-3">
             <div class="row">
-                @if (NumLeads != null && NumLeads.Count > 0)
-                {
+                
                     <div class="col-md-4">
                         <label for="NumTotalLeads">Numero Total de Leads</label>
-                        <input type="text" class="form-control" id="NumTotalLeads" name="NumTotalLeads" value="@NumLeads[0]"
-                            readonly>
+                        <input type="text" class="form-control" id="NumTotalLeads" name="NumTotalLeads" 
+                            value="@totalClientes" readonly>
                     </div>
                     <div class="col-md-4">
                         <label for="NumLeadsDisponible">Numero de Leads Disponibles</label>
                         <input type="text" class="form-control" id="NumLeadsDisponible" name="NumLeadsDisponible"
-                            value="@NumLeads[1]" readonly>
+                            value="@totalClientesPendientes" readonly>
                     </div>
                     <div class="col-md-4">
                         <label for="NumLeadsAsignados">Numero de Leads Asignados</label>
                         <input type="text" class="form-control" id="NumLeadsAsignados" name="NumLeadsAsignados"
-                            value="@NumLeads[2]" readonly>
+                            value="@totalClientesAsignados" readonly>
                     </div>
-                }
             </div>
             <label for="BaseDestino">Destino</label>
             <select class="form-control" name="BaseDestino" id="BaseDestino"
@@ -41,7 +41,7 @@
                 {
                     @foreach (var destinoBase in destinoBases)
                     {
-                        @if (@destinoBase != "A365_AGREGADO_MANUALMENTE" || @destinoBase != "ALFIN_AGREGADO_MANUALMENTE_2")
+                        @if (@destinoBase != "A365_AGREGADO_MANUALMENTE" || @destinoBase != "ALFIN_AGREGADO_MANUALMENTE")
                         {
                             <option value="@destinoBase">@destinoBase</option>
                         }
@@ -62,7 +62,7 @@
                 @{
                     int cont = 0;
                 }
-                @foreach (var vendedores in Model)
+                @foreach (var vendedores in Model.Asesores)
                 {
                     if (vendedores.estaActivado == true)
                     {
@@ -71,7 +71,12 @@
                                 <textarea class="form-control" readonly>@vendedores.NombresCompletos</textarea>
                             </td>
                             <td>
-                                <input class="form-control" value="@vendedores.NumeroClientes" readonly>
+                                <label for="num-clientes-asignacion"> Total Asignado: </label>
+                                <input type="number" class="form-control" value="@vendedores.NumeroClientes" id="num-clientes-asignacion" readonly>
+                                <label for="num-clientes-gestionados-asignacion">Clientes Gestionados: </label>
+                                <input type="number" class="form-control" value="@vendedores.NumeroClientesGestionados" id="num-clientes-gestionados-asignacion" readonly>
+                                <label for="num-clientes-pendientes-asignacion">Clientes Pendientes: </label>
+                                <input type="number" class="form-control" value="@vendedores.NumeroClientesPendientes" id="num-clientes-pendientes-asignacion" readonly>
                             </td>
                             <td>
                                 <input name="asignacionasesor[@cont].NumClientes" type="number" class="form-control" value="0"
@@ -93,93 +98,5 @@
 </div>
 
 @section Scripts {
-    <script>
-        function EnviarDatos() {
-            const asignaciones = [];
-
-            // Mostrar la ventana de carga
-            Swal.fire({
-                title: 'Procesando...',
-                text: 'Por favor, espera mientras se procesa la asignación.',
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
-            // Recopilar datos del formulario dinámico
-            document.querySelectorAll('tbody tr').forEach((row) => {
-                const index = row.getAttribute('data-index');
-                const numClientesInput = row.querySelector(`input[name="asignacionasesor[${index}].NumClientes"]`);
-                const idVendedorInput = row.querySelector(`input[name="asignacionasesor[${index}].IdVendedor"]`);
-
-                // Verificar que ambos inputs existen antes de usarlos
-                if (numClientesInput && idVendedorInput) {
-                    const numClientes = numClientesInput.value;
-                    const idVendedor = idVendedorInput.value;
-
-                    if (numClientes > 0) { // Solo agregamos si el número de clientes es mayor a 0
-                        asignaciones.push({
-                            NumClientes: parseInt(numClientes, 10),
-                            IdVendedor: parseInt(idVendedor, 10)
-                        });
-                    }
-                }
-            });
-
-            const selectAsesorBase = document.getElementById('BaseDestino').value;
-
-            // Imprimir la información completa a enviar antes de hacer el AJAX
-            console.log("Información completa a enviar:", {
-                asignacionasesor: asignaciones,
-                selectAsesorBase: selectAsesorBase,
-            });
-
-            // Enviar los datos mediante AJAX
-            $.ajax({
-                url: '/Asesor/AsignarClientesAAsesores',
-                type: 'POST',
-                data: {
-                    asignacionasesor: asignaciones,
-                    selectAsesorBase: selectAsesorBase,
-                },
-                success: function (response) {
-                    Swal.close(); // Cerrar la ventana de carga
-
-                    if (response.success === false) {
-                        Swal.fire({
-                            title: 'Error en la asignación',
-                            text: response.message,
-                            icon: 'error',
-                            confirmButtonText: 'Aceptar'
-                        });
-                    } else {
-                        Swal.fire({
-                            title: 'Asignación Exitosa',
-                            text: response.message,
-                            icon: 'success',
-                            confirmButtonText: 'Aceptar'
-                        }).then(() => {
-                            // Reset UI
-                            document.getElementById('guardarAsignacionesContainer').style.display = 'none';
-                            location.reload();
-                        });
-                    }
-                },
-                error: function () {
-                    Swal.close(); // Cerrar la ventana de carga
-
-                    Swal.fire({
-                        title: 'Error en la Reasignación',
-                        text: 'Error en la Reasignación',
-                        icon: 'error',
-                        confirmButtonText: 'Aceptar'
-                    });
-                }
-            });
-        }
-
-    </script>
     <script src="~/js/Asignacion/Asignacion.js?v=@DateTime.Now.Ticks"></script>
 }

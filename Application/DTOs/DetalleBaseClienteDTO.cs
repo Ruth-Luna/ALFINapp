@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ALFINapp.Domain.Entities;
+using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Persistence.Procedures;
 
 namespace ALFINapp.Application.DTOs
@@ -57,6 +58,7 @@ namespace ALFINapp.Application.DTOs
         public string? TipificacionDeMayorPeso { get; set; }
         public int? PesoTipificacionMayor { get; set; }
         public DateTime? FechaTipificacionDeMayorPeso { get; set; }
+        public int? IdUsuarioV { get; set; }        
 
         public DetalleBaseClienteDTO(InicioDetallesClientesFromAsesor model)
         {
@@ -77,6 +79,18 @@ namespace ALFINapp.Application.DTOs
             PrioridadSistema = model.PrioridadSistema;
         }
 
+        public DetalleBaseClienteDTO(ClientesAsignado model)
+        {
+            IdAsignacion = model.IdAsignacion;
+            IdBase = model.IdCliente;
+            IdUsuarioV = model.IdUsuarioV;
+            FechaAsignacionVendedor = model.FechaAsignacionVendedor;
+            FinalizarTipificacion = model.FinalizarTipificacion;
+            ComentarioGeneral = model.ComentarioGeneral;
+            TipificacionDeMayorPeso = model.TipificacionMayorPeso;
+            PesoTipificacionMayor = model.PesoTipificacionMayor;
+            FechaTipificacionDeMayorPeso = model.FechaTipificacionMayorPeso;
+        }
         public Cliente DtoToCliente ()
         {
             Cliente cliente = new Cliente();
