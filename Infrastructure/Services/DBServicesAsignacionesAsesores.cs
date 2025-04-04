@@ -72,7 +72,7 @@ namespace ALFINapp.Infrastructure.Services
                         from bc in _context.base_clientes
                         join db in _context.detalle_base on bc.IdBase equals db.IdBase
                         where bc.Dni == DNIBusqueda
-                        orderby db.FechaCarga
+                        orderby db.FechaCarga descending
                         select new { bc, db }
                     ).FirstOrDefaultAsync();
 

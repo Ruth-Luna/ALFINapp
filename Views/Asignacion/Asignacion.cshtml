@@ -16,22 +16,22 @@
         <h3>Seccion Asignaciones del Asesor de Creditos</h3>
         <div class="form-group mb-3">
             <div class="row">
-                
-                    <div class="col-md-4">
-                        <label for="NumTotalLeads">Numero Total de Leads</label>
-                        <input type="text" class="form-control" id="NumTotalLeads" name="NumTotalLeads" 
-                            value="@totalClientes" readonly>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="NumLeadsDisponible">Numero de Leads Disponibles</label>
-                        <input type="text" class="form-control" id="NumLeadsDisponible" name="NumLeadsDisponible"
-                            value="@totalClientesPendientes" readonly>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="NumLeadsAsignados">Numero de Leads Asignados</label>
-                        <input type="text" class="form-control" id="NumLeadsAsignados" name="NumLeadsAsignados"
-                            value="@totalClientesAsignados" readonly>
-                    </div>
+
+                <div class="col-md-4">
+                    <label for="NumTotalLeads">Numero Total de Leads</label>
+                    <input type="text" class="form-control" id="NumTotalLeads" name="NumTotalLeads"
+                        value="@totalClientes" readonly>
+                </div>
+                <div class="col-md-4">
+                    <label for="NumLeadsDisponible">Numero de Leads Disponibles</label>
+                    <input type="text" class="form-control" id="NumLeadsDisponible" name="NumLeadsDisponible"
+                        value="@totalClientesPendientes" readonly>
+                </div>
+                <div class="col-md-4">
+                    <label for="NumLeadsAsignados">Numero de Leads Asignados</label>
+                    <input type="text" class="form-control" id="NumLeadsAsignados" name="NumLeadsAsignados"
+                        value="@totalClientesAsignados" readonly>
+                </div>
             </div>
             <label for="BaseDestino">Destino</label>
             <select class="form-control" name="BaseDestino" id="BaseDestino"
@@ -71,12 +71,23 @@
                                 <textarea class="form-control" readonly>@vendedores.NombresCompletos</textarea>
                             </td>
                             <td>
-                                <label for="num-clientes-asignacion"> Total Asignado: </label>
-                                <input type="number" class="form-control" value="@vendedores.NumeroClientes" id="num-clientes-asignacion" readonly>
-                                <label for="num-clientes-gestionados-asignacion">Clientes Gestionados: </label>
-                                <input type="number" class="form-control" value="@vendedores.NumeroClientesGestionados" id="num-clientes-gestionados-asignacion" readonly>
-                                <label for="num-clientes-pendientes-asignacion">Clientes Pendientes: </label>
-                                <input type="number" class="form-control" value="@vendedores.NumeroClientesPendientes" id="num-clientes-pendientes-asignacion" readonly>
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="num-clientes-asignacion"> Total Asignado: </label>
+                                        <input type="number" class="form-control" value="@vendedores.NumeroClientes"
+                                            id="num-clientes-asignacion" readonly>
+                                    </div>
+                                    <div class="col">
+                                        <label for="num-clientes-gestionados-asignacion">Clientes Gestionados: </label>
+                                        <input type="number" class="form-control" value="@vendedores.NumeroClientesGestionados"
+                                            id="num-clientes-gestionados-asignacion" readonly>
+                                    </div>
+                                    <div class="col">
+                                        <label for="num-clientes-pendientes-asignacion">Clientes Pendientes: </label>
+                                        <input type="number" class="form-control" value="@vendedores.NumeroClientesPendientes"
+                                            id="num-clientes-pendientes-asignacion" readonly>
+                                    </div>
+                                </div>
                             </td>
                             <td>
                                 <input name="asignacionasesor[@cont].NumClientes" type="number" class="form-control" value="0"

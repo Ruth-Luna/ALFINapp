@@ -18,6 +18,94 @@ namespace ALFINapp.Infrastructure.Repositories
             _context = context;
         }
 
+        public async Task<List<DetallesAsignacionesDTO>> GetAllAsignacionesFromDestino(int idUsuarioS, string destino)
+        {
+            try
+            {
+                var allclientes = await (
+                    from ca in _context.clientes_asignados
+                    join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
+                    join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
+                    where ca.IdUsuarioS == idUsuarioS
+                        && ca.Destino == destino
+                        && ca.FechaAsignacionSup.HasValue
+                        && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
+                        && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
+                    select new 
+                    {
+                        IdAsignacion = ca.IdAsignacion,
+                        IdCliente = ca.IdCliente,
+                        IdUsuarioS = ca.IdUsuarioS,
+                        FechaAsignacionSup = ca.FechaAsignacionSup,
+                        IdUsuarioV = ca.IdUsuarioV,
+                        FechaAsignacionVendedor = ca.FechaAsignacionVendedor,
+                        Destino = ca.Destino,
+                        Dni = bc.Dni
+                    }
+                ).ToListAsync();
+
+                if (allclientes == null || allclientes.Count == 0)
+                {
+                    Console.WriteLine("No hay clientes asignados al supervisor.");
+                    return new List<DetallesAsignacionesDTO>();
+                }
+
+                var getDnis = allclientes
+                    .Select(cliente => cliente.Dni)
+                    .Distinct()
+                    .ToHashSet();
+                
+                var getDesembolsos = await _context.desembolsos
+                    .AsNoTracking()
+                    .Where(x => getDnis.Contains(x.DniDesembolso ?? ""))
+                    .Select(x => new
+                    {
+                        x.DniDesembolso
+                    })
+                    .ToHashSetAsync();
+                    
+                var getRetiros = await _context.retiros
+                    .AsNoTracking()
+                    .Where(x => getDnis.Contains(x.DniRetiros ?? ""))
+                    .Select(x => new
+                    {
+                        x.DniRetiros
+                    })
+                    .ToHashSetAsync();
+
+                var getAsignacionesFinal = allclientes
+                    .Where(cliente => !getDesembolsos.Any(d => d.DniDesembolso == cliente.Dni) && !getRetiros.Any(r => r.DniRetiros == cliente.Dni))
+                    .ToList();
+                var clientesDisponibles = getAsignacionesFinal
+                    .Select(cliente => new ClientesAsignado
+                    {
+                        IdAsignacion = cliente.IdAsignacion,
+                        IdCliente = cliente.IdCliente,
+                        IdUsuarioS = cliente.IdUsuarioS,
+                        FechaAsignacionSup = cliente.FechaAsignacionSup,
+                        IdUsuarioV = cliente.IdUsuarioV,
+                        FechaAsignacionVendedor = cliente.FechaAsignacionVendedor,
+                        Destino = cliente.Destino
+                    })
+                    .ToList();
+                
+                if (allclientes == null || allclientes.Count == 0)
+                {
+                    Console.WriteLine("No hay clientes asignados al supervisor.");
+                    return new List<DetallesAsignacionesDTO>();
+                }
+                var detallesAsignaciones = clientesDisponibles
+                    .Select(cliente => new DetallesAsignacionesDTO(cliente))
+                    .ToList();
+                
+                return detallesAsignaciones;
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return new List<DetallesAsignacionesDTO>();
+            }
+        }
         public async Task<DetallesAsignacionContadorFromVendedorDTO> GetContadorAllAsignacionesFromVendedor(List<int> IdsUsuariosVendedores, int idUsuarioS)
         {
             try

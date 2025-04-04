@@ -1,12 +1,9 @@
-using System.Security;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using ALFINapp.API.DTOs;
 using ALFINapp.API.Filters;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace ALFINapp.API.Controllers
 {
@@ -355,7 +352,7 @@ namespace ALFINapp.API.Controllers
         /// </code>
         /// </example>
         [HttpPost]
-        public async Task<IActionResult> AsignarClientesAAsesores(List<AsignarAsesorDTO> asignacionasesor, string selectAsesorBase)
+        public async Task<IActionResult> AsignarClientesAAsesores(List<DtoVAsignarClientes> asignacionasesor, string selectAsesorBase)
         {
             try
             {
