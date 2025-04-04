@@ -236,48 +236,5 @@ namespace ALFINapp.Infrastructure.Services
                 return (false, ex.Message);
             }
         }
-        public async Task<(bool IsSuccess, string message, List<ClientesAsignado>? data)>ObtenerClientesDisponibles(
-            int IdUsuario, 
-            string selectAsesorBase, 
-            int nClientes)
-        {
-            try
-            {
-                var clientesDisponibles = await _context.clientes_asignados
-                    .FromSqlRaw("EXEC sp_asesores_clientes_disponibles_asignar @idSupervisorActual, @selectAsesorBase, @nClientes",
-                    new SqlParameter("@idSupervisorActual", IdUsuario),
-                    new SqlParameter("@selectAsesorBase", selectAsesorBase),
-                    new SqlParameter("@nClientes", nClientes))
-                    .ToListAsync();
-                
-                return (true, "Clientes disponibles obtenidos correctamente", clientesDisponibles);
-            }
-            catch (System.Exception ex)
-            {
-                return (false, ex.Message, null);
-            }
-        }
-
-        public async Task<(bool IsSuccess, string message)> ActualizarClienteAsignado(
-            ClientesAsignado cliente)
-        {
-            try
-            {
-                var result = await _context.Database.ExecuteSqlRawAsync("EXEC sp_asesores_asignar_clientes @IdAsignacion, @IdUsuarioV",
-                    new SqlParameter("@IdAsignacion", cliente.IdAsignacion),
-                    new SqlParameter("@IdUsuarioV", cliente.IdUsuarioV));
-
-                if (result == 0)
-                {
-                    return (false, "No se pudo actualizar el cliente asignado");
-                }
-                
-                return (true, "Clientes asignados correctamente");
-            }
-            catch (System.Exception ex)
-            {
-                return (false, ex.Message);
-            }
-        }
     }
 }

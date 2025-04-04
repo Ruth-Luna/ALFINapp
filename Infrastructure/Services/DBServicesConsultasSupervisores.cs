@@ -98,99 +98,6 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
-        /// <summary>
-        /// Obtiene las bases de clientes asignadas a un supervisor específico en el mes actual
-        /// </summary>
-        /// <param name="SupervisorId">ID del supervisor del cual se desean obtener las bases asignadas</param>
-        /// <returns>
-        /// Una tupla que contiene:
-        /// - IsSuccess: Indica si la operación fue exitosa
-        /// - Message: Mensaje descriptivo del resultado de la operación
-        /// - Data: Lista de nombres de bases asignadas. Puede ser null si ocurre un error
-        /// </returns>
-        /// <remarks>
-        /// Este método:
-        /// - Consulta la tabla clientes_asignados
-        /// - Filtra por supervisor y mes/año actual
-        /// - Retorna nombres únicos de bases (FuenteBase)
-        /// - Los resultados se limitan al mes y año actual de la consulta
-        /// </remarks>
-        /// <exception cref="Exception">Se lanza cuando ocurre un error en la consulta a la base de datos</exception>
-        /// <example>
-        /// Ejemplo de uso:
-        /// <code>
-        /// var result = await GetBasesClientes(supervisorId);
-        /// if (result.IsSuccess)
-        /// {
-        ///     var bases = result.Data;
-        ///     // Procesar la lista de bases
-        /// }
-        /// </code>
-        /// </example>
-        public async Task<(bool IsSuccess, string Message, List<string>? Data)> GetBasesClientes(int SupervisorId)
-        {
-            try
-            {
-                var BasesAsignadas = await (from ca in _context.clientes_asignados
-                                            where ca.IdUsuarioS == SupervisorId
-                                                && ca.FechaAsignacionSup.HasValue
-                                                && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                                                && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
-                                            select new { ca.FuenteBase })
-                                                .Distinct()
-                                                .ToListAsync();
-
-                if (BasesAsignadas == null)
-                {
-                    return (false, "Ocurrió un error al obtener la base de los Asesores", null);
-                }
-
-                var BasesAsignadasMapeadas = new List<string>();
-                foreach (var BaseAsignada in BasesAsignadas)
-                {
-                    BasesAsignadasMapeadas.Add(BaseAsignada.FuenteBase);
-                }
-                return (true, $"Ocurrió un error al obtener los asesores", BasesAsignadasMapeadas);
-            }
-            catch (System.Exception ex)
-            {
-                return (false, $"Ocurrió un error al obtener los asesores: {ex.Message}", null);
-            }
-        }
-        public async Task<(bool IsSuccess, string Message, SupervisorConAsesoresDTO? Data)> GetAssessorsFromSupervisor(Usuario SupervisorBusqueda)
-        {
-            try
-            {
-                var IdVendedoresAsignados = await (from ca in _context.clientes_asignados
-                                                   where ca.IdUsuarioS == SupervisorBusqueda.IdUsuario
-                                                           && ca.FechaAsignacionSup.HasValue
-                                                           && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                                                           && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
-                                                   select ca.IdUsuarioV).Distinct().ToListAsync();
-
-                if (IdVendedoresAsignados.Count() == 0)
-                {
-                    // El supervisor no tiene asesores asignados
-                    return (true, "El supervisor no tiene asesores asignados", null);
-                }
-
-                var AsesoresDelSupervisor = await _context.usuarios
-                    .Where(u => IdVendedoresAsignados.Contains(u.IdUsuario))
-                    .ToListAsync();
-
-                var DataToBeReturned = new SupervisorConAsesoresDTO
-                {
-                    TotalAsesores = IdVendedoresAsignados.Count(),
-                    AsesoresDelSupervisor = AsesoresDelSupervisor
-                };
-                return (true, $"La Consulta se produjo con exito", DataToBeReturned);
-            }
-            catch (System.Exception ex)
-            {
-                return (false, $"Ocurrió un error al obtener los supervisores: {ex.Message}", null);
-            }
-        }
-
         public async Task<(bool IsSuccess, string Message, List<UsuarioAsesorDTO>? Data)> ConsultaAsesoresDelSupervisor(int idSupervisorActual)
         {
             try
@@ -251,77 +158,6 @@ namespace ALFINapp.Infrastructure.Services
                 return (false, $"Ocurrió un error al obtener los asesores: {ex.Message}", null);
             }
         }
-
-        public async Task<(bool IsSuccess, string Message, List<SupervisorDTO>? Data)> ConsultaLeadsDelSupervisor(int idSupervisorActual)
-        {
-            try
-            {
-                var hoy = DateTime.Now;
-                var añoActual = hoy.Year;
-                var mesActual = hoy.Month;
-
-                var supervisorData = await (from ca in _context.clientes_asignados.AsNoTracking()
-                                            join ce in _context.clientes_enriquecidos.AsNoTracking() on ca.IdCliente equals ce.IdCliente
-                                            join bc in _context.base_clientes.AsNoTracking() on ce.IdBase equals bc.IdBase
-                                            join u in _context.usuarios.AsNoTracking() on ca.IdUsuarioV equals u.IdUsuario into usuarioJoin
-                                            from u in usuarioJoin.DefaultIfEmpty()
-                                            where ca.IdUsuarioS == idSupervisorActual
-                                                && ca.Destino != "A365_AGREGADO_MANUALMENTE"
-                                                && ca.Destino != "ALFIN_AGREGADO_MANUALMENTE"
-                                                && ca.FechaAsignacionSup.HasValue
-                                                && ca.FechaAsignacionSup.Value.Year == añoActual
-                                                && ca.FechaAsignacionSup.Value.Month == mesActual
-                                            select new SupervisorDTO
-                                            {
-                                                IdAsignacion = ca.IdAsignacion,
-                                                IdCliente = ca.IdCliente,
-                                                idUsuarioV = ca.IdUsuarioV ?? 0,
-                                                FechaAsignacionV = ca.FechaAsignacionVendedor,
-                                                Dni = bc.Dni,
-                                                XAppaterno = bc.XAppaterno,
-                                                XApmaterno = bc.XApmaterno,
-                                                XNombre = bc.XNombre,
-                                                NombresCompletos = u != null ? u.NombresCompletos : "Asesor no Asignado",
-                                                DniVendedor = u != null ? u.Dni : " ",
-                                            }).ToListAsync();
-
-                if (!supervisorData.Any())
-                {
-                    return (true, "El presente Usuario Supervisor no tiene clientes Asignados", null);
-                }
-
-                var dnisAsesores = await _context.usuarios.AsNoTracking()
-                    .Where(x => x.IDUSUARIOSUP == idSupervisorActual)
-                    .Select(x => x.Dni)
-                    .ToListAsync();
-
-                var dniDesembolsos = await _context.desembolsos.AsNoTracking()
-                    .Where(d => d.FechaDesembolsos.HasValue
-                                && d.FechaDesembolsos.Value.Year == añoActual
-                                && d.FechaDesembolsos.Value.Month == mesActual
-                                && dnisAsesores.Contains(d.DocAsesor))
-                    .Select(d => d.DniDesembolso)
-                    .ToListAsync();
-
-                var dniRetiros = await _context.retiros.AsNoTracking()
-                    .Where(r => r.FechaRetiro.HasValue
-                                && r.FechaRetiro.Value.Year == añoActual
-                                && r.FechaRetiro.Value.Month == mesActual)
-                    .Select(r => r.DniRetiros)
-                    .ToListAsync();
-
-                supervisorData = supervisorData
-                    .Where(s => !dniDesembolsos.Contains(s.Dni) && !dniRetiros.Contains(s.Dni))
-                    .ToList();
-
-                return (true, "La consulta se produjo con éxito", supervisorData);
-            }
-            catch (Exception ex)
-            {
-                return (false, $"Ocurrió un error al obtener los asesores: {ex.Message}", null);
-            }
-        }
-
         public async Task<(bool IsSuccess, string Message, List<ClientesAsignado>? Data)> ConsultaLeadsDelSupervisorDestino(int idSupervisorActual, string destino)
         {
             try
@@ -363,6 +199,5 @@ namespace ALFINapp.Infrastructure.Services
                 return (false, $"Ocurrió un error al obtener los asesores: {ex.Message}", null);
             }
         }
-        //... other methods...
     }
 }

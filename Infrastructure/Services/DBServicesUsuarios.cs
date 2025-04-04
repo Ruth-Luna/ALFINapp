@@ -191,22 +191,5 @@ namespace ALFINapp.Infrastructure.Services
                 return (false, ex.Message, null);
             }
         }
-
-        public async Task<(bool IsSuccess, string Message, Usuario? Data)> GetUsuario(string dni)
-        {
-            try
-            {
-                var usuario = await _context.usuarios.FirstOrDefaultAsync(x => x.Dni == dni);
-                if (usuario == null)
-                {
-                    return (false, "Usuario no encontrado", null);
-                }
-                return (true, "Usuario encontrado", usuario);
-            }
-            catch (Exception ex)
-            {
-                return (false, ex.Message, null);
-            }
-        }
     }
 }

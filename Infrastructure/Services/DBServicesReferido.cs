@@ -26,22 +26,23 @@ namespace ALFINapp.Infrastructure.Services
         /// <param name="apellidos">Los apellidos del asesor que refiere al cliente.</param>
         /// <param name="dniUsuario">El DNI del usuario que refiere al cliente.</param>
         /// <returns>Una tupla que indica si la operación fue exitosa y un mensaje asociado.</returns>
-        public async Task<(bool IsSuccess, string Message)> GuardarClienteReferido(string dni,
-                                                                                string fuenteBase,
-                                                                                string nombres,
-                                                                                string apellidos,
-                                                                                string dniUsuario,
-                                                                                string telefono,
-                                                                                string agencia,
-                                                                                DateTime fechaVisita,
-                                                                                string nombresCliente,
-                                                                                decimal OfertaEnviada,
-                                                                                string celular,
-                                                                                string correo,
-                                                                                string cci,
-                                                                                string departamento,
-                                                                                string ubigeo,
-                                                                                string banco)
+        public async Task<(bool IsSuccess, string Message)> GuardarClienteReferido(
+            string dni,
+            string fuenteBase,
+            string nombres,
+            string apellidos,
+            string dniUsuario,
+            string telefono,
+            string agencia,
+            DateTime fechaVisita,
+            string nombresCliente,
+            decimal OfertaEnviada,
+            string celular,
+            string correo,
+            string cci,
+            string departamento,
+            string ubigeo,
+            string banco)
         {
             try
             {
@@ -281,14 +282,15 @@ namespace ALFINapp.Infrastructure.Services
                     return (true, "Se ha encontrado el cliente en la base de datos de A365", clienteDetallesA365);
                 }
 
-                var clienteDetallesALFIN = await (from bcb in _context.base_clientes_banco
-                                                  where bcb.Dni == dni
-                                                  orderby bcb.FechaSubida descending
-                                                  select new
-                                                  {
-                                                      NombresCompletos = "DESCONOCIDO",
-                                                      OfertaMax = bcb.OfertaMax * 100,
-                                                  }).FirstOrDefaultAsync();
+                var clienteDetallesALFIN = await (
+                    from bcb in _context.base_clientes_banco
+                    where bcb.Dni == dni
+                    orderby bcb.FechaSubida descending
+                    select new
+                    {
+                        NombresCompletos = "DESCONOCIDO",
+                        OfertaMax = bcb.OfertaMax * 100,
+                    }).FirstOrDefaultAsync();
 
                 if (clienteDetallesALFIN != null)
                 {

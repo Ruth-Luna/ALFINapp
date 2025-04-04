@@ -22,22 +22,25 @@ namespace ALFINapp.Infrastructure.Repositories
         {
             try
             {
+                var actualdate = DateTime.Now;
+                var year = actualdate.Year;
+                var month = actualdate.Month;
                 var allclientes = await (
                     from ca in _context.clientes_asignados
                     join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
                     join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
                     where ca.IdUsuarioS == idUsuarioS
+                        && ca.IdUsuarioV == null
                         && ca.Destino == destino
                         && ca.FechaAsignacionSup.HasValue
-                        && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                        && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
+                        && ca.FechaAsignacionSup.Value.Year == year
+                        && ca.FechaAsignacionSup.Value.Month == month
                     select new 
                     {
                         IdAsignacion = ca.IdAsignacion,
                         IdCliente = ca.IdCliente,
                         IdUsuarioS = ca.IdUsuarioS,
                         FechaAsignacionSup = ca.FechaAsignacionSup,
-                        IdUsuarioV = ca.IdUsuarioV,
                         FechaAsignacionVendedor = ca.FechaAsignacionVendedor,
                         Destino = ca.Destino,
                         Dni = bc.Dni
@@ -57,7 +60,10 @@ namespace ALFINapp.Infrastructure.Repositories
                 
                 var getDesembolsos = await _context.desembolsos
                     .AsNoTracking()
-                    .Where(x => getDnis.Contains(x.DniDesembolso ?? ""))
+                    .Where(x => getDnis.Contains(x.DniDesembolso ?? "") 
+                        && x.FechaDesembolsos != null
+                        && x.FechaDesembolsos.Value.Year == year
+                        && x.FechaDesembolsos.Value.Month == month)
                     .Select(x => new
                     {
                         x.DniDesembolso
@@ -66,7 +72,10 @@ namespace ALFINapp.Infrastructure.Repositories
                     
                 var getRetiros = await _context.retiros
                     .AsNoTracking()
-                    .Where(x => getDnis.Contains(x.DniRetiros ?? ""))
+                    .Where(x => getDnis.Contains(x.DniRetiros ?? "")
+                        && x.FechaRetiro != null
+                        && x.FechaRetiro.Value.Year == year
+                        && x.FechaRetiro.Value.Month == month)
                     .Select(x => new
                     {
                         x.DniRetiros
@@ -83,7 +92,6 @@ namespace ALFINapp.Infrastructure.Repositories
                         IdCliente = cliente.IdCliente,
                         IdUsuarioS = cliente.IdUsuarioS,
                         FechaAsignacionSup = cliente.FechaAsignacionSup,
-                        IdUsuarioV = cliente.IdUsuarioV,
                         FechaAsignacionVendedor = cliente.FechaAsignacionVendedor,
                         Destino = cliente.Destino
                     })

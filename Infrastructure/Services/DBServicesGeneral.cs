@@ -16,29 +16,6 @@ namespace ALFINapp.Infrastructure.Services
             _context = context;
         }
 
-        /// <summary>
-        /// Retrieves the DNI (Documento Nacional de Identidad) of a user based on their user ID.
-        /// </summary>
-        /// <param name="IdUsuario">The ID of the user whose DNI is to be retrieved. It can be null.</param>
-        /// <returns>
-        /// A string representing the DNI of the user if found; otherwise, null.
-        /// </returns>
-        /// <exception cref="System.Exception">Thrown when an error occurs while retrieving the DNI.</exception>
-        public string ConseguirDNIUsuarios(int? IdUsuario)
-        {
-            try
-            {
-                var dniAsesor = (from u in _context.usuarios
-                                 where u.IdUsuario == IdUsuario
-                                 select u.Dni
-                                ).FirstOrDefault();
-                return dniAsesor;
-            }
-            catch (System.Exception)
-            {
-                throw;
-            }
-        }
         public async Task<(bool IsSuccess, string Message, Usuario? Data)> GetUserInformation(int IdUsuario)
         {
             try
@@ -83,67 +60,6 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
-        public async Task<(bool IsSuccess, string Message, BaseCliente? data)> GetBaseClienteFunction(int IdBaseB)
-        {
-            try
-            {
-                var cliente = await _context.base_clientes.Where(u => u.IdBase == IdBaseB)
-                                    .FirstOrDefaultAsync();
-
-                if (cliente == null)
-                {
-                    return (false, "El usuario no se encuentra registrado", null);
-                }
-
-                return (true, "El Usuario se ha encontrado", cliente);
-            }
-            catch (System.Exception ex)
-            {
-                return (true, ex.Message, null);
-            }
-        }
-        public async Task<(bool IsSuccess, string Message, ClientesEnriquecido? data)> GetClienteEnriquecidoFunction(int IdBaseB = 0)
-        {
-            try
-            {
-                var cliente = await _context.clientes_enriquecidos.Where(u => u.IdBase == IdBaseB)
-                                    .FirstOrDefaultAsync();
-
-                if (cliente == null)
-                {
-                    return (false, "El usuario no se encuentra registrado, en la tabla enriquecida", null);
-                }
-
-                return (true, "El Usuario se ha encontrado en la tabla enriquecida", cliente);
-            }
-            catch (System.Exception ex)
-            {
-                return (true, ex.Message, null);
-            }
-        }
-
-        public async Task<(bool IsSuccess, string Message, List<string>? data)> GetAgenciasDisponibles()
-        {
-            try
-            {
-                var agencias = await _context.detalle_base
-                        .Where(db => db.AgenciaComercial != null && db.AgenciaComercial != "None" && db.AgenciaComercial != "NULL" && db.AgenciaComercial != "") // Filtra primero para mejorar eficiencia
-                        .Select(db => db.AgenciaComercial)        // Selecciona solo el campo necesario
-                        .Distinct()                               // Elimina duplicados
-                        .ToListAsync();
-
-                if (agencias == null || !agencias.Any())      // Verifica si la lista es nula o vacía
-                {
-                    return (false, "No se encontraron agencias disponibles", null);
-                }
-
-                return (true, "Agencias encontradas", agencias);
-            }
-            catch (System.Exception ex)
-            {
-                return (false, ex.Message, null);
-            }
-        }
         public async Task<(bool IsSuccess, string Message, List<AgenciasDisponiblesDTO>? data)> GetUAgenciasConNumeros()
         {
             try
@@ -434,27 +350,6 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
-        public async Task<(bool IsSuccess, string Message, List<USupervisoresDTO>? data)> GetUSupervisores()
-        {
-            try
-            {
-                var supervisores = await _context.u_supervisores_dto
-                    .FromSqlRaw("EXEC SP_U_Supervisores")
-                    .ToListAsync();
-
-                if (supervisores == null || !supervisores.Any())
-                {
-                    return (false, "No se encontraron supervisores disponibles", null);
-                }
-
-                return (true, "Supervisores encontrados", supervisores);
-            }
-            catch (System.Exception ex)
-            {
-                return (false, ex.Message, null);
-            }
-        }
-
         public async Task<(bool IsSuccess, string Message, List<StringDTO>? data)> GetUTipoBase()
         {
             try
@@ -517,21 +412,5 @@ namespace ALFINapp.Infrastructure.Services
                 return (false, ex.Message, null);
             }
         }
-
-        public async Task<(bool IsSuccess, string Message, AsesoresOcultos? data)> GetCambio(string dni)
-        {
-            try
-            {
-                var asesorOculto = await _context.Asesores_Ocultos
-                    .FirstOrDefaultAsync( x => x.DniVicidial == dni);
-
-                return (true, "Cambio encontrado", asesorOculto);
-            }
-            catch (System.Exception ex)
-            {
-                return (false, ex.Message, null);
-            }
-        }
-        // Other DB services can be added here
     }
 }

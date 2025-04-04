@@ -1,5 +1,6 @@
 using ALFINapp.API.DTOs;
 using ALFINapp.API.Filters;
+using ALFINapp.Application.Interfaces.Asignacion;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,7 @@ namespace ALFINapp.API.Controllers
         private readonly MDbContext _context;
         private readonly DBServicesUsuarios _dBServicesUsuarios;
         private readonly DBServicesConsultasSupervisores _dBServicesConsultasSupervisores;
+        private readonly IUseCaseAsignarClientes _useCaseAsignarClientes;
 
         public AsesorController(
             DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores,
@@ -24,7 +26,8 @@ namespace ALFINapp.API.Controllers
             DBServicesEstadoAsesores dbServicesEstadoAsesores,
             MDbContext context,
             DBServicesUsuarios dBServicesUsuarios,
-            DBServicesConsultasSupervisores dBServicesConsultasSupervisores)
+            DBServicesConsultasSupervisores dBServicesConsultasSupervisores,
+            IUseCaseAsignarClientes useCaseAsignarClientes)
         {
             _dbServicesAsignacionesAsesores = dbServicesAsignacionesAsesores;
             _dbServicesGeneral = dbServicesGeneral;
@@ -32,6 +35,7 @@ namespace ALFINapp.API.Controllers
             _context = context;
             _dBServicesUsuarios = dBServicesUsuarios;
             _dBServicesConsultasSupervisores = dBServicesConsultasSupervisores;
+            _useCaseAsignarClientes = useCaseAsignarClientes;
         }
 
         [HttpPost]
@@ -362,88 +366,15 @@ namespace ALFINapp.API.Controllers
                     return Json(new { success = false, message = "No se pudo obtener el ID del supervisor actual recuerde Iniciar Sesion." });
                 }
 
-                string mensajesError = " ";
-                if (asignacionasesor == null)
-                {
-                    return Json(new { success = false, message = "No se han enviado datos para asignar asesores." });
-                }
+                var execute = await _useCaseAsignarClientes.exec(asignacionasesor, selectAsesorBase, idSupervisorActual.Value);
 
-                if (string.IsNullOrEmpty(selectAsesorBase))
+                if (!execute.success)
                 {
-                    return Json(new { success = false, message = "Debe seleccionar un Destino de la Base." });
-                }
-
-                // Comprobación adicional para verificar si todas las entradas tienen NumClientes igual a 0
-                if (asignacionasesor.All(a => a.NumClientes == 0))
-                {
-                    return Json(new { success = false, message = "No se ha llenado ninguna entrada. Los campos no pueden estar vacíos." });
-                }
-                int contadorClientesAsignados = 0;
-                var totalClientes = await _dBServicesConsultasSupervisores.ConsultaLeadsDelSupervisorDestino(idSupervisorActual.Value, selectAsesorBase);
-                if (!totalClientes.IsSuccess || totalClientes.Data == null)
-                {
-                    return Json(new { success = false, message = $"Ha ocurrido un error al obtener los clientes disponibles. {totalClientes.Message}" });
-                }
-                foreach (var asignacion in asignacionasesor)
-                {
-                    if (asignacion.NumClientes == 0)
-                    {
-                        continue;
-                    }
-
-                    int nClientes = asignacion.NumClientes;
-                    contadorClientesAsignados = contadorClientesAsignados + nClientes;
-                    var clientesDisponibles = totalClientes.Data;
-                    if (clientesDisponibles.Count < nClientes)
-                    {
-                        mensajesError = mensajesError + $"En la base '{selectAsesorBase}', solo hay {clientesDisponibles.Count} clientes disponibles para la asignación. La entrada ha sido obviada.";
-                        continue;
-                    }
-                    if (contadorClientesAsignados > clientesDisponibles.Count)
-                    {
-                        mensajesError = mensajesError + $"Ha ocurrido un error al asignar los clientes. Esta mandando mas entradas del total disponible";
-                        continue;
-                    }
-                }
-                if (mensajesError != " ")
-                {
-                    return Json(new { success = false, message = $"{mensajesError}" });
-                }
-                contadorClientesAsignados = 0;
-                foreach (var asignacion in asignacionasesor)
-                {
-                    Console.WriteLine($"IdVendedor: {asignacion.IdVendedor}, NumClientes: {asignacion.NumClientes}");
-                    if (asignacion.NumClientes == 0)
-                    {
-                        continue;
-                    }
-
-                    int nClientes = asignacion.NumClientes;
-                    contadorClientesAsignados = contadorClientesAsignados + nClientes;
-                    var getClientesDisponibles = await _dbServicesAsignacionesAsesores.ObtenerClientesDisponibles(idSupervisorActual.Value, selectAsesorBase, nClientes);
-                    if (!getClientesDisponibles.IsSuccess || getClientesDisponibles.data == null)
-                    {
-                        return Json(new { success = false, message = $"{getClientesDisponibles.message}" });
-                    }
-                    var clientesDisponibles = getClientesDisponibles.data;
-                    foreach (var cliente in clientesDisponibles)
-                    {
-                        cliente.IdUsuarioV = asignacion.IdVendedor;
-                        cliente.FechaAsignacionVendedor = DateTime.Now;
-                        var result = await _dbServicesAsignacionesAsesores.ActualizarClienteAsignado(cliente);
-                        if (!result.IsSuccess)
-                        {
-                            return Json(new { success = false, message = $"{result.message}" });
-                        }
-                    }
-                }
-                if (mensajesError != " ")
-                {
-                    return Json(new { success = false, message = $"{mensajesError}" });
+                    return Json(new { success = false, message = $"{execute.message}" });
                 }
                 else
                 {
-                    return Json(new { success = true, message = $"Se han modificado {contadorClientesAsignados} asignaciones correctamente." });
+                    return Json(new { success = true, message = $"{execute.message}" });
                 }
             }
             catch (System.Exception ex)

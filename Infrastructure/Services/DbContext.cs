@@ -16,9 +16,6 @@ public class MDbContext : DbContext
     public DbSet<ClientesTipificado> clientes_tipificados { get; set; }
     public DbSet<Tipificaciones> tipificaciones { get; set; }
     public DbSet<TelefonosAgregados> telefonos_agregados { get; set; }
-    public DbSet<SubirFeed> SUBIR_FEED { get; set; }
-    public DbSet<CargaManualCsv> carga_manual_csv { get; set; }
-    public DbSet<AsesoresSecundariosAsignacion> asesores_secundarios_asignacion { get; set; }
     public DbSet<DerivacionesAsesores> derivaciones_asesores { get; set; }
     public DbSet<BaseClientesBanco> base_clientes_banco { get; set; }
     public DbSet<CampanaGrupo> base_clientes_banco_campana_grupo { get; set; }
@@ -27,7 +24,6 @@ public class MDbContext : DbContext
     public DbSet<RangoDeuda> base_clientes_banco_rango_deuda { get; set; }
     public DbSet<UsuarioBanco> base_clientes_banco_usuario { get; set; }
     public DbSet<ClientesReferidos> clientes_referidos { get; set; }
-    public DbSet<FeedGReportes> feed_G_REPORTES { get; set; }
     public DbSet<VistaRutas> Vista_Rutas { get; set; }
     public DbSet<Roles> roles { get; set; }
     public DbSet<BancoUserV3> base_clientes_banco_user_v3 { get; set; }
@@ -41,19 +37,13 @@ public class MDbContext : DbContext
     //PROCEDIMIENTOS ALMACENADOS NO BORRAR
     public DbSet<StringDTO> string_dto { get; set; }
     public DbSet<NumerosEnterosDTO> numeros_enteros_dto { get; set; }
-    public DbSet<BoolDTO> bool_dto { get; set; }
     public DbSet<USupervisoresDTO> u_supervisores_dto { get; set; }
     public DbSet<AgenciasDisponiblesDTO> agencias_disponibles_dto { get; set; }
     public DbSet<AsignacionFiltrarBasesDTO> asignacion_filtrar_bases_dto { get; set; }
     public DbSet<VistasPorRolDTO> vistas_por_rol_dto { get; set; }
-    public DbSet<DerivacionesBSDIALDTO> derivaciones_bsdial_dto { get; set; }
     public DbSet<DetallesClienteDTO> detalles_clientes_dto { get; set; }
-    public DbSet<DetalleTipificarClienteDTO> detalle_tipificar_cliente_dto { get; set; }
     public DbSet<DetalleClienteA365TipificarDTO> detalle_cliente_a365_tipificar_dto { get; set; }
-    public DbSet<DerivacionesAsesoresDTO> derivaciones_asesores_dto { get; set; }
     public DbSet<InicioDetallesClientesFromAsesor> inicio_detalles_clientes_from_asesor { get; set; }
-    public DbSet<ReportsSupervisorDerivacionFecha> reportes_derivacion_fecha { get; set; }
-    public DbSet<ReportsSupervisorGestion> reportes_supervisor_gestion { get; set; }
     public DbSet<SupervisorGetInicioData> supervisor_get_inicio_data { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -55,15 +55,12 @@ namespace ALFINapp.Application.UseCases.Asignacion
 
                     int nClientes = asignacion.NumClientes;
                     contadorClientesAsignados = contadorClientesAsignados + nClientes;
-                    var clientesDisponibles = totalClientes
-                        .Where(c => c.IdUsuarioV == null && c.Destino == selectBase)
-                        .ToList();
-                    if (clientesDisponibles.Count < nClientes)
+                    if (totalClientes.Count < nClientes)
                     {
-                        mensajesError = mensajesError + $"En la base '{selectBase}', solo hay {clientesDisponibles.Count} clientes disponibles para la asignación. La entrada ha sido obviada para el usuario '{asignacion.IdVendedor}'.";
+                        mensajesError = mensajesError + $"En la base '{selectBase}', solo hay {totalClientes.Count} clientes disponibles para la asignación. La entrada ha sido obviada para el usuario '{asignacion.IdVendedor}'.";
                         continue;
                     }
-                    if (contadorClientesAsignados > clientesDisponibles.Count)
+                    if (contadorClientesAsignados > totalClientes.Count)
                     {
                         mensajesError = mensajesError + $"Ha ocurrido un error al asignar los clientes. Esta mandando mas entradas del total disponible";
                         continue;
@@ -86,6 +83,11 @@ namespace ALFINapp.Application.UseCases.Asignacion
                         .Where(c => c.IdUsuarioV == null && c.Destino == selectBase)
                         .Take(nClientes)
                         .ToList();
+                    totalClientes = totalClientes
+                        .Where(c => c.IdUsuarioV == null && c.Destino == selectBase)
+                        .Skip(nClientes)
+                        .ToList();
+
                     foreach (var cliente in clientesDisponibles)
                     {
                         cliente.IdUsuarioV = asignacion.IdVendedor;
@@ -97,7 +99,7 @@ namespace ALFINapp.Application.UseCases.Asignacion
                         mensajesError = mensajesError + $"No se pudo asignar al asesor {asignacion.IdVendedor}. Se saltará la asignación de este asesor. ";
                     }
                 }
-                if (mensajesError != " ")
+                if (mensajesError != "")
                 {
                     return (false, mensajesError);
                 }
