@@ -37,35 +37,6 @@
         <div class="spacing"></div>
     </div>
 
-    @*<div class="row mb-2">
-        <div class="row mb-2 align-items-center">
-            @if (Asesores is List<AsesoresDeUnClienteDTO> AsesoresAsignados && AsesoresAsignados.Any())
-            {
-                <div class="alert alert-info mt-2" role="alert">
-                    El cliente a buscar tiene los siguientes asesores asignados
-                </div>
-
-                <div class="col-md-6">
-                    <label for="asesor">Asesor:</label>
-                    <select class="form-control" id="asesor" required>
-                        <option value="">Seleccione un asesor</option>
-                        @foreach (var asesor in AsesoresAsignados)
-                        {
-                            <option value="@asesor.IDAsesorPrimario">@asesor.NombreAsesorPrimario</option>
-                        }
-                    </select>
-                </div>
-            }
-            else
-            {
-                <div class="alert alert-info mt-2" role="alert">
-                    El cliente a buscar no tiene asesores asignados
-                </div>
-            }
-
-        </div>
-    </div>*@
-
     <div id="detalle-campana">
         @if (Model.TraidoDe == "BDALFIN")
         {

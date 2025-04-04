@@ -31,8 +31,6 @@ public class MDbContext : DbContext
     public DbSet<Desembolsos> desembolsos { get; set; }
     public DbSet<PermisosRolesVistas> Permisos_Roles_Vistas { get; set; }
     public DbSet<Retiros> retiros { get; set; }
-    public DbSet<Correos> correos { get; set; }
-    public DbSet<DirectorioComercial> directorio_comercial { get; set; }
     public DbSet<AsesoresOcultos> Asesores_Ocultos { get; set; }
     //PROCEDIMIENTOS ALMACENADOS NO BORRAR
     public DbSet<StringDTO> string_dto { get; set; }
@@ -61,19 +59,7 @@ public class MDbContext : DbContext
             .HasNoKey()
             .ToView(null);
 
-        modelBuilder.Entity<FeedGReportes>()
-            .HasNoKey()
-            .ToView(null);
-
-        modelBuilder.Entity<DerivacionesBSDIALDTO>()
-            .HasNoKey()
-            .ToView(null);
-
         modelBuilder.Entity<DetallesClienteDTO>()
-            .HasNoKey()
-            .ToView(null);
-
-        modelBuilder.Entity<BoolDTO>()
             .HasNoKey()
             .ToView(null);
 
@@ -85,10 +71,6 @@ public class MDbContext : DbContext
             .HasNoKey()
             .ToView(null);
 
-        modelBuilder.Entity<DerivacionesAsesoresDTO>()
-            .HasNoKey()
-            .ToView(null);
-        
         modelBuilder.Entity<InicioDetallesClientesFromAsesor>()
             .HasNoKey()
             .ToView(null);

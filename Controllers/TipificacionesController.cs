@@ -1,11 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Services;
 using ALFINapp.API.Filters;
 using ALFINapp.API.DTOs;
@@ -21,7 +14,6 @@ namespace ALFINapp.API.Controllers
         private readonly DBServicesGeneral _dbServicesGeneral;
         private readonly DBServicesTipificaciones _dbServicesTipificaciones;
         private readonly DBServicesDerivacion _dBServicesDerivacion;
-        private readonly DBServicesConsultasAsesores _dbServicesAsesores;
         private readonly MDbContext _context;
         private readonly IUseCaseUploadTipificaciones _useCaseUploadTipificaciones;
         private readonly IUseCaseUploadDerivacion _useCaseUploadDerivacion;
@@ -29,7 +21,6 @@ namespace ALFINapp.API.Controllers
             DBServicesTipificaciones dbServicesTipificaciones,
             DBServicesDerivacion dBServicesDerivacion,
             MDbContext context,
-            DBServicesConsultasAsesores dbServicesAsesores,
             IUseCaseUploadTipificaciones useCaseUploadTipificaciones,
             IUseCaseUploadDerivacion useCaseUploadDerivacion)
         {
@@ -37,7 +28,6 @@ namespace ALFINapp.API.Controllers
             _dbServicesTipificaciones = dbServicesTipificaciones;
             _dBServicesDerivacion = dBServicesDerivacion;
             _context = context;
-            _dbServicesAsesores = dbServicesAsesores;
             _useCaseUploadTipificaciones = useCaseUploadTipificaciones;
             _useCaseUploadDerivacion = useCaseUploadDerivacion;
         }

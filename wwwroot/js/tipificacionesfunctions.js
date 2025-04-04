@@ -32,63 +32,6 @@ function actualizarIdTipificacion(contadorNumeros) {
     hiddenInput.value = ''; // Si no hay coincidencia, limpiar el ID
 }
 
-// Función para enviar los cambios de datos personales de Clientes traidos por el Asesor
-function guardarCambiosPorAsesor() {
-    const formData = {};
-    console.log('Guardando cambios...');
-
-    // Recolectar datos del formulario
-    document.querySelectorAll(".form-control-editable").forEach(input => {
-        if (!input.hasAttribute("readonly")) {
-            formData[input.id] = input.value;
-        }
-    });
-
-    // Recolectar datos de los campos ocultos
-
-    const idBase = document.getElementById("IDBASEUSUARIO").value;
-
-    console.log('Datos enviados:', { formData, idBase });
-
-    // Enviar datos como JSON
-    $.ajax({
-        url: '/Datos/ActualizarDatosProspecto',
-        type: 'POST',
-        data: {
-            formData: formData,
-            idBase: idBase,
-        },
-        success: function (result) {
-            if (result.success === true) {
-                Swal.fire({
-                    title: 'Cambios guardados',
-                    text: result.message,
-                    icon: 'success',
-                    confirmButtonText: 'Aceptar'
-                });
-            }
-            else {
-                Swal.fire({
-                    title: 'Error en la operación',
-                    text: result.message,
-                    icon: 'error',
-                    confirmButtonText: 'Aceptar'
-                });
-            }
-
-        },
-        error: function (xhr, status, error) {
-            Swal.fire({
-                title: 'Error al guardar los cambios',
-                text: 'Hubo un error al intentar guardar los cambios. Por favor, inténtalo nuevamente.',
-                icon: 'error',
-                confirmButtonText: 'Aceptar'
-            });
-            console.error('Error al guardar los cambios:', error);
-        }
-    });
-}
-
 function enviarFormularioDerivacion(
     idAgenciaComercial,
     idFechaDeVisita,
