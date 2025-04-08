@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.Infrastructure.Persistence.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -196,7 +192,7 @@ namespace ALFINapp.Infrastructure.Services
                     return (true, "El Usuario se ha encontrado en la Base de Datos de A365", dataclientebc);
                 }
 
-                var clientebcbList = await _context.detalles_clientes_dto.FromSqlRaw("SP_Consulta_Obtener_Cliente_Banco_Alfin @DNIBusqueda", new SqlParameter("@DNIBusqueda", DNI))
+                var clientebcbList = await _context.consulta_obtener_cliente.FromSqlRaw("SP_Consulta_Obtener_Cliente_Banco_Alfin @DNIBusqueda", new SqlParameter("@DNIBusqueda", DNI))
                                                                     .ToListAsync();
 
                 if (clientebcbList.Count == 0)

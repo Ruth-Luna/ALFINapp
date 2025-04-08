@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using ALFINapp.API.Filters;
+using ALFINapp.Application.Interfaces.Perfil;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -14,13 +15,21 @@ namespace ALFINapp.API.Controllers
     [RequireSession]
     public class PerfilController : Controller
     {
-        private readonly DBServicesGeneral _dbservicesgeneral; // Add this line
-        private readonly DBServicesUsuarios _dbservicesusuarios; // Add this line
+        private readonly DBServicesGeneral _dbservicesgeneral;
+        private readonly DBServicesUsuarios _dbservicesusuarios;
+        private readonly ILogger<PerfilController> _logger;
+        private readonly IUseCaseGetPerfil _useCaseGetPerfil;
 
-        public PerfilController(DBServicesGeneral dbservicesgeneral, DBServicesUsuarios dbservicesusuarios) // Add this parameter
+        public PerfilController(
+            DBServicesGeneral dbservicesgeneral, 
+            DBServicesUsuarios dbservicesusuarios, 
+            ILogger<PerfilController> logger,
+            IUseCaseGetPerfil useCaseGetPerfil)
         {
             _dbservicesgeneral = dbservicesgeneral;
-            _dbservicesusuarios = dbservicesusuarios; // Add this line
+            _dbservicesusuarios = dbservicesusuarios;
+            _useCaseGetPerfil = useCaseGetPerfil;
+            _logger = logger;
         }
         
         [HttpGet]
@@ -36,14 +45,14 @@ namespace ALFINapp.API.Controllers
                     TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
                     return RedirectToAction("Index", "Home");
                 }
-                var userInformation = await _dbservicesgeneral.GetUserInformation(usuarioId.Value);
-                if (userInformation.IsSuccess == false)
+                var userInformation = await _useCaseGetPerfil.exec(usuarioId.Value);
+                if (userInformation.success == false)
                 {
-                    TempData["MessageError"] = userInformation.Message;
+                    TempData["MessageError"] = userInformation.message;
                     return RedirectToAction("Redireccionar", "Error");
                 }
                 ViewData["RolUser"] = RolUser;
-                return View("Perfil", userInformation.Data);
+                return View("Perfil", userInformation.data);
             }
             catch (System.Exception ex)
             {

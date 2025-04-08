@@ -63,7 +63,7 @@ function TakeThisClient(DNIdatos, tipoBase) {
     });
 }
 
-function validarDNI() {
+async function validarDNI() {
     const dniInput = document.getElementById("dnicliente");
     const datosClienteExistente = document.getElementById("datos-cliente-existente");
 
@@ -88,71 +88,52 @@ function validarDNI() {
         });
         return;
     } else {
-        $.ajax({
-            url: `/Consulta/VerificarDNIenBDoBanco`,
-            type: 'GET',
-            data: { dni: dniValue },
-            success: function (data) {
-                if (data.existe === false && data.error === false) {
-                    Swal.fire({
-                        title: 'Error',
-                        text: data.message,
-                        icon: 'error',
-                        confirmButtonText: 'Aceptar'
-                    });
-                    return;
-                } else if (data.existe === false && data.error === true) {
-                    Swal.fire({
-                        title: 'Error',
-                        text: data.message,
-                        icon: 'error',
-                        confirmButtonText: 'Aceptar'
-                    });
-                    return;
-                } else {
-                    Swal.fire({
-                        title: 'Cliente encontrado',
-                        text: 'Se encontro una entrada del cliente en una de nuestras bases de datos conocidas.',
-                        icon: 'success',
-                        confirmButtonText: 'Aceptar'
-                    });
-                    datosClienteExistente.style.display = "block";
-                    datosClienteExistente.innerHTML = data; // Carga la vista parcial
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('Error:', error);
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Hubo un error al verificar el DNI.',
-                    icon: 'error',
-                    confirmButtonText: 'Aceptar'
-                });
-                return;
+        let loadingSwal = Swal.fire({
+            title: 'Enviando...',
+            text: 'Por favor, espera mientras se busque el Dni.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
             }
         });
+        const baseUrl = window.location.origin;
+        const url = `${baseUrl}/Consulta/VerificarDNIenBDoBanco?dni=${encodeURIComponent(dniValue)}`;
+        try {
+            const response = await fetch(url, {
+                method: 'GET'
+            });
+            const contentType = response.headers.get("content-type");
+            Swal.close();
+            if (contentType && contentType.includes("application/json")) {
+                const result = await response.json();
+                if (!result.success) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: result.message || 'Ocurrió un error desconocido',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+            } else {
+                Swal.fire({
+                    title: 'Cliente encontrado',
+                    text: 'Se encontro una entrada del cliente en una de nuestras bases de datos conocidas.',
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar'
+                });
+                datosClienteExistente.style.display = "block";
+                const html = await response.text();
+                datosClienteExistente.innerHTML = html; // Carga la vista parcial
+            }
+        } catch (error) {
+            Swal.close();
+            Swal.fire({
+                title: 'Error',
+                text: 'Hubo un error al verificar el DNI.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+            return;
+        }
     }
-}
-
-// Función para cargar los datos correspondientes según la fuente base seleccionada
-/*function cargarDatos(fuenteBase) {
-    // Seleccionar todas las secciones con ID que comiencen con 'detalle-campana_'
-    const todasLasSecciones = document.querySelectorAll("[id^='detalle-campana_']");
-
-    // Ocultar todas las secciones
-    todasLasSecciones.forEach(seccion => {
-        seccion.style.display = "none";
-    });
-
-    // Mostrar solo la sección correspondiente a 'fuenteBase'
-    const fuenteSeccion = document.getElementById('detalle-campana_' + fuenteBase);
-    if (fuenteSeccion) {
-        fuenteSeccion.style.display = "block";
-    } else {
-        console.warn(`No se encontró la sección con ID: detalle-campana_${fuenteBase}`);
-    }
-}*/
-
-function VistaDeriveEsteCliente(DNIdatos, tipoBase) {
-    
 }

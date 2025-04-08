@@ -1,8 +1,8 @@
 using System;
 
-namespace ALFINapp.Infrastructure.Persistence.Models
+namespace ALFINapp.Infrastructure.Persistence.Procedures
 {
-    public class DetallesClienteDTO
+    public class ConsultaObtenerCliente
     {
         public int? IdBase { get; set; }
         public string? Dni { get; set; }

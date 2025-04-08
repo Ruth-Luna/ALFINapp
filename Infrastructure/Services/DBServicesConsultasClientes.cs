@@ -1,4 +1,5 @@
 using ALFINapp.Infrastructure.Persistence.Models;
+using ALFINapp.Infrastructure.Persistence.Procedures;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +14,7 @@ namespace ALFINapp.Infrastructure.Services
             _context = context;
         }
 
-        public async Task<(bool IsSuccess, string message, DetallesClienteDTO? Data)> GetClientsFromDBandBank(string DNIBusqueda)
+        public async Task<(bool IsSuccess, string message, ConsultaObtenerCliente? Data)> GetClientsFromDBandBank(string DNIBusqueda)
         {
             try
             {
@@ -61,7 +62,7 @@ namespace ALFINapp.Infrastructure.Services
                                 return (false, "El cliente no tiene Detalles en la Base de Datos de A365, este DNI fue eliminado manualmente durante la consulta", null);
                             }
                             // Consulta a la base de datos del A365
-                            var clienteA365Encontrado = new DetallesClienteDTO
+                            var clienteA365Encontrado = new ConsultaObtenerCliente
                             {
                                 Dni = clienteExistenteBD.Dni,
                                 ColorFinal = detalleclienteExistenteBD.ColorFinal,
@@ -129,7 +130,7 @@ namespace ALFINapp.Infrastructure.Services
                     return (false, entradaA365.mensaje + "El cliente no fue enviado por el banco este mes a la base de datos interna de ALFIN. Al cliente no se le permitira ser tipificado " , null);
                 }
 
-                var clienteExistenteBank = _context.detalles_clientes_dto
+                var clienteExistenteBank = _context.consulta_obtener_cliente
                     .FromSqlRaw("EXEC SP_Consulta_Obtener_Cliente_Banco_Alfin @DNIBusqueda",
                         new SqlParameter("@DNIBusqueda", DNIBusqueda))
                     .AsEnumerable()
@@ -147,7 +148,7 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
-        public async Task<(bool IsSuccess, string message, DetallesClienteDTO? Data)> GetClienteByTelefono(string telefono)
+        public async Task<(bool IsSuccess, string message, ConsultaObtenerCliente? Data)> GetClienteByTelefono(string telefono)
         {
             try
             {
@@ -159,7 +160,7 @@ namespace ALFINapp.Infrastructure.Services
 
                 if (detalleclienteExistenteBD == null)
                 {
-                    var detalleclienteExistenteBDALFIN = _context.detalles_clientes_dto
+                    var detalleclienteExistenteBDALFIN = _context.consulta_obtener_cliente
                     .FromSqlRaw("EXEC SP_Consulta_Obtener_detalle_cliente_por_telefono_ALFIN_banco @Telefono",
                         new SqlParameter("@Telefono", telefono))
                     .AsEnumerable()
@@ -178,7 +179,7 @@ namespace ALFINapp.Infrastructure.Services
                     return (false, "El cliente no tiene Detalles en la Base de Datos de A365, este TELEFONO no se encuentra en ninguna de nuestras bases de datos conocidas", null);
                 }
 
-                var clienteA365Encontrado = new DetallesClienteDTO
+                var clienteA365Encontrado = new ConsultaObtenerCliente
                 {
                     Dni = baseClienteExistenteBD.Dni,
                     ColorFinal = detalleclienteExistenteBD.ColorFinal,

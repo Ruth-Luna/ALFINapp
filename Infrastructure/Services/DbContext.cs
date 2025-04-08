@@ -39,7 +39,7 @@ public class MDbContext : DbContext
     public DbSet<AgenciasDisponiblesDTO> agencias_disponibles_dto { get; set; }
     public DbSet<AsignacionFiltrarBasesDTO> asignacion_filtrar_bases_dto { get; set; }
     public DbSet<VistasPorRolDTO> vistas_por_rol_dto { get; set; }
-    public DbSet<DetallesClienteDTO> detalles_clientes_dto { get; set; }
+    public DbSet<ConsultaObtenerCliente> consulta_obtener_cliente { get; set; }
     public DbSet<DetalleClienteA365TipificarDTO> detalle_cliente_a365_tipificar_dto { get; set; }
     public DbSet<InicioDetallesClientesFromAsesor> inicio_detalles_clientes_from_asesor { get; set; }
     public DbSet<SupervisorGetInicioData> supervisor_get_inicio_data { get; set; }
@@ -59,7 +59,7 @@ public class MDbContext : DbContext
             .HasNoKey()
             .ToView(null);
 
-        modelBuilder.Entity<DetallesClienteDTO>()
+        modelBuilder.Entity<ConsultaObtenerCliente>()
             .HasNoKey()
             .ToView(null);
 

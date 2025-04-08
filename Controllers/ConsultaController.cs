@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using ALFINapp.API.Filters;
+using ALFINapp.Application.Interfaces.Consulta;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -17,12 +18,20 @@ namespace ALFINapp.API.Controllers
         private readonly DBServicesAsignacionesAsesores _dbServicesAsignacionesAsesores;
         private readonly DBServicesGeneral _dbServicesGeneral;
         private readonly DBServicesConsultasClientes _dbServicesConsultasClientes;
-
-        public ConsultaController(DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores, DBServicesGeneral dbServicesGeneral, DBServicesConsultasClientes dbServicesConsultasClientes)
+        private readonly ILogger<ConsultaController> _logger;
+        private readonly IUseCaseConsultaClienteDni _useCaseConsultaClienteDni;
+        public ConsultaController(
+            DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores, 
+            DBServicesGeneral dbServicesGeneral, 
+            DBServicesConsultasClientes dbServicesConsultasClientes,
+            ILogger<ConsultaController> logger,
+            IUseCaseConsultaClienteDni useCaseConsultaClienteDni)
         {
             _dbServicesAsignacionesAsesores = dbServicesAsignacionesAsesores;
             _dbServicesGeneral = dbServicesGeneral;
             _dbServicesConsultasClientes = dbServicesConsultasClientes;
+            _logger = logger;
+            _useCaseConsultaClienteDni = useCaseConsultaClienteDni;
         }
 
         [HttpGet]
@@ -73,24 +82,13 @@ namespace ALFINapp.API.Controllers
                 {
                     return Json(new { existe = false, error = true, message = "No se ha encontrado una sesion activa, vuelva a iniciar sesion. " });
                 }
-                var GetClienteExistente = await _dbServicesConsultasClientes.GetClientsFromDBandBank(dni);
-                if (GetClienteExistente.IsSuccess == false || GetClienteExistente.Data == null)
+                var exec = await _useCaseConsultaClienteDni.Execute(dni);
+                if (exec.IsSuccess == false || exec.Data == null)
                 {
-                    return Json(new { existe = false, error = true, message = GetClienteExistente.message });
+                    return Json(new { existe = false, error = true, message = exec.Message });
                 }
                 ViewData["RolUser"] = GetUserRol;
-                if (GetClienteExistente.Data.TraidoDe == "BDA365")
-                {
-                    return PartialView("_DatosConsulta", GetClienteExistente.Data);
-                }
-                if (GetClienteExistente.Data.TraidoDe == "BDALFIN")
-                {
-                    return PartialView("_DatosConsulta", GetClienteExistente.Data);
-                }
-                else
-                {
-                    return Json(new { existe = false, error = true, message = "El cliente fue conseguido, pero no se le permite ver los datos de este cliente. Por una politica interna del banco. " });
-                }
+                return PartialView("_DatosConsulta", exec.Data);
             }
             catch (Exception ex)
             {
