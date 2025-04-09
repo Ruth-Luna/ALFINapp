@@ -17,23 +17,6 @@ namespace ALFINapp.Infrastructure.Services
         {
             _context = context;
         }
-
-        //ACA ESTAN LAS INSERCIONES A LA DB
-        /// <summary>
-        /// Guarda la reasignación de un cliente a un usuario vendedor en la base de datos especificada.
-        /// </summary>
-        /// <param name="DNIBusqueda">El DNI del cliente a buscar.</param>
-        /// <param name="BaseTipo">El tipo de base de datos donde se realizará la búsqueda ("BDA365" o "BDALFIN").</param>
-        /// <param name="IdUsuarioVAsignar">El ID del usuario vendedor al que se asignará el cliente.</param>
-        /// <returns>Una tupla que indica si la operación fue exitosa y un mensaje descriptivo.</returns>
-        /// <remarks>
-        /// Este método realiza las siguientes operaciones:
-        /// - Busca el supervisor asignado al usuario vendedor.
-        /// - Dependiendo del tipo de base, busca al cliente en la base de datos correspondiente.
-        /// - Si el cliente ya está asignado al usuario vendedor en el mes y año actual, retorna un mensaje indicándolo.
-        /// - Si el cliente no está asignado, lo asigna al usuario vendedor y guarda los cambios en la base de datos.
-        /// </remarks>
-        /// <exception cref="Exception">Retorna el mensaje de la excepción en caso de error.</exception>
         public async Task<(bool IsSuccess, string message)> GuardarReAsignacionCliente(string DNIBusqueda, string BaseTipo, int IdUsuarioVAsignar)
         {
             try

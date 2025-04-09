@@ -1,9 +1,7 @@
-function TakeThisClient(DNIdatos, tipoBase) {
-    console.log("Función llamada", DNIdatos); // Verifica si se llama la función
+async function TakeThisClient(DNIdatos, tipoBase) {
+    console.log("Función llamada", DNIdatos);
     DNIdatos = String(DNIdatos).padStart(8, '0');
-    // Identificar la TipoBase activa
 
-    // Validar si se encontraron datos necesarios
     if (!DNIdatos || !tipoBase) {
         Swal.fire({
             title: 'Error al realizar la asignación',
@@ -14,53 +12,57 @@ function TakeThisClient(DNIdatos, tipoBase) {
         return;
     }
 
-    console.log(DNIdatos, tipoBase);
-
-    $.ajax({
-        url: '/Consulta/ReAsignarClienteAUsuario',
-        type: 'POST',
-        data: {
-            DniAReasignar: DNIdatos,
-            BaseTipo: tipoBase
-        },
-        headers: {
-            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() // Anti-CSRF
-        },
-        success: function (response) {
-            if (response.success) {
-                Swal.fire({
-                    title: 'Asignación completa',
-                    text: response.message,
-                    icon: 'success',
-                    confirmButtonText: 'Aceptar'
-                });
-                setTimeout(function () {
-                    location.reload();
-                }, 5000);
-            } else {
-                Swal.fire({
-                    title: 'Error al realizar la asignación',
-                    text: response.message,
-                    icon: 'error',
-                    confirmButtonText: 'Aceptar'
-                });
-            }
-        },
-        error: function (xhr, status, error) {
-            console.error('Error al enviar comentario:', error);
-            console.log('XHR:', xhr);
-            console.log('Status:', status);
-            console.log('Response Text:', xhr.responseText);
-            if (xhr.status !== 200) {
-                Swal.fire({
-                    title: 'Hay un error en la solicitud',
-                    text: error,
-                    icon: 'error',
-                    confirmButtonText: 'Aceptar'
-                });
-            }
+    let loadingSwal = Swal.fire({
+        title: 'Enviando...',
+        text: 'Por favor, espera mientras se procesa la solicitud.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
         }
     });
+    const baseUrl = window.location.origin;
+    const url = `${baseUrl}/Consulta/ReAsignarClienteAUsuario`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            },
+            body: JSON.stringify({
+                DniAReasignar: DNIdatos,
+                BaseTipo: tipoBase
+            })
+        });
+
+        const result = await response.json();
+        Swal.close();
+        if (!response.ok || result.success === false) {
+            Swal.fire({
+                title: 'Error al realizar la asignación',
+                text: result.message || 'Ocurrió un error desconocido',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+        } else {
+            Swal.fire({
+                title: 'Asignación completa',
+                text: result.message,
+                icon: 'success',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    } catch (error) {
+        Swal.close();
+        console.error('Error al enviar la solicitud:', error);
+        Swal.fire({
+            title: 'Error al realizar la asignación',
+            text: 'Hubo un error al procesar la solicitud.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+    }
 }
 
 async function validarDNI() {

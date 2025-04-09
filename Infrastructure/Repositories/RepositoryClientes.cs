@@ -40,7 +40,7 @@ namespace ALFINapp.Infrastructure.Repositories
                 var lastDay = firstDay.AddMonths(1).AddDays(-1);
                 var getAsignaciones = await _context.clientes_asignados
                     .AsNoTracking()
-                    .Where(x => x.FechaAsignacionSup >= firstDay 
+                    .Where(x => x.FechaAsignacionSup >= firstDay
                         && x.FechaAsignacionSup <= lastDay
                         && x.IdUsuarioV != null)
                     .ToListAsync();
@@ -69,7 +69,7 @@ namespace ALFINapp.Infrastructure.Repositories
                 var getAsig = await _context.clientes_asignados
                     .AsNoTracking()
                     .Where(x => x.PesoTipificacionMayor != null
-                        && x.FechaAsignacionSup >= firstDay 
+                        && x.FechaAsignacionSup >= firstDay
                         && x.FechaAsignacionSup <= lastDay)
                     .ToListAsync();
                 var asignaciones = new List<DetallesAsignacionesDTO>();
@@ -150,9 +150,9 @@ namespace ALFINapp.Infrastructure.Repositories
                     return (false, "El cliente no puede ser tipificado porque ya tiene un retiro en este mes", null);
                 }
                 var checkEntradaA365 = (from bc in _context.base_clientes
-                                    join db in _context.detalle_base on bc.IdBase equals db.IdBase
-                                    where bc.Dni == dni
-                                    select new { bc, db }).ToList().OrderByDescending(c => c.db.FechaCarga).FirstOrDefault();
+                                        join db in _context.detalle_base on bc.IdBase equals db.IdBase
+                                        where bc.Dni == dni
+                                        select new { bc, db }).ToList().OrderByDescending(c => c.db.FechaCarga).FirstOrDefault();
                 var entradaA365 = (entradaDB: false, mensaje: string.Empty);
                 if (checkEntradaA365 != null)
                 {
@@ -171,7 +171,7 @@ namespace ALFINapp.Infrastructure.Repositories
                                 return (false, "El cliente no tiene Detalles en la Base de Datos de A365. Este DNI no se encuentra en ninguna de nuestras bases de datos conocidas", null);
                             }
                             var clienteA365Encontrado = new Application.DTOs.DetallesClienteDTO(detalleclienteExistenteBD, clienteExistenteBD);
-                            return (true, "Entrada en la Base de Datos de A365 encontrado",clienteA365Encontrado);
+                            return (true, "Entrada en la Base de Datos de A365 encontrado", clienteA365Encontrado);
                         }
                         else
                         {
@@ -192,18 +192,18 @@ namespace ALFINapp.Infrastructure.Repositories
                 }
                 // Consulta a la base de datos del banco de clientes
                 var checkEntradaBankAlfin = await (from bcb in _context.base_clientes_banco
-                                          where bcb.Dni == dni
-                                          orderby bcb.FechaSubida descending
-                                          select bcb).FirstOrDefaultAsync();
+                                                   where bcb.Dni == dni
+                                                   orderby bcb.FechaSubida descending
+                                                   select bcb).FirstOrDefaultAsync();
 
                 if (checkEntradaBankAlfin == null || !checkEntradaBankAlfin.FechaSubida.HasValue)
                 {
-                    return (false, entradaA365.mensaje + "El cliente no tiene Detalles en la Base de Datos del Banco Alfin. Al cliente no se le permitira ser tipificado" , null);
+                    return (false, entradaA365.mensaje + "El cliente no tiene Detalles en la Base de Datos del Banco Alfin. Al cliente no se le permitira ser tipificado", null);
                 }
 
                 if (checkEntradaBankAlfin.FechaSubida.Value.Year != DateTime.Now.Year && checkEntradaBankAlfin.FechaSubida.Value.Month != DateTime.Now.Month)
                 {
-                    return (false, entradaA365.mensaje + "El cliente no fue enviado por el banco este mes a la base de datos interna de ALFIN. Al cliente no se le permitira ser tipificado " , null);
+                    return (false, entradaA365.mensaje + "El cliente no fue enviado por el banco este mes a la base de datos interna de ALFIN. Al cliente no se le permitira ser tipificado ", null);
                 }
 
                 var clienteExistenteBank = _context.consulta_obtener_cliente
@@ -223,6 +223,47 @@ namespace ALFINapp.Infrastructure.Repositories
             {
                 Console.WriteLine(ex.Message);
                 return (false, "Error al consultar el cliente", null);
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message, DetallesClienteDTO? Data)> getClientesFromTelefono(string telefono)
+        {
+            try
+            {
+                var detalleclienteExistenteBD = _context.detalle_base
+                    .FromSqlRaw("EXEC SP_Consulta_Obtener_detalle_cliente_por_telefono @Telefono",
+                        new SqlParameter("@Telefono", telefono))
+                    .AsEnumerable()
+                    .FirstOrDefault();
+
+                if (detalleclienteExistenteBD == null)
+                {
+                    var detalleclienteExistenteBDALFIN = _context.consulta_obtener_cliente
+                    .FromSqlRaw("EXEC SP_Consulta_Obtener_detalle_cliente_por_telefono_ALFIN_banco @Telefono",
+                        new SqlParameter("@Telefono", telefono))
+                    .AsEnumerable()
+                    .FirstOrDefault();
+                    if (detalleclienteExistenteBDALFIN == null)
+                    {
+                        return (false, "El cliente no tiene Detalles en la Base de Datos de A365, este TELEFONO no se encuentra en ninguna de nuestras bases de datos conocidas", null);
+                    }
+                    var detalleclienteDto = new Application.DTOs.DetallesClienteDTO(detalleclienteExistenteBDALFIN);
+                    return (true, "El cliente fue encontrado en la base de Datos de ALFIN", detalleclienteDto);
+                }
+
+                var baseClienteExistenteBD = await _context.base_clientes.FirstOrDefaultAsync(c => c.IdBase == detalleclienteExistenteBD.IdBase);
+
+                if (baseClienteExistenteBD == null)
+                {
+                    return (false, "El cliente no tiene Detalles en la Base de Datos de A365, este TELEFONO no se encuentra en ninguna de nuestras bases de datos conocidas", null);
+                }
+
+                var clienteA365EncontradoDto = new Application.DTOs.DetallesClienteDTO(detalleclienteExistenteBD, baseClienteExistenteBD);
+                return (true, "El cliente fue encontrado en la base de Datos de A365", clienteA365EncontradoDto);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message, null);
             }
         }
 

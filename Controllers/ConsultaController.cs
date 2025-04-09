@@ -20,18 +20,21 @@ namespace ALFINapp.API.Controllers
         private readonly DBServicesConsultasClientes _dbServicesConsultasClientes;
         private readonly ILogger<ConsultaController> _logger;
         private readonly IUseCaseConsultaClienteDni _useCaseConsultaClienteDni;
+        private readonly IUseCaseConsultaClienteTelefono _useCaseConsultaClienteTelefono;
         public ConsultaController(
             DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores, 
             DBServicesGeneral dbServicesGeneral, 
             DBServicesConsultasClientes dbServicesConsultasClientes,
             ILogger<ConsultaController> logger,
-            IUseCaseConsultaClienteDni useCaseConsultaClienteDni)
+            IUseCaseConsultaClienteDni useCaseConsultaClienteDni,
+            IUseCaseConsultaClienteTelefono useCaseConsultaClienteTelefono)
         {
             _dbServicesAsignacionesAsesores = dbServicesAsignacionesAsesores;
             _dbServicesGeneral = dbServicesGeneral;
             _dbServicesConsultasClientes = dbServicesConsultasClientes;
             _logger = logger;
             _useCaseConsultaClienteDni = useCaseConsultaClienteDni;
+            _useCaseConsultaClienteTelefono = useCaseConsultaClienteTelefono;
         }
 
         [HttpGet]
@@ -107,13 +110,13 @@ namespace ALFINapp.API.Controllers
                     return Json(new { existe = false, error = true, message = "No ha iniciado sesion" });
                 }
 
-                var getCliente = await _dbServicesConsultasClientes.GetClienteByTelefono(telefono);
-                if (getCliente.IsSuccess == false || getCliente.Data == null)
+                var execute = await _useCaseConsultaClienteTelefono.exec(telefono);
+                if (execute.IsSuccess == false || execute.Data == null)
                 {
-                    return Json(new { success = false, message = $"{getCliente.message}" });
+                    return Json(new { existe = false, error = true, message = execute.Message });
                 }
                 ViewData["RolUser"] = GetUserRol;
-                return PartialView("_DatosConsulta", getCliente.Data);
+                return PartialView("_DatosConsulta", execute.Data);
             }
             catch (System.Exception ex)
             {
