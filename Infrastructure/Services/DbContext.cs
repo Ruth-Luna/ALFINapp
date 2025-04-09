@@ -43,6 +43,7 @@ public class MDbContext : DbContext
     public DbSet<DetalleClienteA365TipificarDTO> detalle_cliente_a365_tipificar_dto { get; set; }
     public DbSet<InicioDetallesClientesFromAsesor> inicio_detalles_clientes_from_asesor { get; set; }
     public DbSet<SupervisorGetInicioData> supervisor_get_inicio_data { get; set; }
+    public DbSet<ReportsGLineasGestionVsDerivacionDiaria> reports_g_lineas_gestion_vs_derivacion_diaria { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -84,6 +85,10 @@ public class MDbContext : DbContext
             .ToView(null);
         
         modelBuilder.Entity<SupervisorGetInicioData>()
+            .HasNoKey()
+            .ToView(null);
+        
+        modelBuilder.Entity<ReportsGLineasGestionVsDerivacionDiaria>()
             .HasNoKey()
             .ToView(null);
     }

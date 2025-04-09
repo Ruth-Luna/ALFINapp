@@ -10,6 +10,7 @@ namespace ALFINapp.API.Models
         public List<ViewUsuario>? Asesores { get; set; }
         public List<ViewUsuario>? Supervisores { get; set; }
         public List<ViewReporteDerivaciones>? Derivaciones { get; set; }
+        public List<ViewLineaGestionVsDerivacion>? lineaGestionVsDerivacion { get; set; }
         public int? TotalDerivaciones { get; set; }
         public int? TotalDerivacionesDesembolsadas { get; set; }
         public int? TotalDerivacionesNoDesembolsadas { get; set; }
@@ -31,4 +32,10 @@ namespace ALFINapp.API.Models
         public int Contador { get; set; }
     }
     
+    public class ViewLineaGestionVsDerivacion
+    {
+        public DateOnly FECHA { get; set; }
+        public int GESTIONES { get; set; }
+        public int DERIVACIONES { get; set; }
+    }
 }

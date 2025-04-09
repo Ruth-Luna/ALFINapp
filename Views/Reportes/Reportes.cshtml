@@ -26,7 +26,17 @@
                 <div class="row">
                     <div class="col-md-3">
                         <div class="card-header">
-                            <h5>Progreso General</h5>
+                            <h5>Asignaciones Total Y Tipificados</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-progreso-total-y-tipificados">
+                                @*Aca se cargara las graficas del Asesor*@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card-header">
+                            <h5>Derivaciones Vs Desembolsos</h5>
                         </div>
                         <div class="card-body">
                             <div id="chart-progreso-general">
@@ -34,7 +44,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-9" id="div-derivaciones" style="display: none;">
+                    <div class="col-md-6" id="div-derivaciones" style="display: none;">
                         <div class="card-header">
                             <h5>Derivaciones Generales</h5>
                         </div>
@@ -56,9 +66,9 @@
             @if (rol == 1 || rol == 4)
             {
                 <div class="card-header">
-                    <div class="alert alert-info">
+                    <h5>
                         Seleccione un Asesor o Supervisor para ver sus reportes
-                    </div>
+                    </h5>
                 </div>
                 <div class="card-body">
                     <div class="row mt-3">

@@ -65,10 +65,6 @@ namespace ALFINapp.Application.UseCases.Reports
                     reporteDerivaciones.Add(reporteDerivacion);
                 }
 
-                var CreateNumDerivacionesXFecha = reporteDerivaciones
-                    .GroupBy(x => x.derivacion.FechaDerivacion.ToString("%d/%M/%y"))
-                    .Select(x => new DerivacionesFecha {Fecha = x.Key, Contador = x.Count()})
-                    .ToList();
                 var CreateNumDesembolsosXFecha = reporteDerivaciones
                     .GroupBy(x => x.desembolsos.FechaDesembolsos!=null
                         ? x.desembolsos.FechaDesembolsos.Value.ToString("%d/%M/%y")
@@ -76,7 +72,6 @@ namespace ALFINapp.Application.UseCases.Reports
                     .Select(x => new DerivacionesFecha {Fecha = x.Key, Contador = x.Count()})
                     .ToList();
                 reporteGeneral.Derivaciones = reporteDerivaciones;
-                reporteGeneral.NumDerivacionesXFecha = CreateNumDerivacionesXFecha;
                 reporteGeneral.NumDesembolsosXFecha = CreateNumDesembolsosXFecha;
                 reporteGeneral.TotalDerivaciones = reporteDerivaciones.Count;
                 reporteGeneral.TotalDerivacionesDesembolsadas = reporteDerivaciones.Count(x => x.desembolsos.DniDesembolso != null);
@@ -94,7 +89,6 @@ namespace ALFINapp.Application.UseCases.Reports
                     usuarioView = item.ToView();
                     usuariosViews.Add(usuarioView);
                 }
-
                 var supervisores = await _repositoryUsuarios.GetAllSupervisores();
                 var supervisoresViews = new List<ViewUsuario>();
 
@@ -104,9 +98,12 @@ namespace ALFINapp.Application.UseCases.Reports
                     supervisorView = item.ToView();
                     supervisoresViews.Add(supervisorView);
                 }
-
                 reporteGeneral.Supervisores = supervisoresViews;
                 reporteGeneral.Asesores = usuariosViews;
+                var lineasGestionDerivacion = await _repositoryReports.LineaGestionVsDerivacionDiaria();
+                var viewLineasGestionDerivacion = new List<ViewLineaGestionVsDerivacion>();
+                reporteGeneral.lineaGestionVsDerivacion = lineasGestionDerivacion.toViewLineaGestionVsDerivacion();
+                
                 return (true, "Reportes obtenidos correctamente", reporteGeneral);
             }
             catch (System.Exception ex)

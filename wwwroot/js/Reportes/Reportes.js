@@ -3,20 +3,24 @@ document.addEventListener('DOMContentLoaded', function () {
     var reportesElement = document.getElementById("reportes-data");
     reportesData = JSON.parse(reportesElement.getAttribute("data-json"));
     cargarDerivacionesGenerales();
+    cargarProgresoAsignacion();
     cargarProgreso();
 });
 
 function cargarDerivacionesGenerales() {
     var derivaciones = document.getElementById('div-derivaciones');
     derivaciones.style.display = 'block';
-    var derivacionesFecha = reportesData["numDerivacionesXFecha"];
-    
+    var lineaGestionVsDerivacion = reportesData["lineaGestionVsDerivacion"];
+    console.log(reportesData);
+
     var fechas = [];
-    var contador = [];
-    
-    derivacionesFecha.forEach(item => {
+    var contadorGestion = [];
+    var contadorDerivacion = [];
+
+    lineaGestionVsDerivacion.forEach(item => {
         fechas.push(item["fecha"]);
-        contador.push(item["contador"]);
+        contadorGestion.push(item["gestiones"]);
+        contadorDerivacion.push(item["derivaciones"]);
     });
 
     var options = {
@@ -26,10 +30,9 @@ function cargarDerivacionesGenerales() {
             stacked: false
         },
         dataLabels: {
-            enabled: true, // Activamos los dataLabels
+            enabled: true,
             style: {
-                fontSize: '12px',
-                colors: ["#FF1654"]
+                fontSize: '12px'
             },
             background: {
                 enabled: true,
@@ -38,15 +41,19 @@ function cargarDerivacionesGenerales() {
                 padding: 4
             }
         },
-        colors: ["#FF1654"],
+        colors: ["#FF1654", "#247BA0"], // Derivaciones - rojo, Gestiones - azul
         series: [
             {
-                name: "Derivaciones Por Fecha",
-                data: contador
+                name: "Derivaciones por Fecha",
+                data: contadorDerivacion
+            },
+            {
+                name: "Gestiones por Fecha",
+                data: contadorGestion
             }
         ],
         stroke: {
-            width: [4]
+            width: [4, 4]
         },
         plotOptions: {
             bar: {
@@ -58,6 +65,7 @@ function cargarDerivacionesGenerales() {
         },
         yaxis: [
             {
+                seriesName: "Derivaciones por Fecha",
                 axisTicks: {
                     show: true
                 },
@@ -71,18 +79,40 @@ function cargarDerivacionesGenerales() {
                     }
                 },
                 title: {
-                    text: "Num Tipificaciones",
+                    text: "Num. Derivaciones",
                     style: {
                         color: "#FF1654"
+                    }
+                }
+            },
+            {
+                opposite: true,
+                seriesName: "Gestiones por Fecha",
+                axisTicks: {
+                    show: true
+                },
+                axisBorder: {
+                    show: true,
+                    color: "#247BA0"
+                },
+                labels: {
+                    style: {
+                        colors: "#247BA0"
+                    }
+                },
+                title: {
+                    text: "Num. Gestiones",
+                    style: {
+                        color: "#247BA0"
                     }
                 }
             }
         ],
         tooltip: {
-            shared: false,
-            intersect: true,
+            shared: true,
+            intersect: false,
             x: {
-                show: false
+                show: true
             }
         },
         legend: {
@@ -158,5 +188,71 @@ function cargarProgreso() {
         }
     };
     var chart = new ApexCharts(document.querySelector("#chart-progreso-general"), options);
+    chart.render();
+}
+
+function cargarProgresoAsignacion() {
+    var totalDerivaciones = reportesData["totalDerivaciones"];
+    var totalDesembolsadas = reportesData["totalDerivacionesDesembolsadas"];
+    var porcentaje = Math.floor((totalDesembolsadas / totalDerivaciones) * 100);
+
+    var options = {
+        chart: {
+            type: "donut",
+            height: 350 // Aumentamos el tamaño
+        },
+        series: [totalDesembolsadas, totalDerivaciones - totalDesembolsadas], // Parte desembolsada vs resto
+        labels: ["Desembolsadas", "Pendientes"],
+        colors: ["#008FFB", "#9e9e9e"], // Azul para desembolsadas, gris para fondo
+        plotOptions: {
+            pie: {
+                donut: {
+                    size: "65%", // Hace el círculo más grande
+                    labels: {
+                        show: true,
+                        name: {
+                            show: true,
+                            fontSize: "16px",
+                            color: "#888",
+                            offsetY: -10,
+                            formatter: function () {
+                                return "Desembolsos\nvs\nDerivaciones"; // Texto con saltos de línea
+                            }
+                        },
+                        value: {
+                            show: true,
+                            fontSize: "30px",
+                            fontWeight: "bold",
+                            color: "#111",
+                            formatter: function (val) {
+                                return `${porcentaje}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        stroke: {
+            show: true,
+            width: 2,
+            colors: ["#fff"]
+        },
+        tooltip: {
+            enabled: true,
+            y: {
+                formatter: function (val, { seriesIndex }) {
+                    if (seriesIndex === 0) {
+                        return `${totalDesembolsadas} de ${totalDerivaciones} desembolsadas`;
+                    } else {
+                        return `${totalDerivaciones - totalDesembolsadas} pendientes`;
+                    }
+                }
+            }
+        },
+        legend: {
+            position: "bottom"
+        }
+    };
+    var chart = new ApexCharts(document.querySelector("#chart-progreso-total-y-tipificados"), options);
     chart.render();
 }

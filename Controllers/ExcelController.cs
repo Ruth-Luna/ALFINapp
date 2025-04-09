@@ -1,21 +1,6 @@
-using System.Security;
-using System.Text.RegularExpressions;
-using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.API.Filters;
-using ALFINapp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using OfficeOpenXml;
-using CsvHelper;
-using CsvHelper.Configuration;
-using Microsoft.AspNetCore.Http;
-using System.Globalization; // Necesaria para CultureInfo
-using System.IO;           // Necesaria para StreamReader
-using System.Linq;         // Necesaria para operaciones como Except
-using System.Collections.Generic;
-using System.Security.AccessControl; // Necesaria para List<>
 
 namespace ALFINapp.API.Controllers
 {
@@ -49,7 +34,6 @@ namespace ALFINapp.API.Controllers
                     TempData["Message"] = "Error en la autenticación. Intente iniciar sesión nuevamente.";
                     return RedirectToAction("Index", "Home");
                 }
-                // Obtén los datos necesarios (simplificado para mostrar la idea)
                 if (fechaFin.HasValue)
                 {
                     fechaFin = fechaFin.Value.Date.AddHours(23).AddMinutes(59).AddSeconds(59);
@@ -59,7 +43,6 @@ namespace ALFINapp.API.Controllers
                     fechaInicio = fechaInicio.Value.Date.AddMinutes(-1); // Reducir un minuto
                 }
 
-                /*El filtro base aun no sera usado*/
                 DateTime fechaInicioMes = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
                 DateTime fechaFinMes = fechaInicioMes.AddMonths(1).AddDays(-1).Date.AddHours(23).AddMinutes(59).AddSeconds(59);
 

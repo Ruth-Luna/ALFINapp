@@ -341,5 +341,29 @@ namespace ALFINapp.Infrastructure.Repositories
                 return new DetallesReportesDerivacionesDTO();
             }
         }
+
+        public async Task<DetallesReportesLineaGestionVsDerivacionDTO> LineaGestionVsDerivacionDiaria()
+        {
+            try
+            {
+                var getData = await _context.reports_g_lineas_gestion_vs_derivacion_diaria
+                    .FromSqlRaw("EXEC SP_REPORTES_GLINEAS_GESTION_VS_DERIVACION_DIARIA")
+                    .ToListAsync();
+
+                var convertDto = new DetallesReportesLineaGestionVsDerivacionDTO(getData);
+                if (getData == null || getData.Count == 0)
+                {
+                    Console.WriteLine("No se encontraron datos para la consulta.");
+                    return new DetallesReportesLineaGestionVsDerivacionDTO();
+                }
+                
+                return convertDto;
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new DetallesReportesLineaGestionVsDerivacionDTO();
+            }
+        }
     }
 }
