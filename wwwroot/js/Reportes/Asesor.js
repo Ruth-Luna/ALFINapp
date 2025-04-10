@@ -129,6 +129,7 @@ function cargarGestionInforme() {
 
 function cargarReporteGeneralAsesor() {
     var reportesAsesor = document.getElementById('reportes-asesor');
+    console.log(reportesAsesor);
     var reportesData = JSON.parse(reportesAsesor.getAttribute("data-json"));
     
     var options = {

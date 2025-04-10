@@ -1,0 +1,31 @@
+@model ALFINapp.API.Models.ViewReportesFecha
+@{
+}
+
+<div class="card">
+    <div class="card-header">
+        <h4>Asignaciones</h4>
+    </div>
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card-header">
+                    <h5>Asignaciones Total Y Tipificados</h5>
+                </div>
+                <div class="card-body">
+                    <div id="div-asignaciones-total-tip-general-por-fechas"></div>
+                </div>                    
+            </div>
+            <div class="col-md-6">
+                <div class="card-header">
+                    <h5>Derivaciones Vs Desembolsos</h5>
+                </div>
+                <div class="card-body">
+                    <div id="div-asignaciones-der-des-general-por-fechas"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="reportes-por-fecha" data-json='@Html.Raw(Json.Serialize(Model))'></div>

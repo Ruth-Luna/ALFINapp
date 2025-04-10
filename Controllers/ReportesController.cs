@@ -19,18 +19,21 @@ namespace ALFINapp.API.Controllers
         private readonly IUseCaseGetReportesSupervisor _useCaseGetReportesSupervisor;
         private readonly IUseCaseGetReportesGeneralSupervisor _useCaseGetReportesGeneralSupervisor;
         private readonly IUseCaseGetReportesGeneralAsesor _useCaseGetReportesGeneralAsesor;
+        private readonly IUseCaseGetReportesFechas _useCaseGetReportesFechas;
         public ReportesController(
             IUseCaseGetReportesAdministrador useCaseGetReportesAdministrador,
             IUseCaseGetReportesAsesor useCaseGetReportesAsesor,
             IUseCaseGetReportesSupervisor useCaseGetReportesSupervisor,
             IUseCaseGetReportesGeneralSupervisor useCaseGetReportesGeneralSupervisor,
-            IUseCaseGetReportesGeneralAsesor useCaseGetReportesGeneralAsesor)
+            IUseCaseGetReportesGeneralAsesor useCaseGetReportesGeneralAsesor,
+            IUseCaseGetReportesFechas useCaseGetReportesFechas)
         {
             _useCaseGetReportesAdministrador = useCaseGetReportesAdministrador;
             _useCaseGetReportesAsesor = useCaseGetReportesAsesor;
             _useCaseGetReportesSupervisor = useCaseGetReportesSupervisor;
             _useCaseGetReportesGeneralSupervisor = useCaseGetReportesGeneralSupervisor;
             _useCaseGetReportesGeneralAsesor = useCaseGetReportesGeneralAsesor;
+            _useCaseGetReportesFechas = useCaseGetReportesFechas;
         }
         [HttpGet]
         [PermissionAuthorization("Reportes", "Reportes")]
@@ -116,6 +119,27 @@ namespace ALFINapp.API.Controllers
                 return Json(new { success = false, message = reportesAdministrador.Message });
             }
             return PartialView("_ReportesSupervisor", reportesAdministrador.Data);
+        }
+        [HttpGet]
+        public async Task<IActionResult> ReportesFechas(DateTime fecha)
+        {
+            var rol = HttpContext.Session.GetInt32("RolUser");
+            if (rol == null)
+            {
+                return Json(new { success = false, message = "No se ha iniciado sesión" });
+            }
+            var idUsuario = HttpContext.Session.GetInt32("UsuarioId");
+            if (idUsuario == null)
+            {
+                return Json(new { success = false, message = "Id de usuario no valido." });
+            }
+            var fechaString = fecha.ToString("yyyy-MM-dd");
+            var reportesFechas = await _useCaseGetReportesFechas.Execute(fechaString, idUsuario.Value, rol.Value);
+            if (!reportesFechas.IsSuccess)
+            {
+                return Json(new { success = false, message = reportesFechas.Message });
+            }
+            return PartialView("_ReportesFechas", reportesFechas.Data);
         }
     }
 }

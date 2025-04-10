@@ -11,7 +11,6 @@ function cargarDerivacionesGenerales() {
     var derivaciones = document.getElementById('div-derivaciones');
     derivaciones.style.display = 'block';
     var lineaGestionVsDerivacion = reportesData["lineaGestionVsDerivacion"];
-    console.log(reportesData);
 
     var fechas = [];
     var contadorGestion = [];
@@ -126,8 +125,9 @@ function cargarDerivacionesGenerales() {
 }
 
 function cargarProgreso() {
-    var totalDerivaciones = reportesData["totalDerivaciones"];
-    var totalDesembolsadas = reportesData["totalDerivacionesDesembolsadas"];
+    var progresoGral = reportesData["progresoGeneral"];
+    var totalDerivaciones = progresoGral["totaL_DERIVADOS"];
+    var totalDesembolsadas = progresoGral["totaL_DESEMBOLSADOS"];
     var porcentaje = Math.floor((totalDesembolsadas / totalDerivaciones) * 100);
 
     var options = {
@@ -136,7 +136,7 @@ function cargarProgreso() {
             height: 350 // Aumentamos el tamaño
         },
         series: [totalDesembolsadas, totalDerivaciones - totalDesembolsadas], // Parte desembolsada vs resto
-        labels: ["Desembolsadas", "Pendientes"],
+        labels: ["Desembolsados", "Derivados"],
         colors: ["#008FFB", "#9e9e9e"], // Azul para desembolsadas, gris para fondo
         plotOptions: {
             pie: {
@@ -178,7 +178,7 @@ function cargarProgreso() {
                     if (seriesIndex === 0) {
                         return `${totalDesembolsadas} de ${totalDerivaciones} desembolsadas`;
                     } else {
-                        return `${totalDerivaciones - totalDesembolsadas} pendientes`;
+                        return `${totalDerivaciones - totalDesembolsadas} derivaciones no desembolsadas`;
                     }
                 }
             }
@@ -192,18 +192,19 @@ function cargarProgreso() {
 }
 
 function cargarProgresoAsignacion() {
-    var totalDerivaciones = reportesData["totalDerivaciones"];
-    var totalDesembolsadas = reportesData["totalDerivacionesDesembolsadas"];
-    var porcentaje = Math.floor((totalDesembolsadas / totalDerivaciones) * 100);
+    var progresoGeneral = reportesData["progresoGeneral"];
+    var totalAsignaciones = progresoGeneral["totaL_ASIGNADOS"];
+    var totalGestionados = progresoGeneral["totaL_GESTIONADOS"];
+    var porcentaje = Math.floor((totalGestionados / totalAsignaciones) * 100);
 
     var options = {
         chart: {
             type: "donut",
-            height: 350 // Aumentamos el tamaño
+            height: 350
         },
-        series: [totalDesembolsadas, totalDerivaciones - totalDesembolsadas], // Parte desembolsada vs resto
-        labels: ["Desembolsadas", "Pendientes"],
-        colors: ["#008FFB", "#9e9e9e"], // Azul para desembolsadas, gris para fondo
+        series: [totalGestionados, totalAsignaciones - totalGestionados],
+        labels: ["Gestionados", "Asignados"],
+        colors: ["#008FFB", "#9e9e9e"],
         plotOptions: {
             pie: {
                 donut: {
@@ -216,7 +217,7 @@ function cargarProgresoAsignacion() {
                             color: "#888",
                             offsetY: -10,
                             formatter: function () {
-                                return "Desembolsos\nvs\nDerivaciones"; // Texto con saltos de línea
+                                return "Gestionados\nvs\nAsignaciones"; // Texto con saltos de línea
                             }
                         },
                         value: {
@@ -242,9 +243,9 @@ function cargarProgresoAsignacion() {
             y: {
                 formatter: function (val, { seriesIndex }) {
                     if (seriesIndex === 0) {
-                        return `${totalDesembolsadas} de ${totalDerivaciones} desembolsadas`;
+                        return `${totalGestionados} de ${totalAsignaciones} gestionados`;
                     } else {
-                        return `${totalDerivaciones - totalDesembolsadas} pendientes`;
+                        return `${totalAsignaciones - totalGestionados} pendientes por asignar`;
                     }
                 }
             }
@@ -256,3 +257,4 @@ function cargarProgresoAsignacion() {
     var chart = new ApexCharts(document.querySelector("#chart-progreso-total-y-tipificados"), options);
     chart.render();
 }
+

@@ -104,3 +104,57 @@ async function cargarReporteSupervisor(idUsuario) {
         });
     }
 }
+
+async function cargarReportePorFechas(fecha) {
+    if (fecha === undefined || fecha === null || fecha === '') {
+        return;
+    }
+    var fechaElement = document.getElementById('div-reporteria-fechas');
+    fechaElement.innerHTML = '';
+    fechaElement.style.display = 'none';
+    const baseUrl = window.location.origin;
+    const fechaToSend = new Date(fecha);
+    const formattedDate = fechaToSend.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    fecha = formattedDate;
+    const url = `${baseUrl}/Reportes/ReportesFechas?fecha=${encodeURIComponent(fecha)}`;
+    let loadingSwal = Swal.fire({
+        title: 'Enviando...',
+        text: 'Por favor, espera mientras se procesa la solicitud de reporteria.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    try {
+        const response = await fetch(url, {
+            method: 'GET'
+        });
+        const contentType = response.headers.get("content-type");
+        Swal.close();
+        if (contentType && contentType.includes("application/json")) {
+            const result = await response.json();
+            if (!result.success) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al obtener el reporte',
+                    text: result.message || 'Ocurrió un error desconocido',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+        } else {
+            const html = await response.text();
+            fechaElement.innerHTML = html;
+            fechaElement.style.display = 'block';
+            gpiederivacionesFecha();
+            gpieasignacionFecha();
+        }
+    } catch (error) {
+        Swal.close();
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo cargar el reporte',
+            confirmButtonText: 'Aceptar'
+        });
+    }
+}

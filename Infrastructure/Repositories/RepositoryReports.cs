@@ -242,14 +242,14 @@ namespace ALFINapp.Infrastructure.Repositories
                         && x.FechaAsignacionSup.HasValue
                         && x.FechaAsignacionSup.Value.Year == year
                         && x.FechaAsignacionSup.Value.Month == month)
-                    .Select(x => new ClientesAsignado {IdCliente = x.IdCliente, IdUsuarioV = x.IdUsuarioV} )
+                    .Select(x => new ClientesAsignado { IdCliente = x.IdCliente, IdUsuarioV = x.IdUsuarioV })
                     .ToListAsync();
 
                 var getAsesores = await _context
                     .usuarios
                     .Where(x => x.IDUSUARIOSUP == idUsuario)
                     .ToListAsync();
-                
+
                 var getGestionDetalles = await _context.GESTION_DETALLE.FromSqlRaw(
                     "EXEC SP_Reportes_Supervisor_gestion @DniSupervisor",
                     new SqlParameter("@DniSupervisor", usuario.Dni))
@@ -356,13 +356,119 @@ namespace ALFINapp.Infrastructure.Repositories
                     Console.WriteLine("No se encontraron datos para la consulta.");
                     return new DetallesReportesLineaGestionVsDerivacionDTO();
                 }
-                
+
                 return convertDto;
             }
             catch (System.Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return new DetallesReportesLineaGestionVsDerivacionDTO();
+            }
+        }
+
+        public async Task<DetallesReportesGpieDTO> GetReportesGpieGestionadosVsAsignados()
+        {
+            try
+            {
+                var getData = await _context.reports_g_pie_gestion_asignados
+                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_PORCENTAJE_GESTIONADOS_SOBRE_ASIGNADOS")
+                    .ToListAsync();
+                if (getData == null || getData.Count == 0)
+                {
+                    Console.WriteLine("No se encontraron datos para la consulta.");
+                    return new DetallesReportesGpieDTO();
+                }
+                var convertDto = new DetallesReportesGpieDTO(getData.FirstOrDefault(), null);
+                return convertDto;
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new DetallesReportesGpieDTO();
+            }
+        }
+
+        public async Task<DetallesReportesGpieDTO> GetReportesGpieDerivadosVsDesembolsados()
+        {
+            try
+            {
+                var getData = await _context.reports_g_pie_derivados_desembolsados
+                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_PORCENTAJE_GESTIONADO_DERIVADO_DESEMBOLSADO")
+                    .ToListAsync();
+                if (getData == null || getData.Count == 0)
+                {
+                    Console.WriteLine("No se encontraron datos para la consulta.");
+                    return new DetallesReportesGpieDTO();
+                }
+                var convertDto = new DetallesReportesGpieDTO(null, getData.FirstOrDefault());
+                return convertDto;
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new DetallesReportesGpieDTO();
+            }
+        }
+
+        public async Task<DetallesReportesGpieDTO> GetReportesGpieGeneral()
+        {
+            try
+            {
+                var getData = await _context.reports_g_pie_derivados_desembolsados
+                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_PORCENTAJE_GESTIONADO_DERIVADO_DESEMBOLSADO")
+                    .ToListAsync();
+                var getData2 = await _context.reports_g_pie_gestion_asignados
+                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_PORCENTAJE_GESTIONADOS_SOBRE_ASIGNADOS")
+                    .ToListAsync();
+                if (getData == null || getData.Count == 0)
+                {
+                    Console.WriteLine("No se encontraron datos para la consulta.");
+                    return new DetallesReportesGpieDTO();
+                }
+                if (getData2 == null || getData2.Count == 0)
+                {
+                    Console.WriteLine("No se encontraron datos para la consulta.");
+                    return new DetallesReportesGpieDTO();
+                }
+                var convertDto = new DetallesReportesGpieDTO(getData2.FirstOrDefault(), getData.FirstOrDefault());
+                return convertDto;
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new DetallesReportesGpieDTO();
+            }
+        }
+
+        public async Task<DetallesReportesGpieDTO> GetReportesGpieGeneralFecha(DateOnly fecha)
+        {
+            try
+            {
+                var getDataDer = await _context.reports_g_pie_derivados_desembolsados
+                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_POR_FECHAS_GESTION_DERIVACION_DESEMBOLSO @Fecha",
+                        new SqlParameter("@Fecha", fecha))
+                    .ToListAsync();
+                var getDataGes = await _context.reports_g_pie_gestion_asignados
+                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_POR_FECHAS_GESTIONADOS_SOBRE_ASIGNADOS @Fecha",
+                        new SqlParameter("@Fecha", fecha))
+                    .ToListAsync();
+                if (getDataDer == null || getDataDer.Count == 0)
+                {
+                    Console.WriteLine("No se encontraron datos para la consulta.");
+                    return new DetallesReportesGpieDTO();
+                }
+                if (getDataGes == null || getDataGes.Count == 0)
+                {
+                    Console.WriteLine("No se encontraron datos para la consulta.");
+                    return new DetallesReportesGpieDTO();
+                }
+                var convertDto = new DetallesReportesGpieDTO(getDataGes.FirstOrDefault(), getDataDer.FirstOrDefault());
+                return convertDto;
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new DetallesReportesGpieDTO();
             }
         }
     }
