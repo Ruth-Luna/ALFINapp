@@ -86,13 +86,7 @@ namespace ALFINapp.API.Controllers
             }
 
             var dataInicio = executeInicio.Data;
-            ViewData["TotalClientes"] = dataInicio.clientesTotal;
-            ViewData["ClientesPendientes"] = dataInicio.clientesPendientes;
-            ViewData["ClientesTipificados"] = dataInicio.clientesTipificados;
-            // Asignar el nombre del usuario a la vista
-            ViewData["UsuarioNombre"] = dataInicio.Vendedor!=null ? dataInicio.Vendedor.NombresCompletos : "Usuario No Encontrado";
-            ViewData["ClientesTraidosDBALFIN"] = dataInicio.ClientesAlfin;
-            return View("Main", dataInicio.ClientesA365);
+            return View("Main", dataInicio);
         }
 
 

@@ -46,6 +46,8 @@ public class MDbContext : DbContext
     public DbSet<ReportsGLineasGestionVsDerivacionDiaria> reports_g_lineas_gestion_vs_derivacion_diaria { get; set; }
     public DbSet<ReportsGPiePorcentajeGestionadosSobreAsignados> reports_g_pie_gestion_asignados { get; set; }
     public DbSet<ReportsGPiePorcentajeGestionadoDerivadoDesembolsado> reports_g_pie_derivados_desembolsados { get; set; }
+    public DbSet<ResultadoVerificacion> resultado_verificacion { get; set; }
+    public DbSet<LeadsGetClientesAsignadosGestionLeads> leads_get_clientes_asignados_gestion_leads { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -97,6 +99,13 @@ public class MDbContext : DbContext
             .HasNoKey()
             .ToView(null);
         modelBuilder.Entity<ReportsGPiePorcentajeGestionadoDerivadoDesembolsado>()
+            .HasNoKey()
+            .ToView(null);
+
+        modelBuilder.Entity<ResultadoVerificacion>()
+            .HasNoKey()
+            .ToView(null);
+        modelBuilder.Entity<LeadsGetClientesAsignadosGestionLeads>()
             .HasNoKey()
             .ToView(null);
     }

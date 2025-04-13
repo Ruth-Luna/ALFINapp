@@ -35,7 +35,9 @@ namespace ALFINapp.Application.UseCases.Reports
                 var viewReportes = new ViewReportesAsesores();
                 var detallesUsuarioDTO = new DetallesUsuarioDTO(usuario);
                 viewReportes.asesor = detallesUsuarioDTO.ToView();
-                viewReportes.totalDerivaciones = reportes.gESTIONDETALLEs.Count(x => x.CodTip == 2);
+                viewReportes.totalDerivaciones = reportes.gESTIONDETALLEs
+                    .Where(x => x.CodTip == 2)
+                    .Count();
                 viewReportes.totalDesembolsos = reportes.Desembolsos.Count();
                 viewReportes.totalAsignado = reportes.ClientesAsignados.Count();
                 viewReportes.totalGestionado = reportes.gESTIONDETALLEs.Count();

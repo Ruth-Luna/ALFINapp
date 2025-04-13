@@ -58,7 +58,8 @@ namespace ALFINapp.Application.DTOs
         public string? TipificacionDeMayorPeso { get; set; }
         public int? PesoTipificacionMayor { get; set; }
         public DateTime? FechaTipificacionDeMayorPeso { get; set; }
-        public int? IdUsuarioV { get; set; }        
+        public int? IdUsuarioV { get; set; }
+        public string? TraidoDe { get; set; }
 
         public DetalleBaseClienteDTO(InicioDetallesClientesFromAsesor model)
         {
@@ -77,6 +78,26 @@ namespace ALFINapp.Application.DTOs
             PesoTipificacionMayor = model.PesoTipificacionMayor;
             FechaTipificacionDeMayorPeso = model.FechaTipificacionDeMayorPeso;
             PrioridadSistema = model.PrioridadSistema;
+        }
+
+        public DetalleBaseClienteDTO(LeadsGetClientesAsignadosGestionLeads model)
+        {
+            Dni = model.Dni;
+            XAppaterno = model.XAppaterno;
+            XApmaterno = model.XApmaterno;
+            XNombre = model.XNombre;
+            OfertaMax = model.OfertaMax;
+            Campaña = model.Campaña;
+            IdBase = model.IdBase;
+            IdAsignacion = model.IdAsignacion;
+            FechaAsignacionVendedor = model.FechaAsignacionVendedor;
+
+            ComentarioGeneral = model.ComentarioGeneral;
+            TipificacionDeMayorPeso = model.TipificacionDeMayorPeso;
+            PesoTipificacionMayor = model.PesoTipificacionMayor;
+            FechaTipificacionDeMayorPeso = model.FechaTipificacionDeMayorPeso;
+            PrioridadSistema = model.PrioridadSistema;
+            TraidoDe = model.TraidoDe;
         }
 
         public DetalleBaseClienteDTO(ClientesAsignado model)
@@ -131,6 +152,7 @@ namespace ALFINapp.Application.DTOs
             cliente.TipificacionDeMayorPeso = TipificacionDeMayorPeso;
             cliente.PesoTipificacionMayor = PesoTipificacionMayor;
             cliente.FechaTipificacionDeMayorPeso = FechaTipificacionDeMayorPeso;
+            cliente.TraidoDe = TraidoDe;
             return cliente;
         }
 

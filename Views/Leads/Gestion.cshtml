@@ -1,0 +1,272 @@
+@model List<ALFINapp.Domain.Entities.Cliente>
+
+@{
+    var usuarioNombre = ViewData["UsuarioNombre"];
+    var clientesPendientes = ViewData["ClientesPendientes"];
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/main_page.css">
+}
+
+<div class="container mt-4">
+    <div class="container mb-3">
+        <div class="row align-items-center">
+            <!-- Título -->
+            <div class="col-12 col-md-6 mb-3 mb-md-0">
+                <h2 class="text-center text-md-start">ASESOR DE CREDITOS - @usuarioNombre</h2>
+                <div>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Asignado</th>
+                                <th>Gestionado</th>
+                                <th>Sin Gestionar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>@ViewData["TotalClientes"]</td>
+                                <td>@ViewData["ClientesTipificados"]</td>
+                                <td>@clientesPendientes</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="d-flex flex-md-row align-items-md-center">
+                    <label for="busqueda-campo-gestion-leads" class="form-label mb-2 mb-md-0 me-md-2">
+                        Buscar por:
+                    </label>
+                    <select id="busqueda-campo-gestion-leads" class="form-control me-md-2"
+                        onchange="toggleInputFields(this.value)">
+                        <option value="apellidoPaterno">Apellidos y Nombres</option>
+                        <option value="campaña">Campaña</option>
+                        <option value="ofertaMax">Oferta Max</option>
+                        <option value="comentarioPrincipal">Comentario Principal</option>
+                        <option value="tipificacionRelevante">Tipificación más Relevante</option>
+                        <option value="dni">DNI</option>
+                        <option value="fechaAsignacion">Fecha de Asignacion</option>
+                    </select>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="busqueda-campo-gestion-leads-texto"
+                            placeholder="Ingrese valor de búsqueda" />
+                        <a href="javascript:void(0)" class="btn btn-info"
+                            onclick="filterTablaByDetails('busqueda-campo-gestion-leads', 'busqueda-campo-gestion-leads-texto')"><i
+                                class="bi bi-search"></i></a>
+                    </div>
+                    <div class="form-group">
+                        <input type="date" class="form-control mt-2" id="busqueda-campo-gestion-leads-fecha-start"
+                            style="display: none;" placeholder="Fecha Inicial">
+                        <input type="date" class="form-control mt-2" id="busqueda-campo-gestion-leads-fecha-end"
+                            style="display: none;" placeholder="Fecha Final">
+                    </div>
+                </div>
+                <div class="flex-md-row align-items-md-center mt-2">
+                    @*Seccion Paginacion*@
+                    <div class="d-flex justify-content-center">
+                        <button class="btn btn-primary me-2" id="previous-page-button" disabled>
+                            Anterior
+                        </button>
+                        <button class="btn btn-primary" id="next-page-button">
+                            Siguiente
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered" id="clientesTable">
+            <thead>
+                <tr>
+                    <th>Ver Cliente:</th>
+                    <th>
+                        <span>DNI</span>
+                    </th>
+                    <th>
+                        <span>Nombres Completos</span>
+                    </th>
+                    <th>
+                        <span>Oferta Max</span>
+                    </th>
+                    <th>
+                        <span>Campaña</span>
+                    </th>
+                    <th>
+                        <span>Fecha Asignacion</span>
+                    </th>
+                    <th>
+                        <span>Comentario Principal</span>
+                    </th>
+                    <th>
+                        <span>Tipificacion mas Relevante</span>
+                    </th>
+                    <th>
+                        <span>Fecha de la Tipificacion</span>
+                    </th>
+                    <th>
+                        <span>Prioridad</span>
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td>
+                        <button class="btn btn-warning p-0 mt-auto"
+                            onclick="sortTableGestionLeads('clientesTable', 1, 'number')" data-sort-ignore>
+                            &#x25BC;
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn btn-warning p-0 mt-auto"
+                            onclick="sortTableGestionLeads('clientesTable', 2, 'string')" data-sort-ignore>
+                            &#x25BC;
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn btn-warning p-0 mt-auto"
+                            onclick="sortTableGestionLeads('clientesTable', 3, 'number')" data-sort-ignore>
+                            &#x25BC;
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn btn-warning p-0 mt-auto"
+                            onclick="sortTableGestionLeads('clientesTable', 4, 'string')" data-sort-ignore>
+                            &#x25BC;
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn btn-warning p-0 mt-auto"
+                            onclick="sortTableGestionLeads('clientesTable', 5, 'date')" data-sort-ignore>
+                            &#x25BC;
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn btn-warning p-0 mt-auto"
+                            onclick="sortTableGestionLeads('clientesTable', 6, 'string')" data-sort-ignore>
+                            &#x25BC;
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn btn-warning p-0 mt-auto"
+                            onclick="sortTableGestionLeads('clientesTable', 7, 'string')" data-sort-ignore>
+                            &#x25BC;
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn btn-warning p-0 mt-auto"
+                            onclick="sortTableGestionLeads('clientesTable', 8, 'date')" data-sort-ignore>
+                            &#x25BC;
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn btn-warning p-0 mt-auto"
+                            onclick="sortTableGestionLeads('clientesTable', 9, 'string')" data-sort-ignore>
+                            &#x25BC;
+                        </button>
+                    </td>
+                </tr>
+                @foreach (var Cliente in Model)
+                {
+                    var pesotipMayor = Cliente.PesoTipificacionMayor;
+                    var rowClass = ""; // Inicializa como cadena vacía
+                    if (pesotipMayor != null)
+                    {
+                        rowClass = "table-success"; // Clase base para filas con tipificación
+
+                        if (pesotipMayor > 100)
+                        {
+                            rowClass += " table-danger"; // Clase adicional para peso mayor a 100
+                        }
+                    }
+                    <tr class="@rowClass">
+                        <td class="text-center">
+                            @if (Cliente.TraidoDe == "A365")
+                            {
+                                <a href="javascript:void(0);" class="btn btn-primary"
+                                    onclick="loadTipificarCliente(@Cliente.IdBase,'TipificarClienteView')">
+                                    <i class="fa fa-eye"></i>
+                                </a>
+                                <span class="badge bg-primary">A365</span>
+
+                            }
+                            else if (Cliente.TraidoDe == "ALFIN")
+                            {
+                                <a href="javascript:void(0);" class="btn btn-primary"
+                                    onclick="loadTipificarCliente(@Cliente.IdBase,'TipificarClienteDBALFINView')">
+                                    <i class="fa fa-eye"></i>
+                                </a>
+                                <span class="badge bg-info">ALFIN</span>
+                            }
+                        </td>
+                        <td>@Cliente.Dni</td>
+                        <td>@(Cliente.XAppaterno?.ToUpper() ?? "") @(Cliente.XApmaterno?.ToUpper() ?? "")
+                            @(Cliente.XNombre?.ToUpper() ?? "")
+                        <td>@Cliente.OfertaMax</td>
+                        <td>@(Cliente.Campaña?.ToUpper() ?? "N/A")</td>
+                        <td>@Cliente.FechaAsignacionVendedor</td>
+                        <td><textarea name=""
+                                id="comentarioGeneral[@Cliente.IdAsignacion]">@Cliente.ComentarioGeneral</textarea>
+                            <a href="javascript:void(0);" class="btn btn-primary"
+                                onclick="guardarComentarioGeneral(@Cliente.IdAsignacion)">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                        </td>
+                        <td>@Cliente.TipificacionDeMayorPeso</td>
+                        <td>@Cliente.FechaTipificacionDeMayorPeso</td>
+                        <td>@Cliente.PrioridadSistema</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true"
+    data-bs-focus="false">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="GeneralTemplateTitleModalLabel"></h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalContentGeneralTemplate">
+                    @*Aca cargara el contenido del Modal*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @if (TempData["Message"] != null)
+    {
+        <script>
+            Swal.fire({
+                title: 'Mensaje', // Título del mensaje
+                text: '@Html.Raw(TempData["Message"] as string)', // Usamos Html.Raw para evitar que se escape el texto
+                icon: 'info', // Tipo de ícono (info, success, error, warning)
+                confirmButtonText: 'Aceptar' // Texto del botón de confirmación
+            });
+        </script>
+    }
+    @if (TempData["MessageError"] != null)
+    {
+        <script>
+            Swal.fire({
+                title: 'Error', // Título del mensaje
+                text: '@Html.Raw(TempData["MessageError"] as string)', // Usamos Html.Raw para evitar que se escape el texto
+                icon: 'error', // Tipo de ícono (info, success, error, warning)
+                confirmButtonText: 'Aceptar' // Texto del botón de confirmación
+            });
+        </script>
+    }
+    <script src="~/js/Leads/Gestion.js?v=@DateTime.Now.Ticks"></script>
+}

@@ -28,5 +28,6 @@ namespace ALFINapp.Domain.Entities
         public int? IdUsuarioAccion { get; set; }
         public DateTime? FechaInicio { get; set; }
         public DateTime? FechaCese { get; set; }
+        public String? Correo { get; set; }
     }
 }

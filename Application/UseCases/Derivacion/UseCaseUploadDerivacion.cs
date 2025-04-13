@@ -38,55 +38,25 @@ namespace ALFINapp.Application.UseCases.Derivacion
         {
             try
             {
-                var getClienteBase = await _repositoryClientes.getBase(idBase);
-                if (getClienteBase == null)
-                {
-                    return (false, "Error al obtener la base");
-                }
-
-                var getAsesor = await _repositoryUsuarios.GetUser(idUsuario);
-                var getEnriquecido = await _repositoryClientes.GetEnriquecidoxBase(getClienteBase.IdBase);
-                if (getAsesor == null || getEnriquecido == null)
-                {
-                    return (false, "Error al obtener el asesor o el enriquecido");
-                }
-                var verificarDerivacion = await _repositoryDerivaciones
-                            .getDerivaciones(getEnriquecido.IdCliente, getAsesor.Dni ?? "");
-                if (verificarDerivacion == null)
-                {
-                    return (false, "Error al verificar la derivacion");
-                }
-                if (verificarDerivacion.Count > 0)
-                {
-                    return (false, "Usted ya ha derivado previamente a este cliente durante este mes, para ver su estado puede dirigirse a la pestana de Derivaciones.");
-                }
-                var verificarGestion = await _repositoryDerivaciones
-                    .getGestionDerivacion(getClienteBase.Dni ?? "", getAsesor.Dni ?? "");
-                if (verificarGestion != null)
-                {
-                    return (false, "Usted ya ha derivado previamente a este cliente durante este mes, para ver su estado puede dirigirse a la pestana de Derivaciones.");
-                }
+                var verificarDisponibilidad = await _repositoryDerivaciones.verDisponibilidad(idBase);
                 var derivacion = new DerivacionesAsesores
                 {
                     FechaDerivacion = DateTime.Now,
                     FechaVisita = FechaVisita,
-                    DniAsesor = getAsesor.Dni,
-                    DniCliente = getClienteBase.Dni,
-                    IdCliente = getEnriquecido.IdCliente,
-                    NombreCliente = getClienteBase.XNombre + " " + getClienteBase.XAppaterno + " " + getClienteBase.XApmaterno,
                     TelefonoCliente = Telefono,
-                    NombreAgencia = agenciaComercial,
-                    FueProcesado = false,
-                    EstadoDerivacion = "DERIVACION PENDIENTE"
+                    NombreAgencia = agenciaComercial
                 };
                 if (NombresCompletos != null)
                 {
                     derivacion.NombreCliente = NombresCompletos;
                 }
-                var uploadDerivacion = await _repositoryDerivaciones.uploadDerivacion(derivacion);
-                if (!uploadDerivacion)
+                var uploadDerivacion = await _repositoryDerivaciones.uploadNuevaDerivacion(
+                    derivacion,
+                    idBase,
+                    idUsuario);
+                if (!uploadDerivacion.success)
                 {
-                    return (false, "Error al subir la derivacion");
+                    return (false, uploadDerivacion.message);
                 }
                 var checkDerivacion = await _repositoryDerivaciones.verDerivacion(derivacion.DniCliente ?? string.Empty);
                 if (!checkDerivacion.success)

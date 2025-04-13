@@ -129,31 +129,45 @@ function cargarGestionInforme() {
 
 function cargarReporteGeneralAsesor() {
     var reportesAsesor = document.getElementById('reportes-asesor');
-    console.log(reportesAsesor);
     var reportesData = JSON.parse(reportesAsesor.getAttribute("data-json"));
-    
+    console.log(reportesData);
+
+    var series = [
+        reportesData["totalDerivaciones"],
+        reportesData["totalDesembolsos"],
+        reportesData["totalAsignado"],
+        reportesData["totalGestionado"],
+        reportesData["totalSinGestionar"]
+    ];
+
+    var labels = [
+        "Derivaciones",
+        "Desembolsos",
+        "Clientes Asignados",
+        "Clientes Tipificados",
+        "Clientes No Tipificados"
+    ];
+
+    var totalGeneral = series.reduce((acc, val) => acc + val, 0);
+
     var options = {
-        series: [
-            reportesData["totalDerivaciones"],
-            reportesData["totalDesembolsos"],
-            reportesData["totalAsignado"],
-            reportesData["totalGestionado"],
-            reportesData["totalSinGestionar"]
-        ],
+        series: series,
         chart: {
             type: 'pie',
             height: 350
         },
-        labels: [
-            "Derivaciones",
-            "Desembolsos",
-            "Clientes Asignados",
-            "Clientes Tipificados",
-            "Clientes No Tipificados"
-        ],
+        labels: labels,
         colors: ["#00E396", "#FF4560", "#008FFB", "#FEB019", "#775DD0"],
         legend: {
             position: 'bottom'
+        },
+        tooltip: {
+            intersect: false,
+            y: {
+                formatter: function (value, { dataPointIndex }) {
+                    return `${labels[dataPointIndex]}: ${value} (Total: ${totalGeneral})`;
+                }
+            }
         }
     };
 

@@ -123,6 +123,38 @@ namespace ALFINapp.Infrastructure.Repositories
             }
         }
 
+        public async Task<(bool success, string message)> uploadNuevaDerivacion(
+            DerivacionesAsesores derivacion, 
+            int idBase, 
+            int idUsuario)
+        {
+            try
+            {
+                var parametros = new[]
+                {
+                    new SqlParameter("@agencia_derivacion", derivacion.NombreAgencia),
+                    new SqlParameter("@fecha_visita", derivacion.FechaVisita) { SqlDbType = SqlDbType.DateTime },
+                    new SqlParameter("@telefono", derivacion.TelefonoCliente),
+                    new SqlParameter("@id_base", idBase),
+                    new SqlParameter("@id_usuario", derivacion.DniAsesor),
+                    new SqlParameter("@nombre_completos", derivacion.NombreCliente)
+                };
+                var generarDerivacion = await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC SP_derivacion_insertar_nueva_derivacion_pendiente @agencia_derivacion, @fecha_visita, @telefono, @id_base, @id_usuario, @nombre_completos",
+                    parametros);
+                if (generarDerivacion == 0)
+                {
+                    return (false, "Error al subir la derivacion");
+                }
+                return (true, "Derivacion subida correctamente");
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return (false, "Error en la base de datos al subir la derivacion");
+            }
+        }
+
         public async Task<(bool success,string message)> verDerivacion(string Dni)
         {
             try
@@ -132,9 +164,9 @@ namespace ALFINapp.Infrastructure.Repositories
                 int tiempoTranscurrido = 0;
 
                 var verificarDerivacionEnviada = await _context.derivaciones_asesores
-                        .FromSqlRaw("EXEC sp_Derivacion_verificar_derivacion_enviada {0}", Dni)
-                        .AsNoTracking()
-                        .ToListAsync();
+                    .FromSqlRaw("EXEC sp_Derivacion_verificar_derivacion_enviada {0}", Dni)
+                    .AsNoTracking()
+                    .ToListAsync();
                 var derivacionEnviada = verificarDerivacionEnviada.FirstOrDefault();
                 while (tiempoTranscurrido < tiempoMaximoEspera)
                 {
@@ -159,6 +191,69 @@ namespace ALFINapp.Infrastructure.Repositories
                     return (false, "No se encontró la derivación en la base de datos, intentelo nuevamente");
                 }
                 return (false, "Tiempo de espera agotado. La entrada no fue procesada. Pero fue guardada correctamente en nuestro sistema no sera necesario que envie mas derivaciones de este cliente en caso su rol sea Asesor. Su derivacion sera procesada muy pronto. Para conocer el estado de su derivacion puede dirigirse a la pestaña de Derivaciones, ademas no se olvide de guardar la Tipificacion");
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return (false, "Error en la base de datos");
+            }
+        }
+
+        public async Task<(bool success, string message)> verDisponibilidad(string DniCliente, string DniAsesor)
+        {
+            try
+            {
+                var parametros = new[]
+                {
+                    new SqlParameter("@dni_cliente", DniCliente),
+                    new SqlParameter("@dni_asesor", DniAsesor)
+                };
+                var verDerivacion = await _context.resultado_verificacion
+                    .FromSqlRaw("EXEC SP_verificar_disponibilidad_para_derivacion @dni_cliente, @dni_asesor", parametros)
+                    .AsNoTracking()
+                    .ToListAsync();
+                var resultadoVerificacion = verDerivacion.FirstOrDefault();
+                if (resultadoVerificacion == null)
+                {
+                    return (false, "Ha ocurrido un error en la base de datos, intentelo nuevamente");
+                }
+                if (resultadoVerificacion.Resultado == 0)
+                {
+                    return (false, resultadoVerificacion.Mensaje);
+                }
+                else 
+                {
+                    return (true, resultadoVerificacion.Mensaje);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return (false, "Error en la base de datos");
+            }
+        }
+
+        public async Task<(bool success, string message)> verDisponibilidad(int idBase)
+        {
+            try
+            {
+                var verDerivacion = await _context.resultado_verificacion
+                    .FromSqlRaw("EXEC SP_derivaciones_verificar_disponibilidad_para_derivacion_id_base @id_base", new SqlParameter("@id_base", idBase))
+                    .AsNoTracking()
+                    .ToListAsync();
+                var resultadoVerificacion = verDerivacion.FirstOrDefault();
+                if (resultadoVerificacion == null)
+                {
+                    return (false, "Ha ocurrido un error en la base de datos, intentelo nuevamente");
+                }
+                if (resultadoVerificacion.Resultado == 0)
+                {
+                    return (false, resultadoVerificacion.Mensaje);
+                }
+                else
+                {
+                    return (true, resultadoVerificacion.Mensaje);
+                }
             }
             catch (System.Exception ex)
             {

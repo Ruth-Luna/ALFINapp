@@ -1,259 +1,66 @@
-@model List<ALFINapp.Domain.Entities.Cliente>
+@model ALFINapp.API.Models.ViewInicioVendedor
 
 @{
-    var usuarioNombre = ViewData["UsuarioNombre"];
-    var clientesPendientes = ViewData["ClientesPendientes"];
-    var ClientesTraidosDBALFIN = ViewData["ClientesTraidosDBALFIN"] as List<ALFINapp.Domain.Entities.Cliente>;
+    ViewData["Title"] = "Inicio Vendedor";
 }
 
 @section Styles {
     <link rel="stylesheet" href="~/css/main_page.css">
 }
 
-@{
-    var idAsignaciones = new List<int>();
-    var ultimaFechasTipificacion = new List<DateTime?>();
-    @if (ViewData["UltimasTipificacion"] is IEnumerable<dynamic> ultimasTipificaciones)
-    {
-        @foreach (var ultimaTipificacion in ultimasTipificaciones)
-        {
-            idAsignaciones.Add(ultimaTipificacion.idAsignacion);
-            ultimaFechasTipificacion.Add(ultimaTipificacion.UltimaFechaTipificacion);
-        }
-    }
-}
-
 <div class="container mt-4">
-    <div class="container mb-3">
-        <div class="row align-items-center">
-            <!-- Título -->
-            <div class="col-12 col-md-6 mb-3 mb-md-0">
-                <h2 class="text-center text-md-start">ASESOR DE CREDITOS - @usuarioNombre</h2>
-                <div>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Asignado</th>
-                                <th>Gestionado</th>
-                                <th>Sin Gestionar</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>@ViewData["TotalClientes"]</td>
-                                <td>@ViewData["ClientesTipificados"]</td>
-                                <td>@clientesPendientes</td>
-                            </tr>
-                        </tbody>
-                    </table>
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h2>Bienvenido, @Model.Vendedor.NombresCompletos</h2>
+            <p class="text-muted">Este es tu panel de inicio</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <!-- Información básica -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    Información del Vendedor
+                </div>
+                <div class="card-body">
+                    <p><strong>DNI:</strong> @Model.Vendedor.Dni</p>
+                    <p><strong>Rol:</strong> @Model.Vendedor.Rol</p>
+                    <p><strong>Teléfono:</strong> @Model.Vendedor.Telefono</p>
+                    <p><strong>Correo:</strong> @Model.Vendedor.Correo</p>
+                    <p><strong>Ubicación:</strong> @Model.Vendedor.Departamento, @Model.Vendedor.Provincia, @Model.Vendedor.Distrito</p>
+                    <p><strong>Fecha de Registro:</strong> @Model.Vendedor.FechaRegistro?.ToString("dd/MM/yyyy")</p>
                 </div>
             </div>
+        </div>
 
-            <div class="col-12 col-md-6">
-                <div class="d-flex flex-column flex-md-row align-items-md-center">
-                    <label for="searchField" class="form-label mb-2 mb-md-0 me-md-2">
-                        Buscar por:
-                    </label>
-                    <select id="searchField" class="form-control me-md-2">
-                        <option value="apellidoPaterno">Apellidos y Nombres</option>
-                        <option value="campaña">Campaña</option>
-                        <option value="ofertaMax">Oferta Max</option>
-                        <option value="comentarioPrincipal">Comentario Principal</option>
-                        <option value="tipificacionRelevante">Tipificación más Relevante</option>
-                        <option value="dni">DNI</option>
-                        <option value="fechaAsignacion">Fecha de Asignacion</option>
-                    </select>
-                    <input type="text" class="form-control" id="searchInput" placeholder="Ingrese valor de búsqueda">
-                    <input type="date" class="form-control mt-2" id="startDate" style="display: none;"
-                        placeholder="Fecha Inicial">
-                    <input type="date" class="form-control mt-2" id="endDate" style="display: none;"
-                        placeholder="Fecha Final">
+        <!-- Información de campaña -->
+        <div class="col-md-6 mt-4 mt-md-0">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    Campaña Actual
+                </div>
+                <div class="card-body">
+                    <p><strong>Nombre de Campaña:</strong> @Model.Vendedor.NOMBRECAMPAÑA</p>
+                    <p><strong>Responsable Supervisor:</strong> @Model.Vendedor.RESPONSABLESUP</p>
+                    <p><strong>Región:</strong> @Model.Vendedor.REGION</p>
+                    <p><strong>Fecha de Inicio:</strong> @Model.Vendedor.FechaInicio?.ToString("dd/MM/yyyy")</p>
+                    <p><strong>Fecha de Cese:</strong> @Model.Vendedor.FechaCese?.ToString("dd/MM/yyyy")</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-bordered" id="clientesTable">
-            <thead>
-                <tr>
-                    <th>Ver Cliente:</th>
-                    <th>
-                        <span>DNI</span>
-                    </th>
-                    <th>
-                        <span>Nombres Completos</span>
-                    </th>
-                    <th>
-                        <span>Oferta Max</span>
-                    </th>
-                    <th>
-                        <span>Campaña</span>
-                    </th>
-                    <th>
-                        <span>Fecha Asignacion</span>
-                    </th>
-                    <th>
-                        <span>Comentario Principal</span>
-                    </th>
-                    <th>
-                        <span>Tipificacion mas Relevante</span>
-                    </th>
-                    <th>
-                        <span>Fecha de la Tipificacion</span>
-                    </th>
-                    <th>
-                        <span>Prioridad</span>
-                    </th>
-                </tr>
-            </thead>
-
-            <tbody>
-                <tr>
-                    <td></td>
-                    <td>
-                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 1, 'number')"
-                            data-sort-ignore>
-                            &#x25BC;
-                        </button>
-                    </td>
-                    <td>
-                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 2, 'string')"
-                            data-sort-ignore>
-                            &#x25BC;
-                        </button>
-                    </td>
-                    <td>
-                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 3, 'number')"
-                            data-sort-ignore>
-                            &#x25BC;
-                        </button>
-                    </td>
-                    <td>
-                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 4, 'string')"
-                            data-sort-ignore>
-                            &#x25BC;
-                        </button>
-                    </td>
-                    <td>
-                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 5, 'date')"
-                            data-sort-ignore>
-                            &#x25BC;
-                        </button>
-                    </td>
-                    <td>
-                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 6, 'string')"
-                            data-sort-ignore>
-                            &#x25BC;
-                        </button>
-                    </td>
-                    <td>
-                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 7, 'string')"
-                            data-sort-ignore>
-                            &#x25BC;
-                        </button>
-                    </td>
-                    <td>
-                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 8, 'date')"
-                            data-sort-ignore>
-                            &#x25BC;
-                        </button>
-                    </td>
-                    <td>
-                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 9, 'string')"
-                            data-sort-ignore>
-                            &#x25BC;
-                        </button>
-                    </td>
-                </tr>
-                @foreach (var ClienteDTO in Model)
-                {
-                    var pesotipMayor = ClienteDTO.PesoTipificacionMayor;
-                    var rowClass = ""; // Inicializa como cadena vacía
-                    if (pesotipMayor != null)
-                    {
-                        rowClass = "table-success"; // Clase base para filas con tipificación
-
-                        if (pesotipMayor > 100)
-                        {
-                            rowClass += " table-danger"; // Clase adicional para peso mayor a 100
-                        }
-                    }
-                    <tr class="@rowClass">
-                        <td class="text-center">
-                            <a href="javascript:void(0);" class="btn btn-primary"
-                                onclick="loadTipificarCliente(@ClienteDTO.IdBase,'TipificarClienteView')">
-                                <i class="fa fa-eye"></i>
-                            </a>
-                            <span class="badge bg-primary">A365</span>
-                        </td>
-
-                        <td>@ClienteDTO.Dni</td>
-                        <td>@(ClienteDTO.XAppaterno?.ToUpper() ?? "") @(ClienteDTO.XApmaterno?.ToUpper() ?? "")
-                            @(ClienteDTO.XNombre?.ToUpper() ?? "")
-                        <td>@ClienteDTO.OfertaMax</td>
-                        <td>@(ClienteDTO.Campaña?.ToUpper() ?? "N/A")</td>
-                        <td>@ClienteDTO.FechaAsignacionVendedor</td>
-                        <td><textarea name=""
-                                id="comentarioGeneral[@ClienteDTO.IdAsignacion]">@ClienteDTO.ComentarioGeneral</textarea>
-                            <a href="javascript:void(0);" class="btn btn-primary"
-                                onclick="guardarComentarioGeneral(@ClienteDTO.IdAsignacion)">
-                                <i class="fa fa-pencil"></i>
-                            </a>
-                        </td>
-                        <td>@ClienteDTO.TipificacionDeMayorPeso</td>
-                        <td>@ClienteDTO.FechaTipificacionDeMayorPeso</td>
-                        <td>@ClienteDTO.PrioridadSistema</td>
-                    </tr>
-                }
-                @if (ClientesTraidosDBALFIN != null)
-                {
-                    @foreach (var ClienteDTO in ClientesTraidosDBALFIN)
-                    {
-                        var pesotipMayor = ClienteDTO.PesoTipificacionMayor;
-                        var rowClass = ""; // Inicializa como cadena vacía
-                        if (pesotipMayor != null)
-                        {
-                            rowClass = "table-success"; // Clase base para filas con tipificación
-
-                            if (pesotipMayor > 100)
-                            {
-                                rowClass += " table-danger"; // Clase adicional para peso mayor a 100
-                            }
-                        }
-                        <tr class="@rowClass">
-                            <td class="text-center">
-                                <a href="javascript:void(0);" class="btn btn-primary"
-                                    onclick="loadTipificarCliente(@ClienteDTO.IdBase, 'TipificarClienteDBALFINView')">
-                                    <i class="fa fa-eye"></i>
-                                </a>
-                                <span class="badge bg-info">Alfin</span>
-                            </td>
-
-                            <td>@ClienteDTO.Dni</td>
-                            <td>@(ClienteDTO.XAppaterno?.ToUpper() ?? "") @(ClienteDTO.XApmaterno?.ToUpper() ?? "")
-                                @(ClienteDTO.XNombre?.ToUpper() ?? "")
-                            <td>@(ClienteDTO.OfertaMax * 100)</td>
-                            <td>@(ClienteDTO.Campaña?.ToUpper() ?? "N/A")</td>
-                            <td>@ClienteDTO.FechaAsignacionVendedor</td>
-                            <td><textarea name=""
-                                    id="comentarioGeneral[@ClienteDTO.IdAsignacion]">@ClienteDTO.ComentarioGeneral</textarea>
-                                <a href="javascript:void(0);" class="btn btn-primary"
-                                    onclick="guardarComentarioGeneral(@ClienteDTO.IdAsignacion)">
-                                    <i class="fa fa-pencil"></i>
-                                </a>
-                            </td>
-                            <td>@ClienteDTO.TipificacionDeMayorPeso</td>
-                            <td>@ClienteDTO.FechaTipificacionDeMayorPeso</td>
-                            <td>@ClienteDTO.PrioridadSistema</td>
-                        </tr>
-                    }
-                }
-            </tbody>
-        </table>
+    <!-- Botones rápidos (puedes enlazar acciones futuras aquí) -->
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <a class="btn btn-outline-primary me-2" href="#">Ver Clientes</a>
+            <a class="btn btn-outline-secondary" href="#">Ver Reportes</a>
+        </div>
     </div>
 </div>
 
+<!-- Modal reutilizable -->
 <div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true" data-bs-focus="false">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
         <div class="modal-content">
@@ -263,7 +70,7 @@
             </div>
             <div class="modal-body">
                 <div id="modalContentGeneralTemplate">
-                    @*Aca cargara el contenido del Modal*@
+                    @* Acá se cargará dinámicamente el contenido del modal *@
                 </div>
             </div>
         </div>
@@ -275,10 +82,10 @@
     {
         <script>
             Swal.fire({
-                title: 'Mensaje', // Título del mensaje
-                text: '@Html.Raw(TempData["Message"] as string)', // Usamos Html.Raw para evitar que se escape el texto
-                icon: 'info', // Tipo de ícono (info, success, error, warning)
-                confirmButtonText: 'Aceptar' // Texto del botón de confirmación
+                title: 'Mensaje',
+                text: '@Html.Raw(TempData["Message"] as string)',
+                icon: 'info',
+                confirmButtonText: 'Aceptar'
             });
         </script>
     }
@@ -287,19 +94,20 @@
     {
         <script>
             Swal.fire({
-                title: 'Error', // Título del mensaje
-                text: '@Html.Raw(TempData["MessageError"] as string)', // Usamos Html.Raw para evitar que se escape el texto
-                icon: 'error', // Tipo de ícono (info, success, error, warning)
-                confirmButtonText: 'Aceptar' // Texto del botón de confirmación
+                title: 'Error',
+                text: '@Html.Raw(TempData["MessageError"] as string)',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
             });
         </script>
     }
+
     @if (TempData["ActivarCambio"] != null && (int?)TempData["ActivarCambio"] == 1)
     {
         <script>
             Swal.fire({
-                title: 'Cambio de Usuario', // Título del mensaje
-                text: 'Usted ha sido registrado como un Usuario oculto, podra tipificar a sus clientes, sin embargo sus tipificaciones seran enviados con el DNI: @Html.Raw(TempData["DniCambio"] as string)',
+                title: 'Cambio de Usuario',
+                text: 'Usted ha sido registrado como un Usuario oculto, podrá tipificar a sus clientes, sin embargo sus tipificaciones serán enviadas con el DNI: @Html.Raw(TempData["DniCambio"] as string)',
                 icon: 'warning',
                 confirmButtonText: 'Aceptar'
             });

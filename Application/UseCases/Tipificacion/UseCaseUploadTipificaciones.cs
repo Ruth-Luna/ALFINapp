@@ -88,7 +88,12 @@ namespace ALFINapp.Application.UseCases.Tipificacion
                         {
                             return (false, "La agencia asignada no puede estar vacia.");
                         }
-
+                        var verificarDerivacion = await _repositoryDerivaciones
+                            .getDerivaciones(ClienteAsignado.IdCliente, usuarioInfo.Dni ?? "");
+                        if (verificarDerivacion == null || verificarDerivacion.Count() == 0)
+                        {
+                            return (false, "No ha enviado la derivacion correspondiente. No se guardara ninguna Tipificacion");
+                        }
                         existeDerivacion = true;
                     }
                     agregado = true;
@@ -122,7 +127,6 @@ namespace ALFINapp.Application.UseCases.Tipificacion
                         {
                             continue;
                         }
-
                         var verificarGestion = await _repositoryDerivaciones
                             .getGestionDerivacion(verificarDerivacion[0].DniCliente ?? "", usuarioInfo.Dni ?? "");
                         if (verificarGestion != null)

@@ -52,5 +52,6 @@ namespace ALFINapp.Domain.Entities
         public string? TipificacionDeMayorPeso { get; set; }
         public int? PesoTipificacionMayor { get; set; }
         public DateTime? FechaTipificacionDeMayorPeso { get; set; }
+        public string? TraidoDe { get; set; }
     }
 }

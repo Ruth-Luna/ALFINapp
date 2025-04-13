@@ -76,7 +76,41 @@ namespace ALFINapp.Infrastructure.Repositories
                 return null;
             }
         }
-
+        public async Task<List<DetalleBaseClienteDTO>> GetClientesGeneralPaginadoFromVendedor(
+            int IdUsuarioVendedor,
+            int IntervaloInicio,
+            int IntervaloFin)
+        {
+            try
+            {
+                var parameters = new[]
+                {
+                    new SqlParameter("@IdUsuarioVendedor", IdUsuarioVendedor),
+                    new SqlParameter("@IntervaloInicio", IntervaloInicio),
+                    new SqlParameter("@IntervaloFin", IntervaloFin)
+                };
+                var getAllBase = await _context
+                    .leads_get_clientes_asignados_gestion_leads
+                    .FromSqlRaw("EXECUTE sp_leads_get_clientes_asignados_for_gestion_de_leads @IdUsuarioVendedor, @IntervaloInicio, @IntervaloFin",
+                    parameters)
+                    .ToListAsync();
+                if (getAllBase.Count == 0)
+                {
+                    return new List<DetalleBaseClienteDTO>();
+                }
+                var dtoEnvio = new List<DetalleBaseClienteDTO>();
+                foreach (var cliente in getAllBase)
+                {
+                    dtoEnvio.Add(new DetalleBaseClienteDTO(cliente));
+                }
+                return dtoEnvio;
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new List<DetalleBaseClienteDTO>();
+            }
+        }
         public async Task<Persistence.Models.Usuario?> GetVendedor(int IdUsuario)
         {
             try

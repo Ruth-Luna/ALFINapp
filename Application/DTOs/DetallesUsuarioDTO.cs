@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ALFINapp.API.Models;
+using ALFINapp.Domain.Entities;
 using ALFINapp.Infrastructure.Persistence.Models;
 
 namespace ALFINapp.Application.DTOs
@@ -59,6 +60,34 @@ namespace ALFINapp.Application.DTOs
         public ViewUsuario ToView ()
         {
             return new ViewUsuario
+            {
+                IdUsuario = IdUsuario,
+                Dni = Dni,
+                NombresCompletos = NombresCompletos,
+                Rol = Rol,
+                Departamento = Departamento,
+                Provincia = Provincia,
+                Distrito = Distrito,
+                Telefono = Telefono,
+                FechaRegistro = FechaRegistro,
+                Estado = Estado,
+                IDUSUARIOSUP = IDUSUARIOSUP,
+                RESPONSABLESUP = RESPONSABLESUP,
+                REGION = REGION,
+                contraseña = contraseña,
+                NOMBRECAMPAÑA = NOMBRECAMPAÑA,
+                IdRol = IdRol,
+                FechaActualizacion = FechaActualizacion,
+                TipoDocumento = TipoDocumento,
+                IdUsuarioAccion = IdUsuarioAccion,
+                FechaInicio = FechaInicio,
+                FechaCese = FechaCese,
+                Correo = Correo
+            };
+        }
+        public Vendedor ToEntityVendedor ()
+        {
+            return new Vendedor
             {
                 IdUsuario = IdUsuario,
                 Dni = Dni,
