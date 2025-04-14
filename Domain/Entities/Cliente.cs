@@ -44,14 +44,22 @@ namespace ALFINapp.Domain.Entities
         //Ids y demas NO MOSTRABLE
         public int? IdAsignacion { get; set; }
         public int? IdBase { get; set; }
+        public int? IdCliente { get; set; }
+        public int? IdUsuarioV { get; set; }
 
         //Tabla clientes_asignados
         public DateTime? FechaAsignacionVendedor { get; set; }
         public bool FinalizarTipificacion { get; set; }
         public string? ComentarioGeneral { get; set; }
         public string? TipificacionDeMayorPeso { get; set; }
+        public string? UltimaTipificacion { get; set; } = "";
         public int? PesoTipificacionMayor { get; set; }
         public DateTime? FechaTipificacionDeMayorPeso { get; set; }
         public string? TraidoDe { get; set; }
+        //DETALLES DEL VENDEDOR ASIGNADO
+        public string? DniVendedor { get; set; }
+        public string NombresCompletosV { get; set; } = "";
+        public string? ApellidoPaternoV { get; set; } = "";
+        
     }
 }

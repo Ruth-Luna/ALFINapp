@@ -70,7 +70,7 @@ namespace ALFINapp.API.Controllers
         /// </exception>
         [HttpGet]
         [PermissionAuthorization("Supervisor", "Inicio")]
-        public async Task<IActionResult> Inicio(int page = 1, int pageSize = 20)
+        public async Task<IActionResult> Inicio()
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             int? IdRol = HttpContext.Session.GetInt32("RolUser");

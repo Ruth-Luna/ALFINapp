@@ -42,7 +42,7 @@ public class MDbContext : DbContext
     public DbSet<ConsultaObtenerCliente> consulta_obtener_cliente { get; set; }
     public DbSet<DetalleClienteA365TipificarDTO> detalle_cliente_a365_tipificar_dto { get; set; }
     public DbSet<InicioDetallesClientesFromAsesor> inicio_detalles_clientes_from_asesor { get; set; }
-    public DbSet<SupervisorGetInicioData> supervisor_get_inicio_data { get; set; }
+    public DbSet<SupervisorGetAsignacionLeads> supervisor_get_asignacion_leads { get; set; }
     public DbSet<ReportsGLineasGestionVsDerivacionDiaria> reports_g_lineas_gestion_vs_derivacion_diaria { get; set; }
     public DbSet<ReportsGPiePorcentajeGestionadosSobreAsignados> reports_g_pie_gestion_asignados { get; set; }
     public DbSet<ReportsGPiePorcentajeGestionadoDerivadoDesembolsado> reports_g_pie_derivados_desembolsados { get; set; }
@@ -88,7 +88,7 @@ public class MDbContext : DbContext
             .HasNoKey()
             .ToView(null);
         
-        modelBuilder.Entity<SupervisorGetInicioData>()
+        modelBuilder.Entity<SupervisorGetAsignacionLeads>()
             .HasNoKey()
             .ToView(null);
         

@@ -2,17 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ALFINapp.Domain.Entities;
 
 namespace ALFINapp.API.Models
 {
     public class ViewInicioSupervisor
     {
-        public List<ViewClienteSupervisor> DetallesClientes { get; set; } = new List<ViewClienteSupervisor>();
-        public string nombreSupervisor { get; set; } = string.Empty;
-        public int clientesPendientesSupervisor { get; set; }
-        public List<string> DestinoBases { get; set; } = new List<string>();
-        public int clientesAsignadosSupervisor { get; set; }
-        public int totalClientes { get; set; }
+        public Supervisor Supervisor { get; set; } = new Supervisor();
     }
 
     public class ViewClienteSupervisor

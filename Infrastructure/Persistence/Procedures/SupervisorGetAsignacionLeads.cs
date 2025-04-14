@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ALFINapp.Infrastructure.Persistence.Procedures
 {
-    public class SupervisorGetInicioData
+    public class SupervisorGetAsignacionLeads
     {
         public int? IdAsignacion { get; set; }
         public int? IdCliente { get; set; }

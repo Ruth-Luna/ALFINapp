@@ -175,7 +175,7 @@ namespace ALFINapp.Infrastructure.Repositories
             }
         }
 
-        public async Task<DetallesInicioSupervisorDTO> GetInicioSupervisor(int idUsuario)
+        public async Task<List<DetalleBaseClienteDTO>> GetClientesGeneralPaginadoFromSupervisor(int idUsuario)
         {
             try
             {
@@ -183,33 +183,21 @@ namespace ALFINapp.Infrastructure.Repositories
                 var añoActual = hoy.Year;
                 var mesActual = hoy.Month;
 
-                var supervisorData = await _context.supervisor_get_inicio_data.FromSqlRaw(
-                    "EXEC dbo.sp_supervisor_get_inicio_data @IdUsuario = {0}", new SqlParameter("@IdUsuario", idUsuario))
+                var supervisorData = await _context.supervisor_get_asignacion_leads.FromSqlRaw(
+                    "EXEC dbo.sp_supervisor_get_asignacion_de_leads @IdUsuario = {0}", new SqlParameter("@IdUsuario", idUsuario))
                     .ToListAsync();
-
                 if (!supervisorData.Any())
                 {
                     Console.WriteLine("No hay clientes asignados al supervisor.");
-                    return new DetallesInicioSupervisorDTO
-                    {
-                        DetallesClientes = new List<ALFINapp.Application.DTOs.DetallesClienteDTO>()
-                    };
+                    return new List<DetalleBaseClienteDTO>();
                 }
-
-                var detallesClientes = supervisorData.Select(cliente => new ALFINapp.Application.DTOs.DetallesClienteDTO(cliente)).ToList();
-                var detallesClientesl = new DetallesInicioSupervisorDTO
-                {
-                    DetallesClientes = detallesClientes
-                };
-                return detallesClientesl;
+                var detallesClientes = supervisorData.Select(cliente => new ALFINapp.Application.DTOs.DetalleBaseClienteDTO(cliente)).ToList();
+                return detallesClientes;
             }
             catch (System.Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return new DetallesInicioSupervisorDTO
-                {
-                    DetallesClientes = new List<ALFINapp.Application.DTOs.DetallesClienteDTO>()
-                };
+                return new List<DetalleBaseClienteDTO>();
             }
         }
     }

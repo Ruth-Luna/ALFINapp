@@ -52,22 +52,6 @@ namespace ALFINapp.Application.DTOs
         public string? UserV3 { get; set; }
         public int? FlagDeudaVOferta { get; set; }
         public string? PerfilRo { get; set; }
-        public DetallesClienteDTO (SupervisorGetInicioData model)
-        {
-            IdAsignacion = model.IdAsignacion;
-            IdCliente = model.IdCliente;
-            idUsuarioV = model.idUsuarioV;
-            Destino = model.Destino;
-            FechaAsignacionV = model.FechaAsignacionV;
-            DniVendedor = model.DniVendedor;
-            Dni = model.Dni;
-            XAppaterno = model.XAppaterno;
-            XApmaterno = model.XApmaterno;
-            XNombre = model.XNombre;
-            NombresCompletos = model.NombresCompletos;
-            UltimaTipificacion = model.UltimaTipificacion;
-            TipificacionMasRelevante = model.TipificacionMasRelevante;
-        }
         public DetallesClienteDTO (DetalleBase model, BaseCliente model2)
         {
             Dni = model2.Dni;

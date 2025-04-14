@@ -29,36 +29,11 @@ namespace ALFINapp.Application.UseCases.Supervisor
                 {
                     return (false, "No se encontraron datos para el usuario.", new ViewInicioSupervisor());
                 }
-                var supervisorData = await _repositorySupervisor.GetInicioSupervisor(idUsuario);
-                if (supervisorData == null)
-                {
-                    return (true, "No se encontraron datos para el supervisor.", new ViewInicioSupervisor());
-                }
-                int clientesPendientesSupervisor = supervisorData.DetallesClientes.Count(cliente => cliente.idUsuarioV == null);
-                int totalClientes = supervisorData.DetallesClientes.Count();
-                int clientesAsignadosSupervisor = supervisorData.DetallesClientes.Count(cliente => cliente.idUsuarioV != null);
-                
-                var DestinoBases = supervisorData.DetallesClientes
-                                    .Where(ca => ca.Destino != null)
-                                    .Select(ca => ca.Destino)
-                                    .Distinct()
-                                    .ToList();
-                var supervisorList = new List<ViewClienteSupervisor>();
-                foreach (var cliente in supervisorData.DetallesClientes)
-                {
-                    supervisorList.Add(cliente.toView());
-                }
-
+                var supervisorData = new DetallesUsuarioDTO(usuario).ToEntitySupervisor();
                 var supervisorDataFinal = new ViewInicioSupervisor
                 {
-                    DetallesClientes = supervisorList.Take(300).ToList(),
-                    nombreSupervisor = $"{usuario.NombresCompletos}",
-                    clientesPendientesSupervisor = clientesPendientesSupervisor,
-                    clientesAsignadosSupervisor = clientesAsignadosSupervisor,
-                    totalClientes = totalClientes,
-                    DestinoBases = DestinoBases.Where(destino => destino != null).Cast<string>().ToList()
+                    Supervisor = supervisorData,
                 };
-
                 return (true, "Correcto", supervisorDataFinal);
             }
             catch (System.Exception ex)

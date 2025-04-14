@@ -113,5 +113,33 @@ namespace ALFINapp.Application.DTOs
                 Correo = Correo
             };
         }
+        public Supervisor ToEntitySupervisor ()
+        {
+            return new Supervisor
+            {
+                IdUsuario = IdUsuario,
+                Dni = Dni,
+                NombresCompletos = NombresCompletos,
+                Rol = Rol,
+                Departamento = Departamento,
+                Provincia = Provincia,
+                Distrito = Distrito,
+                Telefono = Telefono,
+                FechaRegistro = FechaRegistro,
+                Estado = Estado,
+                IDUSUARIOSUP = IDUSUARIOSUP,
+                RESPONSABLESUP = RESPONSABLESUP,
+                REGION = REGION,
+                contraseña = contraseña,
+                NOMBRECAMPAÑA = NOMBRECAMPAÑA,
+                IdRol = IdRol,
+                FechaActualizacion = FechaActualizacion,
+                TipoDocumento = TipoDocumento,
+                IdUsuarioAccion = IdUsuarioAccion,
+                FechaInicio = FechaInicio,
+                FechaCese = FechaCese,
+                Correo = Correo
+            };
+        }
     }
 }

@@ -16,7 +16,6 @@ namespace ALFINapp.Application.DTOs
         public string? XApmaterno { get; set; }
         public string? XNombre { get; set; }
         public int? Edad { get; set; }
-
         //Propiedades de la tabla DetalleBase
         public decimal? OfertaMax { get; set; }
         public string? Campaña { get; set; }
@@ -31,14 +30,11 @@ namespace ALFINapp.Application.DTOs
         public decimal? Oferta36m { get; set; }
         public decimal? Tasa36m { get; set; }
         public decimal? Cuota36m { get; set; }
-
         //Detalles relevantes de Bse Cliente
         public string? Departamento { get; set; }
         public string? Provincia { get; set; }
         public string? Distrito { get; set; }
-
         //Detalles relevantes de DetalleBase
-
         public string? Sucursal { get; set; }
         public string? AgenciaComercial { get; set; }
         public string? TipoCliente { get; set; }
@@ -50,7 +46,6 @@ namespace ALFINapp.Application.DTOs
         //Ids y demas NO MOSTRABLE
         public int? IdAsignacion { get; set; }
         public int? IdBase { get; set; }
-
         //Tabla clientes_asignados
         public DateTime? FechaAsignacionVendedor { get; set; }
         public bool FinalizarTipificacion { get; set; }
@@ -59,8 +54,27 @@ namespace ALFINapp.Application.DTOs
         public int? PesoTipificacionMayor { get; set; }
         public DateTime? FechaTipificacionDeMayorPeso { get; set; }
         public int? IdUsuarioV { get; set; }
+        public string? DniVendedor { get; set; }
+        public string? Destino { get; set; }
         public string? TraidoDe { get; set; }
+        public string? UltimaTipificacion { get; set; }
+        public DetalleBaseClienteDTO() { }
+        public DetalleBaseClienteDTO(SupervisorGetAsignacionLeads model)
+        {
+            Dni = model.Dni;
+            XAppaterno = model.XAppaterno;
+            XApmaterno = model.XApmaterno;
+            XNombre = model.XNombre;
+            IdBase = model.IdCliente;
+            IdAsignacion = model.IdAsignacion;
+            IdUsuarioV = model.idUsuarioV;
+            FechaAsignacionVendedor = model.FechaAsignacionV;
 
+            UltimaTipificacion = model.UltimaTipificacion;
+            TipificacionDeMayorPeso = model.TipificacionMasRelevante;
+            DniVendedor = model.DniVendedor;
+            Destino = model.Destino;
+        }
         public DetalleBaseClienteDTO(InicioDetallesClientesFromAsesor model)
         {
             Dni = model.Dni;
@@ -79,7 +93,6 @@ namespace ALFINapp.Application.DTOs
             FechaTipificacionDeMayorPeso = model.FechaTipificacionDeMayorPeso;
             PrioridadSistema = model.PrioridadSistema;
         }
-
         public DetalleBaseClienteDTO(LeadsGetClientesAsignadosGestionLeads model)
         {
             Dni = model.Dni;
@@ -99,7 +112,6 @@ namespace ALFINapp.Application.DTOs
             PrioridadSistema = model.PrioridadSistema;
             TraidoDe = model.TraidoDe;
         }
-
         public DetalleBaseClienteDTO(ClientesAsignado model)
         {
             IdAsignacion = model.IdAsignacion;
@@ -155,6 +167,5 @@ namespace ALFINapp.Application.DTOs
             cliente.TraidoDe = TraidoDe;
             return cliente;
         }
-
     }
 }

@@ -1,125 +1,63 @@
 @model ALFINapp.API.Models.ViewInicioSupervisor
 
-@{
-    var usuarioNombre = Model.nombreSupervisor;
-
-    var clientesPendientesSupervisor = Model.clientesPendientesSupervisor;
-    var totalClientes = Model.totalClientes;
-    var clientesAsignadosSupervisor = Model.clientesAsignadosSupervisor;
-    var destinoBases = Model.DestinoBases;
-}
-
 @section Styles {
     <link rel="stylesheet" href="~/css/main_page.css">
 }
 
 <div class="container mt-4">
-    <div class="container mb-3">
-        <div class="row align-items-center">
-            <div class="col-12 col-md-6 mb-3 mb-md-0">
-                <h2 class="mb-0">Supervisor - @usuarioNombre</h2>
-                <div class="spacing"></div>
-                <div>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Base</th>
-                                <th>Asignado a Asesores</th>
-                                <th>Disponible</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>@totalClientes</td>
-                                <td>@clientesAsignadosSupervisor</td>
-                                <td>@clientesPendientesSupervisor</td>
-                            </tr>
-                        </tbody>
-                    </table>
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h2>Bienvenido, @Model.Supervisor.NombresCompletos</h2>
+            <p class="text-muted">Este es tu panel de inicio</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <!-- Información básica -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    Información del Supervisor
+                </div>
+                <div class="card-body">
+                    <p><strong>DNI:</strong> @Model.Supervisor.Dni</p>
+                    <p><strong>Rol:</strong> @Model.Supervisor.Rol</p>
+                    <p><strong>Teléfono:</strong> @Model.Supervisor.Telefono</p>
+                    <p><strong>Correo:</strong> @Model.Supervisor.Correo</p>
+                    <p><strong>Ubicación:</strong> @Model.Supervisor.Departamento, @Model.Supervisor.Provincia, @Model.Supervisor.Distrito</p>
+                    <p><strong>Fecha de Registro:</strong> @Model.Supervisor.FechaRegistro?.ToString("dd/MM/yyyy")</p>
                 </div>
             </div>
-            <div class="col-12 col-md-6 d-flex flex-column align-items-center">
-                <div class="d-flex flex-column align-items-center w-100">
-                    <div class="d-flex justify-content-between w-100 mb-3">
-                        <div class="me-2">
-                            <label for="fechaInicio">Fecha Inicio:</label>
-                            <input type="date" id="fechaInicio" class="form-control" />
-                            <label for="fechaFin">Fecha Fin:</label>
-                            <input type="date" id="fechaFin" class="form-control" />
-                            <label for="BaseDestino">Destino</label>
-                            <select class="form-control" name="BaseDestino" id="BaseDestino">
-                                <option value="">Seleccione una Base de Destino</option>
-                                @if (destinoBases != null)
-                                {
-                                    @foreach (var destinoBase in destinoBases)
-                                    {
-                                        <option value="@destinoBase">@destinoBase</option>
-                                    }
-                                }
-                            </select>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-between w-100">
-                        <a href="javascript:void(0);" class="btn btn-primary mb-3 ms-2"
-                            onclick="descargarDatos()">Descargar Datos</a>
-                    </div>
+        </div>
+
+        <!-- Información de campaña -->
+        <div class="col-md-6 mt-4 mt-md-0">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    Campaña Actual
+                </div>
+                <div class="card-body">
+                    <p><strong>Nombre de Campaña:</strong> @Model.Supervisor.NOMBRECAMPAÑA</p>
+                    <p><strong>Responsable Supervisor:</strong> @Model.Supervisor.RESPONSABLESUP</p>
+                    <p><strong>Región:</strong> @Model.Supervisor.REGION</p>
+                    <p><strong>Fecha de Inicio:</strong> @Model.Supervisor.FechaInicio?.ToString("dd/MM/yyyy")</p>
+                    <p><strong>Fecha de Cese:</strong> @Model.Supervisor.FechaCese?.ToString("dd/MM/yyyy")</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Tabla para mostrar los DetalleBases/ventas -->
-    <div class="table-responsive">
-        <table class="table table-bordered" id="clientesTable">
-            <thead>
-                <tr>
-                    <th>DNI Cliente</th>
-                    <th>
-                        Nombres del Cliente
-                        <!--<button class="btn btn-link p-0"
-                            onclick="sortTable('clientesTable', 2, 'string')">Ordenar</button>-->
-                    </th>
-
-                    <th>
-                        Asesor Asignado
-                        <!--<button class="btn btn-link p-0"
-                            onclick="sortTable('clientesTable', 3, 'string')">Ordenar</button>-->
-                    </th>
-
-                    <th>
-                        Ultima Tipificacion
-                    </th>
-                    <th>
-                        Tipificacion mas Relevante
-                    </th>
-
-                    <!--<th>Asigne o Modifique la Asignacion</th>
-                        <td><a href="javascript:void(0);" class="btn btn-primary"
-                                onclick="loadModificarVendedorAsignado(SupervisorDTO.IdAsignacion)">Modificar</a>
-                    </td>-->
-                </tr>
-            </thead>
-            <tbody id="data-table">
-                @foreach (var SupervisorDTO in Model.DetallesClientes)
-                {
-                    <tr>
-                        <td>@SupervisorDTO.Dni</td>
-                        <td>@SupervisorDTO.XNombre.ToUpper() @SupervisorDTO.XAppaterno.ToUpper()
-                            @SupervisorDTO.XApmaterno.ToUpper()</td>
-                        <td>@SupervisorDTO.NombresCompletos.ToUpper()</td>
-                        <td>@SupervisorDTO.UltimaTipificacion</td>
-                        <td>@SupervisorDTO.TipificacionMasRelevante</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-    <div class="alert alert-info mt-3" role="alert">
-        <strong>Nota:</strong> Las demas entradas han sido truncadas.
+    <!-- Botones rápidos (puedes enlazar acciones futuras aquí) -->
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <a class="btn btn-outline-primary me-2" href="#">Ver Clientes</a>
+            <a class="btn btn-outline-secondary" href="#">Ver Reportes</a>
+        </div>
     </div>
 </div>
 
-<div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+<!-- Modal reutilizable -->
+<div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true" data-bs-focus="false">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
         <div class="modal-content">
             <div class="modal-header">
@@ -128,7 +66,7 @@
             </div>
             <div class="modal-body">
                 <div id="modalContentGeneralTemplate">
-                    <!-- Aquí se cargará el formulario de agregar cliente -->
+                    @* Acá se cargará dinámicamente el contenido del modal *@
                 </div>
             </div>
         </div>
