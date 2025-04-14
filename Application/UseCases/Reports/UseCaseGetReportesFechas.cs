@@ -16,7 +16,10 @@ namespace ALFINapp.Application.UseCases.Reports
         {
             _repositoryReports = repositoryReports;
         }
-        public async Task<(bool IsSuccess, string Message, ViewReportesFecha Data)> Execute(string fecha, int idUsuario, int rol)
+        public async Task<(bool IsSuccess, string Message, ViewReportesFecha Data)> Execute(
+            string fecha, 
+            int idUsuario, 
+            int rol)
         {
             try
             {

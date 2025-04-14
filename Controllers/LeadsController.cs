@@ -9,12 +9,15 @@ namespace ALFINapp.Controllers
     {
         private readonly ILogger<LeadsController> _logger;
         private readonly IUseCaseGetAsignacionLeads _useCaseGetAsignacionLeads;
+        private readonly IUseCaseGetFilterLeadsGeneral _useCaseGetFilterLeadsGeneral;
         public LeadsController(
             ILogger<LeadsController> logger,
-            IUseCaseGetAsignacionLeads useCaseGetAsignacionLeads)
+            IUseCaseGetAsignacionLeads useCaseGetAsignacionLeads,
+            IUseCaseGetFilterLeadsGeneral useCaseGetFilterLeadsGeneral)
         {
             _logger = logger;
             _useCaseGetAsignacionLeads = useCaseGetAsignacionLeads;
+            _useCaseGetFilterLeadsGeneral = useCaseGetFilterLeadsGeneral;
         }
         [HttpGet]
         public async Task<IActionResult> Gestion(int paginaInicio = 0, int paginaFinal = 1)
@@ -61,9 +64,8 @@ namespace ALFINapp.Controllers
                 return RedirectToAction("Redireccionar", "Error");
             }
         }
-
         [HttpGet]
-        public async Task<IActionResult> GestionPag(int paginaInicio = 0, int paginaFinal = 1)
+        public async Task<IActionResult> FilterGestion (string search, string typeFilter)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)
@@ -77,38 +79,15 @@ namespace ALFINapp.Controllers
                 TempData["MessageError"] = "No se ha encontrado el rol del usuario";
                 return RedirectToAction("Index", "Home");
             }
-
-            var executeInicio = await _useCaseGetAsignacionLeads.Execute(usuarioId.Value, rol.Value, paginaInicio, paginaFinal);
-            if (!executeInicio.IsSuccess || executeInicio.Data == null)
+            var executeFilter = await _useCaseGetFilterLeadsGeneral.Execute(typeFilter, search);
+            if (!executeFilter.IsSuccess || executeFilter.Data == null)
             {
-                TempData["MessageError"] = executeInicio.Message;
+                TempData["MessageError"] = executeFilter.Message;
                 return RedirectToAction("Redireccionar", "Error");
             }
-
-            if (rol.Value == 3)
-            {
-                var dataInicio = executeInicio.Data;
-                ViewData["TotalClientes"] = dataInicio.clientesTotal;
-                ViewData["ClientesPendientes"] = dataInicio.clientesPendientes;
-                ViewData["ClientesTipificados"] = dataInicio.clientesTipificados;
-                ViewData["UsuarioNombre"] = dataInicio.Vendedor != null ? dataInicio.Vendedor.NombresCompletos : "Usuario No Encontrado";
-                ViewData["ClientesTraidosDBALFIN"] = dataInicio.ClientesAlfin;
-                return Json (new
-                {
-                    data = dataInicio.ClientesA365
-                });
-            }
-            else if (rol == 2)
-            {
-                var dataInicio = executeInicio.Data;
-                return View("GestionS", dataInicio);
-            }
-            else
-            {
-                TempData["MessageError"] = "El rol del usuario no es válido";
-                return RedirectToAction("Redireccionar", "Error");
-            }
+            return PartialView("_GestionFiltro", executeFilter.Data);
         }
+        
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

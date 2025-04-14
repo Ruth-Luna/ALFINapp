@@ -38,7 +38,6 @@ namespace ALFINapp.Infrastructure.Repositories
                 {
                     dtoEnvio.Add(new DetalleBaseClienteDTO(cliente));
                 }
-
                 return dtoEnvio;
             }
             catch (System.Exception e)
@@ -46,36 +45,46 @@ namespace ALFINapp.Infrastructure.Repositories
                 Console.WriteLine(e.Message);
                 return null;
             }
-
         }
 
-
-        public List<DetalleBaseClienteDTO>? GetClientesFromVendedor(int IdUsuarioVendedor)
+        public async Task<List<DetalleBaseClienteDTO>> GetClientesFiltradoPaginadoFromVendedor(
+            int IdUsuarioVendedor, 
+            string? filter, 
+            string? searchfield, 
+            int IntervaloInicio, 
+            int IntervaloFin)
         {
             try
             {
-                var clientes = _context
-                .inicio_detalles_clientes_from_asesor
-                .FromSqlRaw("EXECUTE sp_asesores_get_clientes_data_for_inicio @IdUsuarioVendedor = {0}",
-                new SqlParameter("@IdUsuarioVendedor", IdUsuarioVendedor))
-                .ToList();
-                if (clientes.Count == 0)
+                var parameters = new[]
                 {
-                    return null;
+                    new SqlParameter("@IdUsuarioVendedor", IdUsuarioVendedor),
+                    new SqlParameter("@IntervaloInicio", IntervaloInicio),
+                    new SqlParameter("@IntervaloFin", IntervaloFin)
+                };
+                var getAllBase = await _context
+                    .leads_get_clientes_asignados_gestion_leads
+                    .FromSqlRaw($"EXECUTE sp_leads_get_clientes_asignados_for_gestion_de_leads_filtro_por_{filter} @IdUsuarioVendedor, @NombreCliente, @IntervaloInicio, @IntervaloFin",
+                    parameters)
+                    .ToListAsync();
+                if (getAllBase.Count == 0)
+                {
+                    return new List<DetalleBaseClienteDTO>();
                 }
                 var dtoEnvio = new List<DetalleBaseClienteDTO>();
-                foreach (var cliente in clientes)
+                foreach (var cliente in getAllBase)
                 {
                     dtoEnvio.Add(new DetalleBaseClienteDTO(cliente));
                 }
                 return dtoEnvio;
             }
-            catch (System.Exception e)
+            catch (System.Exception ex)
             {
-                Console.WriteLine(e.Message);
-                return null;
+                Console.WriteLine(ex.Message);
+                return new List<DetalleBaseClienteDTO>();
             }
         }
+
         public async Task<List<DetalleBaseClienteDTO>> GetClientesGeneralPaginadoFromVendedor(
             int IdUsuarioVendedor,
             int IntervaloInicio,

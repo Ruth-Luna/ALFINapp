@@ -1,0 +1,148 @@
+@model List<ALFINapp.API.Models.ViewClienteDetalles>
+@{
+}
+
+<table class="table table-bordered" id="clientesTable">
+    <thead>
+        <tr>
+            <th>Ver Cliente:</th>
+            <th>
+                <span>DNI</span>
+            </th>
+            <th>
+                <span>Nombres Completos</span>
+            </th>
+            <th>
+                <span>Oferta Max</span>
+            </th>
+            <th>
+                <span>Campaña</span>
+            </th>
+            <th>
+                <span>Fecha Asignacion</span>
+            </th>
+            <th>
+                <span>Comentario Principal</span>
+            </th>
+            <th>
+                <span>Tipificacion mas Relevante</span>
+            </th>
+            <th>
+                <span>Fecha de la Tipificacion</span>
+            </th>
+            <th>
+                <span>Prioridad</span>
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr>
+            <td></td>
+            <td>
+                <button class="btn btn-warning p-0 mt-auto"
+                    onclick="sortTableGestionLeads('clientesTable', 1, 'number')" data-sort-ignore>
+                    &#x25BC;
+                </button>
+            </td>
+            <td>
+                <button class="btn btn-warning p-0 mt-auto"
+                    onclick="sortTableGestionLeads('clientesTable', 2, 'string')" data-sort-ignore>
+                    &#x25BC;
+                </button>
+            </td>
+            <td>
+                <button class="btn btn-warning p-0 mt-auto"
+                    onclick="sortTableGestionLeads('clientesTable', 3, 'number')" data-sort-ignore>
+                    &#x25BC;
+                </button>
+            </td>
+            <td>
+                <button class="btn btn-warning p-0 mt-auto"
+                    onclick="sortTableGestionLeads('clientesTable', 4, 'string')" data-sort-ignore>
+                    &#x25BC;
+                </button>
+            </td>
+            <td>
+                <button class="btn btn-warning p-0 mt-auto" onclick="sortTableGestionLeads('clientesTable', 5, 'date')"
+                    data-sort-ignore>
+                    &#x25BC;
+                </button>
+            </td>
+            <td>
+                <button class="btn btn-warning p-0 mt-auto"
+                    onclick="sortTableGestionLeads('clientesTable', 6, 'string')" data-sort-ignore>
+                    &#x25BC;
+                </button>
+            </td>
+            <td>
+                <button class="btn btn-warning p-0 mt-auto"
+                    onclick="sortTableGestionLeads('clientesTable', 7, 'string')" data-sort-ignore>
+                    &#x25BC;
+                </button>
+            </td>
+            <td>
+                <button class="btn btn-warning p-0 mt-auto" onclick="sortTableGestionLeads('clientesTable', 8, 'date')"
+                    data-sort-ignore>
+                    &#x25BC;
+                </button>
+            </td>
+            <td>
+                <button class="btn btn-warning p-0 mt-auto"
+                    onclick="sortTableGestionLeads('clientesTable', 9, 'string')" data-sort-ignore>
+                    &#x25BC;
+                </button>
+            </td>
+        </tr>
+        @foreach (var Cliente in Model)
+        {
+            var pesotipMayor = Cliente.PesoTipificacionMayor;
+            var rowClass = ""; // Inicializa como cadena vacía
+            if (pesotipMayor != null)
+            {
+                rowClass = "table-success"; // Clase base para filas con tipificación
+
+                if (pesotipMayor > 100)
+                {
+                    rowClass += " table-danger"; // Clase adicional para peso mayor a 100
+                }
+            }
+            <tr class="@rowClass">
+                <td class="text-center">
+                    @if (Cliente.TraidoDe == "A365")
+                    {
+                        <a href="javascript:void(0);" class="btn btn-primary"
+                            onclick="loadTipificarCliente(@Cliente.IdBase,'TipificarClienteView')">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        <span class="badge bg-primary">A365</span>
+
+                    }
+                    else if (Cliente.TraidoDe == "ALFIN")
+                    {
+                        <a href="javascript:void(0);" class="btn btn-primary"
+                            onclick="loadTipificarCliente(@Cliente.IdBase,'TipificarClienteDBALFINView')">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        <span class="badge bg-info">ALFIN</span>
+                    }
+                </td>
+                <td>@Cliente.Dni</td>
+                <td>@(Cliente.XAppaterno?.ToUpper() ?? "") @(Cliente.XApmaterno?.ToUpper() ?? "")
+                    @(Cliente.XNombre?.ToUpper() ?? "")
+                <td>@Cliente.OfertaMax</td>
+                <td>@(Cliente.Campaña?.ToUpper() ?? "N/A")</td>
+                <td>@Cliente.FechaAsignacionVendedor</td>
+                <td><textarea name="" id="comentarioGeneral[@Cliente.IdAsignacion]">@Cliente.ComentarioGeneral</textarea>
+                    <a href="javascript:void(0);" class="btn btn-primary"
+                        onclick="guardarComentarioGeneral(@Cliente.IdAsignacion)">
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                </td>
+                <td>@Cliente.TipificacionDeMayorPeso</td>
+                <td>@Cliente.FechaTipificacionDeMayorPeso</td>
+                <td>@Cliente.PrioridadSistema</td>
+            </tr>
+        }
+    </tbody>
+</table>

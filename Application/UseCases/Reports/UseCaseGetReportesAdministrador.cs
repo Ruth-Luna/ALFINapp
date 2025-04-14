@@ -50,10 +50,8 @@ namespace ALFINapp.Application.UseCases.Reports
                 var lineasGestionDerivacion = await _repositoryReports.LineaGestionVsDerivacionDiaria();
                 var viewLineasGestionDerivacion = new List<ViewLineaGestionVsDerivacion>();
                 reporteGeneral.lineaGestionVsDerivacion = lineasGestionDerivacion.toViewLineaGestionVsDerivacion();
-
                 var pieGestionAsignados = await _repositoryReports.GetReportesGpieGeneral();
                 reporteGeneral.ProgresoGeneral = pieGestionAsignados.toViewPie();
-                
                 return (true, "Reportes obtenidos correctamente", reporteGeneral);
             }
             catch (System.Exception ex)
