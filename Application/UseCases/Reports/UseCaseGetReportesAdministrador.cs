@@ -21,7 +21,7 @@ namespace ALFINapp.Application.UseCases.Reports
             _repositoryClientes = repositoryClientes;
             _repositoryUsuarios = repositoryUsuarios;
         }
-        public async Task<(bool IsSuccess, string Message, ViewReportesGeneral? Data)> Execute()
+        public async Task<(bool IsSuccess, string Message, ViewReportesGeneral? Data)> Execute(int idUsuario)
         {
             try
             {
@@ -47,10 +47,13 @@ namespace ALFINapp.Application.UseCases.Reports
                 }
                 reporteGeneral.Supervisores = supervisoresViews;
                 reporteGeneral.Asesores = usuariosViews;
-                var lineasGestionDerivacion = await _repositoryReports.LineaGestionVsDerivacionDiaria();
+                // GRAFICAS DE REPORTES Generales
+                var lineasGestionDerivacion = await _repositoryReports.LineaGestionVsDerivacionDiaria(idUsuario);
+                var pieGestionAsignados = await _repositoryReports.GetReportesGpieGeneral(idUsuario);
+                var barTop5Asesores = await _repositoryReports.GetReportesBarTop5General(idUsuario);
                 var viewLineasGestionDerivacion = new List<ViewLineaGestionVsDerivacion>();
                 reporteGeneral.lineaGestionVsDerivacion = lineasGestionDerivacion.toViewLineaGestionVsDerivacion();
-                var pieGestionAsignados = await _repositoryReports.GetReportesGpieGeneral();
+                reporteGeneral.top5asesores = barTop5Asesores.toViewListReporteBarGeneral();
                 reporteGeneral.ProgresoGeneral = pieGestionAsignados.toViewPie();
                 return (true, "Reportes obtenidos correctamente", reporteGeneral);
             }

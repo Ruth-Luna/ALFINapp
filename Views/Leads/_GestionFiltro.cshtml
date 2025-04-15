@@ -1,4 +1,4 @@
-@model List<ALFINapp.API.Models.ViewClienteDetalles>
+@model ALFINapp.API.Models.ViewGestionLeads
 @{
 }
 
@@ -94,7 +94,7 @@
                 </button>
             </td>
         </tr>
-        @foreach (var Cliente in Model)
+        @foreach (var Cliente in Model.ClientesA365)
         {
             var pesotipMayor = Cliente.PesoTipificacionMayor;
             var rowClass = ""; // Inicializa como cadena vacía

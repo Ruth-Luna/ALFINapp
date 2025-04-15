@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     cargarDerivacionesGenerales();
     cargarProgresoAsignacion();
     cargarProgreso();
+    cargarTop5DerivacionesGenerales();
 });
 
 function cargarDerivacionesGenerales() {
@@ -258,3 +259,65 @@ function cargarProgresoAsignacion() {
     chart.render();
 }
 
+function cargarTop5DerivacionesGenerales() {
+    var top5Der = reportesData["top5asesores"];
+    var contador = [];
+    var nombres = [];
+    var dnis = [];
+
+    top5Der.forEach(item => {
+        contador.push(item["contador"]);
+        nombres.push(item["nombres_completos"]);
+        dnis.push(item["dni"]);
+    });
+
+    var divTop5 = document.getElementById('div-derivaciones-top-5');
+    divTop5.style.display = 'block';
+
+    var options = {
+        chart: {
+            type: "bar",
+            height: 350
+        },
+        series: [
+            {
+                name: "Total Derivaciones",
+                data: contador
+            }
+        ],
+        xaxis: {
+            categories: nombres,
+            title: {
+                text: "Asesores"
+            }
+        },
+        yaxis: {
+            title: {
+                text: "Total Derivaciones"
+            }
+        },
+        colors: ["#008FFB"],
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: "50%"
+            }
+        },
+        dataLabels: {
+            enabled: true
+        },
+        tooltip: {
+            y: {
+                formatter: function (val, index) {
+                    return `${val} derivaciones (DNI: ${dnis[index.dataPointIndex]})`;
+                }
+            }
+        },
+        legend: {
+            position: "top"
+        }
+    };
+    
+    var chart = new ApexCharts(document.querySelector("#chart-top-5-derivaciones"), options);
+    chart.render();
+}

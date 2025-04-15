@@ -59,12 +59,13 @@ namespace ALFINapp.Infrastructure.Repositories
                 var parameters = new[]
                 {
                     new SqlParameter("@IdUsuarioVendedor", IdUsuarioVendedor),
+                    new SqlParameter("@Search", searchfield),
                     new SqlParameter("@IntervaloInicio", IntervaloInicio),
                     new SqlParameter("@IntervaloFin", IntervaloFin)
                 };
                 var getAllBase = await _context
                     .leads_get_clientes_asignados_gestion_leads
-                    .FromSqlRaw($"EXECUTE sp_leads_get_clientes_asignados_for_gestion_de_leads_filtro_por_{filter} @IdUsuarioVendedor, @NombreCliente, @IntervaloInicio, @IntervaloFin",
+                    .FromSqlRaw($"EXECUTE sp_leads_get_clientes_asignados_for_gestion_de_leads_filtro_por_{filter} @IdUsuarioVendedor, @Search, @IntervaloInicio, @IntervaloFin",
                     parameters)
                     .ToListAsync();
                 if (getAllBase.Count == 0)

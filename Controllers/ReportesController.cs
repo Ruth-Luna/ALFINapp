@@ -7,6 +7,7 @@ using ALFINapp.API.Filters;
 using ALFINapp.API.Models;
 using ALFINapp.Application.Interfaces.Reports;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.Extensions.Logging;
 
 namespace ALFINapp.API.Controllers
@@ -55,7 +56,7 @@ namespace ALFINapp.API.Controllers
             ViewData["UsuarioId"] = idUsuario.Value;
             if (rol == 1 || rol == 4)
             {
-                var reportesAdministrador = await _useCaseGetReportesAdministrador.Execute();
+                var reportesAdministrador = await _useCaseGetReportesAdministrador.Execute(idUsuario.Value);
                 if (!reportesAdministrador.IsSuccess)
                 {
                     TempData["MessageError"] = reportesAdministrador.Message;

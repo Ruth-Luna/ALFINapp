@@ -65,7 +65,7 @@ namespace ALFINapp.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> FilterGestion (string search, string typeFilter)
+        public async Task<IActionResult> FilterGestion (string search, string typeFilter, int paginaInicio = 0, int paginaFinal = 1)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)
@@ -73,13 +73,7 @@ namespace ALFINapp.Controllers
                 TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
                 return RedirectToAction("Index", "Home");
             }
-            int? rol = HttpContext.Session.GetInt32("RolUser") ?? 0;
-            if (rol == 0)
-            {
-                TempData["MessageError"] = "No se ha encontrado el rol del usuario";
-                return RedirectToAction("Index", "Home");
-            }
-            var executeFilter = await _useCaseGetFilterLeadsGeneral.Execute(typeFilter, search);
+            var executeFilter = await _useCaseGetFilterLeadsGeneral.Execute(usuarioId.Value, typeFilter, search, paginaInicio, paginaFinal);
             if (!executeFilter.IsSuccess || executeFilter.Data == null)
             {
                 TempData["MessageError"] = executeFilter.Message;

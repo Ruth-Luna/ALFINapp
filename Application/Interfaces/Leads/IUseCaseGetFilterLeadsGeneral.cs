@@ -8,11 +8,11 @@ namespace ALFINapp.Application.Interfaces.Leads
 {
     public interface IUseCaseGetFilterLeadsGeneral
     {
-        public Task<(bool IsSuccess, string Message, List<ViewClienteDetalles> Data)> Execute(
+        public Task<(bool IsSuccess, string Message, ViewGestionLeads Data)> Execute(
             int idusuario,
-            int paginaInicio,
-            int paginaFinal,
             string filter,
-            string searchfield);
+            string searchfield,
+            int paginaInicio = 0,
+            int paginaFinal = 1);
     }
 }

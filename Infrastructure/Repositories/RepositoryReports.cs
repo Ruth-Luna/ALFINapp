@@ -14,75 +14,6 @@ namespace ALFINapp.Infrastructure.Repositories
         {
             _context = context;
         }
-        public async Task<DetallesReportesAdministradorDTO?> GetReportesAdministradorAsesores()
-        {
-            try
-            {
-                var actualYear = DateTime.Now.Year;
-                var actualMonth = DateTime.Now.Month;
-                var AllAsesores = await _context
-                    .usuarios
-                    .Where(x => x.IdRol == 3
-                        && x.Estado == "ACTIVO")
-                    .ToListAsync();
-                var getDnis = AllAsesores.Select(x => x.Dni).ToHashSet();
-                var Derivaciones = await _context.derivaciones_asesores
-                    .Where(x => getDnis.Contains(x.DniAsesor)
-                        && x.FechaDerivacion.Year == actualYear
-                        && x.FechaDerivacion.Month == actualMonth)
-                    .ToListAsync();
-                var DerivacionesDnisClientes = Derivaciones.Select(x => x.DniCliente).ToHashSet();
-                var Desembolsos = await _context.desembolsos
-                    .Where(x => DerivacionesDnisClientes.Contains(x.DniDesembolso)
-                        && x.FechaDesembolsos.HasValue
-                        && x.FechaDesembolsos.Value.Year == DateTime.Now.Year
-                        && x.FechaDesembolsos.Value.Month == DateTime.Now.Month)
-                    .ToListAsync();
-                var DerivacionesAllInfo = new DetallesReportesAdministradorDTO();
-                foreach (var asesor in AllAsesores)
-                {
-                    var DerivacionesAsesores = new DerivacionesAsesoresList();
-                    DerivacionesAsesores.DniAsesor = asesor.Dni;
-                    DerivacionesAsesores.NombreCompletoAsesor = asesor.NombresCompletos;
-                    DerivacionesAsesores.CantidadDerivaciones = Derivaciones
-                        .Where(x => x.DniAsesor == asesor.Dni)
-                        .Count();
-                    DerivacionesAsesores.AllDerivaciones = Derivaciones
-                        .Where(x => x.DniAsesor == asesor.Dni)
-                        .Select(x => new DerivacionInformacionDesembolsos
-                        {
-                            DerivacionAsesor = x,
-                            FueDesembolsado = Desembolsos
-                                .Where(y => y.DniDesembolso == x.DniCliente)
-                                .Any(),
-                            Desembolso = Desembolsos
-                                .Where(y => y.DniDesembolso == x.DniCliente)
-                                .FirstOrDefault()
-                        })
-                        .ToList();
-                    DerivacionesAsesores.CantidadDerivacionesProcesadas = DerivacionesAsesores
-                        .AllDerivaciones
-                        .Where(x => x.DerivacionAsesor != null && x.DerivacionAsesor.FueProcesado == true)
-                        .Count();
-                    DerivacionesAsesores.CantidadDerivacionesDesembolsadas = DerivacionesAsesores
-                        .AllDerivaciones
-                        .Where(x => x.FueDesembolsado == true)
-                        .Count();
-                    DerivacionesAsesores.CantidadDerivacionesPendientes = DerivacionesAsesores
-                        .AllDerivaciones
-                        .Where(x => x.FueDesembolsado == false)
-                        .Count();
-                    DerivacionesAllInfo.DerivacionesAllInfo = DerivacionesAsesores;
-                }
-                return DerivacionesAllInfo;
-            }
-            catch (System.Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return null;
-            }
-        }
-
         public async Task<DetallesReportesAsesorDTO> GetReportesAsesor(int idUsuario)
         {
             try
@@ -143,44 +74,6 @@ namespace ALFINapp.Infrastructure.Repositories
                 return new DetallesReportesAsesorDTO();
             }
         }
-
-        public async Task<DetallesReportesDerivacionesDTO?> GetReportesDerivacionGral()
-        {
-            try
-            {
-                var getDerivacionesGral = await _context.derivaciones_asesores
-                    .Where(x => x.FechaDerivacion.Year == DateTime.Now.Year
-                        && x.FechaDerivacion.Month == DateTime.Now.Month)
-                    .ToListAsync();
-                var getDnisAsesor = getDerivacionesGral.Select(x => x.DniAsesor).ToHashSet();
-                var getDnisCliente = getDerivacionesGral.Select(x => x.DniCliente).ToHashSet();
-                var getGestionDetalles = await _context.GESTION_DETALLE
-                    .Where(x => getDnisCliente.Contains(x.DocCliente)
-                        && x.FechaGestion.Year == DateTime.Now.Year
-                        && x.FechaGestion.Month == DateTime.Now.Month)
-                    .GroupBy(x => x.DocCliente)
-                    .Select(g => g.OrderByDescending(x => x.IdFeedback).First())
-                    .ToListAsync();
-                var getDesembolsos = await _context.desembolsos
-                    .Where(x => getDnisCliente.Contains(x.DniDesembolso)
-                        && x.FechaDesembolsos.HasValue
-                        && x.FechaDesembolsos.Value.Year == DateTime.Now.Year
-                        && x.FechaDesembolsos.Value.Month == DateTime.Now.Month
-                        && x.Sucursal != null)
-                    .ToListAsync();
-                var detallesReporte = new DetallesReportesDerivacionesDTO();
-                detallesReporte.DerivacionesGral = getDerivacionesGral;
-                detallesReporte.GestionDetalles = getGestionDetalles;
-                detallesReporte.Desembolsos = getDesembolsos;
-                return detallesReporte;
-            }
-            catch (System.Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return null;
-            }
-        }
-
         public async Task<DetallesReportesDerivacionesDTO?> GetReportesGralSupervisor(int idSupervisor)
         {
             try
@@ -342,12 +235,13 @@ namespace ALFINapp.Infrastructure.Repositories
             }
         }
 
-        public async Task<DetallesReportesLineaGestionVsDerivacionDTO> LineaGestionVsDerivacionDiaria()
+        public async Task<DetallesReportesLineaGestionVsDerivacionDTO> LineaGestionVsDerivacionDiaria(int idUsuario)
         {
             try
             {
                 var getData = await _context.reports_g_lineas_gestion_vs_derivacion_diaria
-                    .FromSqlRaw("EXEC SP_REPORTES_GLINEAS_GESTION_VS_DERIVACION_DIARIA")
+                    .FromSqlRaw("EXEC SP_REPORTES_GLINEAS_GESTION_VS_DERIVACION_DIARIA @id_usuario", new SqlParameter("@id_usuario", idUsuario))
+                    .AsNoTracking()
                     .ToListAsync();
 
                 var convertDto = new DetallesReportesLineaGestionVsDerivacionDTO(getData);
@@ -410,15 +304,17 @@ namespace ALFINapp.Infrastructure.Repositories
             }
         }
 
-        public async Task<DetallesReportesGpieDTO> GetReportesGpieGeneral()
+        public async Task<DetallesReportesGpieDTO> GetReportesGpieGeneral(int idUsuario)
         {
             try
             {
                 var getData = await _context.reports_g_pie_derivados_desembolsados
-                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_PORCENTAJE_GESTIONADO_DERIVADO_DESEMBOLSADO")
+                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_PORCENTAJE_GESTIONADO_DERIVADO_DESEMBOLSADO @id_usuario", new SqlParameter("@id_usuario", idUsuario))
+                    .AsNoTracking()
                     .ToListAsync();
                 var getData2 = await _context.reports_g_pie_gestion_asignados
-                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_PORCENTAJE_GESTIONADOS_SOBRE_ASIGNADOS")
+                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_PORCENTAJE_GESTIONADOS_SOBRE_ASIGNADOS @id_usuario", new SqlParameter("@id_usuario", idUsuario))
+                    .AsNoTracking()
                     .ToListAsync();
                 if (getData == null || getData.Count == 0)
                 {
@@ -469,6 +365,29 @@ namespace ALFINapp.Infrastructure.Repositories
             {
                 Console.WriteLine(ex.Message);
                 return new DetallesReportesGpieDTO();
+            }
+        }
+
+        public async Task<DetallesReportesBarDTO> GetReportesBarTop5General(int idUsuario)
+        {
+            try
+            {
+                var getData = await _context.reports_bar_top_5_derivaciones
+                    .FromSqlRaw("EXEC SP_REPORTES_BAR_TOP_5_DERIVACIONES @id_usuario", new SqlParameter("@id_usuario", idUsuario))
+                    .AsNoTracking()
+                    .ToListAsync();
+                if (getData == null || getData.Count == 0)
+                {
+                    Console.WriteLine("No se encontraron datos para la consulta.");
+                    return new DetallesReportesBarDTO();
+                }
+                var convertDto = new DetallesReportesBarDTO(getData);
+                return convertDto;
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new DetallesReportesBarDTO();
             }
         }
     }

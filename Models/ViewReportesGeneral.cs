@@ -9,7 +9,6 @@ namespace ALFINapp.API.Models
     {
         public List<ViewUsuario>? Asesores { get; set; }
         public List<ViewUsuario>? Supervisores { get; set; }
-        public List<ViewReporteDerivaciones>? Derivaciones { get; set; }
         public List<ViewLineaGestionVsDerivacion>? lineaGestionVsDerivacion { get; set; }
         public ViewReportePieGeneral ProgresoGeneral { get; set; } = new ViewReportePieGeneral();
         public int? TotalDerivaciones { get; set; }
@@ -20,19 +19,13 @@ namespace ALFINapp.API.Models
         public int? TotalDerivacionesEnvioForm { get; set; }
         public List<DerivacionesFecha>? NumDerivacionesXFecha { get; set; }
         public List<DerivacionesFecha>? NumDesembolsosXFecha { get; set; }
-        public List<ViewTipificacionesAsesor>? NumDerivacionesXAsesor { get; set; }
+        public List<ViewReporteBarGeneral>? top5asesores { get; set; }
     }
     public class DerivacionesFecha
     {
         public string? Fecha { get; set; }
         public int Contador { get; set; }
     }
-    public class DesembolsosAsesor
-    {
-        public string? Usuario { get; set; }
-        public int Contador { get; set; }
-    }
-    
     public class ViewLineaGestionVsDerivacion
     {
         public DateOnly FECHA { get; set; }
@@ -51,5 +44,11 @@ namespace ALFINapp.API.Models
         public decimal PORCENTAJE_DERIVADOS { get; set; }
         public decimal PORCENTAJE_DESEMBOLSADOS { get; set; }
         public decimal PORCENTAJE_NO_DERIVADO { get; set; }
+    }
+    public class ViewReporteBarGeneral
+    {
+        public string? dni { get; set; }
+        public string? nombres_completos { get; set; }
+        public int contador { get; set; }
     }
 }

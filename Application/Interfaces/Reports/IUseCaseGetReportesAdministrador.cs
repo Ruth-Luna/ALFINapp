@@ -9,6 +9,6 @@ namespace ALFINapp.Application.Interfaces.Reports
 {
     public interface IUseCaseGetReportesAdministrador
     {
-        public Task<(bool IsSuccess, string Message, ViewReportesGeneral? Data)> Execute();
+        public Task<(bool IsSuccess, string Message, ViewReportesGeneral? Data)> Execute(int idUsuario);
     }
 }
