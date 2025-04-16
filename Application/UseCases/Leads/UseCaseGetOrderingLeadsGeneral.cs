@@ -13,7 +13,7 @@ namespace ALFINapp.Application.UseCases.Leads
         {
             try
             {
-                var filtrosValidos = new HashSet<string> { "nombres", "campana", 
+                var ordenamientosValidos = new HashSet<string> { "nombres", "campana", 
                     "oferta", "comentario", "tipificacion", "dni", "fecha" };
                 return (true, "Non Implemented", new ViewGestionLeads());
             }
