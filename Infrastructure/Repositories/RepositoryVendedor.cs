@@ -18,6 +18,33 @@ namespace ALFINapp.Infrastructure.Repositories
             _context = context;
         }
 
+        public async Task<(bool IsSuccess, string Message, int Total, int Tipificados, int Pendientes)> GetCantidadClientesGeneralTotalFromVendedor(int IdUsuarioVendedor)
+        {
+            try
+            {
+                var parameters = new[]
+                {
+                    new SqlParameter("@IdUsuarioVendedor", IdUsuarioVendedor)
+                };
+                var getCantidad = await _context
+                    .leads_get_clientes_asignados_cantidades
+                    .FromSqlRaw("EXECUTE sp_leads_get_clientes_asignados_cantidades @IdUsuarioVendedor",
+                    parameters)
+                    .ToListAsync();
+                var cantidades = getCantidad.FirstOrDefault();
+                if (cantidades == null)
+                {
+                    return (true, "No se encontraron clientes", 0, 0, 0);
+                }
+                return (true, "Non Implemented", cantidades.Total, cantidades.Gestionados, cantidades.Pendientes);
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return (false, "Error al obtener la cantidad de clientes", 0, 0, 0);
+            }
+        }
+
         public List<DetalleBaseClienteDTO>? GetClientesAlfinFromVendedor(int IdUsuarioVendedor)
         {
             try
@@ -48,14 +75,22 @@ namespace ALFINapp.Infrastructure.Repositories
         }
 
         public async Task<List<DetalleBaseClienteDTO>> GetClientesFiltradoPaginadoFromVendedor(
-            int IdUsuarioVendedor, 
-            string? filter, 
-            string? searchfield, 
-            int IntervaloInicio, 
+            int IdUsuarioVendedor,
+            string? filter,
+            string? searchfield,
+            int IntervaloInicio,
             int IntervaloFin)
         {
             try
             {
+                var filtrosValidos = new HashSet<string> { "nombres", "campana", 
+                    "oferta", "comentario", "tipificacion", "dni" };
+
+                if (string.IsNullOrWhiteSpace(filter) || !filtrosValidos.Contains(filter))
+                {
+                    throw new ArgumentException("Filtro no válido");
+                }
+
                 var parameters = new[]
                 {
                     new SqlParameter("@IdUsuarioVendedor", IdUsuarioVendedor),
@@ -63,11 +98,13 @@ namespace ALFINapp.Infrastructure.Repositories
                     new SqlParameter("@IntervaloInicio", IntervaloInicio),
                     new SqlParameter("@IntervaloFin", IntervaloFin)
                 };
+#pragma warning disable EF1002 // Risk of vulnerability to SQL injection.
                 var getAllBase = await _context
                     .leads_get_clientes_asignados_gestion_leads
                     .FromSqlRaw($"EXECUTE sp_leads_get_clientes_asignados_for_gestion_de_leads_filtro_por_{filter} @IdUsuarioVendedor, @Search, @IntervaloInicio, @IntervaloFin",
                     parameters)
                     .ToListAsync();
+#pragma warning restore EF1002 // Risk of vulnerability to SQL injection.
                 if (getAllBase.Count == 0)
                 {
                     return new List<DetalleBaseClienteDTO>();

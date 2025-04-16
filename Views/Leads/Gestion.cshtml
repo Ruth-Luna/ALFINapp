@@ -1,9 +1,6 @@
-@model List<ALFINapp.Domain.Entities.Cliente>
+@model ALFINapp.API.Models.ViewGestionLeads
 
 @{
-    var usuarioNombre = ViewData["UsuarioNombre"];
-    var clientesPendientes = ViewData["ClientesPendientes"];
-    int PaginaActual = (int)(ViewData["PaginaActual"] ?? 0);
 }
 
 @section Styles {
@@ -15,7 +12,7 @@
         <div class="row align-items-center">
             <!-- Título -->
             <div class="col-12 col-md-6 mb-3 mb-md-0">
-                <h2 class="text-center text-md-start">ASESOR DE CREDITOS - @usuarioNombre</h2>
+                <h2 class="text-center text-md-start">ASESOR DE CREDITOS - @Model.Vendedor.NombresCompletos</h2>
                 <div>
                     <table class="table table-bordered">
                         <thead>
@@ -27,9 +24,9 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>@ViewData["TotalClientes"]</td>
-                                <td>@ViewData["ClientesTipificados"]</td>
-                                <td>@clientesPendientes</td>
+                                <td>@Model.clientesTotal</td>
+                                <td>@Model.clientesTipificados</td>
+                                <td>@Model.clientesPendientes</td>
                             </tr>
                         </tbody>
                     </table>
@@ -41,21 +38,23 @@
                     <label for="busqueda-campo-gestion-leads" class="form-label mb-2 mb-md-0 me-md-2 col-1">
                         Buscar por:
                     </label>
-                    <select id="busqueda-campo-gestion-leads" class="form-control me-md-2 col"
+                    <select id="filtro-busqueda-campo-gestion-leads" class="form-control me-md-2 col"
                         onchange="toggleInputFields(this.value)">
-                        <option value="apellidoPaterno">Apellidos y Nombres</option>
-                        <option value="campaña">Campaña</option>
-                        <option value="ofertaMax">Oferta Max</option>
-                        <option value="comentarioPrincipal">Comentario Principal</option>
-                        <option value="tipificacionRelevante">Tipificación más Relevante</option>
+                        <option value="nombres">Apellidos y Nombres</option>
+                        <option value="campana">Campaña</option>
+                        <option value="oferta">Oferta Max</option>
+                        <option value="comentario">Comentario Principal</option>
+                        <option value="tipificacion">Tipificación más Relevante</option>
                         <option value="dni">DNI</option>
-                        <option value="fechaAsignacion">Fecha de Asignacion</option>
+                        <option value="fecha">Fecha de Asignacion</option>
                     </select>
                     <input type="text" class="form-control col me-md-2" id="busqueda-campo-gestion-leads-texto"
                         placeholder="Ingrese valor de búsqueda" />
-                    <a href="javascript:void(0)" class="btn btn-info col"
-                        onclick="filterTablaByDetails('busqueda-campo-gestion-leads', 'busqueda-campo-gestion-leads-texto')"><i
+                    <a href="javascript:void(0)" class="btn btn-info col-1 me-md-2"
+                        onclick="filterTablaByDetails('busqueda-campo-gestion-leads-texto', 'filtro-busqueda-campo-gestion-leads')"><i
                             class="bi bi-search"></i></a>
+                    <a href="javascript:void(0)" class="btn btn-info col-1" id="btn-clean-filters"
+                        onclick="restartDefaultTable()"><i class="bi bi-trash"></i></a>
                     <div class="form-group">
                         <input type="date" class="form-control" id="busqueda-campo-gestion-leads-fecha-start"
                             style="display: none;" placeholder="Fecha Inicial">
@@ -65,14 +64,19 @@
                 </div>
                 <div class="flex-md-row align-items-md-center mt-4">
                     <div class="btn-group justify-content-center">
-                        <a asp-action="Gestion" asp-route-paginaInicio="@(PaginaActual - 1)"
-                            asp-route-paginaFinal="@(PaginaActual)" class="me-2 @(PaginaActual <= 0 ? "disabled" : "")">
+                        <a asp-action="Gestion" asp-route-paginaInicio="@(Model.PaginaActual - 1)"
+                            asp-route-paginaFinal="@(Model.PaginaActual)" 
+                            asp-route-filter="@(Model.filtro)"
+                            asp-route-searchField="@(Model.searchfield)"
+                            class="me-2 @(Model.PaginaActual <= 0 ? "disabled" : "")">
                             <i class="bi bi-arrow-left-circle"></i>
                         </a>
-
-                        <span id="page-indicator" class="me-2"> Página @(PaginaActual + 1) </span>
-                        <a asp-action="Gestion" asp-route-paginaInicio="@(PaginaActual + 1)"
-                            asp-route-paginaFinal="@(PaginaActual + 2)" class="me-2">
+                        <span id="page-indicator" class="me-2"> Página @(Model.PaginaActual + 1) </span>
+                        <a asp-action="Gestion" asp-route-paginaInicio="@(Model.PaginaActual + 1)"
+                            asp-route-paginaFinal="@(Model.PaginaActual + 2)" 
+                            asp-route-filter="@(Model.filtro)"
+                            asp-route-searchField="@(Model.searchfield)"
+                            class="me-2">
                             <i class="bi bi-arrow-right-circle"></i>
                         </a>
                     </div>
@@ -124,60 +128,60 @@
                     <td></td>
                     <td>
                         <button class="btn btn-warning p-0 mt-auto"
-                            onclick="sortTableGestionLeads('clientesTable', 1, 'number')" data-sort-ignore>
+                            onclick="sortTableGestionLeads('dni')" data-sort-ignore>
                             &#x25BC;
                         </button>
                     </td>
                     <td>
                         <button class="btn btn-warning p-0 mt-auto"
-                            onclick="sortTableGestionLeads('clientesTable', 2, 'string')" data-sort-ignore>
+                            onclick="sortTableGestionLeads('nombres')" data-sort-ignore>
                             &#x25BC;
                         </button>
                     </td>
                     <td>
                         <button class="btn btn-warning p-0 mt-auto"
-                            onclick="sortTableGestionLeads('clientesTable', 3, 'number')" data-sort-ignore>
+                            onclick="sortTableGestionLeads('oferta')" data-sort-ignore>
                             &#x25BC;
                         </button>
                     </td>
                     <td>
                         <button class="btn btn-warning p-0 mt-auto"
-                            onclick="sortTableGestionLeads('clientesTable', 4, 'string')" data-sort-ignore>
+                            onclick="sortTableGestionLeads('campana')" data-sort-ignore>
                             &#x25BC;
                         </button>
                     </td>
                     <td>
                         <button class="btn btn-warning p-0 mt-auto"
-                            onclick="sortTableGestionLeads('clientesTable', 5, 'date')" data-sort-ignore>
+                            onclick="sortTableGestionLeads('fecha')" data-sort-ignore>
                             &#x25BC;
                         </button>
                     </td>
                     <td>
                         <button class="btn btn-warning p-0 mt-auto"
-                            onclick="sortTableGestionLeads('clientesTable', 6, 'string')" data-sort-ignore>
+                            onclick="sortTableGestionLeads('comentario')" data-sort-ignore>
                             &#x25BC;
                         </button>
                     </td>
                     <td>
                         <button class="btn btn-warning p-0 mt-auto"
-                            onclick="sortTableGestionLeads('clientesTable', 7, 'string')" data-sort-ignore>
+                            onclick="sortTableGestionLeads('tipificacion')" data-sort-ignore>
                             &#x25BC;
                         </button>
                     </td>
                     <td>
                         <button class="btn btn-warning p-0 mt-auto"
-                            onclick="sortTableGestionLeads('clientesTable', 8, 'date')" data-sort-ignore>
+                            onclick="sortTableGestionLeads('fecha')" data-sort-ignore>
                             &#x25BC;
                         </button>
                     </td>
                     <td>
                         <button class="btn btn-warning p-0 mt-auto"
-                            onclick="sortTableGestionLeads('clientesTable', 9, 'string')" data-sort-ignore>
+                            onclick="sortTableGestionLeads('prioridad')" data-sort-ignore>
                             &#x25BC;
                         </button>
                     </td>
                 </tr>
-                @foreach (var Cliente in Model)
+                @foreach (var Cliente in Model.ClientesA365)
                 {
                     var pesotipMayor = Cliente.PesoTipificacionMayor;
                     var rowClass = ""; // Inicializa como cadena vacía

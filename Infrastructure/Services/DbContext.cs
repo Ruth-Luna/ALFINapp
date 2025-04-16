@@ -49,6 +49,7 @@ public class MDbContext : DbContext
     public DbSet<ResultadoVerificacion> resultado_verificacion { get; set; }
     public DbSet<LeadsGetClientesAsignadosGestionLeads> leads_get_clientes_asignados_gestion_leads { get; set; }
     public DbSet<ReportsBarTop5Derivaciones> reports_bar_top_5_derivaciones { get; set; }
+    public DbSet<LeadsGetClientesAsignadosCantidades> leads_get_clientes_asignados_cantidades { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -110,6 +111,9 @@ public class MDbContext : DbContext
             .HasNoKey()
             .ToView(null);
         modelBuilder.Entity<ReportsBarTop5Derivaciones>()
+            .HasNoKey()
+            .ToView(null);
+        modelBuilder.Entity<LeadsGetClientesAsignadosCantidades>()
             .HasNoKey()
             .ToView(null);
     }

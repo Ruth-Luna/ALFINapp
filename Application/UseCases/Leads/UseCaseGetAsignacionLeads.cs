@@ -46,20 +46,19 @@ namespace ALFINapp.Application.UseCases.Leads
                     {
                         return (true, "No se encontraron clientes", new ViewGestionLeads());
                     }
+                    var cantidades = await _repositoryVendedor.GetCantidadClientesGeneralTotalFromVendedor (usuarioId);
+                    if (cantidades.IsSuccess == false)
+                    {
+                        return (false, "Ha ocurrido un error en la consulta", new ViewGestionLeads());
+                    }
                     var convertView = new ViewGestionLeads
                     {
                         ClientesA365 = clientes.Select(c => c.DtoToCliente()).ToList(),
                         Vendedor = usuarioDTO.ToEntityVendedor(),
                         ClientesAlfin = new List<Cliente>(),
-                        clientesPendientes = clientes.Count(dc =>
-                            (!dc.FechaTipificacionDeMayorPeso.HasValue ||
-                            (dc.FechaTipificacionDeMayorPeso.Value.Year != currentYear &&
-                            dc.FechaTipificacionDeMayorPeso.Value.Month != currentMonth))),
-                        clientesTipificados = clientes.Count(dc =>
-                            dc.FechaTipificacionDeMayorPeso.HasValue &&
-                            dc.FechaTipificacionDeMayorPeso.Value.Year == currentYear &&
-                            dc.FechaTipificacionDeMayorPeso.Value.Month == currentMonth),
-                        clientesTotal = clientes.Count()
+                        clientesPendientes = cantidades.Pendientes,
+                        clientesTipificados = cantidades.Tipificados,
+                        clientesTotal = cantidades.Total,
                     };
                     return (true, "Se encontraron los siguientes clientes", convertView);
                 }

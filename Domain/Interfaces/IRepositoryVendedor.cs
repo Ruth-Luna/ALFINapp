@@ -22,5 +22,6 @@ namespace ALFINapp.Domain.Interfaces
             string? searchfield,
             int IntervaloInicio,
             int IntervaloFin);
+        public Task<(bool IsSuccess, string Message, int Total, int Tipificados, int Pendientes)> GetCantidadClientesGeneralTotalFromVendedor(int IdUsuarioVendedor);
     }
 }

@@ -15,6 +15,9 @@ namespace ALFINapp.API.Models
         public int clientesPendientes { get; set; }
         public int clientesTipificados { get; set; }
         public int clientesTotal { get; set; }
+        public int PaginaActual { get; set; } = 1;
+        public string filtro { get; set; } = "";
+        public string searchfield { get; set; } = "";
         public List<string> destinoBases { get; set; } = new List<string>();
     }
 }
