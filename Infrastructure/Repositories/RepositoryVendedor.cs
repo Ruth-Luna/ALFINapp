@@ -83,7 +83,7 @@ namespace ALFINapp.Infrastructure.Repositories
         {
             try
             {
-                var filtrosValidos = new HashSet<string> { "nombres", "campana", 
+                var filtrosValidos = new HashSet<string> { "nombres", "campana",
                     "oferta", "comentario", "tipificacion", "dni" };
 
                 if (string.IsNullOrWhiteSpace(filter) || !filtrosValidos.Contains(filter))
@@ -126,19 +126,28 @@ namespace ALFINapp.Infrastructure.Repositories
         public async Task<List<DetalleBaseClienteDTO>> GetClientesGeneralPaginadoFromVendedor(
             int IdUsuarioVendedor,
             int IntervaloInicio,
-            int IntervaloFin)
+            int IntervaloFin,
+            string? filter,
+            string? searchfield,
+            string? order,
+            bool orderAsc)
         {
             try
             {
                 var parameters = new[]
                 {
                     new SqlParameter("@IdUsuarioVendedor", IdUsuarioVendedor),
+                    new SqlParameter("@Search", searchfield),
+                    new SqlParameter("@Filter", filter),
                     new SqlParameter("@IntervaloInicio", IntervaloInicio),
-                    new SqlParameter("@IntervaloFin", IntervaloFin)
+                    new SqlParameter("@IntervaloFinal", IntervaloFin),
+                    new SqlParameter("@Ordenamiento", order),
+                    new SqlParameter("@OrdenamientoAsc", orderAsc)
                 };
+
                 var getAllBase = await _context
                     .leads_get_clientes_asignados_gestion_leads
-                    .FromSqlRaw("EXECUTE sp_leads_get_clientes_asignados_for_gestion_de_leads @IdUsuarioVendedor, @IntervaloInicio, @IntervaloFin",
+                    .FromSqlRaw("EXECUTE sp_leads_get_clientes_asignados_for_gestion_de_leads_filtro_y_ordenamiento_general @IdUsuarioVendedor, @Search, @Filter, @IntervaloInicio, @IntervaloFinal, @Ordenamiento, @OrdenamientoAsc",
                     parameters)
                     .ToListAsync();
                 if (getAllBase.Count == 0)

@@ -15,7 +15,11 @@ namespace ALFINapp.Domain.Interfaces
         public Task<List<DetalleBaseClienteDTO>> GetClientesGeneralPaginadoFromVendedor(
             int IdUsuarioVendedor,
             int IntervaloInicio,
-            int IntervaloFin);
+            int IntervaloFin,
+            string? filter,
+            string? searchfield,
+            string? order,
+            bool orderAsc);
         public Task<List<DetalleBaseClienteDTO>> GetClientesFiltradoPaginadoFromVendedor(
             int IdUsuarioVendedor,
             string? filter,

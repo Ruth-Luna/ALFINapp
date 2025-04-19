@@ -390,5 +390,27 @@ namespace ALFINapp.Infrastructure.Repositories
                 return new DetallesReportesBarDTO();
             }
         }
+        public async Task<DetallesReportesGpieDTO> GetReportesPieContactabilidadCliente(int idUsuario)
+        {
+            try
+            {
+                var getData = await _context.reports_pie_contactabilidad_cliente
+                    .FromSqlRaw("EXEC SP_REPORTES_PIE_CONTACTABILIDAD_CLIENTE @id_usuario", new SqlParameter("@id_usuario", idUsuario))
+                    .AsNoTracking()
+                    .ToListAsync();
+                if (getData == null || getData.Count == 0)
+                {
+                    Console.WriteLine("No se encontraron datos para la consulta.");
+                    return new DetallesReportesGpieDTO();
+                }
+                var convertDto = new DetallesReportesGpieDTO(getData);
+                return convertDto;
+            }
+            catch (System.Exception)
+            {
+                Console.WriteLine("Error al obtener los datos de contactabilidad del cliente.");
+                return new DetallesReportesGpieDTO();
+            }
+        }
     }
 }

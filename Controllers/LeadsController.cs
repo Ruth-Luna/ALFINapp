@@ -23,7 +23,13 @@ namespace ALFINapp.Controllers
             _useCaseGetFilterLeadsGeneralVendedor = useCaseGetFilterLeadsGeneralVendedor;
         }
         [HttpGet]
-        public async Task<IActionResult> Gestion(int paginaInicio = 0, int paginaFinal = 1, string filter = "", string searchfield = "")
+        public async Task<IActionResult> Gestion(
+            int paginaInicio = 0, 
+            int paginaFinal = 1, 
+            string filter = "", 
+            string searchfield = "",
+            string order = "tipificacion",
+            bool orderAsc = true)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)
@@ -53,31 +59,16 @@ namespace ALFINapp.Controllers
 
             if (rol.Value == 3)
             {
-                if (filter != "")
-                {
-                    if (string.IsNullOrEmpty(searchfield))
-                    {
-                        var orderTable = await _useCaseGetFilterLeadsGeneral.Execute(usuarioId.Value, filter, searchfield, paginaInicio, paginaFinal);
-                        if (!orderTable.IsSuccess || orderTable.Data == null)
-                        {
-                            TempData["MessageError"] = orderTable.Message;
-                            return RedirectToAction("Redireccionar", "Error");
-                        }
-                        var dataOrdered = orderTable.Data;
-                        dataOrdered.PaginaActual = paginaInicio;
-                        return View("Gestion", dataOrdered);
-                    }
-                    var resultFiltered = await _useCaseGetFilterLeadsGeneral.Execute(usuarioId.Value, filter, searchfield, paginaInicio, paginaFinal);
-                    if (!resultFiltered.IsSuccess || resultFiltered.Data == null)
-                    {
-                        TempData["MessageError"] = resultFiltered.Message;
-                        return RedirectToAction("Redireccionar", "Error");
-                    }
-                    var dataFiltered = resultFiltered.Data;
-                    dataFiltered.PaginaActual = paginaInicio;
-                    return View("Gestion", dataFiltered);
-                }
-                var executeInicio = await _useCaseGetAsignacionLeads.Execute(usuarioId.Value, rol.Value, paginaInicio, paginaFinal);
+                var executeInicio = await _useCaseGetAsignacionLeads
+                    .Execute(
+                        usuarioId.Value, 
+                        rol.Value, 
+                        intervaloInicio: paginaInicio,
+                        intervaloFin: paginaFinal,
+                        filter: filter,
+                        search: searchfield,
+                        order: order,
+                        orderAsc: orderAsc);
                 if (!executeInicio.IsSuccess || executeInicio.Data == null)
                 {
                     TempData["MessageError"] = executeInicio.Message;
@@ -106,28 +97,6 @@ namespace ALFINapp.Controllers
                 return RedirectToAction("Redireccionar", "Error");
             }
         }
-        [HttpGet]
-        public async Task<IActionResult> FilterGestion(
-            string search,
-            string typeFilter,
-            int paginaInicio = 0,
-            int paginaFinal = 1)
-        {
-            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId == null)
-            {
-                TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
-                return RedirectToAction("Index", "Home");
-            }
-            var executeFilter = await _useCaseGetFilterLeadsGeneral.Execute(usuarioId.Value, typeFilter, search, paginaInicio, paginaFinal);
-            if (!executeFilter.IsSuccess || executeFilter.Data == null)
-            {
-                TempData["MessageError"] = executeFilter.Message;
-                return RedirectToAction("Redireccionar", "Error");
-            }
-            return PartialView("_GestionFiltro", executeFilter.Data);
-        }
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

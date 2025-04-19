@@ -18,6 +18,8 @@ namespace ALFINapp.API.Models
         public int PaginaActual { get; set; } = 1;
         public string filtro { get; set; } = "";
         public string searchfield { get; set; } = "";
+        public string order { get; set; } = "";
+        public bool orderAsc { get; set; } = true;
         public List<string> destinoBases { get; set; } = new List<string>();
     }
 }

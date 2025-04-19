@@ -11,17 +11,26 @@ namespace ALFINapp.Application.DTOs
     {
         public ReportsGPiePorcentajeGestionadosSobreAsignados Reportes { get; set; }
         public ReportsGPiePorcentajeGestionadoDerivadoDesembolsado Reportes2 { get; set; }
+        public List<ReportsPieContactabilidadCliente> ReportesContactabilidad { get; set; }
         public DetallesReportesGpieDTO(
             ReportsGPiePorcentajeGestionadosSobreAsignados? model, 
             ReportsGPiePorcentajeGestionadoDerivadoDesembolsado? model2)
         {
             Reportes = model ?? new ReportsGPiePorcentajeGestionadosSobreAsignados();
             Reportes2 = model2 ?? new ReportsGPiePorcentajeGestionadoDerivadoDesembolsado();
+            ReportesContactabilidad = new List<ReportsPieContactabilidadCliente>();
+        }
+        public DetallesReportesGpieDTO(List<ReportsPieContactabilidadCliente> model)
+        {
+            Reportes = new ReportsGPiePorcentajeGestionadosSobreAsignados();
+            Reportes2 = new ReportsGPiePorcentajeGestionadoDerivadoDesembolsado();
+            ReportesContactabilidad = model;
         }
         public DetallesReportesGpieDTO()
         {
             Reportes = new ReportsGPiePorcentajeGestionadosSobreAsignados();
             Reportes2 = new ReportsGPiePorcentajeGestionadoDerivadoDesembolsado();
+            ReportesContactabilidad = new List<ReportsPieContactabilidadCliente>();
         }
         public ViewReportePieGeneral toViewPie()
         {

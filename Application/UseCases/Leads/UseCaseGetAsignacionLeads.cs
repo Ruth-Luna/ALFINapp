@@ -22,7 +22,11 @@ namespace ALFINapp.Application.UseCases.Leads
             int usuarioId,
             int rol,
             int intervaloInicio = 0,
-            int intervaloFin = 1)
+            int intervaloFin = 1,
+            string filter = "",
+            string search = "",
+            string order = "tipificacion",
+            bool orderAsc = true)
         {
             try
             {
@@ -34,14 +38,18 @@ namespace ALFINapp.Application.UseCases.Leads
                     return (false, "No se encontró el usuario", new ViewGestionLeads());
                 }
                 var usuarioDTO = new DetallesUsuarioDTO(usuario);
-                if (rol == 0)
-                {
-                    return (false, "No se encontró el rol del usuario", new ViewGestionLeads());
-                }
                 var clientes = new List<DetalleBaseClienteDTO>();
                 if (rol == 3)
                 {
-                    clientes = await _repositoryVendedor.GetClientesGeneralPaginadoFromVendedor(usuarioId, intervaloInicio, intervaloFin);
+                    clientes = await _repositoryVendedor
+                        .GetClientesGeneralPaginadoFromVendedor(
+                            usuarioId, 
+                            intervaloInicio, 
+                            intervaloFin,
+                            filter,
+                            search,
+                            order,
+                            orderAsc);
                     if (clientes == null)
                     {
                         return (true, "No se encontraron clientes", new ViewGestionLeads());
@@ -59,6 +67,11 @@ namespace ALFINapp.Application.UseCases.Leads
                         clientesPendientes = cantidades.Pendientes,
                         clientesTipificados = cantidades.Tipificados,
                         clientesTotal = cantidades.Total,
+                        filtro = filter,
+                        searchfield = search,
+                        order = order,
+                        orderAsc = orderAsc,
+                        PaginaActual = intervaloInicio,
                     };
                     return (true, "Se encontraron los siguientes clientes", convertView);
                 }
