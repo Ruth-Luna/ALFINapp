@@ -412,5 +412,63 @@ namespace ALFINapp.Infrastructure.Repositories
                 return new DetallesReportesGpieDTO();
             }
         }
+
+        public async Task<DetallesReportesTablasDTO> GetReportesTablaGestionDerivadoDesembolsoImporte()
+        {
+            try
+            {
+                var getData = await _context.reports_tabla_gestionado_derivado_desembolsado_importe
+                    .FromSqlRaw("EXEC SP_REPORTES_TABLA_GESTIONADO_DERIVADO_DESEMBOLSADO_IMPORTE")
+                    .AsNoTracking()
+                    .ToListAsync();
+                if (getData == null || getData.Count == 0)
+                {
+                    Console.WriteLine("No se encontraron datos para la consulta.");
+                    return new DetallesReportesTablasDTO();
+                }
+                var convertDto = new DetallesReportesTablasDTO(getData);
+                return convertDto;
+            }
+            catch (System.Exception)
+            {
+                Console.WriteLine("Error al obtener los datos de la tabla de gestión, derivación y desembolso por importe.");
+                return new DetallesReportesTablasDTO();
+            }
+            
+        }
+
+        public async Task<DetallesReportesEtiquetasDTO> GetReportesEtiquetasDesembolsosNImportes(int idUsuario)
+        {
+            try
+            {
+                var parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@id_usuario", idUsuario),
+                    new SqlParameter("@doc_busqueda", DBNull.Value),
+                };
+                var getData = await _context.reports_desembolsos_n_monto
+                    .FromSqlRaw("EXEC SP_Reportes_desembolsos_n_y_monto @id_usuario, @doc_busqueda", parameters)
+                    .AsNoTracking()
+                    .ToListAsync();
+                if (getData == null || getData.Count == 0)
+                {
+                    Console.WriteLine("No se encontraron datos para la consulta.");
+                    return new DetallesReportesEtiquetasDTO();
+                }
+                var firstData = getData.FirstOrDefault();
+                if (firstData == null)
+                {
+                    Console.WriteLine("No se encontraron datos para la consulta.");
+                    return new DetallesReportesEtiquetasDTO();
+                }
+                var convertDto = new DetallesReportesEtiquetasDTO(firstData);
+                return convertDto;
+            }
+            catch (System.Exception)
+            {
+                Console.WriteLine("Error al obtener los datos de etiquetas de desembolsos por importe.");
+                return new DetallesReportesEtiquetasDTO();
+            }
+        }
     }
 }

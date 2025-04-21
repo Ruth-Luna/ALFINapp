@@ -51,10 +51,16 @@ namespace ALFINapp.Application.UseCases.Reports
                 var lineasGestionDerivacion = await _repositoryReports.LineaGestionVsDerivacionDiaria(idUsuario);
                 var pieGestionAsignados = await _repositoryReports.GetReportesGpieGeneral(idUsuario);
                 var barTop5Asesores = await _repositoryReports.GetReportesBarTop5General(idUsuario);
-                var viewLineasGestionDerivacion = new List<ViewLineaGestionVsDerivacion>();
+                var tablaGestionado = await _repositoryReports.GetReportesTablaGestionDerivadoDesembolsoImporte();
+                var pieContactabilidad = await _repositoryReports.GetReportesPieContactabilidadCliente(idUsuario);
+                var etiquetaDesembolsoMonto = await _repositoryReports.GetReportesEtiquetasDesembolsosNImportes(idUsuario);
                 reporteGeneral.lineaGestionVsDerivacion = lineasGestionDerivacion.toViewLineaGestionVsDerivacion();
-                reporteGeneral.top5asesores = barTop5Asesores.toViewListReporteBarGeneral();
                 reporteGeneral.ProgresoGeneral = pieGestionAsignados.toViewPie();
+                reporteGeneral.top5asesores = barTop5Asesores.toViewListReporteBarGeneral();
+                reporteGeneral.reporteTablaGeneral = tablaGestionado.toViewTabla();
+                reporteGeneral.pieContactabilidad = pieContactabilidad.toViewPieLista();
+                reporteGeneral.etiquetas = etiquetaDesembolsoMonto.toViewEtiquetas();
+                
                 return (true, "Reportes obtenidos correctamente", reporteGeneral);
             }
             catch (System.Exception ex)

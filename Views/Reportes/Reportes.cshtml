@@ -7,7 +7,7 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/main_page.css">
+    <link rel="stylesheet" href="~/css/main_page.css?v=@DateTime.Now.Ticks">
     <link rel="stylesheet" href="~/css/Reportes/Reportes.css?v=@DateTime.Now.Ticks">
 }
 
@@ -18,9 +18,26 @@
     <div class="flex-container mt-4">
         @*Row --- 01*@
         <div class="card">
-            <div class="card-header d-flex align-items-center justify-content-between">
-                <h4 class="mb-0">Resumen de Progreso Mensual</h4>
-                <div class="ms-auto col-auto" id="lista-reportes-por-fechas">
+            <div class="card-header d-flex align-items-center justify-content-between row">
+                <div class="col-md-9">
+                    <h4 class="me-md-2">Resumen de Progreso Mensual</h4>
+                </div>
+                <div class="me-md-2 col d-flex flex-column align-items-center justify-content-center">
+                    @if (Model.etiquetas != null && Model.etiquetas.Any())
+                    {
+                        foreach (var item in Model.etiquetas)
+                        {
+                            <span class="bigger-badge-custom badge mb-2" style="font-size: 0.85em;">@item.nombreEtiqueta</span>
+                            <input class="form-control" type="text" value="@item.cantidadEtiqueta" readonly />
+                            <input class="form-control" type="text" value="@item.importeEtiquetas" readonly />
+                        }
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">No hay etiquestas encontradas</span>
+                    }
+                </div>
+                <div class="me-md-2 col" id="lista-reportes-por-fechas">
                     <label for="lista-fechas" class="form-label">Filtro Por Fechas</label>
                     <input type="date" class="form-control mt-3" name="lista-fechas" id="lista-fechas"
                         onchange="cargarReportePorFechas(this.value)">
@@ -38,7 +55,17 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-9" id="div-derivaciones-top-5" style="display: none;">
+                    <div class="col-md-3" id="div-pie-contactabilidad-reporte" style="display: none;">
+                        <div class="card-header">
+                            <h5>Contactabilidad Reporte</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-contactabilidad-reporte">
+                                @*Aca se cargara las graficas del Asesor*@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="div-derivaciones-top-5" style="display: none;">
                         <div class="card-header">
                             <h5>Top 5 Derivaciones</h5>
                         </div>
@@ -68,6 +95,102 @@
                         <div class="card-body">
                             <div id="chart-derivaciones">
                                 @*Aca se cargara las graficas del Asesor*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-12">
+                        <div class="card-header row d-flex align-items-center justify-content-between">
+                            <div class="col-md-9">
+                                <h5>Tabla derivaciones generales</h5>
+                            </div>
+                            <div class="col-md-3">
+                                @{
+                                    var entradaSinDni = new ALFINapp.API.Models.ViewReporteTablaGeneral();
+                                    if (Model.reporteTablaGeneral != null && Model.reporteTablaGeneral.Any())
+                                    {
+                                        entradaSinDni = Model.reporteTablaGeneral.FirstOrDefault(x => x.dni == null);
+                                    }
+                                }
+
+                                <div class="text-center">
+                                    @if (entradaSinDni != null)
+                                    {
+                                        <div>
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Desembolsos Total</th>
+                                                        <th>Importe Total</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            @entradaSinDni.contador_desembolsado
+                                                        </td>
+                                                        <td>
+                                                            @entradaSinDni.importe_desembolsado?.ToString("C")
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Sin datos</span>
+                                    }
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-tabla-derivaciones-generales">
+                                @*Aca se cargara la tabla general*@
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>DNI</th>
+                                                <th>Asesor</th>
+                                                <th>Supervisor</th>
+                                                <th>Gestionado</th>
+                                                <th>Derivado</th>
+                                                <th>Desembolsado</th>
+                                                <th>Importe Desembolsado</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.reporteTablaGeneral != null && Model.reporteTablaGeneral.Any())
+                                            {
+                                                foreach (var item in Model.reporteTablaGeneral)
+                                                {
+                                                    @if (item.dni == null)
+                                                    {
+                                                        continue;
+                                                    }
+                                                    <tr>
+                                                        <td>@item.dni</td>
+                                                        <td>@item.nombres_asesor</td>
+                                                        <td>@item.nombres_supervisor</td>
+                                                        <td>@item.contador_gestionado</td>
+                                                        <td>@item.contador_derivado</td>
+                                                        <td>@item.contador_desembolsado</td>
+                                                        <td>@item.importe_desembolsado?.ToString("C")</td>
+                                                    </tr>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td colspan="7" class="text-center">No data available</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>

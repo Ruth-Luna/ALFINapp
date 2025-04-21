@@ -5,6 +5,14 @@ header {
     /* Bordo inferior */
 }
 
+.bigger-badge-custom {
+    background-color: darkcyan;
+    font-size: 1.1rem;
+    padding: 0.6em 1em;
+    font-weight: bold;
+}
+
+
 .table thead tr {
     background-color: #085394;
     /* Fondo azul */

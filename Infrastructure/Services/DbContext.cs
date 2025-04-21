@@ -51,6 +51,8 @@ public class MDbContext : DbContext
     public DbSet<ReportsBarTop5Derivaciones> reports_bar_top_5_derivaciones { get; set; }
     public DbSet<LeadsGetClientesAsignadosCantidades> leads_get_clientes_asignados_cantidades { get; set; }
     public DbSet<ReportsPieContactabilidadCliente> reports_pie_contactabilidad_cliente { get; set; }
+    public DbSet<ReportsTablaGestionadoDerivadoDesembolsadoImporte> reports_tabla_gestionado_derivado_desembolsado_importe { get; set; }
+    public DbSet<ReportsDesembolsosNMonto> reports_desembolsos_n_monto { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -118,6 +120,12 @@ public class MDbContext : DbContext
             .HasNoKey()
             .ToView(null);
         modelBuilder.Entity<ReportsPieContactabilidadCliente>()
+            .HasNoKey()
+            .ToView(null);
+        modelBuilder.Entity<ReportsTablaGestionadoDerivadoDesembolsadoImporte>()
+            .HasNoKey()
+            .ToView(null);
+        modelBuilder.Entity<ReportsDesembolsosNMonto>()
             .HasNoKey()
             .ToView(null);
     }

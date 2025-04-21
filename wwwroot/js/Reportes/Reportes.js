@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     cargarProgresoAsignacion();
     cargarProgreso();
     cargarTop5DerivacionesGenerales();
+    cargarPiesContactabilidad();
 });
 
 function cargarDerivacionesGenerales() {
@@ -319,5 +320,47 @@ function cargarTop5DerivacionesGenerales() {
     };
     
     var chart = new ApexCharts(document.querySelector("#chart-top-5-derivaciones"), options);
+    chart.render();
+}
+
+function cargarPiesContactabilidad() {
+    var pieContactabilidad = reportesData["pieContactabilidad"];
+    var divPie = document.getElementById('div-pie-contactabilidad-reporte');
+    var estado = [];
+    var total = [];
+    var porcentaje = [];
+
+    pieContactabilidad.forEach(item => {
+        estado.push(item.estado);
+        total.push(item.total);
+        porcentaje.push(item.porcentaje);
+    });
+
+    var options = {
+        series: total,
+        chart: {
+            type: 'donut',
+            height: 350
+        },
+        labels: estado,
+        dataLabels: {
+            enabled: true,
+            formatter: function (val, opts) {
+                return porcentaje[opts.seriesIndex].toFixed(2) + '%';
+            }
+        },
+        legend: {
+            position: 'bottom'
+        },
+        tooltip: {
+            y: {
+                formatter: function (val, opts) {
+                    return `${val} contactos (${porcentaje[opts.seriesIndex].toFixed(2)}%)`;
+                }
+            }
+        }
+    };
+    divPie.style.display = 'block';
+    var chart = new ApexCharts(document.querySelector("#chart-contactabilidad-reporte"), options);
     chart.render();
 }
