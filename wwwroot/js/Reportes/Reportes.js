@@ -1,12 +1,30 @@
 let reportesData;
 document.addEventListener('DOMContentLoaded', function () {
     var reportesElement = document.getElementById("reportes-data");
+    var roldiv = document.getElementById("rol-general");
+    var idrol = roldiv.getAttribute("data");
+    idrol = idrol === "null" ? null : parseInt(idrol);
     reportesData = JSON.parse(reportesElement.getAttribute("data-json"));
-    cargarDerivacionesGenerales();
-    cargarProgresoAsignacion();
-    cargarProgreso();
-    cargarTop5DerivacionesGenerales();
-    cargarPiesContactabilidad();
+    console.log(idrol);
+    if (idrol === 1 || idrol === 4 || idrol === 2) {
+        cargarDerivacionesGenerales();
+        cargarProgresoAsignacion();
+        cargarProgreso();
+        cargarTop5DerivacionesGenerales();
+        cargarPiesContactabilidad();
+    } else if (idrol === 3) {
+        cargarDerivacionesGenerales();
+        cargarProgresoAsignacion();
+        cargarProgreso();
+        cargarPiesContactabilidad();
+    } else {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Error en permisos',
+            text: 'No tienes permisos para ver los reportes.',
+            confirmButtonText: 'Aceptar'
+        });
+    }
 });
 
 function cargarDerivacionesGenerales() {
@@ -195,6 +213,7 @@ function cargarProgreso() {
 
 function cargarProgresoAsignacion() {
     var progresoGeneral = reportesData["progresoGeneral"];
+    console.log(progresoGeneral);
     var totalAsignaciones = progresoGeneral["totaL_ASIGNADOS"];
     var totalGestionados = progresoGeneral["totaL_GESTIONADOS"];
     var porcentaje = Math.floor((totalGestionados / totalAsignaciones) * 100);
@@ -247,7 +266,7 @@ function cargarProgresoAsignacion() {
                     if (seriesIndex === 0) {
                         return `${totalGestionados} de ${totalAsignaciones} gestionados`;
                     } else {
-                        return `${totalAsignaciones - totalGestionados} pendientes por asignar`;
+                        return `${totalAsignaciones - totalGestionados} pendientes por gestionar`;
                     }
                 }
             }

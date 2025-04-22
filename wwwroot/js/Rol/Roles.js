@@ -36,14 +36,10 @@ function ActualizarPermisosRoles(rol, idvista, idrol) {
             } else {
                 Swal.fire({
                     title: 'Rol actualizado',
-                    text: `El rol: ${rol} se actualizó correctamente la pagina se recargara en 3 segundos para ver los cambios correspondientes`,
+                    text: `El rol: ${rol} se actualizó correctamente la pagina se recargara para ver los cambios correspondientes`,
                     icon: 'success',
                     confirmButtonText: 'Aceptar'
-                });
-
-                setTimeout(function() {
-                    location.reload();
-                }, 3000);
+                }).then(() => location.reload());
             }
         }
     });

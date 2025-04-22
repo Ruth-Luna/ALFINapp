@@ -13,7 +13,7 @@ namespace ALFINapp.Domain.Interfaces
         public Task<DetallesReportesGpieDTO> GetReportesGpieGestionadosVsAsignados();
         public Task<DetallesReportesGpieDTO> GetReportesGpieDerivadosVsDesembolsados();
         public Task<DetallesReportesGpieDTO> GetReportesGpieGeneral(int idUsuario);
-        public Task<DetallesReportesGpieDTO> GetReportesGpieGeneralFecha(DateOnly fecha);
+        public Task<DetallesReportesGpieDTO> GetReportesGpieGeneralFecha(DateOnly fecha, int idUsuario);
         public Task<DetallesReportesBarDTO> GetReportesBarTop5General(int idUsuario);
         public Task<DetallesReportesGpieDTO> GetReportesPieContactabilidadCliente(int idUsuario);
         public Task<DetallesReportesTablasDTO> GetReportesTablaGestionDerivadoDesembolsoImporte();

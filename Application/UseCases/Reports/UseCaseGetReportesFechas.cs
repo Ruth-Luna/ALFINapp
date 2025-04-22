@@ -23,7 +23,7 @@ namespace ALFINapp.Application.UseCases.Reports
         {
             try
             {
-                var getReportesPie = await _repositoryReports.GetReportesGpieGeneralFecha(DateOnly.Parse(fecha));
+                var getReportesPie = await _repositoryReports.GetReportesGpieGeneralFecha(DateOnly.Parse(fecha), idUsuario);
                 if (getReportesPie == null)
                 {
                     return (false, "No se encontraron reportes para la fecha seleccionada", new ViewReportesFecha());

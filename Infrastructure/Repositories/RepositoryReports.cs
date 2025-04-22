@@ -1,9 +1,9 @@
 using ALFINapp.Application.DTOs;
 using ALFINapp.Domain.Interfaces;
 using ALFINapp.Infrastructure.Persistence.Models;
+using ALFINapp.Infrastructure.Persistence.Procedures;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace ALFINapp.Infrastructure.Repositories
 {
@@ -336,27 +336,32 @@ namespace ALFINapp.Infrastructure.Repositories
             }
         }
 
-        public async Task<DetallesReportesGpieDTO> GetReportesGpieGeneralFecha(DateOnly fecha)
+        public async Task<DetallesReportesGpieDTO> GetReportesGpieGeneralFecha(DateOnly fecha, int idUsuario)
         {
             try
             {
+                var parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@Fecha", fecha),
+                    new SqlParameter("@IdUsuario", idUsuario)
+                };
                 var getDataDer = await _context.reports_g_pie_derivados_desembolsados
-                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_POR_FECHAS_GESTION_DERIVACION_DESEMBOLSO @Fecha",
-                        new SqlParameter("@Fecha", fecha))
+                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_POR_FECHAS_GESTION_DERIVACION_DESEMBOLSO @Fecha @IdUsuario",
+                        parameters)
                     .ToListAsync();
                 var getDataGes = await _context.reports_g_pie_gestion_asignados
-                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_POR_FECHAS_GESTIONADOS_SOBRE_ASIGNADOS @Fecha",
-                        new SqlParameter("@Fecha", fecha))
+                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_POR_FECHAS_GESTIONADOS_SOBRE_ASIGNADOS @Fecha @IdUsuario",
+                        parameters)
                     .ToListAsync();
                 if (getDataDer == null || getDataDer.Count == 0)
                 {
-                    Console.WriteLine("No se encontraron datos para la consulta.");
-                    return new DetallesReportesGpieDTO();
+                    Console.WriteLine("No se encontraron datos para la consulta. Se pasara una lista vacia");
+                    getDataDer = new List<ReportsGPiePorcentajeGestionadoDerivadoDesembolsado>();
                 }
                 if (getDataGes == null || getDataGes.Count == 0)
                 {
                     Console.WriteLine("No se encontraron datos para la consulta.");
-                    return new DetallesReportesGpieDTO();
+                    getDataGes = new List<ReportsGPiePorcentajeGestionadosSobreAsignados>();
                 }
                 var convertDto = new DetallesReportesGpieDTO(getDataGes.FirstOrDefault(), getDataDer.FirstOrDefault());
                 return convertDto;

@@ -19,7 +19,7 @@
         @*Row --- 01*@
         <div class="card">
             <div class="card-header d-flex align-items-center justify-content-between row">
-                <div class="col-md-9">
+                <div class="col-md-8">
                     <h4 class="me-md-2">Resumen de Progreso Mensual</h4>
                 </div>
                 <div class="me-md-2 col d-flex flex-column align-items-center justify-content-center">
@@ -45,9 +45,9 @@
             </div>
             <div class="card-body">
                 <div class="row mb-2">
-                    <div class="col-md-3">
+                    <div class="@(rol == 1 || rol == 4 || rol == 2 ? "col-md-3" : "col-md-6")">
                         <div class="card-header">
-                            <h5>Asignaciones Vs Tipificaciones</h5>
+                            <h5>Gestionados Vs Asignados</h5>
                         </div>
                         <div class="card-body">
                             <div id="chart-progreso-total-y-tipificados">
@@ -55,7 +55,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3" id="div-pie-contactabilidad-reporte" style="display: none;">
+                    <div class="@(rol == 1 || rol == 4 || rol == 2 ? "col-md-3" : "col-md-6")"
+                        id="div-pie-contactabilidad-reporte" style="display: none;">
                         <div class="card-header">
                             <h5>Contactabilidad Reporte</h5>
                         </div>
@@ -65,18 +66,20 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6" id="div-derivaciones-top-5" style="display: none;">
-                        <div class="card-header">
-                            <h5>Top 5 Derivaciones</h5>
-                        </div>
-                        <div class="card-body">
-                            <div id="chart-top-5-derivaciones">
-                                @*Aca se cargara las graficas del Asesor*@
+                    @if (rol == 1 || rol == 4 || rol == 2)
+                    {
+                        <div class="col-md-6" id="div-derivaciones-top-5" style="display: none;">
+                            <div class="card-header">
+                                <h5>Top 5 Derivaciones</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="chart-top-5-derivaciones">
+                                    @*Aca se cargara las graficas del Asesor*@
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
                 </div>
-
                 <div class="row mb-2">
                     <div class="col-md-3">
                         <div class="card-header">
@@ -99,102 +102,105 @@
                         </div>
                     </div>
                 </div>
-                <div class="row mb-2">
-                    <div class="col-md-12">
-                        <div class="card-header row d-flex align-items-center justify-content-between">
-                            <div class="col-md-9">
-                                <h5>Tabla derivaciones generales</h5>
-                            </div>
-                            <div class="col-md-3">
-                                @{
-                                    var entradaSinDni = new ALFINapp.API.Models.ViewReporteTablaGeneral();
-                                    if (Model.reporteTablaGeneral != null && Model.reporteTablaGeneral.Any())
-                                    {
-                                        entradaSinDni = Model.reporteTablaGeneral.FirstOrDefault(x => x.dni == null);
-                                    }
-                                }
-
-                                <div class="text-center">
-                                    @if (entradaSinDni != null)
-                                    {
-                                        <div>
-                                            <table class="table table-bordered">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Desembolsos Total</th>
-                                                        <th>Importe Total</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>
-                                                            @entradaSinDni.contador_desembolsado
-                                                        </td>
-                                                        <td>
-                                                            @entradaSinDni.importe_desembolsado?.ToString("C")
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-secondary">Sin datos</span>
-                                    }
+                @if (rol == 1 || rol == 4 || rol == 2)
+                {
+                    <div class="row mb-2">
+                        <div class="col-md-12">
+                            <div class="card-header row d-flex align-items-center justify-content-between">
+                                <div class="col-md-9">
+                                    <h5>Tabla derivaciones generales</h5>
                                 </div>
+                                <div class="col-md-3">
+                                    @{
+                                        var entradaSinDni = new ALFINapp.API.Models.ViewReporteTablaGeneral();
+                                        if (Model.reporteTablaGeneral != null && Model.reporteTablaGeneral.Any())
+                                        {
+                                            entradaSinDni = Model.reporteTablaGeneral.FirstOrDefault(x => x.dni == null);
+                                        }
+                                    }
 
+                                    <div class="text-center">
+                                        @if (entradaSinDni != null)
+                                        {
+                                            <div>
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Desembolsos Total</th>
+                                                            <th>Importe Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                @entradaSinDni.contador_desembolsado
+                                                            </td>
+                                                            <td>
+                                                                @entradaSinDni.importe_desembolsado?.ToString("C")
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Sin datos</span>
+                                        }
+                                    </div>
+
+                                </div>
                             </div>
-                        </div>
-                        <div class="card-body">
-                            <div id="chart-tabla-derivaciones-generales">
-                                @*Aca se cargara la tabla general*@
-                                <div class="table-responsive">
-                                    <table class="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th>DNI</th>
-                                                <th>Asesor</th>
-                                                <th>Supervisor</th>
-                                                <th>Gestionado</th>
-                                                <th>Derivado</th>
-                                                <th>Desembolsado</th>
-                                                <th>Importe Desembolsado</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @if (Model.reporteTablaGeneral != null && Model.reporteTablaGeneral.Any())
-                                            {
-                                                foreach (var item in Model.reporteTablaGeneral)
+                            <div class="card-body">
+                                <div id="chart-tabla-derivaciones-generales">
+                                    @*Aca se cargara la tabla general*@
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>DNI</th>
+                                                    <th>Asesor</th>
+                                                    <th>Supervisor</th>
+                                                    <th>Gestionado</th>
+                                                    <th>Derivado</th>
+                                                    <th>Desembolsado</th>
+                                                    <th>Importe Desembolsado</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (Model.reporteTablaGeneral != null && Model.reporteTablaGeneral.Any())
                                                 {
-                                                    @if (item.dni == null)
+                                                    foreach (var item in Model.reporteTablaGeneral)
                                                     {
-                                                        continue;
+                                                        @if (item.dni == null)
+                                                        {
+                                                            continue;
+                                                        }
+                                                        <tr>
+                                                            <td>@item.dni</td>
+                                                            <td>@item.nombres_asesor</td>
+                                                            <td>@item.nombres_supervisor</td>
+                                                            <td>@item.contador_gestionado</td>
+                                                            <td>@item.contador_derivado</td>
+                                                            <td>@item.contador_desembolsado</td>
+                                                            <td>@item.importe_desembolsado?.ToString("C")</td>
+                                                        </tr>
                                                     }
+                                                }
+                                                else
+                                                {
                                                     <tr>
-                                                        <td>@item.dni</td>
-                                                        <td>@item.nombres_asesor</td>
-                                                        <td>@item.nombres_supervisor</td>
-                                                        <td>@item.contador_gestionado</td>
-                                                        <td>@item.contador_derivado</td>
-                                                        <td>@item.contador_desembolsado</td>
-                                                        <td>@item.importe_desembolsado?.ToString("C")</td>
+                                                        <td colspan="7" class="text-center">No data available</td>
                                                     </tr>
                                                 }
-                                            }
-                                            else
-                                            {
-                                                <tr>
-                                                    <td colspan="7" class="text-center">No data available</td>
-                                                </tr>
-                                            }
-                                        </tbody>
-                                    </table>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                }
             </div>
         </div>
     </div>
@@ -287,14 +293,10 @@
 </div>
 
 <div id="reportes-data" data-json='@Html.Raw(Json.Serialize(Model))'></div>
+<div id="rol-general" data='@(rol.HasValue? rol.Value.ToString() : "null")'></div>
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <script src="~/js/Reportes/Reportes.js?v=@DateTime.Now.Ticks"></script>
-    <script src="~/js/Reportes/ReportesBusqueda.js?v=@DateTime.Now.Ticks"></script>
-    <script src="~/js/Reportes/Asesor.js?v=@DateTime.Now.Ticks"></script>
-    <script src="~/js/Reportes/Supervisor.js?v=@DateTime.Now.Ticks"></script>
-    <script src="~/js/Reportes/Fechas.js?v=@DateTime.Now.Ticks"></script>
     <script>
         var rol = @(rol.HasValue? rol.Value.ToString() : "null");
         var idUsuario = @(idUsuario.HasValue? idUsuario.Value.ToString() : "null");
@@ -307,4 +309,10 @@
             }
         });
     </script>
+    <script src="~/js/Reportes/Reportes.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/js/Reportes/ReportesBusqueda.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/js/Reportes/Asesor.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/js/Reportes/Supervisor.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/js/Reportes/Fechas.js?v=@DateTime.Now.Ticks"></script>
+
 }
