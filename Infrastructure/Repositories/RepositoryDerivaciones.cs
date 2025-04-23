@@ -136,8 +136,8 @@ namespace ALFINapp.Infrastructure.Repositories
                     new SqlParameter("@fecha_visita", derivacion.FechaVisita) { SqlDbType = SqlDbType.DateTime },
                     new SqlParameter("@telefono", derivacion.TelefonoCliente),
                     new SqlParameter("@id_base", idBase),
-                    new SqlParameter("@id_usuario", derivacion.DniAsesor),
-                    new SqlParameter("@nombre_completos", derivacion.NombreCliente)
+                    new SqlParameter("@id_usuario", idUsuario),
+                    new SqlParameter("@nombre_completos", derivacion.NombreCliente ?? string.Empty)
                 };
                 var generarDerivacion = await _context.Database.ExecuteSqlRawAsync(
                     "EXEC SP_derivacion_insertar_nueva_derivacion_pendiente @agencia_derivacion, @fecha_visita, @telefono, @id_base, @id_usuario, @nombre_completos",

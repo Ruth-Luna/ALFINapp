@@ -46,6 +46,11 @@ namespace ALFINapp.Application.UseCases.Derivacion
                     TelefonoCliente = Telefono,
                     NombreAgencia = agenciaComercial
                 };
+                var getcliente = await _repositoryClientes.getBase(idBase);
+                if (getcliente == null)
+                {
+                    return (false, "No se encontro el cliente");
+                }
                 if (NombresCompletos != null)
                 {
                     derivacion.NombreCliente = NombresCompletos;
@@ -58,7 +63,7 @@ namespace ALFINapp.Application.UseCases.Derivacion
                 {
                     return (false, uploadDerivacion.message);
                 }
-                var checkDerivacion = await _repositoryDerivaciones.verDerivacion(derivacion.DniCliente ?? string.Empty);
+                var checkDerivacion = await _repositoryDerivaciones.verDerivacion(getcliente.Dni ?? string.Empty);
                 if (!checkDerivacion.success)
                 {
                     return (false, checkDerivacion.message);
