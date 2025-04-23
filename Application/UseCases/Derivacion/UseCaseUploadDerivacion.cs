@@ -39,6 +39,10 @@ namespace ALFINapp.Application.UseCases.Derivacion
             try
             {
                 var verificarDisponibilidad = await _repositoryDerivaciones.verDisponibilidad(idBase);
+                if (!verificarDisponibilidad.success)
+                {
+                    return (false, verificarDisponibilidad.message);
+                }
                 var derivacion = new DerivacionesAsesores
                 {
                     FechaDerivacion = DateTime.Now,
