@@ -166,7 +166,7 @@ namespace ALFINapp.Application.DTOs
             GrupoTasa = model.GrupoTasa;
             Usuario = model.Usuario;
             SegmentoUser = model.SegmentoUser;
-            TraidoDe = TraidoDe;
+            TraidoDe = model.TraidoDe;
             IdBase = model.IdBase;
             UserV3 = model.UserV3;
             FlagDeudaVOferta = model.FlagDeudaVOferta;
