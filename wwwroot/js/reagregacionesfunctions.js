@@ -1,4 +1,4 @@
-async function TakeThisClient(DNIdatos, tipoBase) {
+function TakeThisClient(DNIdatos, tipoBase) {
     console.log("Función llamada", DNIdatos);
     DNIdatos = String(DNIdatos).padStart(8, '0');
 
@@ -20,49 +20,46 @@ async function TakeThisClient(DNIdatos, tipoBase) {
             Swal.showLoading();
         }
     });
+
     const baseUrl = window.location.origin;
     const url = `${baseUrl}/Consulta/ReAsignarClienteAUsuario`;
 
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-            },
-            body: JSON.stringify({
-                DniAReasignar: DNIdatos,
-                BaseTipo: tipoBase
-            })
-        });
-
-        const result = await response.json();
-        Swal.close();
-        if (!response.ok || result.success === false) {
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: {
+            DniAReasignar: DNIdatos,
+            BaseTipo: tipoBase
+        },
+        success: function (result) {
+            Swal.close();
+            if (!result.success) {
+                Swal.fire({
+                    title: 'Error al realizar la asignación',
+                    text: result.message || 'Ocurrió un error desconocido',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+            } else {
+                Swal.fire({
+                    title: 'Asignación completa',
+                    text: result.message,
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+        },
+        error: function (xhr, status, error) {
+            Swal.close();
+            console.error('Error al enviar la solicitud:', error);
             Swal.fire({
                 title: 'Error al realizar la asignación',
-                text: result.message || 'Ocurrió un error desconocido',
+                text: 'Hubo un error al procesar la solicitud.',
                 icon: 'error',
                 confirmButtonText: 'Aceptar'
             });
-        } else {
-            Swal.fire({
-                title: 'Asignación completa',
-                text: result.message,
-                icon: 'success',
-                confirmButtonText: 'Aceptar'
-            });
         }
-    } catch (error) {
-        Swal.close();
-        console.error('Error al enviar la solicitud:', error);
-        Swal.fire({
-            title: 'Error al realizar la asignación',
-            text: 'Hubo un error al procesar la solicitud.',
-            icon: 'error',
-            confirmButtonText: 'Aceptar'
-        });
-    }
+    });
 }
 
 async function validarDNI() {
