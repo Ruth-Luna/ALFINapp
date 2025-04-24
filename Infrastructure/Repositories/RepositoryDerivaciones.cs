@@ -7,6 +7,8 @@ using ALFINapp.Domain.Interfaces;
 using ALFINapp.Infrastructure.Persistence.Models;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using ALFINapp.Domain.Entities;
+using ALFINapp.Application.DTOs;
 
 namespace ALFINapp.Infrastructure.Repositories
 {
@@ -44,7 +46,39 @@ namespace ALFINapp.Infrastructure.Repositories
                 return null;
             }
         }
-
+        public async Task<List<DetallesDerivacionesAsesoresDTO>> getDerivaciones(List<Vendedor> asesores)
+        {
+            try
+            {
+                var dnis = new DataTable();
+                dnis.Columns.Add("Dni", typeof(string));
+                var getAllDnisClientes = asesores.Select(x => x.Dni).ToHashSet();
+                foreach (var dni in getAllDnisClientes)
+                {
+                    dnis.Rows.Add(dni);
+                }
+                var parameter = new SqlParameter("@Dni", SqlDbType.Structured)
+                {
+                    TypeName = "dbo.DniTableType",
+                    Value = dnis
+                };
+                var result = await _context.derivaciones_asesores
+                    .FromSqlRaw("EXEC sp_Derivacion_consulta_derivaciones_x_asesor_por_dni_REFACTORIZADO @Dni = {0}", 
+                        parameter)
+                    .ToListAsync();
+                if (result == null || result.Count == 0)
+                {
+                    return new List<DetallesDerivacionesAsesoresDTO>();
+                }
+                
+                return result.Select(x => new DetallesDerivacionesAsesoresDTO(x)).ToList();
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new List<DetallesDerivacionesAsesoresDTO>();
+            }
+        }
         public async Task<GESTIONDETALLE?> getGestionDerivacion(string docCliente, string docAsesor)
         {
             try

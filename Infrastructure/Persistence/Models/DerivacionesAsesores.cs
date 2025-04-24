@@ -40,5 +40,17 @@ namespace ALFINapp.Infrastructure.Persistence.Models
         public string? ObservacionDerivacion { get; set; }
         [Column("fue_enviado_email")]
         public bool? FueEnviadoEmail { get; set; }
+        [Column("ID_DESEMBOLSO")]
+        public int? IdDesembolso { get; set; }
+        [Column("doc_supervisor")]
+        public string? DocSupervisor { get; set; }
+        [Column("oferta_max")]
+        public decimal? OfertaMax { get; set; }
+        [Column("supervisor")]
+        public string? Supervisor { get; set; }
+        [Column("monto_desembolso")]
+        public decimal? MontoDesembolso { get; set; }
+        [Column("real_error")]
+        public string? RealError { get; set; }
     }
 }

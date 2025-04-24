@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using ALFINapp.API.Filters;
+using ALFINapp.Application.Interfaces.Derivacion;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -19,16 +20,19 @@ namespace ALFINapp.API.Controllers
         private readonly DBServicesConsultasSupervisores _dBServicesConsultasSupervisores;
         private readonly DBServicesConsultasAdministrador _dBServicesConsultasAdministrador;
         private readonly DBServicesGeneral _dBServicesGeneral;
+        private readonly IUseCaseGetDerivacion _useCaseGetDerivacion;
         public DerivacionController(
             DBServicesDerivacion dBServicesDerivacion,
             DBServicesConsultasSupervisores dBServicesConsultasSupervisores,
             DBServicesGeneral dBServicesGeneral,
-            DBServicesConsultasAdministrador dBServicesConsultasAdministrador)
+            DBServicesConsultasAdministrador dBServicesConsultasAdministrador,
+            IUseCaseGetDerivacion useCaseGetDerivacion)
         {
             _dBServicesDerivacion = dBServicesDerivacion;
             _dBServicesConsultasSupervisores = dBServicesConsultasSupervisores;
             _dBServicesGeneral = dBServicesGeneral;
             _dBServicesConsultasAdministrador = dBServicesConsultasAdministrador;
+            _useCaseGetDerivacion = useCaseGetDerivacion;
         }
 
         [HttpGet]
@@ -39,141 +43,22 @@ namespace ALFINapp.API.Controllers
             if (UsuarioIdSupervisor == null)
             {
                 TempData["MessageError"] = "No se ha iniciado sesión.";
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Redireccionar", "Error");
             }
             var rolUsuario = HttpContext.Session.GetInt32("RolUser");
             if (rolUsuario == null)
             {
                 TempData["MessageError"] = "No se ha iniciado sesión.";
-                return RedirectToAction("Index", "Home");
-            }
-            ViewData["RolUsuario"] = rolUsuario;
-            var getdatosUsuario = await _dBServicesGeneral.GetUserInformation(UsuarioIdSupervisor.Value);
-            if (!getdatosUsuario.IsSuccess || getdatosUsuario.Data == null)
-            {
-                TempData["MessageError"] = getdatosUsuario.Message;
                 return RedirectToAction("Redireccionar", "Error");
             }
-            ViewData["DniUsuario"] = getdatosUsuario.Data.Dni;
-            if (rolUsuario == 2)
+            var execute = await _useCaseGetDerivacion.Execute(UsuarioIdSupervisor.Value, rolUsuario.Value);
+            if (!execute.success)
             {
-                var getAsesoresAsignados = await _dBServicesConsultasSupervisores.GetAsesorsFromSupervisor(UsuarioIdSupervisor.Value);
-                if (!getAsesoresAsignados.IsSuccess || getAsesoresAsignados.Data == null)
-                {
-                    TempData["MessageError"] = getAsesoresAsignados.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                var getClientesDerivadosGenerales = await _dBServicesDerivacion.GetClientesDerivadosGenerales(getAsesoresAsignados.Data);
-                if (!getClientesDerivadosGenerales.IsSuccess)
-                {
-                    TempData["MessageError"] = getClientesDerivadosGenerales.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                var getClientesDatosDTO = new List<GestionDetalleDTO>();
-                if (getClientesDerivadosGenerales.Data == null)
-                {
-                    ViewData["Asesores"] = getAsesoresAsignados.Data;
-                    return View("Derivacion", getClientesDatosDTO);
-                }
-
-                var getInformation = await _dBServicesDerivacion.GetDerivacionInformationAll(getClientesDerivadosGenerales.Data);
-                if (!getInformation.IsSuccess)
-                {
-                    TempData["MessageError"] = getInformation.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-
-                if (getInformation.Data == null)
-                {
-                    TempData["MessageError"] = "Ocurrio un error al obtener la información de las derivaciones.";
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                getInformation.Data = getInformation.Data.OrderByDescending(a => a.FechaEnvio).ToList();
-                ViewData["Asesores"] = getAsesoresAsignados.Data;
-                return View("Derivacion", getInformation.Data);
+                TempData["MessageError"] = execute.message;
+                return RedirectToAction("Redireccionar", "Error");
             }
-            if (rolUsuario == 3)
-            {
-                var idUsuario = HttpContext.Session.GetInt32("UsuarioId");
-                if (idUsuario == null)
-                {
-                    TempData["MessageError"] = "No se ha iniciado sesión.";
-                    return RedirectToAction("Index", "Home");
-                }
-                var getDniAsesor = await _dBServicesGeneral.GetUserInformation(idUsuario.Value);
-                if (!getDniAsesor.IsSuccess || getDniAsesor.Data == null)
-                {
-                    TempData["MessageError"] = getDniAsesor.Message;
-                    return RedirectToAction("Index", "Home");
-                }
-                var DniAsesor = getDniAsesor.Data.Dni;
-                var getClientesDerivadosGenerales = await _dBServicesDerivacion.GetClientesDerivadosGenerales(new List<Usuario> { new Usuario { Dni = DniAsesor } });
-                if (!getClientesDerivadosGenerales.IsSuccess)
-                {
-                    TempData["MessageError"] = getClientesDerivadosGenerales.Message;
-                    return RedirectToAction("Index", "Home");
-                }
-                var getClientesDatosDTO = new List<GestionDetalleDTO>();
-                if (getClientesDerivadosGenerales.Data == null)
-                {
-                    ViewData["Asesores"] = new List<Usuario> { new Usuario { Dni = DniAsesor } };
-                    return View("Derivacion", getClientesDatosDTO);
-                }
-                var getInformation = await _dBServicesDerivacion.GetDerivacionInformationAll(getClientesDerivadosGenerales.Data);
-                if (!getInformation.IsSuccess)
-                {
-                    TempData["MessageError"] = getInformation.Message;
-                    return RedirectToAction("Index", "Home");
-                }
-                if (getInformation.Data == null)
-                {
-                    TempData["MessageError"] = "Ocurrio un error al obtener la información de las derivaciones.";
-                    return RedirectToAction("Index", "Home");
-                }
-                getInformation.Data = getInformation.Data.OrderByDescending(a => a.FechaEnvio).ToList();
-                return View("Derivacion", getInformation.Data);
-            }
-            if (rolUsuario == 4 || rolUsuario == 1)
-            {
-                var getAsesoresAsignados = await _dBServicesConsultasAdministrador.ConseguirTodosLosUsuarios();
-                if (!getAsesoresAsignados.IsSuccess || getAsesoresAsignados.Data == null)
-                {
-                    TempData["MessageError"] = getAsesoresAsignados.Message;
-                    return RedirectToAction("Index", "Home");
-                }
-                var todosAsesores = getAsesoresAsignados.Data.Where(a => a.IdRol == 3).ToList();
-                var getClientesDerivadosGenerales = await _dBServicesDerivacion.GetClientesDerivadosGenerales(todosAsesores);
-                if (!getClientesDerivadosGenerales.IsSuccess || getClientesDerivadosGenerales.Data == null)
-                {
-                    TempData["MessageError"] = getClientesDerivadosGenerales.Message;
-                    return RedirectToAction("Index", "Home");
-                }
-                var getClientesDatosDTO = new List<GestionDetalleDTO>();
-                if (getClientesDerivadosGenerales.Data == null)
-                {
-                    ViewData["Asesores"] = todosAsesores;
-                    return View("Derivacion", getClientesDatosDTO);
-                }
-                var getInformation = await _dBServicesDerivacion.GetDerivacionInformationAll(getClientesDerivadosGenerales.Data);
-                if (!getInformation.IsSuccess)
-                {
-                    TempData["MessageError"] = getInformation.Message;
-                    return RedirectToAction("Index", "Home");
-                }
-                if (getInformation.Data == null)
-                {
-                    TempData["MessageError"] = "Ocurrio un error al obtener la información de las derivaciones.";
-                    return RedirectToAction("Index", "Home");
-                }
-                getInformation.Data = getInformation.Data.OrderByDescending(a => a.FechaEnvio).ToList();
-                ViewData["Asesores"] = todosAsesores;
-                return View("Derivacion", getInformation.Data);
-            }
-            else
-            {
-                TempData["MessageError"] = "No tiene permisos para acceder a esta vista.";
-                return RedirectToAction("Index", "Home");
-            }
+            var viewDerivaciones = execute.data;
+            return View("Derivacion", viewDerivaciones);
         }
         
         public async Task<IActionResult> ObtenerDerivacionesGestion(string DniAsesor)

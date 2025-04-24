@@ -23,7 +23,6 @@ namespace ALFINapp.Application.DTOs
         public int? IDUSUARIOSUP { get; set; }
         public string? RESPONSABLESUP { get; set; }
         public string? REGION { get; set; }
-        public string? contraseña { get; set; }
         public string? NOMBRECAMPAÑA { get; set; }
         public int? IdRol { get; set; }
         public DateTime? FechaActualizacion { get; set; }
@@ -47,7 +46,6 @@ namespace ALFINapp.Application.DTOs
             IDUSUARIOSUP = model.IDUSUARIOSUP;
             RESPONSABLESUP = model.RESPONSABLESUP;
             REGION = model.REGION;
-            contraseña = model.contraseña;
             NOMBRECAMPAÑA = model.NOMBRECAMPAÑA;
             IdRol = model.IdRol;
             FechaActualizacion = model.FechaActualizacion;
@@ -74,7 +72,6 @@ namespace ALFINapp.Application.DTOs
                 IDUSUARIOSUP = IDUSUARIOSUP,
                 RESPONSABLESUP = RESPONSABLESUP,
                 REGION = REGION,
-                contraseña = contraseña,
                 NOMBRECAMPAÑA = NOMBRECAMPAÑA,
                 IdRol = IdRol,
                 FechaActualizacion = FechaActualizacion,
@@ -102,7 +99,6 @@ namespace ALFINapp.Application.DTOs
                 IDUSUARIOSUP = IDUSUARIOSUP,
                 RESPONSABLESUP = RESPONSABLESUP,
                 REGION = REGION,
-                contraseña = contraseña,
                 NOMBRECAMPAÑA = NOMBRECAMPAÑA,
                 IdRol = IdRol,
                 FechaActualizacion = FechaActualizacion,
@@ -130,7 +126,6 @@ namespace ALFINapp.Application.DTOs
                 IDUSUARIOSUP = IDUSUARIOSUP,
                 RESPONSABLESUP = RESPONSABLESUP,
                 REGION = REGION,
-                contraseña = contraseña,
                 NOMBRECAMPAÑA = NOMBRECAMPAÑA,
                 IdRol = IdRol,
                 FechaActualizacion = FechaActualizacion,
