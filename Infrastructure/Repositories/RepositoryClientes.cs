@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.Application.DTOs;
 using ALFINapp.Domain.Interfaces;
 using ALFINapp.Infrastructure.Persistence.Models;
@@ -114,6 +110,22 @@ namespace ALFINapp.Infrastructure.Repositories
                 var basecliente = await _context.base_clientes
                     .AsNoTracking()
                     .FirstOrDefaultAsync(x => x.IdBase == idBase);
+                return basecliente;
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
+        public async Task<BaseCliente?> getBase(string dni)
+        {
+            try
+            {
+                var basecliente = await _context.base_clientes
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.Dni == dni);
                 return basecliente;
             }
             catch (System.Exception ex)

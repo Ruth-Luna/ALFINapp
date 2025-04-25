@@ -88,10 +88,10 @@
                         onclick="cargarDerivacionesSistema()">
                         <i class="fas fa-table"></i> Derivaciones Sistema
                     </a>
-                    <a href="javascript:void(0);" type="button" class="btn btn-primary" id="btnTablaGestion"
+                    @*<a href="javascript:void(0);" type="button" class="btn btn-primary" id="btnTablaGestion"
                         onclick="cargarDerivacionesGestion(@Dni)">
                         <i class="fas fa-table"></i> Derivaciones Gestión
-                    </a>
+                    </a>*@
                 </div>
 
                 <div class="btn-group">
@@ -153,13 +153,13 @@
                         <th>Teléfono</th>
                         <th>DNI Asesor</th>
                         <th>Fecha de Derivación</th>
-                        <th>Monto</th>
+                        <th>Oferta</th>
                         <th>Agencia</th>
                         <th>Fecha Visita</th>
-                        @*<th style="background-color: white;
+                        <th style="background-color: white;
                         border-left: 1px solid #2980b9; 
                         border-top: 1px solid white;
-                        border-bottom: 1px solid white;"></th>*@
+                        border-bottom: 1px solid white;"></th>
 
                         <th>Accion</th>
                     </tr>
@@ -182,7 +182,6 @@
                         <td></td>
                         <td></td>
                         <td></td>
-
                     </tr>
                     @if (Model.Derivaciones != null)
                     {
@@ -211,9 +210,9 @@
                                 <td>@derivacionAsesor.OfertaMax</td>
                                 <td>@derivacionAsesor.NombreAgencia</td>
                                 <td>@derivacionAsesor.FechaVisita.ToString("yyyy-MM-dd")</td>
-                                @*<td
+                                <td
                                     style="background-color: white; border-left: 1px solid #2980b9; border-top: 1px solid white; border-bottom: 1px solid white;">
-                                </td>*@
+                                </td>
                                 <td><a href="javascript:void(0)" onclick="reagendarView(@derivacionAsesor.IdDerivacion)" class="btn btn-primary" style="width: auto;" title="Reagendar este cliente"><i class="bi bi-clipboard2-plus"></i></a></td>
                             </tr>
                         }

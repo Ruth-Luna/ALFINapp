@@ -18,6 +18,7 @@ namespace ALFINapp.Domain.Interfaces
         public Task<bool> UpdateAsignacion(ClientesAsignado asignacion);
         public Task<bool> UpdateEnriquecido(ClientesEnriquecido enriquecido);
         public Task<BaseCliente?> getBase(int idBase);
+        public Task<BaseCliente?> getBase(string dni);
         public Task<(bool IsSuccess, string Message, Application.DTOs.DetallesClienteDTO? Data)> getClientesFromDBandBank (string dni);
         public Task<(bool IsSuccess, string Message, Application.DTOs.DetallesClienteDTO? Data)> getClientesFromTelefono (string telefono);
     }

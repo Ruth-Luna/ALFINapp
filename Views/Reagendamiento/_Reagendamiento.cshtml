@@ -1,7 +1,49 @@
+@model ALFINapp.API.Models.ViewClienteReagendado
+
 @{
 }
 
-<div>
-    
+<div class="container">
+    <div class="row">
+        <h5>Reagendamiento</h5>
+        <div class="col-md-6">
+            <div class="form-group mb-2">
+                <label for="dni-reagendamiento">Dni Cliente: </label>
+                <input type="text" class="form-control" id="dni-reagendamiento" name="dni-reagendamiento" value="@Model.Dni" readonly/>
+            </div>
+            <div class="form-group mb-2">
+                <label for="nombre-reagendamiento">Nombre Cliente: </label>
+                <input type="text" class="form-control" id="nombre-reagendamiento" name="nombre-reagendamiento" value="@Model.NombresCompletos" readonly/>
+            </div>
+            <div class="form-group mb-2">
+                <label for="telefono-reagendamiento">Teléfono Cliente: </label>
+                <input type="text" class="form-control" id="telefono-reagendamiento" name="telefono-reagendamiento" value="@Model.Telefono" readonly/>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group mb-2">
+                <label for="oferta-reagendamiento">Oferta a enviar: </label>
+                <input type="text" class="form-control" id="oferta-reagendamiento" name="oferta-reagendamiento" value="@Model.OfertaMax" readonly/>
+            </div>
+            <div class="form-group mb-2">
+                <label for="agencia-reagendamiento">Agencia Asignada: </label>
+                <input type="text" class="form-control" id="agencia-reagendamiento" name="agencia-reagendamiento" value="@Model.AgenciaAsignada" readonly/>
+            </div>
+            <div class="form-group">
+                <label for="fecha-reagendamiento-previo">Fecha Reagendamiento</label>
+                <input type="text" class="form-control" id="fecha-reagendamiento-previo" name="fecha-reagendamiento-previo" value="value="@($"{Model.FechaVisitaPrevia:yyyy-MM-dd}")"" readonly/>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="form-group mb-3">
+                <label for="fecha-reagendamiento-nueva">Nueva Fecha de Visita</label>
+                <input type="date" class="form-control" id="fecha-reagendamiento-nueva" name="fecha-reagendamiento-nueva"/>
+            </div>
+            <div>
+                <a class="btn btn-success" href="javascript:void(0)" onclick="reagendarCliente('fecha-reagendamiento-nueva')">Reagendar</a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Cancelar</button>
+            </div>
+        </div>
+    </div>
 </div>
 

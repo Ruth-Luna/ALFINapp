@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 using ALFINapp.Domain.Interfaces;
 using ALFINapp.Infrastructure.Persistence.Models;
 using Microsoft.Data.SqlClient;
@@ -19,6 +15,31 @@ namespace ALFINapp.Infrastructure.Repositories
         {
             _context = context;
         }
+
+        public async Task<DetallesDerivacionesAsesoresDTO?> getDerivacion(int idDer)
+        {
+            try
+            {
+                var derivacion = await _context
+                    .derivaciones_asesores
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.IdDerivacion == idDer);
+                if (derivacion != null)
+                {
+                    return new DetallesDerivacionesAsesoresDTO(derivacion);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
         public async Task<List<DerivacionesAsesores>?> getDerivaciones(int idCliente, string docAsesor)
         {
             try
@@ -186,6 +207,60 @@ namespace ALFINapp.Infrastructure.Repositories
             {
                 Console.WriteLine(ex.Message);
                 return (false, "Error en la base de datos al subir la derivacion");
+            }
+        }
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async Task<(bool success, string message)> uploadReagendacion(int idDer, DateTime fechaReagendamiento)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
+            try
+            {
+                var parametros = new[]
+                {
+                    new SqlParameter("@nueva_fecha_visita", fechaReagendamiento) { SqlDbType = SqlDbType.DateTime },
+                    new SqlParameter("@id_derivacion", idDer)
+                };
+                var generarReagendacion = _context.Database.ExecuteSqlRaw(
+                    "EXEC sp_reagendamiento_mandar_nuevas_entradas @nueva_fecha_visita, @id_derivacion;",
+                    parametros);
+                if (generarReagendacion == 0)
+                {
+                    return (false, "Error al subir la reagendacion");
+                }
+                return (true, "Reagendacion subida correctamente");
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return (false, "Error en la base de datos al subir la reagendacion");
+            }
+        }
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async Task<(bool success, string message)> uploadReagendacion(string dniCliente, DateTime fechaReagendamiento)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
+            try
+            {
+                var parametros = new[]
+                {
+                    new SqlParameter("@dni_cliente", dniCliente),
+                    new SqlParameter("@nueva_fecha_visita", fechaReagendamiento) { SqlDbType = SqlDbType.DateTime }
+                };
+                var generarReagendacion = _context.Database.ExecuteSqlRaw(
+                    "EXEC sp_reagendamiento_upload_nueva_reagendacion @dni_cliente, @nueva_fecha_visita",
+                    parametros);
+                if (generarReagendacion == 0)
+                {
+                    return (false, "Error al subir la reagendacion");
+                }
+                return (true, "Reagendacion subida correctamente");
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return (false, "Error en la base de datos al subir la reagendacion");
             }
         }
 

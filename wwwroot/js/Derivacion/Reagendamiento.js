@@ -1,14 +1,8 @@
-async function reagendarCliente(IdDerivacion, nuevaFechaVisita, nuevaAgencia, nuevaOferta, nuevoTelefono) {
+async function reagendarCliente(nuevaFechaVisita, idDerivacion) {
     const fechaVisita = document.getElementById(nuevaFechaVisita).value;
-    const agencia = document.getElementById(nuevaAgencia).value;
-    const oferta = document.getElementById(nuevaOferta).value;
-    const telefono = document.getElementById(nuevoTelefono).value;
     const dto = {
-        idDerivacion: [IdDerivacion], // Lista con un solo ID
-        nuevaFechaVisita: fechaVisita,
-        nuevaAgencia: agencia,
-        nuevaOferta: oferta,
-        filtros: []
+        FechaReagendamiento: fechaVisita,
+        IdDerivacion: idDerivacion
     };
     Swal.fire({
         title: 'Reagendar cita',

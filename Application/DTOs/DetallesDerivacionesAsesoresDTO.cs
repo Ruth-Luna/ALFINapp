@@ -81,5 +81,17 @@ namespace ALFINapp.Application.DTOs
                 RealError = RealError ?? string.Empty
             };
         }
+        public ViewClienteReagendado ToViewClienteReagendado()
+        {
+            return new ViewClienteReagendado
+            {
+                IdDerivacion = IdDerivacion,
+                Dni = DniCliente,
+                NombresCompletos = NombreCliente,
+                OfertaMax = OfertaMax,
+                AgenciaAsignada = NombreAgencia,
+                FechaVisitaPrevia = FechaVisita,
+            };
+        }
     }
 }
