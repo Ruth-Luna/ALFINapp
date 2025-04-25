@@ -3,7 +3,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE TRIGGER [dbo].[trg_agendamientos_re_after_insertion]
+CREATE TRIGGER [dbo].[trg_agendamientos_re_after_insertion_and_update]
 ON [dbo].[derivaciones_asesores]
 AFTER INSERT, UPDATE
 AS
@@ -51,3 +51,9 @@ GO
 -- Si el nombre correcto del trigger es "trg_agendamientos_re_after_insertion", este ALTER no es necesario
 -- y podrías querer eliminar esta línea o corregir el nombre si es un trigger previo
 -- ALTER TABLE [dbo].[derivaciones_asesores] ENABLE TRIGGER [trg_derivaciones_asesores_after_insertion]
+
+
+SELECT TOP 1200 * FROM base_clientes ORDER BY id_base DESC 
+
+
+SELECT * FROM derivaciones_asesores ORDER BY id_derivacion DESC

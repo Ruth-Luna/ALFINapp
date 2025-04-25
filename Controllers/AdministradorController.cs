@@ -1,34 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.API.Filters;
-using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Persistence.Models.DTOs;
 using ALFINapp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace ALFINapp.API.Controllers
 {
     [RequireSession]
     public class AdministradorController : Controller
     {
-        private readonly DBServicesGeneral _dbServicesGeneral;
-        private readonly DBServicesRoles _dBServicesRoles;
-        private readonly DBServicesConsultasSupervisores _dBServicesConsultasSupervisores;
         private readonly DBServicesConsultasAdministrador _dBServicesConsultasAdministrador;
         public AdministradorController(
-            DBServicesGeneral dbServicesGeneral, 
-            DBServicesRoles dBServicesRoles, 
             DBServicesConsultasSupervisores dBServicesConsultasSupervisores,
             DBServicesConsultasAdministrador dBServicesConsultasAdministrador)
         {
-            _dbServicesGeneral = dbServicesGeneral;
-            _dBServicesRoles = dBServicesRoles;
-            _dBServicesConsultasSupervisores = dBServicesConsultasSupervisores;
             _dBServicesConsultasAdministrador = dBServicesConsultasAdministrador;
         }
 

@@ -214,12 +214,29 @@
                                 @*<td
                                     style="background-color: white; border-left: 1px solid #2980b9; border-top: 1px solid white; border-bottom: 1px solid white;">
                                 </td>*@
-                                <td><a href="javascript:void(0)" onclick="reagendarCliente("@derivacionAsesor.IdDerivacion")" class="btn btn-primary" style="width: auto;" title="Reagendar este cliente"><i class="bi bi-clipboard2-plus"></i></a></td>
+                                <td><a href="javascript:void(0)" onclick="reagendarView(@derivacionAsesor.IdDerivacion)" class="btn btn-primary" style="width: auto;" title="Reagendar este cliente"><i class="bi bi-clipboard2-plus"></i></a></td>
                             </tr>
                         }
                     }
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true"
+    data-bs-focus="false">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="GeneralTemplateTitleModalLabel"></h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalContentGeneralTemplate">
+                    @*Aca cargara el contenido del Modal*@
+                </div>
+            </div>
         </div>
     </div>
 </div>

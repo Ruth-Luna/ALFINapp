@@ -1,15 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.API.DTOs;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
-namespace ALFINapp.Controllers
+namespace ALFINapp.API.Controllers
 {
-    [Route("[controller]")]
     public class ReagendamientoController : Controller
     {
         private readonly ILogger<ReagendamientoController> _logger;
@@ -22,6 +15,11 @@ namespace ALFINapp.Controllers
             DtoVReagendarClientes dtoReagendarClientes)
         {
             return Json(new { success = true, message = "Reagendamiento" });
+        }
+
+        public async Task<IActionResult> Reagendamiento(int id)
+        {
+            return PartialView("_Reagendamiento", id);
         }
     }
 }
