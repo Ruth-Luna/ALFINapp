@@ -4,4 +4,9 @@ namespace ALFINapp.API.DTOs
     {
         public string? email_update_users { get; set; }
     }
+    public class DtoVReagendar
+    {
+        public DateTime? FechaReagendamiento { get; set; }
+        public int? IdDerivacion { get; set; }
+    }
 }

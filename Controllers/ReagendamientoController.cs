@@ -19,12 +19,19 @@ namespace ALFINapp.API.Controllers
             _useCaseReagendar = useCaseReagendar;
         }
         public async Task<IActionResult> Reagendar(
-            DateTime FechaReagendamiento,
-            int IdDerivacion)
+            [FromBody]DtoVReagendar dtovreagendar)
         {
+            if (dtovreagendar.FechaReagendamiento == null || dtovreagendar.FechaReagendamiento == DateTime.MinValue)
+            {
+                return Json(new { success = false, message = "La fecha de reagendamiento es obligatoria." });
+            }
+            if (dtovreagendar.IdDerivacion == null || dtovreagendar.IdDerivacion == 0)
+            {
+                return Json(new { success = false, message = "El id de derivación es obligatorio." });
+            }
             var exec = await _useCaseReagendar.exec(
-                IdDerivacion,
-                FechaReagendamiento);
+                dtovreagendar.IdDerivacion.Value,
+                dtovreagendar.FechaReagendamiento.Value);
             if (!exec.IsSuccess)
             {
                 return Json(new { success = false, message = exec.Message });

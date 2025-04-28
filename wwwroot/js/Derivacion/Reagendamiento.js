@@ -1,9 +1,4 @@
 async function reagendarCliente(nuevaFechaVisita, idDerivacion) {
-    const fechaVisita = document.getElementById(nuevaFechaVisita).value;
-    const dto = {
-        FechaReagendamiento: fechaVisita,
-        IdDerivacion: idDerivacion
-    };
     Swal.fire({
         title: 'Reagendar cita',
         text: 'Reagendar la cita del cliente, volvera a enviar el formulario y los correos al banco.',
@@ -13,6 +8,13 @@ async function reagendarCliente(nuevaFechaVisita, idDerivacion) {
         cancelButtonText: 'No, cancelar'
     }).then(async (result) => {
         if (result.isConfirmed) {
+            const fechaVisitaInput = document.getElementById(nuevaFechaVisita).value;
+            const fechaVisita = new Date(fechaVisitaInput).toISOString(); // Convert to ISO 8601 format for C#
+
+            const dto = {
+                FechaReagendamiento: fechaVisita,
+                IdDerivacion: idDerivacion
+            };
             const baseUrl = window.location.origin;
             const url = `${baseUrl}/Reagendamiento/Reagendar`;
             try {
@@ -52,7 +54,16 @@ async function reagendarCliente(nuevaFechaVisita, idDerivacion) {
     });
 }
 
-async function reagendarView(IdDerivacion) {
+async function reagendarView(IdDerivacion, puedeSerReagendado) {
+    if (puedeSerReagendado === 'False') {
+        Swal.fire({
+            icon: 'warning',
+            title: 'No se puede reagendar la cita',
+            text: 'Una cita solo puede ser reagendada dentro de 5 dias habiles despues de su fecha de visita.',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
     const modal = document.getElementById('GeneralTemplateModal');
     const modalTitle = document.getElementById('GeneralTemplateTitleModalLabel');
     const modalBody = document.getElementById('modalContentGeneralTemplate');

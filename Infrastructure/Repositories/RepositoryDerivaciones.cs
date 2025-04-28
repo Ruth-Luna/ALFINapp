@@ -83,8 +83,8 @@ namespace ALFINapp.Infrastructure.Repositories
                     TypeName = "dbo.DniTableType",
                     Value = dnis
                 };
-                var result = await _context.derivaciones_asesores
-                    .FromSqlRaw("EXEC sp_Derivacion_consulta_derivaciones_x_asesor_por_dni_REFACTORIZADO @Dni = {0}", 
+                var result = await _context.derivaciones_asesores_for_view_derivacion
+                    .FromSqlRaw("EXEC sp_Derivacion_consulta_derivaciones_x_asesor_por_dni_con_reagendacion @Dni = {0}", 
                         parameter)
                     .ToListAsync();
                 if (result == null || result.Count == 0)
@@ -222,7 +222,7 @@ namespace ALFINapp.Infrastructure.Repositories
                     new SqlParameter("@id_derivacion", idDer)
                 };
                 var generarReagendacion = _context.Database.ExecuteSqlRaw(
-                    "EXEC sp_reagendamiento_mandar_nuevas_entradas @nueva_fecha_visita, @id_derivacion;",
+                    "EXEC sp_reagendamiento_upload_nueva_reagendacion @nueva_fecha_visita, @id_derivacion;",
                     parametros);
                 if (generarReagendacion == 0)
                 {

@@ -1,15 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.API.Filters;
 using ALFINapp.Application.Interfaces.Derivacion;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.Logging;
 
 namespace ALFINapp.API.Controllers
 {

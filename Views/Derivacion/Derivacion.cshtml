@@ -63,8 +63,8 @@
                         <select name="cargaTipoFiltro" class="form-control" id="cargaTipoFiltro"
                             onchange="cargarTipoFiltro(this.value)">
                             <option value=""> Seleccione una opcion </option>
-                            <option value="dni"> DNI </option>
-                            <option value="fecha"> Fecha </option>
+                            <option value="dni"> DNI del cliente</option>
+                            <option value="fecha"> Fecha de derivacion </option>
                         </select>
                     </div>
                     <div class="col" style="display: none;" id="filtrosTabla">
@@ -72,7 +72,7 @@
                         <input type="text" class="form-control" id="filtroDNI" style="display: none;"
                             oninput="filtrarTabla('tablaGeneralSistema', this.value, 1, 'text')">
                         <input type="date" class="form-control" id="filtroFecha" style="display: none;"
-                            oninput="filtrarTabla('tablaGeneralSistema', this.value, 6, 'date')">
+                            oninput="filtrarTabla('tablaGeneralSistema', this.value, 5, 'date')">
                     </div>
                 </div>
             </div>
@@ -206,14 +206,28 @@
                                 <td>@derivacionAsesor.NombreCliente</td>
                                 <td>@derivacionAsesor.TelefonoCliente</td>
                                 <td>@derivacionAsesor.DniAsesor</td>
-                                <td>@derivacionAsesor.FechaDerivacion.ToString("yyyy-MM-dd")</td>
+                                <td>@derivacionAsesor.FechaDerivacion</td>
                                 <td>@derivacionAsesor.OfertaMax</td>
                                 <td>@derivacionAsesor.NombreAgencia</td>
                                 <td>@derivacionAsesor.FechaVisita.ToString("yyyy-MM-dd")</td>
                                 <td
                                     style="background-color: white; border-left: 1px solid #2980b9; border-top: 1px solid white; border-bottom: 1px solid white;">
                                 </td>
-                                <td><a href="javascript:void(0)" onclick="reagendarView(@derivacionAsesor.IdDerivacion)" class="btn btn-primary" style="width: auto;" title="Reagendar este cliente"><i class="bi bi-clipboard2-plus"></i></a></td>
+                                <td>
+                                    @if(derivacionAsesor.PuedeSerReagendado == true)
+                                    {
+                                        <a href="javascript:void(0)" onclick="reagendarView(@derivacionAsesor.IdDerivacion, '@derivacionAsesor.PuedeSerReagendado')"
+                                            class="btn btn-primary" style="width: auto;" title="Reagendar este cliente">
+                                            <i class="bi bi-clipboard2-plus"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a href="javascript:void(0)" onclick="reagendarView(@derivacionAsesor.IdDerivacion, '@derivacionAsesor.PuedeSerReagendado')" class="btn btn-secondary" style="width: auto;" title="Reagendar este cliente">
+                                            <i class="bi bi-clipboard2-plus"></i>
+                                        </a>
+                                    }
+                                </td>
                             </tr>
                         }
                     }

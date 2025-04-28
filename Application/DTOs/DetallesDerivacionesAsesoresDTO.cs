@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ALFINapp.API.Models;
 using ALFINapp.Infrastructure.Persistence.Models;
+using ALFINapp.Infrastructure.Persistence.Procedures;
 
 namespace ALFINapp.Application.DTOs
 {
@@ -30,6 +31,7 @@ namespace ALFINapp.Application.DTOs
         public string? Supervisor { get; set; }
         public decimal? MontoDesembolso { get; set; }
         public string? RealError { get; set; }
+        public bool? PuedeSerReagendado { get; set; } = true;
         public DetallesDerivacionesAsesoresDTO(DerivacionesAsesores model)
         {
             IdDerivacion = model.IdDerivacion;
@@ -53,6 +55,32 @@ namespace ALFINapp.Application.DTOs
             Supervisor = model.Supervisor;
             MontoDesembolso = model.MontoDesembolso;
             RealError = model.RealError;
+        }
+
+        public DetallesDerivacionesAsesoresDTO(DerivacionConsultaDerivacionesXAsesorPorDniConReagendacion model)
+        {
+            IdDerivacion = model.IdDerivacion;
+            FechaDerivacion = model.FechaDerivacion;
+            DniAsesor = model.DniAsesor;
+            DniCliente = model.DniCliente;
+            IdCliente = model.IdCliente;
+            NombreCliente = model.NombreCliente;
+            TelefonoCliente = model.TelefonoCliente;
+            NombreAgencia = model.NombreAgencia;
+            NumAgencia = model.NumAgencia;
+            FueProcesado = model.FueProcesado;
+            FechaVisita = model.FechaVisita;
+            EstadoDerivacion = model.EstadoDerivacion;
+            IdAsignacion = model.IdAsignacion;
+            ObservacionDerivacion = model.ObservacionDerivacion;
+            FueEnviadoEmail = model.FueEnviadoEmail;
+            IdDesembolso = model.IdDesembolso;
+            DocSupervisor = model.DocSupervisor;
+            OfertaMax = model.OfertaMax;
+            Supervisor = model.Supervisor;
+            MontoDesembolso = model.MontoDesembolso;
+            RealError = model.RealError;
+            PuedeSerReagendado = model.PuedeSerReagendado;
         }
         public ViewDerivaciones ToViewDerivaciones ()
         {
@@ -78,7 +106,8 @@ namespace ALFINapp.Application.DTOs
                 OfertaMax = OfertaMax ?? 0,
                 Supervisor = Supervisor ?? string.Empty,
                 MontoDesembolso = MontoDesembolso ?? 0,
-                RealError = RealError ?? string.Empty
+                RealError = RealError ?? string.Empty,
+                PuedeSerReagendado = PuedeSerReagendado ?? true,
             };
         }
         public ViewClienteReagendado ToViewClienteReagendado()
@@ -88,6 +117,7 @@ namespace ALFINapp.Application.DTOs
                 IdDerivacion = IdDerivacion,
                 Dni = DniCliente,
                 NombresCompletos = NombreCliente,
+                Telefono = TelefonoCliente,
                 OfertaMax = OfertaMax,
                 AgenciaAsignada = NombreAgencia,
                 FechaVisitaPrevia = FechaVisita,

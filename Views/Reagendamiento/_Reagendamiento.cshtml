@@ -30,8 +30,8 @@
                 <input type="text" class="form-control" id="agencia-reagendamiento" name="agencia-reagendamiento" value="@Model.AgenciaAsignada" readonly/>
             </div>
             <div class="form-group">
-                <label for="fecha-reagendamiento-previo">Fecha Reagendamiento</label>
-                <input type="text" class="form-control" id="fecha-reagendamiento-previo" name="fecha-reagendamiento-previo" value="value="@($"{Model.FechaVisitaPrevia:yyyy-MM-dd}")"" readonly/>
+                <label for="fecha-reagendamiento-previo">Fecha Previa de Agendamiento</label>
+                <input type="text" class="form-control" id="fecha-reagendamiento-previo" name="fecha-reagendamiento-previo" value="@Model.FechaVisitaPrevia" readonly/>
             </div>
         </div>
         <div class="col-md-12">
@@ -40,7 +40,7 @@
                 <input type="date" class="form-control" id="fecha-reagendamiento-nueva" name="fecha-reagendamiento-nueva"/>
             </div>
             <div>
-                <a class="btn btn-success" href="javascript:void(0)" onclick="reagendarCliente('fecha-reagendamiento-nueva')">Reagendar</a>
+                <a class="btn btn-success" href="javascript:void(0)" onclick="reagendarCliente('fecha-reagendamiento-nueva', @Model.IdDerivacion)">Reagendar</a>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Cancelar</button>
             </div>
         </div>

@@ -56,7 +56,7 @@ function cargarDerivacionesXAsesorSistema(DniAsesor) {
     const tabla = tablaGeneralSistema.querySelector("table");
     if (!tabla) return;
 
-    const filas = Array.from(tabla.getElementsByTagName("tr")).slice(3); // Excluye encabezados
+    const filas = Array.from(tabla.getElementsByTagName("tr")).slice(2); // Excluye encabezados
 
     if (DniAsesor === "") {
         filas.forEach(fila => (fila.style.display = "")); // Muestra todas las filas
@@ -337,7 +337,7 @@ function filtrarTabla(idTabla, value, colIndex, type) {
     const table = document.getElementById(idTabla);
     if (!table) return;
 
-    const rows = Array.from(table.getElementsByTagName("tr")).slice(3);
+    const rows = Array.from(table.getElementsByTagName("tr")).slice(2);
 
     rows.forEach(row => {
         const cell = row.cells[colIndex];
