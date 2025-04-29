@@ -59,7 +59,7 @@ async function reagendarView(IdDerivacion, puedeSerReagendado) {
         Swal.fire({
             icon: 'warning',
             title: 'No se puede reagendar la cita',
-            text: 'Una cita solo puede ser reagendada dentro de 5 dias habiles despues de su fecha de visita.',
+            text: 'Aun no se pueden realizar acciones.',
             confirmButtonText: 'Aceptar'
         });
         return;
