@@ -6,10 +6,12 @@ namespace ALFINapp.Application.UseCases.Reagendamiento
     public class UseCaseReagendar : IUseCaseReagendar
     {
         private readonly IRepositoryDerivaciones _repositoryDerivaciones;
-        
+        private readonly IRepositoryReagendacion _repositoryReagendacion;
 
-        public UseCaseReagendar(IRepositoryDerivaciones repositoryDerivaciones)
+        public UseCaseReagendar(IRepositoryDerivaciones repositoryDerivaciones,
+            IRepositoryReagendacion repositoryReagendacion)
         {
+            _repositoryReagendacion = repositoryReagendacion;
             _repositoryDerivaciones = repositoryDerivaciones;
         }
 
@@ -17,7 +19,12 @@ namespace ALFINapp.Application.UseCases.Reagendamiento
         {
             try
             {
-
+                var checkDis = await _repositoryReagendacion.checkDisReagendacion(IdDerivacion, FechaReagendamiento);
+                if (!checkDis.success)
+                {
+                    return (false, checkDis.message);
+                }
+                
                 var reagendar = await _repositoryDerivaciones.uploadReagendacion(IdDerivacion, FechaReagendamiento);
                 if (reagendar.success)
                 {

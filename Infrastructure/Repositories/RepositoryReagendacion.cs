@@ -18,7 +18,7 @@ namespace ALFINapp.Infrastructure.Repositories
                 var parameters = new[]
                 {
                     new SqlParameter("@IdDerivacion", IdDerivacion),
-                    new SqlParameter("@FechaReagendamiento", FechaReagendamiento)
+                    new SqlParameter("@FechaDerivacion", FechaReagendamiento)
                 };
                 var check = await _context.resultado_verificacion
                     .FromSqlRaw("exec sp_reagendamiento_verificar_disponibilidad_para_reagendamiento_derivacion @IdDerivacion, @FechaDerivacion", parameters)
