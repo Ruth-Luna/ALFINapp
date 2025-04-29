@@ -8,6 +8,7 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/main_page.css">
+    <link rel="stylesheet" href="~/css/site.css">
 }
 
 <div class="container-fluid mt-4">
@@ -36,24 +37,108 @@
             </div>
         }
         <div class="row">
+            @if (RolActual == 4 || RolActual == 1)
+            {
+                <div class="col">
+                    <label for="select-option-supervisor-derivacion">Supervisor</label>
+                    <input type="text" name="select-option-supervisor-derivacion" id="select-option-supervisor-derivacion"
+                        style="display: none;">
+                    <div class="custom-select">
+                        <div class="custom-selected-option" id="selected-option-supervisor-derivacion"
+                            onclick="show_options_refac('selected-options-select-supervisor-derivacion')">
+                            Seleccione un Supervisor
+                        </div>
+                        <div class="custom-options" id="selected-options-select-supervisor-derivacion">
+                            <input type="text" class="custom-search" id="busqueda-supervisor-derivacion"
+                                onkeyup="filter_option_refac('busqueda-supervisor-derivacion', 'selected-options-select-supervisor-derivacion')"
+                                placeholder="Buscar...">
+                            @if (Model.Supervisores != null)
+                            {
+                                <div class="custom-option" id="option-non-supervisor-select-derivacion"
+                                    data-value="non" onclick="select_option_refac(
+                                        'select-option-supervisor-derivacion'
+                                        , 'selected-option-supervisor-derivacion'
+                                        , 'selected-options-select-supervisor-derivacion'
+                                        , ''
+                                        , 'Seleccione un Supervisor'
+                                        , () => cargar_asesores_del_supervisor(
+                                            'supervisores-vendedores-data'
+                                            , 'all-vendedores-data'
+                                            , 'selected-options-select-asesores-derivacion'
+                                            , 0))">
+                                    SIN FILTRO
+                                </div>
+                                foreach (var supervisor in Model.Supervisores)
+                                {
+                                    if (supervisor.Estado == "ACTIVO")
+                                    {
+                                        <div class="custom-option" id="option-@(supervisor.Dni)-select-derivacion"
+                                            data-value="@supervisor.Dni" onclick="select_option_refac(
+                                                                'select-option-supervisor-derivacion'
+                                                                , 'selected-option-supervisor-derivacion'
+                                                                , 'selected-options-select-supervisor-derivacion'
+                                                                , '@supervisor.IdUsuario'
+                                                                , '@supervisor.Dni - @supervisor.NombresCompletos'
+                                                                , () => cargar_asesores_del_supervisor(
+                                                                    'supervisores-vendedores-data'
+                                                                    , 'all-vendedores-data'
+                                                                    , 'selected-options-select-asesores-derivacion'
+                                                                    , @supervisor.IdUsuario))">
+                                            @supervisor.Dni - @supervisor.NombresCompletos
+                                        </div>
+                                    }
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
             @if (RolActual != 3)
             {
                 <div class="col">
-                    <label for="IdAsesoresDerivacion">Asesor</label>
-                    <select class="form-select" name="IdAsesoresDerivacion" id="IdAsesoresDerivacion"
-                        onchange="cargarDerivacionesXAsesorSistema(this.value)">
-                        <option value="">Seleccione un Asesor</option>
-                        @if (Asesores != null)
-                        {
-                            foreach (var asesor in Asesores)
+                    <label for="select-option-asesor-derivacion">Asesor</label>
+                    <input type="text" name="select-option-asesor-derivacion" id="select-option-asesor-derivacion"
+                        style="display: none;" oninput="cargarDerivacionesXAsesorSistema(this.value)">
+                    <div class="custom-select">
+                        <div class="custom-selected-option" id="selected-option-asesor-derivacion"
+                            onclick="show_options_refac('selected-options-select-asesores-derivacion')">
+                            Seleccione un Asesor
+                        </div>
+                        <div class="custom-options" id="selected-options-select-asesores-derivacion">
+                            <input type="text" class="custom-search" id="busqueda-asesor-derivacion"
+                                onkeyup="filter_option_refac('busqueda-asesor-derivacion', 'selected-options-select-asesores-derivacion')"
+                                placeholder="Buscar...">
+                            @if (Model.Asesores != null)
                             {
-                                if (asesor.Estado == "ACTIVO")
+                                <div class="custom-option" id="option-non-select-derivacion" data-value="non-select" onclick="select_option_refac(
+                                                'select-option-asesor-derivacion'
+                                                , 'selected-option-asesor-derivacion'
+                                                , 'selected-options-select-asesores-derivacion'
+                                                , ''
+                                                , 'Seleccione un Asesor'
+                                                , () => cargarDerivacionesXAsesorSistema(''))">
+                                    SIN FILTRO
+                                </div>
+                                foreach (var asesor in Model.Asesores)
                                 {
-                                    <option value="@asesor.Dni">@asesor.Dni - @asesor.NombresCompletos</option>
+
+                                    if (asesor.Estado == "ACTIVO")
+                                    {
+                                        <div class="custom-option" id="option-@(asesor.Dni)-select-derivacion" data-value="@asesor.Dni"
+                                            onclick="select_option_refac(
+                                                                'select-option-asesor-derivacion'
+                                                                , 'selected-option-asesor-derivacion'
+                                                                , 'selected-options-select-asesores-derivacion'
+                                                                , '@asesor.Dni'
+                                                                , '@asesor.Dni - @asesor.NombresCompletos'
+                                                                , () => cargarDerivacionesXAsesorSistema('@asesor.Dni'))">
+                                            @asesor.Dni - @asesor.NombresCompletos
+                                        </div>
+                                    }
                                 }
                             }
-                        }
-                    </select>
+                        </div>
+                    </div>
                 </div>
             }
             <div class="col">
@@ -173,7 +258,7 @@
                         <td></td>
                         <td>
                             <button class="btn btn-warning p-0 mt-auto"
-                                onclick="sortTableDerivaciones('derivacionesTable', 6, 'date')" data-sort-ignore>
+                                onclick="sortTableDerivaciones('derivacionesTable', 5, 'date')" data-sort-ignore>
                                 &#x25BC;
                             </button>
                         </td>
@@ -214,16 +299,19 @@
                                     style="background-color: white; border-left: 1px solid #2980b9; border-top: 1px solid white; border-bottom: 1px solid white;">
                                 </td>
                                 <td>
-                                    @if(derivacionAsesor.PuedeSerReagendado == true)
+                                    @if (derivacionAsesor.PuedeSerReagendado == true)
                                     {
-                                        <a href="javascript:void(0)" onclick="reagendarView(@derivacionAsesor.IdDerivacion, '@derivacionAsesor.PuedeSerReagendado')"
+                                        <a href="javascript:void(0)"
+                                            onclick="reagendarView(@derivacionAsesor.IdDerivacion, '@derivacionAsesor.PuedeSerReagendado')"
                                             class="btn btn-primary" style="width: auto;" title="Reagendar este cliente">
                                             <i class="bi bi-clipboard2-plus"></i>
                                         </a>
                                     }
                                     else
                                     {
-                                        <a href="javascript:void(0)" onclick="reagendarView(@derivacionAsesor.IdDerivacion, '@derivacionAsesor.PuedeSerReagendado')" class="btn btn-secondary" style="width: auto;" title="Reagendar este cliente">
+                                        <a href="javascript:void(0)"
+                                            onclick="reagendarView(@derivacionAsesor.IdDerivacion, '@derivacionAsesor.PuedeSerReagendado')"
+                                            class="btn btn-secondary" style="width: auto;" title="Reagendar este cliente">
                                             <i class="bi bi-clipboard2-plus"></i>
                                         </a>
                                     }
@@ -254,6 +342,8 @@
     </div>
 </div>
 
+<div id="supervisores-vendedores-data" data-json='@Html.Raw(Json.Serialize(Model.Supervisores))'></div>
+<div id="all-vendedores-data" data-json='@Html.Raw(Json.Serialize(Model.Asesores))'></div>
 @section Scripts {
     <script src="~/js/Derivacion/Derivacion.js?v=@DateTime.Now.Ticks"></script>
     <script src="~/js/Derivacion/Reagendamiento.js?v=@DateTime.Now.Ticks"></script>

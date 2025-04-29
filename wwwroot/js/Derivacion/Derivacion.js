@@ -47,6 +47,8 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function cargarDerivacionesXAsesorSistema(DniAsesor) {
+    console.log("DniAsesor:", DniAsesor);
+
     const tablaGeneralSistema = document.getElementById("tablaGeneralSistema");
     const tablaDerivacionesGestion = document.getElementById("tablaDerivacionesGestion");
     const tablaGeneralGestion = document.getElementById("tablaGeneralGestion");
@@ -251,7 +253,7 @@ function sortTableDerivaciones(idTabla, numCol, type) {
     const table = document.getElementById(idTabla);
     if (!table) return;
 
-    const rows = Array.from(table.rows).slice(3); // Ya verificaste que es correcto
+    const rows = Array.from(table.rows).slice(2); // Ya verificaste que es correcto
 
     const isAscending = table.dataset.sortOrder !== 'asc';
     table.dataset.sortOrder = isAscending ? 'asc' : 'desc';
@@ -385,4 +387,117 @@ function activatePagination(direction) {
         }
     });
     document.getElementById("page-indicator").innerText = `Página ${currentPage}`;
+}
+
+function cargar_asesores_del_supervisor(idSupJson, idAseJson, asesorSelect, idSupervisor) {
+    const supJson = document.getElementById(idSupJson);
+    if (!supJson) {
+        console.error("Element with ID", idSupJson, "not found.");
+        return;
+    }
+    asesoresSelect = document.getElementById(asesorSelect);
+    if (!asesoresSelect) {
+        console.error("Element with ID", asesorSelect, "not found.");
+        return;
+    }
+    asesoresSelect.innerHTML = `
+            <input type="text" class="custom-search" id="busqueda-asesor-derivacion"
+                onkeyup="filter_option_refac('busqueda-asesor-derivacion', 'selected-options-select-asesores-derivacion')"
+                placeholder="Buscar...">
+            <div class="custom-option" id="option-non-select-derivacion" data-value="non-select"
+                onclick="select_option_refac(
+                    'select-option-asesor-derivacion',
+                    'selected-option-asesor-derivacion',
+                    'selected-options-select-asesores-derivacion',
+                    '',
+                    'Seleccione un Asesor',
+                    () => cargarDerivacionesXAsesorSistema('')
+                )">
+                SIN FILTRO
+            </div>
+        `;
+    asesoresSelect.style = "display: block;"
+
+    if (idSupervisor === "" || idSupervisor === null || idSupervisor === 0) {
+        try {
+            const asesoresJson = document.getElementById(idAseJson);
+            var asesoresData = JSON.parse(asesoresJson.getAttribute("data-json"));
+            console.log("Asesores Data:", asesoresData);
+            asesoresData.forEach(asesor => {
+                asesoresSelect.innerHTML += `
+                    <div class="custom-option" id="option-${asesor["dni"]}-select-derivacion" data-value="${asesor.dni}"
+                        onclick="select_option_refac(
+                            'select-option-asesor-derivacion'
+                            , 'selected-option-asesor-derivacion'
+                            , 'selected-options-select-asesores-derivacion'
+                            , '${asesor["dni"]}'
+                            , '${asesor["dni"]} - ${asesor["nombresCompletos"]}'
+                            , () => cargarDerivacionesXAsesorSistema('${asesor["dni"]}')
+                        )">
+                        ${asesor["dni"]} - ${asesor["nombresCompletos"]}
+                    </div>
+                `;
+            });
+            return;
+        } catch (error) {
+            console.error("Error parsing supervisor JSON:", error);
+            Swal.fire({
+                title: 'Error',
+                text: 'Ocurrió un error al cargar los asesores',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    }
+    var supervisorData = JSON.parse(supJson.getAttribute("data-json"));
+    try {
+        var supervisorInfo;
+        supervisorData.forEach(supervisor => {
+            if (supervisor["idUsuario"] === idSupervisor) {
+                supervisorInfo = supervisor;
+            }
+        });
+        if (!supervisorInfo) {
+            Swal.fire({
+                title: 'Error',
+                text: 'No se encontró información del supervisor',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+            return;
+        }
+        const asesoresData = supervisorInfo["vendedores"];
+        var asesores = [];
+        asesoresData.forEach(asesor => {
+            asesores.push({
+                idusuario: asesor["idUsuario"],
+                dni: asesor["dni"],
+                nombres: asesor["nombresCompletos"],
+            });
+        });
+
+        asesores.forEach(asesor => {
+            asesoresSelect.innerHTML += `
+                <div class="custom-option" id="option-${asesor.dni}-select-derivacion" data-value="${asesor.dni}"
+                    onclick="select_option_refac(
+                        'select-option-asesor-derivacion'
+                        , 'selected-option-asesor-derivacion'
+                        , 'selected-options-select-asesores-derivacion'
+                        , '${asesor.dni}'
+                        , '${asesor.dni} - ${asesor.nombres}'
+                        , () => cargarDerivacionesXAsesorSistema('${asesor.dni}')
+                    )">
+                    ${asesor.dni} - ${asesor.nombres}
+                </div>
+            `;
+        });
+    } catch (error) {
+        console.error("Error parsing supervisor JSON:", error);
+        Swal.fire({
+            title: 'Error',
+            text: 'Ocurrió un error al cargar los asesores',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+    }
 }

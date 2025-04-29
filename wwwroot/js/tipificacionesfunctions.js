@@ -139,6 +139,8 @@ function enviarDerivacion(agenciaComercial, FechaVisita, Telefono, idBase, typeT
                     text: result.message,
                     icon: 'success',
                     confirmButtonText: 'Aceptar'
+                }).then(() => {
+                    location.reload();
                 });
             }
             else {

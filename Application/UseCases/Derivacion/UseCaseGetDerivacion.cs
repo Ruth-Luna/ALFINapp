@@ -40,13 +40,18 @@ namespace ALFINapp.Application.UseCases.Derivacion
                 {
                     var getAllAsesores = await _repositoryUsuarios.GetAllAsesores();
                     var GetAllSupervisores = await _repositoryUsuarios.GetAllSupervisores();
-                    foreach (var item in getAllAsesores)
-                    {
-                        asesores.Add(item.ToEntityVendedor());
-                    }
                     foreach (var item in GetAllSupervisores)
                     {
                         supervisores.Add(item.ToEntitySupervisor());
+                    }
+                    foreach (var item in getAllAsesores)
+                    {
+                        var supAsesor = supervisores.FirstOrDefault(x => x.IdUsuario == item.IDUSUARIOSUP);
+                        if (supAsesor != null)
+                        {
+                            supAsesor.Vendedores.Add(item.ToEntityVendedor());
+                        }
+                        asesores.Add(item.ToEntityVendedor());
                     }
                 }
                 else if (idRol == 2)

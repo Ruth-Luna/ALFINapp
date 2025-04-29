@@ -29,5 +29,6 @@ namespace ALFINapp.Domain.Entities
         public DateTime? FechaInicio { get; set; }
         public DateTime? FechaCese { get; set; }
         public String? Correo { get; set; }
+        public List<Vendedor> Vendedores { get; set; } = new List<Vendedor>();
     }
 }

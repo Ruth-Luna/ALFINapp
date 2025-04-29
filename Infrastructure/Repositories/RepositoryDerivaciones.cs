@@ -206,7 +206,7 @@ namespace ALFINapp.Infrastructure.Repositories
             catch (System.Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return (false, "Error en la base de datos al subir la derivacion");
+                return (false, "Error en la base de datos al subir la derivacion" + ex.Message);
             }
         }
 
