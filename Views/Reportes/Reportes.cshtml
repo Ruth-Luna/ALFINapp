@@ -11,295 +11,344 @@
     <link rel="stylesheet" href="~/css/Reportes/Reportes.css?v=@DateTime.Now.Ticks">
 }
 
-<div class="container-fluid mt-4">
-    <div class="align-center">
-        <h2> Reporteria </h2>
-    </div>
-    <div class="flex-container mt-4">
-        @*Row --- 01*@
-        <div class="card">
-            <div class="card-header d-flex align-items-center justify-content-between row">
-                <div class="col-md-8">
-                    <h4 class="me-md-2">Resumen de Progreso Mensual</h4>
+
+<!-- :::: :: :::: -->
+
+<div class="container-fluid">
+    <div class="row g-3">
+
+        <div class="col-12">
+            <div class="ba-card h-100">
+                <div class="ba-card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
+                            <i class="ri-bar-chart-2-line"></i>
+                            <span>RESUMEN DE RROGRESO MENSUAL</span>
+                        </h5>
+                    </div>
                 </div>
-                <div class="me-md-2 col d-flex flex-column align-items-center justify-content-center">
-                    @if (Model.etiquetas != null && Model.etiquetas.Any())
-                    {
-                        foreach (var item in Model.etiquetas)
-                        {
-                            <span class="bigger-badge-custom badge mb-2" style="font-size: 0.85em;">@item.nombreEtiqueta</span>
-                            <input class="form-control" type="text" value="@item.cantidadEtiqueta" readonly />
-                            <input class="form-control" type="text" value="@item.importeEtiquetas" readonly />
-                        }
-                    }
-                    else
-                    {
-                        <span class="badge bg-secondary">No hay etiquestas encontradas</span>
-                    }
-                </div>
-                <div class="me-md-2 col" id="lista-reportes-por-fechas">
-                    <label for="lista-fechas" class="form-label">Filtro Por Fechas</label>
-                    <input type="date" class="form-control mt-3" name="lista-fechas" id="lista-fechas"
-                        onchange="cargarReportePorFechas(this.value)">
+                <div class="ba-card-body">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <div>
+                                <label for="lista-fechas" class="form-label">Filtro Por Fechas</label>
+                                <input type="date" class="form-control" name="lista-fechas" id="lista-fechas" onchange="cargarReportePorFechas(this.value)" />
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            @if (Model.etiquetas != null && Model.etiquetas.Any())
+                            {
+                                foreach (var item in Model.etiquetas)
+                                {
+                                    <table class="table table-bordered mb-0 text-center">
+                                        <thead class="bg-success text-white">
+                                            <tr>
+                                                <th style="width: 50%;">Desembolsos Total</th>
+                                                <th style="width: 50%;">Importe Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>@item.cantidadEtiqueta</td>
+                                                <td>@item.importeEtiquetas</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                }
+                            }
+                            else
+                            {
+                                <table class="table table-bordered mb-0 table-fixed">
+                                    <thead class="bg-secondary text-white">
+                                        <tr>
+                                            <th style="width: 50%;">Desembolsos Total</th>
+                                            <th style="width: 50%;">Importe Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="2" class="text-center">No hay etiquetas encontradas</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="card-body">
-                <div class="row mb-2">
-                    <div class="@(rol == 1 || rol == 4 || rol == 2 ? "col-md-3" : "col-md-6")">
-                        <div class="card-header">
-                            <h5>Gestionados Vs Asignados</h5>
-                        </div>
-                        <div class="card-body">
-                            <div id="chart-progreso-total-y-tipificados">
-                                @*Aca se cargara las graficas del Asesor*@
-                            </div>
-                        </div>
-                    </div>
-                    <div class="@(rol == 1 || rol == 4 || rol == 2 ? "col-md-3" : "col-md-6")"
-                        id="div-pie-contactabilidad-reporte" style="display: none;">
-                        <div class="card-header">
-                            <h5>Contactabilidad Reporte</h5>
-                        </div>
-                        <div class="card-body">
-                            <div id="chart-contactabilidad-reporte">
-                                @*Aca se cargara las graficas del Asesor*@
-                            </div>
-                        </div>
-                    </div>
-                    @if (rol == 1 || rol == 4 || rol == 2)
-                    {
-                        <div class="col-md-6" id="div-derivaciones-top-5" style="display: none;">
-                            <div class="card-header">
-                                <h5>Top 5 Derivaciones</h5>
-                            </div>
-                            <div class="card-body">
-                                <div id="chart-top-5-derivaciones">
-                                    @*Aca se cargara las graficas del Asesor*@
-                                </div>
-                            </div>
-                        </div>
-                    }
-                </div>
-                <div class="row mb-2">
-                    <div class="col-md-3">
-                        <div class="card-header">
-                            <h5>Desembolsos Vs Derivaciones</h5>
-                        </div>
-                        <div class="card-body">
-                            <div id="chart-progreso-general">
-                                @*Aca se cargara las graficas del Asesor*@
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-9" id="div-derivaciones" style="display: none;">
-                        <div class="card-header">
-                            <h5>Derivaciones Generales</h5>
-                        </div>
-                        <div class="card-body">
-                            <div id="chart-derivaciones">
-                                @*Aca se cargara las graficas del Asesor*@
-                            </div>
-                        </div>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <div class="ba-card h-100">
+                <div class="ba-card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
+                            <i class="ri-swap-box-line"></i>
+                            <span>GESTIONADOS VS. ASIGNADO</span>
+                        </h5>
                     </div>
                 </div>
-                @if (rol == 1 || rol == 4 || rol == 2)
+                <div class="ba-card-body">
+                    <div id="chart-progreso-total-y-tipificados">
+                        @*Aca se cargara las graficas del Asesor*@
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6" id="div-pie-contactabilidad-reporte" style="display: none;">
+            <div class="ba-card h-100">
+                <div class="ba-card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
+                            <i class="ri-customer-service-2-line"></i>
+                            <span>REPORTE DE CONTACTABILIDAD</span>
+                        </h5>
+                    </div>
+                </div>
+                <div class="ba-card-body">
+                    <div id="chart-contactabilidad-reporte">
+                        @*Aca se cargara las graficas del Asesor*@
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <div class="ba-card h-100">
+                <div class="ba-card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
+                            <i class="ri-exchange-dollar-line"></i>
+                            <span>DESEMBOLSOS VS. DERIVACIONES</span>
+                        </h5>
+                    </div>
+                </div>
+                <div class="ba-card-body">
+                    <div id="chart-progreso-general">
+                        @*Aca se cargara las graficas del Asesor*@
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (rol == 1 || rol == 4 || rol == 2)
+        {
+            <div class="col-12 col-md-6" id="div-derivaciones-top-5" style="display: none;">
+                <div class="ba-card h-100">
+                    <div class="ba-card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
+                                <i class="ri-medal-line"></i>
+                                <span>TOP 5 DE DERIVACIONES</span>
+                            </h5>
+                        </div>
+                    </div>
+                    <div class="ba-card-body">
+                        <div id="chart-top-5-derivaciones">
+                            @*Aca se cargara las graficas del Asesor*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="col-12" id="div-derivaciones" style="display: none;">
+            <div class="ba-card h-100">
+                <div class="ba-card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
+                            <i class="ri-share-forward-line"></i>
+                            <span>DERIVACIONES GENERALES</span>
+                        </h5>
+                    </div>
+                </div>
+                <div class="ba-card-body">
+                    <div id="chart-derivaciones">
+                        @*Aca se cargara las graficas del Asesor*@
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (rol == 1 || rol == 4 || rol == 2)
+        {
+            <div class="col-12">
+                <div class="ba-card h-100">
+                    <div class="ba-card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
+                                <i class="ri-table-line"></i>
+                                <span>TABLA DERIVACIONES GENERALES</span>
+                            </h5>
+                        </div>
+                    </div>
+                    <div class="ba-card-body">
+                        <div id="myGrid" class="ag-theme-alpine" style="height: 500px; width: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <hr />
+
+    <div class="row g-3">
+        <div class="col-12">
+            <div class="ba-card h-100">
+                @if (rol == 1 || rol == 4)
                 {
-                    <div class="row mb-2">
-                        <div class="col-md-12">
-                            <div class="card-header row d-flex align-items-center justify-content-between">
-                                <div class="col-md-9">
-                                    <h5>Tabla derivaciones generales</h5>
-                                </div>
-                                <div class="col-md-3">
-                                    @{
-                                        var entradaSinDni = new ALFINapp.API.Models.ViewReporteTablaGeneral();
-                                        if (Model.reporteTablaGeneral != null && Model.reporteTablaGeneral.Any())
-                                        {
-                                            entradaSinDni = Model.reporteTablaGeneral.FirstOrDefault(x => x.dni == null);
-                                        }
-                                    }
+                    <div class="ba-card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
+                                <i class="ri-user-search-line"></i>
+                                <span>VER REPORTES POR ASESOR/SUPERVISOR</span>
+                            </h5>
+                        </div>
+                    </div>
 
-                                    <div class="text-center">
-                                        @if (entradaSinDni != null)
+                    <!-- Contenido de la tarjeta -->
+                    <div class="ba-card-body">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <div>
+                                    <label for="lista-usuario-asesor" class="form-label">Filtro Por Asesor de Créditos</label>
+                                    <select class="form-control" name="lista-usuario-asesor" id="lista-usuario-asesor"
+                                            onchange="cargarReporteAsesor(this.value)">
+                                        <option value="">Seleccione un Asesor de Créditos</option>
+                                        @if (asesores != null)
                                         {
-                                            <div>
-                                                <table class="table table-bordered">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Desembolsos Total</th>
-                                                            <th>Importe Total</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>
-                                                                @entradaSinDni.contador_desembolsado
-                                                            </td>
-                                                            <td>
-                                                                @entradaSinDni.importe_desembolsado?.ToString("C")
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
+                                            @foreach (var usuario in asesores)
+                                            {
+                                                if (usuario.Estado == "ACTIVO")
+                                                {
+                                                    <option value="@usuario.IdUsuario"> @usuario.NombresCompletos </option>
+                                                }
+                                            }
                                         }
-                                        else
-                                        {
-                                            <span class="badge bg-secondary">Sin datos</span>
-                                        }
-                                    </div>
-
+                                    </select>
                                 </div>
                             </div>
-                            <div class="card-body">
-                                <div id="chart-tabla-derivaciones-generales">
-                                    @*Aca se cargara la tabla general*@
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered">
-                                            <thead>
-                                                <tr>
-                                                    <th>DNI</th>
-                                                    <th>Asesor</th>
-                                                    <th>Supervisor</th>
-                                                    <th>Gestionado</th>
-                                                    <th>Derivado</th>
-                                                    <th>Desembolsado</th>
-                                                    <th>Importe Desembolsado</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @if (Model.reporteTablaGeneral != null && Model.reporteTablaGeneral.Any())
+                            <div class="col-12 col-md-6">
+                                <div>
+                                    <label for="lista-usuario-supervisor" class="form-label">Filtro Por Supervisor</label>
+                                    <select class="form-control" name="lista-usuario-supervisor" id="lista-usuario-supervisor"
+                                            onchange="cargarReporteSupervisor(this.value)">
+                                        <option value=""> Seleccione un Supervisor </option>
+                                        @if (supervisores != null)
+                                        {
+                                            @foreach (var usuario in supervisores)
+                                            {
+                                                if (usuario.Estado == "ACTIVO")
                                                 {
-                                                    foreach (var item in Model.reporteTablaGeneral)
-                                                    {
-                                                        @if (item.dni == null)
-                                                        {
-                                                            continue;
-                                                        }
-                                                        <tr>
-                                                            <td>@item.dni</td>
-                                                            <td>@item.nombres_asesor</td>
-                                                            <td>@item.nombres_supervisor</td>
-                                                            <td>@item.contador_gestionado</td>
-                                                            <td>@item.contador_derivado</td>
-                                                            <td>@item.contador_desembolsado</td>
-                                                            <td>@item.importe_desembolsado?.ToString("C")</td>
-                                                        </tr>
-                                                    }
+                                                    <option value="@usuario.IdUsuario"> @usuario.NombresCompletos </option>
                                                 }
-                                                else
-                                                {
-                                                    <tr>
-                                                        <td colspan="7" class="text-center">No data available</td>
-                                                    </tr>
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                            }
+                                        }
+                                    </select>
                                 </div>
                             </div>
                         </div>
                     </div>
                 }
+                else if (rol == 2)
+                {
+                    <div class="ba-card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
+                                <span>VER REPORTES DEL ASESOR</span>
+                            </h5>
+                        </div>
+                    </div>
+
+                    <!-- Contenido de la tarjeta -->
+                    <div class="ba-card-body">
+                        <label for="lista-usuario-asesor" class="form-label">Filtro Por Asesor de Créditos</label>
+                        <select class="form-control mt-3" name="lista-usuario-asesor" id="lista-usuario-asesor"
+                                onchange="cargarReporteAsesor(this.value)">
+                            <option value=""> Seleccione un Asesor de Créditos </option>
+                            @if (asesores != null)
+                            {
+                                @foreach (var usuario in asesores)
+                                {
+                                    if (usuario.Estado == "ACTIVO")
+                                    {
+                                        <option value="@usuario.IdUsuario"> @usuario.NombresCompletos </option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="ba-card h-100">
+                <div class="ba-card-body">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <div style="display: none" id="div-derivaciones-supervisor"></div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div style="display: none" id="div-reporteria-fechas"></div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div style="display: none" id="div-derivaciones-asesor"></div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
     </div>
-    <hr>
-    <div class="flex-container mt-4">
-        <div class="card mt-4">
-            @if (rol == 1 || rol == 4)
-            {
-                <div class="card-header">
-                    <h5>
-                        Seleccione un Asesor o Supervisor para ver sus reportes
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row mt-3">
-                        <div class="col" id="lista-reportes-usuario-asesor">
-                            <label for="lista-usuario-asesor" class="form-label">Filtro Por Asesor de Creditos</label>
-                            <select class="form-control mt-3" name="lista-usuario-asesor" id="lista-usuario-asesor"
-                                onchange="cargarReporteAsesor(this.value)">
-                                <option value=""> Seleccione un Asesor de Creditos </option>
-                                @if (asesores != null)
-                                {
-                                    @foreach (var usuario in asesores)
-                                    {
-                                        if (usuario.Estado == "ACTIVO")
-                                        {
-                                            <option value="@usuario.IdUsuario"> @usuario.NombresCompletos </option>
-                                        }
-                                    }
-                                }
-                            </select>
-                        </div>
-                        <div class="col" id="lista-reportes-usuario-supervisor">
-                            <label for="lista-usuario-supervisor" class="form-label">Filtro Por Supervisor</label>
-                            <select class="form-control mt-3" name="lista-usuario-supervisor" id="lista-usuario-supervisor"
-                                onchange="cargarReporteSupervisor(this.value)">
-                                <option value=""> Seleccione un Supervisor </option>
-                                @if (supervisores != null)
-                                {
-                                    @foreach (var usuario in supervisores)
-                                    {
-                                        if (usuario.Estado == "ACTIVO")
-                                        {
-                                            <option value="@usuario.IdUsuario"> @usuario.NombresCompletos </option>
-                                        }
-                                    }
-                                }
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            }
-            else if (rol == 2)
-            {
-                <div class="card-header">
-                    <div class="alert alert-info">
-                        Seleccione un Asesor para ver sus reportes
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="row mt-3">
-                        <div class="container col" id="lista-reportes-usuario-asesor">
-                            <label for="lista-usuario-asesor" class="form-label">Filtro Por Asesor de Creditos</label>
-                            <select class="form-control mt-3" name="lista-usuario-asesor" id="lista-usuario-asesor"
-                                onchange="cargarReporteAsesor(this.value)">
-                                <option value=""> Seleccione un Asesor de Creditos </option>
-                                @if (asesores != null)
-                                {
-                                    @foreach (var usuario in asesores)
-                                    {
-                                        if (usuario.Estado == "ACTIVO")
-                                        {
-                                            <option value="@usuario.IdUsuario"> @usuario.NombresCompletos </option>
-                                        }
-                                    }
-                                }
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-    </div>
-    @*Row --- 03*@
-    <div class="row">
-        <div class="col" id="div-derivaciones-supervisor" style="display: none;"></div>
-        <div class="col" id="div-reporteria-fechas" style="display: none;"></div>
-        <div class="col" id="div-derivaciones-asesor" style="display: none;"></div>
-    </div>
+
 </div>
+
+<!-- :::: :: :::: -->
+
 
 <div id="reportes-data" data-json='@Html.Raw(Json.Serialize(Model))'></div>
 <div id="rol-general" data='@(rol.HasValue? rol.Value.ToString() : "null")'></div>
 
 @section Scripts {
+    <script>
+        const rowData = @Html.Raw(Json.Serialize(Model.reporteTablaGeneral));
+
+        const gridOptions = {
+            rowData: rowData,
+            columnDefs: [
+                { field: "dni", headerName: "DNI" },
+                { field: "nombres_asesor", headerName: "ASESOR" },
+                { field: "nombres_supervisor", headerName: "Supervisor" },
+                { field: "contador_gestionado", headerName: "Gestionado" },
+                { field: "contador_derivado", headerName: "Derivado" },
+                { field: "contador_desembolsado", headerName: "Desembolsado" },
+                {
+                    field: "importe_desembolsado",
+                    headerName: "Importe Desembolsado",
+                    valueFormatter: params => {
+                        return params.value ? params.value.toLocaleString('es-PE', { style: 'currency', currency: 'PEN' }) : '';
+                    }
+                }
+            ],
+            defaultColDef: {
+                sortable: true,
+                filter: true
+            },
+            pagination: true, // Habilita la paginación
+            paginationPageSize: 10, // Número de filas por página
+            paginationPageSizeSelector: [10, 20, 50, 100], // Opciones de tamaño de página
+        };
+
+        const myGridElement = document.querySelector('#myGrid');
+        agGrid.createGrid(myGridElement, gridOptions);
+    </script>
+
+
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
-        var rol = @(rol.HasValue? rol.Value.ToString() : "null");
-        var idUsuario = @(idUsuario.HasValue? idUsuario.Value.ToString() : "null");
+        var rol = @(rol.HasValue ? rol.Value.ToString() : "null");
+        var idUsuario = @(idUsuario.HasValue ? idUsuario.Value.ToString() : "null");
 
         document.addEventListener("DOMContentLoaded", function () {
             if (rol === 3) {

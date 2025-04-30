@@ -134,3 +134,105 @@ body {
     padding: 10px;
   }
 }
+
+
+
+
+/* NUEVO DISEÑO .CARDS :: START */
+:root {
+    /* Colores */
+    --ba-color-white: #ffffff;
+    --ba-color-gray-50: #f9fafb;
+    --ba-color-gray-100: #f3f4f6;
+    --ba-color-gray-200: #e5e7eb;
+    --ba-color-gray-700: #374151;
+    --ba-color-gray-900: #111827;
+    --ba-color-primary: #e05c4ff;
+    --ba-color-secondary: #732579;
+    /* Transiciones y sombras */
+    --ba-transition: all 0.2s ease;
+    --ba-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --ba-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --ba-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Tipografía y cuerpo */
+body {
+    background-color: var(--ba-color-gray-50);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: var(--ba-color-gray-700);
+}
+
+/* Botones */
+.btn {
+    border-radius: 8px;
+}
+
+.bg-btn-circle {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ba-color-gray-700);
+    background-color: transparent;
+    border: none;
+    transition: var(--ba-transition);
+}
+
+    .bg-btn-circle:hover {
+        background-color: var(--ba-color-gray-100);
+    }
+
+/* Íconos */
+.material-icons,
+.material-icons-outlined {
+    font-size: 1.25rem;
+}
+
+.material-symbols {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Tarjetas */
+.ba-card {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: var(--ba-color-white);
+    background-clip: border-box;
+    border-radius: 12px;
+    box-shadow: var(--ba-shadow-md);
+}
+
+.ba-card-header {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.ba-card-title {
+    margin-bottom: 0px;
+}
+
+.ba-card-body {
+    padding: 1rem;
+}
+
+.ba-card-actions,
+.bd-card-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Colores */
+.ba-color-primary {
+    color: var(--ba-color-primary);
+}
+/* NUEVO DISEÑO .CARDS :: END */
