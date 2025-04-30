@@ -67,11 +67,6 @@ namespace ALFINapp.Application.UseCases.Derivacion
                 {
                     return (false, uploadDerivacion.message);
                 }
-                var checkDerivacion = await _repositoryDerivaciones.verDerivacion(getcliente.Dni ?? string.Empty);
-                if (!checkDerivacion.success)
-                {
-                    return (false, checkDerivacion.message);
-                }
                 var createTipificacion = new List<DtoVTipificarCliente>();
                 var tipificacion = new DtoVTipificarCliente
                 {
@@ -91,7 +86,12 @@ namespace ALFINapp.Application.UseCases.Derivacion
                 {
                     return (false, uploadTipificacion.message);
                 }
-                return (true, "Derivacion subida correctamente. Si tiene mas tipificaciones puede guardarlas usando el boton de Guardar Tipificaciones. Esto no modificara ni procesara la Tipificacion de Derivacion");
+                var checkDerivacion = await _repositoryDerivaciones.verDerivacion(getcliente.Dni ?? string.Empty);
+                if (!checkDerivacion.success)
+                {
+                    return (false, "La derivacion fue subida correctamente, sin embargo aun no se pudo procesar la derivacion. No envie mas derivaciones de este cliente. Su derivacion sera procesada muy pronto. Para conocer el estado de su derivacion puede dirigirse a la pestaña de Derivaciones.");
+                }
+                return (true, "Derivacion subida correctamente. Puede ver los detalles en la pestaña de derivaciones");
             }
             catch (System.Exception ex)
             {

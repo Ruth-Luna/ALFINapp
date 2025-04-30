@@ -195,7 +195,7 @@ namespace ALFINapp.Infrastructure.Repositories
                     new SqlParameter("@nombre_completos", derivacion.NombreCliente ?? string.Empty)
                 };
                 var generarDerivacion = await _context.Database.ExecuteSqlRawAsync(
-                    "EXEC SP_derivacion_insertar_derivacion_test_ONLY_SVL @agencia_derivacion, @fecha_visita, @telefono, @id_base, @id_usuario, @nombre_completos",
+                    "EXEC SP_derivacion_insertar_nueva_derivacion_pendiente_PRUEBA @agencia_derivacion, @fecha_visita, @telefono, @id_base, @id_usuario, @nombre_completos",
                     parametros);
                 if (generarDerivacion == 0)
                 {
@@ -299,7 +299,7 @@ namespace ALFINapp.Infrastructure.Repositories
                 {
                     return (false, "No se encontró la derivación en la base de datos, intentelo nuevamente");
                 }
-                return (false, "Tiempo de espera agotado. La entrada no fue procesada. Pero fue guardada correctamente en nuestro sistema no sera necesario que envie mas derivaciones de este cliente en caso su rol sea Asesor. Su derivacion sera procesada muy pronto. Para conocer el estado de su derivacion puede dirigirse a la pestaña de Derivaciones, ademas no se olvide de guardar la Tipificacion");
+                return (false, "Tiempo de espera agotado. La derivación no fue procesada");
             }
             catch (System.Exception ex)
             {

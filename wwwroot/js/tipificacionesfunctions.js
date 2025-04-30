@@ -151,7 +151,6 @@ function enviarDerivacion(agenciaComercial, FechaVisita, Telefono, idBase, typeT
                     confirmButtonText: 'Aceptar'
                 });
             }
-
         },
         error: function (xhr, status, error) {
             Swal.close();

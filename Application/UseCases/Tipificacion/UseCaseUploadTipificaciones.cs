@@ -33,6 +33,7 @@ namespace ALFINapp.Application.UseCases.Tipificacion
             try
             {
                 int? usuarioId = idUsuario;
+                var message = "No hay tipificaciones de derivacion.";
                 if (usuarioId == null)
                 {
                     return (false, "No se ha enviado el Id del Usuario.");
@@ -131,6 +132,7 @@ namespace ALFINapp.Application.UseCases.Tipificacion
                             .getGestionDerivacion(verificarDerivacion[0].DniCliente ?? "", usuarioInfo.Dni ?? "");
                         if (verificarGestion != null)
                         {
+                            message = "La tipificacion de Derivacion fue previamente procesada, se obviara este campo.";
                             continue;
                         }
                     }
@@ -246,11 +248,7 @@ namespace ALFINapp.Application.UseCases.Tipificacion
                         }
                     }
                 }
-                var message = "No hay tipificaciones de derivacion.";
-                if (existeDerivacion)
-                {
-                    message = "Se proceso la tipificacion de derivacion correctamente.";
-                }
+                
                 return (true, "Se guardaron las Tipificaciones correctamente. " + message);
             }
             catch (System.Exception ex)
