@@ -1,30 +1,49 @@
 @model ALFINapp.API.Models.ViewReportesFecha
-@{
-}
-2
-<div class="card">
-    <div class="card-header">
-        <h4>Asignaciones Por Fechas</h4>
+
+
+@* 2 *@
+
+<div class="ba-card h-100">
+    <div class="ba-card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
+                <span>ASIGNACIONES POR FECHAS</span>
+            </h5>
+        </div>
     </div>
-    <div class="card-body">
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="card-header">
-                    <h5>Asignaciones Total Y Tipificados</h5>
+    <div class="ba-card-body">
+
+        <div class="row g-3">
+            <div class="col-12 col-md-6">
+                <div class="ba-card h-100">
+                    <div class="ba-card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="ba-card-title d-inline-flex align-items-baseline gap-2">
+                                <span>Asignaciones Total y Tipificados</span>
+                            </h5>
+                        </div>
+                    </div>
+                    <div class="ba-card-body">
+                        <div id="div-asignaciones-total-tip-general-por-fechas"></div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div id="div-asignaciones-total-tip-general-por-fechas"></div>
-                </div>                    
             </div>
-            <div class="col-md-6">
-                <div class="card-header">
-                    <h5>Derivaciones Vs Desembolsos</h5>
-                </div>
-                <div class="card-body">
-                    <div id="div-asignaciones-der-des-general-por-fechas"></div>
+            <div class="col-12 col-md-6">
+                <div class="ba-card h-100">
+                    <div class="ba-card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="ba-card-title d-inline-flex align-items-baseline gap-2">
+                                <span>Derivaciones vs. Desembolsos</span>
+                            </h5>
+                        </div>
+                    </div>
+                    <div class="ba-card-body">
+                        <div id="div-asignaciones-der-des-general-por-fechas"></div>
+                    </div>
                 </div>
             </div>
         </div>
+        
     </div>
 </div>
 

@@ -4,7 +4,7 @@ async function cargarReporteAsesor(idUsuario) {
     }
     var asesorElement = document.getElementById('div-derivaciones-asesor');
     asesorElement.innerHTML = ''; // Limpiar el contenido previo
-    asesorElement.style.display = 'none'; // Ocultar el elemento inicialmente
+    $(asesorElement).parent().addClass('d-none'); // Ocultar el elemento inicialmente
     const baseUrl = window.location.origin;
     const userId = parseInt(idUsuario, 10);
     const url = `${baseUrl}/Reportes/AsesorReportes?idAsesor=${encodeURIComponent(userId)}`;
@@ -35,7 +35,7 @@ async function cargarReporteAsesor(idUsuario) {
         } else {
             const html = await response.text();
             asesorElement.innerHTML = html;
-            asesorElement.style.display = 'block';
+            $(asesorElement).parent().removeClass('d-none');
             cargarDerivacionesAsesorFecha();
             cargarGestionInforme();
             cargarReporteGeneralAsesor();
@@ -56,7 +56,7 @@ async function cargarReporteSupervisor(idUsuario) {
     }
     var supervisorElement = document.getElementById('div-derivaciones-supervisor');
     supervisorElement.innerHTML = ''; // Limpiar el contenido previo
-    supervisorElement.style.display = 'none'; // Ocultar el elemento inicialmente
+    $(supervisorElement).parent().addClass('d-none'); // Ocultar el elemento inicialmente
     const baseUrl = window.location.origin;
     const userId = parseInt(idUsuario, 10);
     const url = `${baseUrl}/Reportes/SupervisorReportes?idSupervisor=${encodeURIComponent(userId)}`;
@@ -87,7 +87,7 @@ async function cargarReporteSupervisor(idUsuario) {
         } else {
             const html = await response.text();
             supervisorElement.innerHTML = html;
-            supervisorElement.style.display = 'block';
+            $(supervisorElement).parent().removeClass('d-none');
             cargarReportesSupervisor();
             cargarReportesDerivacionesSupervisor();
             cargarGraficoDerivacionesVsDesembolsos();
@@ -111,7 +111,7 @@ async function cargarReportePorFechas(fecha) {
     }
     var fechaElement = document.getElementById('div-reporteria-fechas');
     fechaElement.innerHTML = '';
-    fechaElement.style.display = 'none';
+    $(fechaElement).parent().addClass('d-none');
     const baseUrl = window.location.origin;
     const fechaToSend = new Date(fecha);
     const formattedDate = fechaToSend.toISOString().split('T')[0]; // Formato YYYY-MM-DD
@@ -144,7 +144,7 @@ async function cargarReportePorFechas(fecha) {
         } else {
             const html = await response.text();
             fechaElement.innerHTML = html;
-            fechaElement.style.display = 'block';
+            $(fechaElement).parent().removeClass('d-none');
             gpiederivacionesFecha();
             gpieasignacionFecha();
         }
