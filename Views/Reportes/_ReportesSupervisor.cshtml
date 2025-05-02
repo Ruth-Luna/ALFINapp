@@ -1,6 +1,88 @@
 @model ALFINapp.API.Models.ViewReportesSupervisor
 
-<div class="card">
+
+@* 3 *@
+<div class="ba-card mb-3 h-100">
+    <div class="ba-card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
+                <span>ASIGNACIONES DEL SUPERVISOR</span>
+            </h5>
+        </div>
+    </div>
+    <div class="ba-card-body">
+        <div class="ba-card mb-3 h-100">
+            <div class="ba-card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="ba-card-title d-inline-flex align-items-baseline gap-2">
+                        <span>Reportes de Asignaciones</span>
+                    </h5>
+                </div>
+            </div>
+            <div class="ba-card-body">
+                <div id="div-asignaciones-general-supervisor"></div>
+            </div>
+        </div>
+
+        <div class="ba-card mb-3 h-100">
+            <div class="ba-card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="ba-card-title d-inline-flex align-items-baseline gap-2">
+                        <span>Reportes de Derivaciones</span>
+                    </h5>
+                </div>
+            </div>
+            <div class="ba-card-body">
+                <div id="div-asignaciones-derivadas-supervisor"></div>
+            </div>
+        </div>
+
+        <div class="ba-card mb-3 h-100">
+            <div class="ba-card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="ba-card-title d-inline-flex align-items-baseline gap-2">
+                        <span>Reportes de Supervisores</span>
+                    </h5>
+                </div>
+            </div>
+            <div class="ba-card-body">
+                <div id="div-reporte-general-supervisor"></div>
+            </div>
+        </div>
+        <div class="ba-card mb-3 h-100">
+            <div class="ba-card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="ba-card-title d-inline-flex align-items-baseline gap-2">
+                        <span>Derivaciones por Fecha</span>
+                    </h5>
+                </div>
+            </div>
+            <div class="ba-card-body">
+                <div id="div-derivaciones-por-fecha-supervisor"></div>
+            </div>
+        </div>
+        <div class="ba-card h-100">
+            <div class="ba-card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="ba-card-title d-inline-flex align-items-baseline gap-2">
+                        <span>Desembolsos por Fecha</span>
+                    </h5>
+                </div>
+            </div>
+            <div class="ba-card-body">
+                <div id="div-desembolsos-por-fecha-supervisor"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="reportes-supervisor" data-json='@Html.Raw(Json.Serialize(Model))'></div>
+
+
+
+
+
+@* <div class="card">
     <div class="card-header">
         <h4>Asignaciones Del Supervisor</h4>
     </div>
@@ -31,7 +113,7 @@
                 </div>
                 <div class="card-body">
                     <div id="div-reporte-general-supervisor">
-                        @*Aca se cargara las graficas del Supervisor*@ 
+                        @*Aca se cargara las graficas del Supervisor*
                     </div>
                 </div>
             </div>
@@ -60,4 +142,4 @@
         </div>
     </div>
 </div>
-<div id="reportes-supervisor" data-json='@Html.Raw(Json.Serialize(Model))'></div>
+<div id="reportes-supervisor" data-json='@Html.Raw(Json.Serialize(Model))'></div> *@

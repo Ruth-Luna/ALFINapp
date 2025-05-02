@@ -7,16 +7,20 @@
     <title>@ViewData["Title"] - ALFINapp</title>
     @RenderSection("Styles", required: false)
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-version="true" />
     <link rel="stylesheet" href="~/css/styles.css" />
     <link rel="stylesheet" href="~/ALFINapp.styles.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <!-- Agregar el CSS de SweetAlert2 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.css" />
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
+    <!-- ICONS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" />
+
+    <!-- AG GRID -->
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
 </head>
 
 
@@ -64,7 +68,7 @@
             <div class="flex-grow-1 d-flex flex-column overflow-auto h-100">
                 <!-- main -->
                 <div class="flex-grow-1 p-3 bg-light">
-                    <div class="container-fluid">
+                    <div class="container-fluid py-3">
                         <!-- contenido principal aquí -->
                         @RenderBody()
                     </div>
@@ -210,7 +214,6 @@
 <script src="~/js/commentfunctions.js?v=@DateTime.Now.Ticks"></script>
 <script src="~/js/telefonosfunctions.js?v=@DateTime.Now.Ticks"></script>
 <script src="~/js/tipificacionesfunctions.js?v=@DateTime.Now.Ticks"></script>
-<script src="~/js/tablefunctions.js?v=@DateTime.Now.Ticks"></script>
 <script src="~/js/reagregacionesfunctions.js?v=@DateTime.Now.Ticks"></script>
 <script src="~/js/accountfunctions.js?v=@DateTime.Now.Ticks"></script>
 <script src="~/js/generalfunctions.js?v=@DateTime.Now.Ticks"></script>
