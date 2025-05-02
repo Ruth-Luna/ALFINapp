@@ -132,7 +132,14 @@ namespace ALFINapp.Application.DTOs
             cliente.XApmaterno = XApmaterno;
             cliente.XNombre = XNombre;
             cliente.Edad = Edad;
-            cliente.OfertaMax = OfertaMax;
+            if (OfertaMax < 1000)
+            {
+                cliente.OfertaMax = OfertaMax * 100;
+            }
+            else
+            {
+                cliente.OfertaMax = OfertaMax;
+            }
             cliente.Campaña = Campaña;
             cliente.Cuota = Cuota;
             cliente.Oferta12m = Oferta12m;
