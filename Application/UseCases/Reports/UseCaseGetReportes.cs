@@ -53,7 +53,6 @@ namespace ALFINapp.Application.UseCases.Reports
                             supervisoresViews.Add(supervisorView);
                         }
                         reporteGeneral.Supervisores = supervisoresViews;
-
                     }
                     // GRAFICAS DE REPORTES Generales
                     var lineasGestionDerivacion = await _repositoryReports.LineaGestionVsDerivacionDiaria(idUsuario);
