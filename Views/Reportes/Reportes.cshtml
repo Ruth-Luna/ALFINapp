@@ -22,59 +22,71 @@
         <div class="col-12">
             <div class="ba-card h-100">
                 <div class="ba-card-header">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
-                            <i class="ri-bubble-chart-fill"></i>
-                            <span>RESUMEN DE PROGRESO MENSUAL</span>
-                        </h5>
-                    </div>
+                    <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
+                        <i class="ri-bubble-chart-fill"></i>
+                        <span>RESUMEN DE PROGRESO MENSUAL</span>
+                    </h5>
                 </div>
                 <div class="ba-card-body">
                     <div class="row g-3">
                         <div class="col-12 col-md-6">
-                            <div>
+                            <div class="card-body">
                                 <label for="lista-fechas" class="form-label">Filtro Por Fechas</label>
                                 <input type="date" class="form-control" name="lista-fechas" id="lista-fechas" onchange="cargarReportePorFechas(this.value)" />
                             </div>
                         </div>
-                        <div class="col-12 col-md-6">
-                            @if (Model.etiquetas != null && Model.etiquetas.Any())
+                        
+
+                        @if (Model.etiquetas != null && Model.etiquetas.Any())
+                        {
+                            foreach (var item in Model.etiquetas)
                             {
-                                foreach (var item in Model.etiquetas)
-                                {
-                                    <table class="table table-bordered mb-0 text-center">
-                                        <thead>
-                                            <tr>
-                                                <th style="width: 50%;">Desembolsos Total</th>
-                                                <th style="width: 50%;">Importe Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="table-success fw-bold">
-                                            <tr>
-                                                <td>@item.cantidadEtiqueta</td>
-                                                <td>@item.importeEtiquetas.ToString("C", CultureInfo.CreateSpecificCulture("es-PE"))</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                }
+                                <div class="col-12 col-sm-6 col-md-3">
+                                    <div class="card border-0 border-success-light bg-success-light">
+                                        <div class="card-body">
+                                            <div class="d-flex flex-column">
+                                                <label class="form-label text-muted">Desembolso total</label>
+                                                <label class="fs-4 fs-md-2 fs-lg-1 fw-bold">@item.cantidadEtiqueta</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-3">
+                                    <div class="card border-0 border-success-light bg-success-light">
+                                        <div class="card-body">
+                                            <div class="d-flex flex-column">
+                                                <label class="form-label text-muted">Importe total</label>
+                                                <label class="fs-4 fs-md-2 fs-lg-1 fw-bold">@item.importeEtiquetas.ToString("C", CultureInfo.CreateSpecificCulture("es-PE"))</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             }
-                            else
-                            {
-                                <table class="table table-bordered mb-0 text-center">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 50%;">Desembolsos Total</th>
-                                            <th style="width: 50%;">Importe Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="table-light fw-bold">
-                                        <tr>
-                                            <td colspan="2">No hay etiquetas encontradas</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            }
-                        </div>
+                        }
+                        else
+                        {
+                            <div class="col-12 col-sm-6 col-md-3">
+                                <div class="card border-0 border-secondary-light bg-secondary-light">
+                                    <div class="card-body">
+                                        <div class="d-flex flex-column">
+                                            <label class="form-label text-muted">Desembolso total</label>
+                                            <label class="fs-4 fs-md-2 fs-lg-1 fw-bold">-</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-md-3">
+                                <div class="card border-0 border-secondary-light bg-secondary-light">
+                                    <div class="card-body">
+                                        <div class="d-flex flex-column">
+                                            <label class="form-label text-muted">Importe total</label>
+                                            <label class="fs-4 fs-md-2 fs-lg-1 fw-bold">-</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
                     </div>
                 </div>
             </div>

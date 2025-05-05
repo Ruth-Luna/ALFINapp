@@ -235,4 +235,18 @@ body {
 .ba-color-primary {
     color: var(--ba-color-primary);
 }
+
+.border-success-light {
+    border-left: 3px solid #82E0AA !important;
+}
+.bg-success-light {
+    background-color: #f8fdfa !important;
+}
+
+.border-secondary-light {
+    border-left: 3px solid #d7dbdd !important;
+}
+.bg-secondary-light {
+    background-color: #f8f9f9 !important;
+}
 /* NUEVO DISEÑO .CARDS :: END */
