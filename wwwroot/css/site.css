@@ -250,3 +250,63 @@ body {
     background-color: #f8f9f9 !important;
 }
 /* NUEVO DISEÑO .CARDS :: END */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+:root {
+    --sidebar-width: 220px;
+    --ba-color-primary: #224589;
+    --ba-color-light: #F9FBFE;
+}
+
+/* Tus clases de color personalizadas */
+.ba-color-primary {
+    background-color: var(--ba-color-primary);
+    color: var(--ba-color-light);
+}
+
+/* Sidebar base */
+#sidebar {
+    flex: 0 0 var(--sidebar-width);
+    max-width: var(--sidebar-width);
+    background-color: var(--ba-color-primary);
+    color: var(--ba-color-light);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: transform 0.3s ease;
+    transform: translateX(-100%); /* oculto en móvil */
+}
+
+/* Cuando el checkbox esté marcado, mostrarlo en móvil */
+#sidebarToggle:checked ~ .d-flex #sidebar {
+    transform: translateX(0);
+}
+
+/* Main con scroll vertical */
+main {
+    height: 100%;
+    overflow-y: auto;
+}
+
+/* En pantallas md+ forzar que el sidebar siempre esté visible */
+@media (min-width: 768px) {
+    #sidebar {
+        transform: translateX(0) !important;
+    }
+}
