@@ -475,5 +475,29 @@ namespace ALFINapp.Infrastructure.Repositories
                 return new DetallesReportesEtiquetasDTO();
             }
         }
+
+        public async Task<DetallesReportesTablasDTO> GetReportesMetas(DateOnly fecha, int idUsuario)
+        {
+            try
+            {
+                var getData = await _context.reports_bar_top_5_derivaciones
+                    .FromSqlRaw("EXEC SP_REPORTES_TABLA_METAS @fecha, @id_usuario",
+                        new SqlParameter("@fecha", fecha),
+                        new SqlParameter("@id_usuario", idUsuario))
+                    .AsNoTracking()
+                    .ToListAsync();
+                if (getData == null || getData.Count == 0)
+                {
+                    Console.WriteLine("No se encontraron datos para la consulta.");
+                    return new DetallesReportesTablasDTO();
+                }
+                return new DetallesReportesTablasDTO();
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new DetallesReportesTablasDTO();
+            }
+        }
     }
 }
