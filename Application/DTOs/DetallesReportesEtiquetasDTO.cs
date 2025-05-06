@@ -16,8 +16,8 @@ namespace ALFINapp.Application.DTOs
             {
                 var detalleEtiqueta = new DetalleEtiqueta();
                 detalleEtiqueta.nombreEtiqueta = "Desembolsos e Importes";
-                detalleEtiqueta.cantidadEtiqueta = model.desembolsado;
-                detalleEtiqueta.importeEtiquetas = model.Importe_Desembolsado;
+                detalleEtiqueta.cantidadEtiqueta = model.desembolsado ?? 0;
+                detalleEtiqueta.importeEtiquetas = model.Importe_Desembolsado ?? 0;
                 etiquetas.Add(detalleEtiqueta);
             }
         }
@@ -37,6 +37,11 @@ namespace ALFINapp.Application.DTOs
                 etiquetasView.Add(etiquetaView);
             }
             return etiquetasView;
+        }
+
+        public static implicit operator List<object>(DetallesReportesEtiquetasDTO v)
+        {
+            throw new NotImplementedException();
         }
     }
 

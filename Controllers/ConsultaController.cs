@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using ALFINapp.API.Filters;
+using ALFINapp.Application.Interfaces.Asignacion;
 using ALFINapp.Application.Interfaces.Consulta;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Services;
@@ -21,13 +22,15 @@ namespace ALFINapp.API.Controllers
         private readonly ILogger<ConsultaController> _logger;
         private readonly IUseCaseConsultaClienteDni _useCaseConsultaClienteDni;
         private readonly IUseCaseConsultaClienteTelefono _useCaseConsultaClienteTelefono;
+        private readonly IUseCaseAsignarClienteManual _useCaseAsignarClienteManual;
         public ConsultaController(
             DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores, 
             DBServicesGeneral dbServicesGeneral, 
             DBServicesConsultasClientes dbServicesConsultasClientes,
             ILogger<ConsultaController> logger,
             IUseCaseConsultaClienteDni useCaseConsultaClienteDni,
-            IUseCaseConsultaClienteTelefono useCaseConsultaClienteTelefono)
+            IUseCaseConsultaClienteTelefono useCaseConsultaClienteTelefono,
+            IUseCaseAsignarClienteManual useCaseAsignarClienteManual)
         {
             _dbServicesAsignacionesAsesores = dbServicesAsignacionesAsesores;
             _dbServicesGeneral = dbServicesGeneral;
@@ -35,6 +38,7 @@ namespace ALFINapp.API.Controllers
             _logger = logger;
             _useCaseConsultaClienteDni = useCaseConsultaClienteDni;
             _useCaseConsultaClienteTelefono = useCaseConsultaClienteTelefono;
+            _useCaseAsignarClienteManual = useCaseAsignarClienteManual;
         }
 
         [HttpGet]
@@ -61,7 +65,11 @@ namespace ALFINapp.API.Controllers
                     return Json(new { success = false, message = "Debe de iniciar la sesion." });
                 }
                 var baseClienteReasignar = await _dbServicesAsignacionesAsesores.GuardarReAsignacionCliente(DniAReasignar, BaseTipo, usuarioId.Value);
-
+                /*var asignar = await _useCaseAsignarClienteManual.exec(DniAReasignar, usuarioId.Value, BaseTipo);
+                if (asignar.success == false)
+                {
+                    return Json(new { success = false, message = $"{asignar.message}" });
+                }*/
                 if (baseClienteReasignar.IsSuccess == false)
                 {
                     return Json(new { success = false, message = $"{baseClienteReasignar.message}" });

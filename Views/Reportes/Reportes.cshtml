@@ -15,7 +15,6 @@
 
 
 <!-- :::: :: :::: -->
-
 <div class="container-fluid">
     <div class="row g-3">
 
@@ -218,10 +217,10 @@
                 <div class="row g-3">
                     <div class="col-12 col-md-6">
                         <div>
-                            <label for="lista-usuario-asesor" class="form-label">Filtro Por Asesor de Créditos</label>
+                            <label for="lista-usuario-asesor" class="form-label">Filtro Por Asesor de Crï¿½ditos</label>
                             <select class="form-control" name="lista-usuario-asesor" id="lista-usuario-asesor"
                                     onchange="cargarReporteAsesor(this.value)">
-                                <option value="">Seleccione un Asesor de Créditos</option>
+                                <option value="">Seleccione un Asesor de Crï¿½ditos</option>
                                 @if (asesores != null)
                                 {
                                     @foreach (var usuario in asesores)
@@ -269,10 +268,10 @@
 
             <!-- Contenido de la tarjeta -->
             <div class="ba-card-body">
-                <label for="lista-usuario-asesor" class="form-label">Filtro Por Asesor de Créditos</label>
+                <label for="lista-usuario-asesor" class="form-label">Filtro Por Asesor de Crï¿½ditos</label>
                 <select class="form-control mt-3" name="lista-usuario-asesor" id="lista-usuario-asesor"
                         onchange="cargarReporteAsesor(this.value)">
-                    <option value=""> Seleccione un Asesor de Créditos </option>
+                    <option value=""> Seleccione un Asesor de Crï¿½ditos </option>
                     @if (asesores != null)
                     {
                         @foreach (var usuario in asesores)
@@ -334,9 +333,9 @@
                 sortable: true,
                 filter: true
             },
-            pagination: true, // Habilita la paginación
-            paginationPageSize: 10, // Número de filas por página
-            paginationPageSizeSelector: [10, 20, 50, 100], // Opciones de tamaño de página
+            pagination: true, // Habilita la paginaciï¿½n
+            paginationPageSize: 10, // Nï¿½mero de filas por pï¿½gina
+            paginationPageSizeSelector: [10, 20, 50, 100], // Opciones de tamaï¿½o de pï¿½gina
         };
 
         const myGridElement = document.querySelector('#myGrid');
@@ -362,5 +361,4 @@
     <script src="~/js/Reportes/Asesor.js?v=@DateTime.Now.Ticks"></script>
     <script src="~/js/Reportes/Supervisor.js?v=@DateTime.Now.Ticks"></script>
     <script src="~/js/Reportes/Fechas.js?v=@DateTime.Now.Ticks"></script>
-
 }

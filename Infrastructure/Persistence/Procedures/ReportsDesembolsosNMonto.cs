@@ -7,7 +7,7 @@ namespace ALFINapp.Infrastructure.Persistence.Procedures
 {
     public class ReportsDesembolsosNMonto
     {
-        public int desembolsado { get; set; } = 0;
-        public decimal Importe_Desembolsado { get; set; } = 0;
+        public int? desembolsado { get; set; } = 0;
+        public decimal? Importe_Desembolsado { get; set; } = 0;
     }
 }

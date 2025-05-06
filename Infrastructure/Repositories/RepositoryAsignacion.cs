@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.Application.DTOs;
 using ALFINapp.Domain.Interfaces;
 using Microsoft.Data.SqlClient;
@@ -18,6 +13,37 @@ namespace ALFINapp.Infrastructure.Repositories
         {
             _context = context;
         }
+
+        public async Task<(bool success, string message)> AsignarClienteManual(string dniCliente, string baseTipo, int idVendedor)
+        {
+            try
+            {
+                var param = new SqlParameter[]
+                {
+                    new SqlParameter("@DNIBusqueda", dniCliente),
+                    new SqlParameter("@IdUsuarioV", idVendedor),
+                    new SqlParameter("@BaseTipo", baseTipo)
+                };
+                var result = await _context
+                    .Database
+                    .ExecuteSqlRawAsync("EXEC sp_Asignacion_cliente_manual @DNIBusqueda, @IdUsuarioV, @BaseTipo", param);
+                if (result > 0)
+                {
+                    return (true, "Asignación manual exitosa");
+                }
+                else
+                {
+                    Console.WriteLine("No se pudo guardar la asignación manual del cliente.");
+                    return (false, "No se pudo guardar la asignación manual del cliente.");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine($"Error en la asignación manual de cliente: {ex.Message}");
+                return (false, $"Error en la asignación manual de cliente: {ex.Message}");
+            }
+        }
+
         public async Task<bool> AsignarClientesAsesor(DetallesAsignacionesDTO nuevaAsignacion)
         {
             try

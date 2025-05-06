@@ -37,6 +37,9 @@ builder.Services.AddSession(options =>
 builder.Services.AddDbContext<MDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
 
+builder.Services.AddDbContextFactory<MDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
+
 builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor();
 

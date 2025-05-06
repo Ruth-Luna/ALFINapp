@@ -1,6 +1,7 @@
 using ALFINapp.API.Models;
 using ALFINapp.Application.Interfaces.Reports;
 using ALFINapp.Domain.Interfaces;
+using ALFINapp.Infrastructure.Repositories.Async.Interfaces;
 
 namespace ALFINapp.Application.UseCases.Reports
 {
@@ -9,14 +10,17 @@ namespace ALFINapp.Application.UseCases.Reports
         private readonly IRepositoryReports _repositoryReports;
         private readonly IRepositoryClientes _repositoryClientes;
         private readonly IRepositoryUsuarios _repositoryUsuarios;
+        private readonly IRepositoryReportsAsync _repositoryReportsAsync;
         public UseCaseGetReportes(
             IRepositoryReports repositoryReports,
             IRepositoryClientes repositoryClientes,
-            IRepositoryUsuarios repositoryUsuarios)
+            IRepositoryUsuarios repositoryUsuarios,
+            IRepositoryReportsAsync repositoryReportsAsync)
         {
             _repositoryReports = repositoryReports;
             _repositoryClientes = repositoryClientes;
             _repositoryUsuarios = repositoryUsuarios;
+            _repositoryReportsAsync = repositoryReportsAsync;
         }
         public async Task<(bool IsSuccess, string Message, ViewReportesGeneral? Data)> Execute(int idUsuario)
         {
@@ -55,18 +59,22 @@ namespace ALFINapp.Application.UseCases.Reports
                         reporteGeneral.Supervisores = supervisoresViews;
                     }
                     // GRAFICAS DE REPORTES Generales
+                    /*
                     var lineasGestionDerivacion = await _repositoryReports.LineaGestionVsDerivacionDiaria(idUsuario);
                     var pieGestionAsignados = await _repositoryReports.GetReportesGpieGeneral(idUsuario);
                     var barTop5Asesores = await _repositoryReports.GetReportesBarTop5General(idUsuario);
                     var tablaGestionado = await _repositoryReports.GetReportesTablaGestionDerivadoDesembolsoImporte();
                     var pieContactabilidad = await _repositoryReports.GetReportesPieContactabilidadCliente(idUsuario);
                     var etiquetaDesembolsoMonto = await _repositoryReports.GetReportesEtiquetasDesembolsosNImportes(idUsuario);
-                    reporteGeneral.lineaGestionVsDerivacion = lineasGestionDerivacion.toViewLineaGestionVsDerivacion();
-                    reporteGeneral.ProgresoGeneral = pieGestionAsignados.toViewPie();
-                    reporteGeneral.top5asesores = barTop5Asesores.toViewListReporteBarGeneral();
-                    reporteGeneral.reporteTablaGeneral = tablaGestionado.toViewTabla();
-                    reporteGeneral.pieContactabilidad = pieContactabilidad.toViewPieLista();
-                    reporteGeneral.etiquetas = etiquetaDesembolsoMonto.toViewEtiquetas();
+                    */
+                    var reportesAsync = await _repositoryReportsAsync.GetReportesAsync(idUsuario);
+                    
+                    reporteGeneral.lineaGestionVsDerivacion = reportesAsync.linea.toViewLineaGestionVsDerivacion();
+                    reporteGeneral.ProgresoGeneral = reportesAsync.pie.toViewPie();
+                    reporteGeneral.top5asesores = reportesAsync.bar.toViewListReporteBarGeneral();
+                    reporteGeneral.reporteTablaGeneral = reportesAsync.tabla.toViewTabla();
+                    reporteGeneral.pieContactabilidad = reportesAsync.pie2.toViewPieLista();
+                    reporteGeneral.etiquetas = reportesAsync.etiquetas.toViewEtiquetas();
                     return (true, "Reportes obtenidos correctamente", reporteGeneral);
                 }
                 else if (user.IdRol == 3)
