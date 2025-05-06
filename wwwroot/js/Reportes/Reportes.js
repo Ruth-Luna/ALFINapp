@@ -27,19 +27,97 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+
+
 function cargarDerivacionesGenerales() {
     var derivaciones = document.getElementById('div-derivaciones');
     derivaciones.style.display = 'block';
     var lineaGestionVsDerivacion = reportesData["lineaGestionVsDerivacion"];
 
-    var fechas = [];
-    var contadorGestion = [];
-    var contadorDerivacion = [];
+    // Función para formatear fechas a 'dd/MM/yy'
+    function formatDate(date) {
+        var d = new Date(date);
+        var day = ('0' + d.getUTCDate()).slice(-2);
+        var month = ('0' + (d.getUTCMonth() + 1)).slice(-2);
+        var year = d.getUTCFullYear() % 100;
+        return `${day}/${month}/${year}`;
+    }
 
+    // Función para parsear 'dd/MM/yy' a Date
+    function parseDate(dateStr) {
+        var parts = dateStr.split('/');
+        var day = parseInt(parts[0], 10);
+        var month = parseInt(parts[1], 10) - 1;
+        var year = 2000 + parseInt(parts[2], 10);
+        return new Date(year, month, day);
+    }
+
+    // Obtener la fecha actual
+    var today = new Date();
+    var currentDateStr = formatDate(today);
+
+    // Obtener el mes y año actuales
+    var year = today.getFullYear();
+    var month = today.getMonth();
+
+    // Obtener el número de días en el mes actual
+    var daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // Generar la lista de todos los días del mes en formato 'dd/MM/yy'
+    var allDates = [];
+    for (var day = 1; day <= daysInMonth; day++) {
+        var date = new Date(year, month, day);
+        allDates.push(formatDate(date));
+    }
+
+    // Crear mapas para la data de derivaciones y gestiones
+    var derivacionMap = {};
+    var gestionMap = {};
     lineaGestionVsDerivacion.forEach(item => {
-        fechas.push(item["fecha"]);
-        contadorGestion.push(item["gestiones"]);
-        contadorDerivacion.push(item["derivaciones"]);
+        var formattedFecha = formatDate(item["fecha"]);
+        derivacionMap[formattedFecha] = item["derivaciones"] || 0;
+        gestionMap[formattedFecha] = item["gestiones"] || 0;
+    });
+
+    // Generar la data para todos los días, usando 0 si no hay data y null para días futuros
+    var contadorDerivacion = allDates.map(date => {
+        var dateObj = parseDate(date);
+        if (dateObj <= today) {
+            return derivacionMap[date] || 0;
+        } else {
+            return null;
+        }
+    });
+    var contadorGestion = allDates.map(date => {
+        var dateObj = parseDate(date);
+        if (dateObj <= today) {
+            return gestionMap[date] || 0;
+        } else {
+            return null;
+        }
+    });
+
+    // Identificar los domingos y crear anotaciones
+    var annotations = {
+        xaxis: []
+    };
+    allDates.forEach(date => {
+        var dateObj = parseDate(date);
+        if (dateObj.getDay() === 0) { // 0 es domingo
+            annotations.xaxis.push({
+                x: date,
+                borderColor: '#00C22A',
+                opacity: 0.2,
+                label: {
+                    borderColor: '#00C22A',
+                    style: {
+                        color: '#00C22A',
+                        background: '#00FF80',
+                    },
+                    text: 'No laborable'
+                }
+            });
+        }
     });
 
     var options = {
@@ -60,7 +138,7 @@ function cargarDerivacionesGenerales() {
                 padding: 4
             }
         },
-        colors: ["#FF1654", "#247BA0"], // Derivaciones - rojo, Gestiones - azul
+        colors: ["#FF1654", "#247BA0"],
         series: [
             {
                 name: "Derivaciones por Fecha",
@@ -80,7 +158,7 @@ function cargarDerivacionesGenerales() {
             }
         },
         xaxis: {
-            categories: fechas
+            categories: allDates
         },
         yaxis: [
             {
@@ -135,14 +213,16 @@ function cargarDerivacionesGenerales() {
             }
         },
         legend: {
-            horizontalAlign: "left",
-            offsetX: 40
-        }
+            position: 'bottom',
+            horizontalAlign: 'center'
+        },
+        annotations: annotations
     };
 
     var chart = new ApexCharts(document.querySelector("#chart-derivaciones"), options);
     chart.render();
 }
+
 
 function cargarProgreso() {
     var progresoGral = reportesData["progresoGeneral"];
