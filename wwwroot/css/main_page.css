@@ -123,12 +123,12 @@ header {
     }
 }
 
-@media (max-width: 767px) {
+/*@media (max-width: 767px) {
     .btn {
         width: 100%;
         margin-bottom: 10px;
     }
-}
+}*/
 
 .color-box {
     width: 20px;
