@@ -22,53 +22,103 @@
     <!-- AG GRID -->
     <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
 
+
+    <!-- CUSTEM THEME -->
+    <link rel="stylesheet" href="~/css/custom-theme.css" />
+
+
 </head>
 
 
-<body>
 
 
-    <div class="vh-100 bg-light d-flex flex-column">
-        <!-- Navbar superior -->
-        <nav class="navbar navbar-dark bg-primary p-2">
-            <div class="container-fluid d-flex justify-content-between align-items-center">
-                <!-- Checkbox hack: input oculto + label como botón, SIEMPRE VISIBLE -->
-                <input type="checkbox" id="sidebarToggle" hidden>
-                <label for="sidebarToggle"
-                       class="btn ba-color-primary text-light mb-0">
+<!-- Layout.cshtml -->
+<body class="vh-100 d-flex flex-column ba-color-light">
+    <input type="checkbox" id="sidebarToggle" class="d-none" checked>
+    <nav class="navbar navbar-dark ba-color-secondary py-2 mb-0">
+        <div class="container-fluid gap-2">
+            <div class="d-flex align-items-center gap-3">
+                <label for="sidebarToggle" class="btn btn-outline-light rounded-circle sidebar-toggle-btn">
                     <i class="bi bi-layout-sidebar-inset"></i>
                 </label>
-
-                <span class="navbar-brand d-flex align-items-center gap-2">
-                    <i class="bi bi-bank"></i> A365 / ALFIN
+                <span class="navbar-brand mb-0 fw-bold ba-color-light rounded-pill px-3 py-1 d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-bank2"></i>A365 / Alfin
                 </span>
-
-                <button class="btn btn-danger">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span class="d-none d-md-inline">Cerrar Sesión</span>
+            </div>
+            <div class="d-flex align-items-center">
+                <button class="btn btn-danger rounded-pill d-inline-flex align-items-center gap-2">
+                    <i class="ri-logout-circle-r-line"></i>
+                    <span class="d-none d-md-block">Cerrar Sesión</span>
                 </button>
             </div>
+        </div>
+    </nav>
+    <div id="content" class="flex-grow-1 d-flex">
+        <nav id="sidebar">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active">
+                        <i class="bi bi-speedometer2"></i>
+                        <span class="menu-text">Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bi bi-people"></i>
+                        <span class="menu-text">Clientes</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bi bi-credit-card"></i>
+                        <span class="menu-text">Transacciones</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bi bi-calendar-check"></i>
+                        <span class="menu-text">Agenda</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <span class="menu-text">Reportes</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bi bi-graph-up"></i>
+                        <span class="menu-text">Estadísticas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bi bi-gear"></i>
+                        <span class="menu-text">Configuración</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bi bi-question-circle"></i>
+                        <span class="menu-text">Ayuda</span>
+                    </a>
+                </li>
+            </ul>
         </nav>
-
-
-        <div class="flex-grow-1 d-flex">
-            <!-- Sidebar como Offcanvas -->
-            <div class="offcanvas offcanvas-start ba-color-primary" tabindex="-1" id="sidebar" aria-labelledby="sidebarLabel">
-                <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="sidebarLabel">Menú</h5>
-                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
-                </div>
-                <div class="offcanvas-body">
-                    <ul class="nav flex-column gap-2" id="sidebarToggleRender">
-                        <!-- Aquí agregas los elementos del sidebar -->
-                    </ul>
+        <div class="flex-grow-1 d-flex flex-column h-100 main-content" id="mainContent">
+            <div class="flex-grow-1 p-3 bg-light content-wrapper">
+                <div class="container-fluid py-3 content-scroll">
+                    @RenderBody()
                 </div>
             </div>
-
-            <!-- Contenido Principal -->
-            <main class="flex-grow-1 p-3">
-                @RenderBody()
-            </main>
+            <div class="shadow-sm py-3 border-top footer">
+                <div class="container-fluid text-center">
+                    <span class="text-muted">
+                        © 2024 - AppBancoAlFIN - <a href="#">Privacy</a>
+                    </span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -77,6 +127,121 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @* <!-- Navbar superior -->
+    <nav class="navbar navbar-dark ba-color-primary p-2">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <!-- Toggle siempre visible (Req 1) -->
+            <button class="btn btn-outline-light border-0"
+                    id="sidebarToggler"
+                    type="button"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#sidebar"
+                    aria-controls="sidebar">
+                <i class="bi bi-list fs-5"></i>
+            </button>
+
+            <span class="navbar-brand d-flex align-items-center gap-2">
+                <i class="bi bi-bank"></i> A365 / ALFIN
+            </span>
+
+            <button class="btn btn-danger">
+                <i class="bi bi-box-arrow-right"></i>
+                <span class="d-none d-md-inline">Cerrar Sesión</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Contenedor principal: sidebar + main -->
+    <div class="flex-grow-1 d-flex overflow-hidden">
+
+        <!-- Sidebar: visible en MD+ y offcanvas en móvil -->
+        <div id="sidebar-wrapper" class="d-none d-md-block ba-color-primary">
+            <div class="h-100 d-flex flex-column">
+                <div class="p-3 border-bottom border-light border-opacity-25">
+                    <h5 class="mb-0 text-light">Menú</h5>
+                </div>
+                <div class="p-3">
+                    <ul class="nav flex-column gap-2">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link text-light d-flex align-items-center gap-2">
+                                <i class="bi bi-house-door"></i> Inicio
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link text-light d-flex align-items-center gap-2">
+                                <i class="bi bi-file-earmark-bar-graph"></i> Reportes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link text-light d-flex align-items-center gap-2">
+                                <i class="bi bi-gear"></i> Ajustes
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Versión offcanvas del sidebar para móvil (Req 3) -->
+        <div class="offcanvas offcanvas-start d-md-none"
+             tabindex="-1"
+             id="sidebar"
+             aria-labelledby="sidebarLabel"
+             style="width: 250px;">
+            <div class="offcanvas-header ba-color-primary">
+                <h5 class="offcanvas-title text-light" id="sidebarLabel">Menú</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body ba-color-primary p-0">
+                <div class="p-3">
+                    <ul class="nav flex-column gap-2">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link text-light d-flex align-items-center gap-2">
+                                <i class="bi bi-house-door"></i> Inicio
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link text-light d-flex align-items-center gap-2">
+                                <i class="bi bi-file-earmark-bar-graph"></i> Reportes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link text-light d-flex align-items-center gap-2">
+                                <i class="bi bi-gear"></i> Ajustes
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main con scroll -->
+        <main class="flex-grow-1 overflow-auto">
+            <div class="p-3">
+                @RenderBody()
+            </div>
+        </main>
+    </div> *@
 
 
 
@@ -95,71 +260,27 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js?v=@DateTime.Now.Ticks"></script>
     <script src="~/js/site.js?v=@DateTime.Now.Ticks"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        // Toggle Sidebar
+        document.getElementById('toggleSidebar').addEventListener('click', () => {
             const sidebar = document.getElementById('sidebar');
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            const sidebarOverlay = document.getElementById('sidebarOverlay');
-            let isDesktop = window.innerWidth >= 992;
+            const body = document.body;
 
-            // Establecer visibilidad inicial
-            if (isDesktop) {
-                sidebar.style.display = 'block';
+            sidebar.classList.toggle('active');
+            body.classList.toggle('sidebar-active');
+        });
+
+        // Cerrar sidebar al hacer clic fuera en móviles
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768 &&
+                !document.getElementById('sidebar').contains(e.target) &&
+                !document.getElementById('toggleSidebar').contains(e.target)) {
+
+                document.getElementById('sidebar').classList.remove('active');
+                document.body.classList.remove('sidebar-active');
             }
-
-            // Función mejorada para mostrar/ocultar el overlay
-            function toggleOverlay(show) {
-                sidebarOverlay.style.display = show ? 'block' : '';
-                setTimeout(() => {
-                    sidebarOverlay.classList.toggle('show', show);
-                }, 10);
-            }
-
-            // Toggle del sidebar mejorado
-            sidebarToggle.addEventListener('click', function () {
-                this.classList.toggle('active');
-
-                if (isDesktop) {
-                    sidebar.classList.toggle('hide');
-                } else {
-                    sidebar.classList.toggle('show');
-                    sidebar.style.display = sidebar.classList.contains('show') ? 'block' : 'none';
-                    toggleOverlay(sidebar.classList.contains('show'));
-                }
-            });
-
-            // Cerrar sidebar al hacer click en el overlay
-            sidebarOverlay.addEventListener('click', function () {
-                sidebar.classList.remove('show');
-                sidebar.style.display = 'none';
-                sidebarToggle.classList.remove('active');
-                toggleOverlay(false);
-            });
-
-            // Ajuste de ventana mejorado
-            let resizeTimeout;
-            window.addEventListener('resize', function () {
-                clearTimeout(resizeTimeout);
-
-                resizeTimeout = setTimeout(() => {
-                    const newIsDesktop = window.innerWidth >= 992;
-
-                    if (newIsDesktop !== isDesktop) {
-                        isDesktop = newIsDesktop;
-                        sidebar.classList.remove('show', 'hide');
-                        sidebarToggle.classList.remove('active');
-                        toggleOverlay(false);
-
-                        // Actualizar visibilidad
-                        if (newIsDesktop) {
-                            sidebar.style.display = 'block';
-                        } else {
-                            sidebar.style.display = 'none';
-                        }
-                    }
-                }, 250);
-            });
         });
     </script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             $.ajax({
