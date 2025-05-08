@@ -4,38 +4,40 @@
     var vistasPrincipales = Model.Where(v => v.es_principal == true).ToList();
 }
 
-@foreach (var vista in vistasPrincipales)
-{
-    var subVistas = Model.Where(v => v.id_vista_padre == vista.id_vista).ToList();
-
-    <li class="nav-item px-3 py-2">
-        <div class="d-flex justify-content-between align-items-center">
-            <!-- Si se da clic aquí, se redirige a la vista principal -->
-            <a class="nav-link text-white rounded-3" href="@Url.Action(vista.ruta_vista, vista.nombre_vista)">
-                <i class="bi @vista.bi_logo me-2"></i> @vista.nombre_sidebar
-            </a>
-
-            @if (subVistas.Any()) 
+<ul class="nav flex-column">
+    @foreach (var vista in vistasPrincipales)
+    {
+        var subVistas = Model.Where(v => v.id_vista_padre == vista.id_vista).ToList();
+        <li class="nav-item">
+            @if (subVistas.Any())
             {
-                <a class="nav-link text-white rounded-3" data-bs-toggle="collapse" data-bs-target="#submenu-@vista.id_vista"
-                   aria-expanded="false" aria-controls="submenu-@vista.id_vista">
-                    <i class="bi bi-chevron-down"></i>
+                <!-- Elemento con submenú -->
+                <a href="#submenu-@vista.id_vista" class="nav-link" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi @vista.bi_logo"></i>
+                    <span class="menu-text">@vista.nombre_sidebar</span>
+                    <i class="bi bi-chevron-down ms-auto menu-text" style="font-size: 0.75rem;"></i>
+                </a>
+                <div class="collapse" id="submenu-@vista.id_vista">
+                    <ul class="nav flex-column">
+                        @foreach (var subVista in subVistas)
+                        {
+                            <li class="nav-item">
+                                <a href="@Url.Action(subVista.ruta_vista, subVista.nombre_vista)" class="nav-link" style="padding-left: 2.5rem;">
+                                    <span class="menu-text">@subVista.nombre_sidebar</span>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+            else
+            {
+                <!-- Elemento sin submenú -->
+                <a href="@Url.Action(vista.ruta_vista, vista.nombre_vista)" class="nav-link">
+                    <i class="bi @vista.bi_logo"></i>
+                    <span class="menu-text">@vista.nombre_sidebar</span>
                 </a>
             }
-        </div>
-
-        @if (subVistas.Any()) 
-        {
-            <ul class="collapse list-unstyled ps-3" id="submenu-@vista.id_vista">
-                @foreach (var subVista in subVistas)
-                {
-                    <li>
-                        <a class="nav-link text-white" href="@Url.Action(subVista.ruta_vista, subVista.nombre_vista)">
-                            <i class="bi @subVista.bi_logo me-2"></i> @subVista.nombre_sidebar
-                        </a>
-                    </li>
-                }
-            </ul>
-        }
-    </li>
-}
+        </li>
+    }
+</ul>
