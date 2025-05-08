@@ -475,14 +475,12 @@ namespace ALFINapp.Infrastructure.Repositories
                 return new DetallesReportesEtiquetasDTO();
             }
         }
-
-        public async Task<DetallesReportesTablasDTO> GetReportesMetas(DateOnly fecha, int idUsuario)
+        public async Task<DetallesReportesTablasDTO> GetReportesMetas(int idUsuario)
         {
             try
             {
-                var getData = await _context.reports_bar_top_5_derivaciones
-                    .FromSqlRaw("EXEC SP_REPORTES_TABLA_METAS @fecha, @id_usuario",
-                        new SqlParameter("@fecha", fecha),
+                var getData = await _context.reports_tablas_metas
+                    .FromSqlRaw("EXEC SP_Reportes_TABLAS_Metas @id_usuario",
                         new SqlParameter("@id_usuario", idUsuario))
                     .AsNoTracking()
                     .ToListAsync();
@@ -491,7 +489,7 @@ namespace ALFINapp.Infrastructure.Repositories
                     Console.WriteLine("No se encontraron datos para la consulta.");
                     return new DetallesReportesTablasDTO();
                 }
-                return new DetallesReportesTablasDTO();
+                return new DetallesReportesTablasDTO(getData);
             }
             catch (System.Exception ex)
             {

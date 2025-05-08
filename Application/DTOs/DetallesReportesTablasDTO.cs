@@ -6,6 +6,7 @@ namespace ALFINapp.Application.DTOs
     public class DetallesReportesTablasDTO
     {
         public List <ReportsTablaGestionadoDerivadoDesembolsadoImporte> Reportes { get; set; } = new List<ReportsTablaGestionadoDerivadoDesembolsadoImporte>();
+        public List <ReportsTablasMetas> Metas { get; set; } = new List<ReportsTablasMetas>();
         public DetallesReportesTablasDTO(List<ReportsTablaGestionadoDerivadoDesembolsadoImporte> model)
         {
             Reportes = model;
@@ -13,6 +14,10 @@ namespace ALFINapp.Application.DTOs
         public DetallesReportesTablasDTO()
         {
             Reportes = new List<ReportsTablaGestionadoDerivadoDesembolsadoImporte>();
+        }
+        public DetallesReportesTablasDTO(List<ReportsTablasMetas> model)
+        {
+            Metas = model;
         }
         public List<ViewReporteTablaGeneral> toViewTabla ()
         {

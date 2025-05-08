@@ -11,16 +11,19 @@ namespace ALFINapp.API.Controllers
         private readonly IUseCaseGetReportesAsesor _useCaseGetReportesAsesor;
         private readonly IUseCaseGetReportesSupervisor _useCaseGetReportesSupervisor;
         private readonly IUseCaseGetReportesFechas _useCaseGetReportesFechas;
+        private readonly IUseCaseGetReportesMetas _useCaseGetReportesMetas;
         public ReportesController(
             IUseCaseGetReportesAsesor useCaseGetReportesAsesor,
             IUseCaseGetReportesSupervisor useCaseGetReportesSupervisor,
             IUseCaseGetReportesFechas useCaseGetReportesFechas,
-            IUseCaseGetReportes useCaseGetReportes)
+            IUseCaseGetReportes useCaseGetReportes,
+            IUseCaseGetReportesMetas useCaseGetReportesMetas)
         {
             _useCaseGetReportesAsesor = useCaseGetReportesAsesor;
             _useCaseGetReportesSupervisor = useCaseGetReportesSupervisor;
             _useCaseGetReportesFechas = useCaseGetReportesFechas;
             _useCaseGetReportes = useCaseGetReportes;
+            _useCaseGetReportesMetas = useCaseGetReportesMetas;
         }
         [HttpGet]
         [PermissionAuthorization("Reportes", "Reportes")]
@@ -99,6 +102,18 @@ namespace ALFINapp.API.Controllers
                 return Json(new { success = false, message = reportesFechas.Message });
             }
             return PartialView("_ReportesFechas", reportesFechas.Data);
+        }
+        [HttpGet]
+        public async Task<IActionResult> Metas()
+        {
+            var id = HttpContext.Session.GetInt32("UsuarioId");
+            if (id == null)
+            {
+                TempData["MessageError"] = "No ha iniciado sesion.";
+                return RedirectToAction("Index", "Home");
+            }
+            var reportes = await _useCaseGetReportesMetas.Execute(id.Value);
+            return View("_ReportesMetas", reportes.Data);
         }
     }
 }

@@ -54,6 +54,7 @@ public class MDbContext : DbContext
     public DbSet<ReportsTablaGestionadoDerivadoDesembolsadoImporte> reports_tabla_gestionado_derivado_desembolsado_importe { get; set; }
     public DbSet<ReportsDesembolsosNMonto> reports_desembolsos_n_monto { get; set; }
     public DbSet<DerivacionConsultaDerivacionesXAsesorPorDniConReagendacion> derivaciones_asesores_for_view_derivacion { get; set; }
+    public DbSet<ReportsTablasMetas> reports_tablas_metas { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -97,7 +98,6 @@ public class MDbContext : DbContext
         modelBuilder.Entity<SupervisorGetAsignacionLeads>()
             .HasNoKey()
             .ToView(null);
-        
         modelBuilder.Entity<ReportsGLineasGestionVsDerivacionDiaria>()
             .HasNoKey()
             .ToView(null);
@@ -107,7 +107,6 @@ public class MDbContext : DbContext
         modelBuilder.Entity<ReportsGPiePorcentajeGestionadoDerivadoDesembolsado>()
             .HasNoKey()
             .ToView(null);
-
         modelBuilder.Entity<ResultadoVerificacion>()
             .HasNoKey()
             .ToView(null);
@@ -130,6 +129,9 @@ public class MDbContext : DbContext
             .HasNoKey()
             .ToView(null);
         modelBuilder.Entity<DerivacionConsultaDerivacionesXAsesorPorDniConReagendacion>()
+            .HasNoKey()
+            .ToView(null);
+        modelBuilder.Entity<ReportsTablasMetas>()
             .HasNoKey()
             .ToView(null);
     }
