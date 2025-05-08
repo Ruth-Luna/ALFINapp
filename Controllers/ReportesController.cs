@@ -113,7 +113,7 @@ namespace ALFINapp.API.Controllers
                 return RedirectToAction("Index", "Home");
             }
             var reportes = await _useCaseGetReportesMetas.Execute(id.Value);
-            return View("_ReportesMetas", reportes.Data);
+            return View("Metas", reportes.Data);
         }
     }
 }
