@@ -3,12 +3,82 @@
 @{
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/main_page.css?v=@DateTime.Now.Ticks">
+    <link rel="stylesheet" href="~/css/Reportes/Reportes.css?v=@DateTime.Now.Ticks">
+}
+
 <h1>@ViewData["Title"]</h1>
 
 <div class="container-fluid">
     <div class="row g-3">
         <div class="col-12">
-            
+            <div class="ba-card h-100">
+                <div class="ba-card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
+                            <span>DERIVACIONES GENERALES</span>
+                        </h5>
+                    </div>
+                </div>
+                <div class="ba-card-body">
+                    <div id="grid-metas-report" class="ag-theme-alpine" style="height: 510px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="ba-card h-100">
+                <div class="ba-card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
+                            <span>Reporte Actual</span>
+                        </h5>
+                    </div>
+                </div>
+                <div class="ba-card-body">
+                    <div id="g-pie-general-report-by-month"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="ba-card h-100">
+                <div class="ba-card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
+                            <span>Reporte General por otras Fechas</span>
+                        </h5>
+                    </div>
+                </div>
+                <div class="ba-card-body">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="date-from-g-pie-report-general">Reporte por Fechas: </label>
+                                <input type="date" class="form-control" id="date-from-g-pie-report-general" placeholder="Seleccione una Fecha"/>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div id="general-important-data"></div>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div id="g-pie-report-general-by-date"></div>
+                        </div>
+                        <div class="col-6">
+                            <div id="g-pie-report-general-by-importes"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<div id="view-reportes-metas-data" data-json='@Html.Raw(Json.Serialize(Model.metas))'></div>
+<div id="view-reportes-g-pie-dates-data" data-json='@Html.Raw(Json.Serialize(Model.pieFechas))'></div>
+
+@section Scripts {
+    
+    <script src="~/js/Reportes/Metas.js?v=@DateTime.Now.Ticks"></script>
+}

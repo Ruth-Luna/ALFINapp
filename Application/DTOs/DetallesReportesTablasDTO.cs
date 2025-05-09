@@ -42,6 +42,7 @@ namespace ALFINapp.Application.DTOs
             foreach (var item in Metas)
             {
                 var meta = new ViewMetas();
+                meta.dni = item.dni ?? string.Empty;
                 meta.nombresCompletos = item.nombre_completo ?? string.Empty;
                 meta.totalDerivaciones = item.total_derivaciones ?? 0;
                 meta.totalImporte = item.total_importe ?? 0;

@@ -6,9 +6,11 @@ namespace ALFINapp.API.Models
         public int totalGestiones { get; set; } = 0;
         public decimal totalImporte { get; set; } = 0;
         public int totalDerivaciones { get; set; } = 0;
+        public ViewReportePieGeneral pieFechas { get; set; } = new ViewReportePieGeneral();
     }
     public class ViewMetas
     {
+        public string dni { get; set; } = string.Empty;
         public string nombresCompletos { get; set; } = string.Empty;
         public int totalDerivaciones { get; set; } = 0;
         public decimal totalImporte { get; set; } = 0;

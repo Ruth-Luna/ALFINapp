@@ -19,5 +19,7 @@ namespace ALFINapp.Domain.Interfaces
         public Task<DetallesReportesTablasDTO> GetReportesTablaGestionDerivadoDesembolsoImporte();
         public Task<DetallesReportesEtiquetasDTO> GetReportesEtiquetasDesembolsosNImportes(int idUsuario);
         public Task<DetallesReportesTablasDTO> GetReportesMetas(int idUsuario);
+        public Task<DetallesReportesGpieDTO> GetReportesByDate( int idUsuario, DateTime? fecha = null);
+        public Task<DetallesReportesGpieDTO> GetReportesByActualMonth(int idUsuario);
     }
 }

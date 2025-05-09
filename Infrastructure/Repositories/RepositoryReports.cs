@@ -439,7 +439,7 @@ namespace ALFINapp.Infrastructure.Repositories
                 Console.WriteLine("Error al obtener los datos de la tabla de gestión, derivación y desembolso por importe.");
                 return new DetallesReportesTablasDTO();
             }
-            
+
         }
 
         public async Task<DetallesReportesEtiquetasDTO> GetReportesEtiquetasDesembolsosNImportes(int idUsuario)
@@ -495,6 +495,63 @@ namespace ALFINapp.Infrastructure.Repositories
             {
                 Console.WriteLine(ex.Message);
                 return new DetallesReportesTablasDTO();
+            }
+        }
+
+        public async Task<DetallesReportesGpieDTO> GetReportesByDate(int idUsuario, DateTime? fecha = null)
+        {
+            try
+            {
+                var parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@id_usuario", idUsuario),
+                    new SqlParameter("@fecha", fecha ?? (object)DBNull.Value)
+                };
+                var getData = await _context.reports_general_datos_actuales
+                    .FromSqlRaw("EXEC sp_Reporte_general_datos_actuales_por_id_usuario_fecha @id_usuario, @fecha",
+                        parameters)
+                    .AsNoTracking()
+                    .ToListAsync();
+                if (getData == null || getData.Count == 0)
+                {
+                    Console.WriteLine("No se encontraron datos para la consulta.");
+                    return new DetallesReportesGpieDTO();
+                }
+                var convertDto = new DetallesReportesGpieDTO(getData);
+                return convertDto;
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new DetallesReportesGpieDTO();
+            }
+        }
+
+        public async Task<DetallesReportesGpieDTO> GetReportesByActualMonth(int idUsuario)
+        {
+            try
+            {
+                var parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@id_usuario", idUsuario)
+                };
+                var getData = await _context.reports_general_datos_actuales
+                    .FromSqlRaw("EXEC sp_Reporte_general_datos_actuales_por_id_usuario_actual_month @id_usuario",
+                        parameters)
+                    .AsNoTracking()
+                    .ToListAsync();
+                if (getData == null || getData.Count == 0)
+                {
+                    Console.WriteLine("No se encontraron datos para la consulta.");
+                    return new DetallesReportesGpieDTO();
+                }
+                var convertDto = new DetallesReportesGpieDTO(getData);
+                return convertDto;
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new DetallesReportesGpieDTO();
             }
         }
     }

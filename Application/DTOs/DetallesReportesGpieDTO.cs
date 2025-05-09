@@ -13,6 +13,7 @@ namespace ALFINapp.Application.DTOs
         public ReportsGPiePorcentajeGestionadosSobreAsignados Reportes { get; set; }
         public ReportsGPiePorcentajeGestionadoDerivadoDesembolsado Reportes2 { get; set; }
         public List<ReportsPieContactabilidadCliente> ReportesGeneral { get; set; }
+        public List<ReportsGeneralDatosActualesPorIdUsuarioFecha> ReportesGralTemplate { get; set; }
         public DetallesReportesGpieDTO(
             ReportsGPiePorcentajeGestionadosSobreAsignados? model, 
             ReportsGPiePorcentajeGestionadoDerivadoDesembolsado? model2)
@@ -20,18 +21,28 @@ namespace ALFINapp.Application.DTOs
             Reportes = model ?? new ReportsGPiePorcentajeGestionadosSobreAsignados();
             Reportes2 = model2 ?? new ReportsGPiePorcentajeGestionadoDerivadoDesembolsado();
             ReportesGeneral = new List<ReportsPieContactabilidadCliente>();
+            ReportesGralTemplate = new List<ReportsGeneralDatosActualesPorIdUsuarioFecha>();
         }
         public DetallesReportesGpieDTO(List<ReportsPieContactabilidadCliente> model)
         {
             Reportes = new ReportsGPiePorcentajeGestionadosSobreAsignados();
             Reportes2 = new ReportsGPiePorcentajeGestionadoDerivadoDesembolsado();
             ReportesGeneral = model;
+            ReportesGralTemplate = new List<ReportsGeneralDatosActualesPorIdUsuarioFecha>();
         }
         public DetallesReportesGpieDTO()
         {
             Reportes = new ReportsGPiePorcentajeGestionadosSobreAsignados();
             Reportes2 = new ReportsGPiePorcentajeGestionadoDerivadoDesembolsado();
             ReportesGeneral = new List<ReportsPieContactabilidadCliente>();
+            ReportesGralTemplate = new List<ReportsGeneralDatosActualesPorIdUsuarioFecha>();
+        }
+        public DetallesReportesGpieDTO(List<ReportsGeneralDatosActualesPorIdUsuarioFecha> model)
+        {
+            Reportes = new ReportsGPiePorcentajeGestionadosSobreAsignados();
+            Reportes2 = new ReportsGPiePorcentajeGestionadoDerivadoDesembolsado();
+            ReportesGeneral = new List<ReportsPieContactabilidadCliente>();
+            ReportesGralTemplate = model;
         }
         public ViewReportePieGeneral toViewPie()
         {
@@ -57,6 +68,35 @@ namespace ALFINapp.Application.DTOs
                 total = item.cantidad,
                 porcentaje = item.porcentaje,
             }).ToList();
+        }
+
+        public ViewReportePieGeneral toViewPie(
+            string busqueda, 
+            int metasGestion = 0,
+            int metasDerivacion = 0,
+            int metasDesembolso = 0,
+            decimal metasImporte = 0.0m)
+        {
+            return new ViewReportePieGeneral
+            {
+                estado = busqueda,
+                PERIODO = DateTime.Now.ToString("dd/MM/yyyy"),
+                total = ReportesGralTemplate.Count(),
+                TOTAL_ASIGNADOS = ReportesGralTemplate.Count(x => x.tiene_asignacion != null),
+                TOTAL_GESTIONADOS = ReportesGralTemplate.Count(x => x.cod_tip != null),
+                TOTAL_DERIVADOS = ReportesGralTemplate.Count(x => x.tiene_derivacion != null),
+                TOTAL_DESEMBOLSADOS = ReportesGralTemplate.Count(x => x.tiene_desembolso != null),
+                total_importes = ReportesGralTemplate.Sum(x => x.MONTO_FINANCIADO??0),
+                PORCENTAJE_GESTIONADOS = ReportesGralTemplate.Count(x => x.cod_tip != null) * 100 / ReportesGralTemplate.Count(),
+                PORCENTAJE_NO_GESTIONADOS = ReportesGralTemplate.Count(x => x.cod_tip == null) * 100 / ReportesGralTemplate.Count(),
+                PORCENTAJE_DERIVADOS = ReportesGralTemplate.Count(x => x.tiene_derivacion != null) * 100 / ReportesGralTemplate.Count(),
+                PORCENTAJE_DESEMBOLSADOS = ReportesGralTemplate.Count(x => x.tiene_desembolso != null) * 100 / ReportesGralTemplate.Count(),
+                PORCENTAJE_NO_DERIVADO = ReportesGralTemplate.Count(x => x.tiene_derivacion == null) * 100 / ReportesGralTemplate.Count(),
+                metasGestiones = metasGestion,
+                metasDerivaciones = metasDerivacion,
+                metasDesembolsos = metasDesembolso,
+                metasImporte = metasImporte,
+            };
         }
     }
 }

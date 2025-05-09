@@ -55,6 +55,7 @@ public class MDbContext : DbContext
     public DbSet<ReportsDesembolsosNMonto> reports_desembolsos_n_monto { get; set; }
     public DbSet<DerivacionConsultaDerivacionesXAsesorPorDniConReagendacion> derivaciones_asesores_for_view_derivacion { get; set; }
     public DbSet<ReportsTablasMetas> reports_tablas_metas { get; set; }
+    public DbSet<ReportsGeneralDatosActualesPorIdUsuarioFecha> reports_general_datos_actuales { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -132,6 +133,9 @@ public class MDbContext : DbContext
             .HasNoKey()
             .ToView(null);
         modelBuilder.Entity<ReportsTablasMetas>()
+            .HasNoKey()
+            .ToView(null);
+        modelBuilder.Entity<ReportsGeneralDatosActualesPorIdUsuarioFecha>()
             .HasNoKey()
             .ToView(null);
     }

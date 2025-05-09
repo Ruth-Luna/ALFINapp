@@ -341,13 +341,9 @@
         const myGridElement = document.querySelector('#myGrid');
         agGrid.createGrid(myGridElement, gridOptions);
     </script>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
         var rol = @(rol.HasValue ? rol.Value.ToString() : "null");
         var idUsuario = @(idUsuario.HasValue ? idUsuario.Value.ToString() : "null");
-
         document.addEventListener("DOMContentLoaded", function () {
             if (rol === 3) {
                 cargarReporteAsesor(idUsuario);
