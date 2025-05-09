@@ -22,150 +22,72 @@
     <!-- AG GRID -->
     <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
 
+
+    <!-- CUSTEM THEME -->
+    <link rel="stylesheet" href="~/css/custom-theme.css" />
+
+
 </head>
 
 
-<body>
 
 
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-<div class="d-flex flex-column vh-100 bg-white">
-    <!-- navbar -->
-    <nav class="navbar navbar-dark bg-dark" style="background-color: #074072 !important">
-        <div class="container-fluid">
+<!-- Layout.cshtml -->
+<body class="vh-100 d-flex flex-column ba-color-light">
+    <input type="checkbox" id="sidebarToggle" hidden>
+    <nav class="navbar navbar-dark ba-color-secondary mb-0">
+        <div class="container-fluid gap-2">
             <div class="d-flex align-items-center gap-3">
-                <button class="navbar-toggler" type="button" id="sidebarToggle">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <a class="navbar-brand m-0" href="#">
-                    <i class="bi bi-bank me-2"></i>
-                    A365 - ALFIN
+                <label for="sidebarToggle" class="sidebar-toggle-btn" id="toggleSidebar">
+                    <i class="bi bi-layout-sidebar-inset"></i>
+                </label>
+                <span class="navbar-brand mb-0 fw-bold ba-color-light rounded-pill px-3 py-1 d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-bank2"></i>A365 / Alfin
+                </span>
+            </div>
+            <div class="d-flex align-items-center">
+                <a href="@Url.Action("CerrarSesion", "Vendedor")" class="btn btn-danger rounded-pill d-inline-flex align-items-center gap-2">
+                    <i class="ri-logout-circle-r-line"></i>
+                    <span class="d-none d-md-block">Cerrar Sesión</span>
                 </a>
             </div>
-            <div class="buttons-container">
-                <a href="@Url.Action("CerrarSesion", "Vendedor")" class="btn btn-danger text-white">
-                    <i class="bi bi-box-arrow-right me-2"></i>
-                    Cerrar Sesion
-                </a>
-            </div>
-            @*  <button class="btn btn-danger">
-                <i class="bi bi-box-arrow-right me-2"></i>
-                Cerrar Sesión
-            </button> *@
         </div>
     </nav>
+    <div id="content" class="flex-grow-1 d-flex">
 
-    <div class="flex-grow-1 d-flex overflow-hidden">
-        <!-- sidebar -->
-        <div class="sidebar" id="sidebar"
-            style="width: 250px; min-width: 250px; background-color: #053763 !important">
-            <ul class="nav flex-column pt-4 sidebar-links">
-                <div id="sidebarToggleRender">
+        <nav id="sidebar">
+            <div id="sidebarToggleRender"></div> <!-- Contenedor para el sidebar dinámico -->
+        </nav>
 
-                </div>
-            </ul>
-        </div>
-
-        <div class="flex-grow-1 d-flex flex-column overflow-auto h-100">
-            <!-- main -->
-            <div class="flex-grow-1 p-3 bg-light">
-                <div class="container-fluid py-3">
-                    <!-- contenido principal aquí -->
+        <div class="flex-grow-1 d-flex flex-column h-100 main-content" id="mainContent">
+            <div class="flex-grow-1 p-3 bg-light content-wrapper">
+                <div class="container-fluid py-3 content-scroll">
                     @RenderBody()
                 </div>
             </div>
-            <!-- footer -->
             <div class="shadow-sm py-3 border-top">
                 <div class="container-fluid text-center">
                     <span class="text-muted">
-                        &copy; 2024 - AppBancoAlFIN - <a asp-area="" asp-controller="Home"
-                            asp-action="Privacy">Privacy</a>
+                        © 2024 - AppBancoAlFIN - <a href="#">Privacy</a>
                     </span>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-    @* <main role="main" class="flex-grow-1 d-flex flex-column">
-        @RenderBody()
-    </main>
-    <footer class="@(ViewBag.isFooterAbsoluteAtBottom == true ? "tfoot-position-login" : "") text-center p-2">&copy; 2024 - AppBancoAlFIN - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></footer>
-    <!-- Agregar el script de SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.js?v=@DateTime.Now.Ticks"></script> *@
+    
     <script src="~/lib/jquery/dist/jquery.min.js?v=@DateTime.Now.Ticks"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js?v=@DateTime.Now.Ticks"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.js?v=@DateTime.Now.Ticks"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js?v=@DateTime.Now.Ticks"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js?v=@DateTime.Now.Ticks"></script>
     <script src="~/js/site.js?v=@DateTime.Now.Ticks"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const sidebar = document.getElementById('sidebar');
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            const sidebarOverlay = document.getElementById('sidebarOverlay');
-            let isDesktop = window.innerWidth >= 992;
 
-            // Establecer visibilidad inicial
-            if (isDesktop) {
-                sidebar.style.display = 'block';
-            }
+    <script src="~/js/sidebar.js"></script>
 
-            // Función mejorada para mostrar/ocultar el overlay
-            function toggleOverlay(show) {
-                sidebarOverlay.style.display = show ? 'block' : '';
-                setTimeout(() => {
-                    sidebarOverlay.classList.toggle('show', show);
-                }, 10);
-            }
 
-            // Toggle del sidebar mejorado
-            sidebarToggle.addEventListener('click', function () {
-                this.classList.toggle('active');
 
-                if (isDesktop) {
-                    sidebar.classList.toggle('hide');
-                } else {
-                    sidebar.classList.toggle('show');
-                    sidebar.style.display = sidebar.classList.contains('show') ? 'block' : 'none';
-                    toggleOverlay(sidebar.classList.contains('show'));
-                }
-            });
 
-            // Cerrar sidebar al hacer click en el overlay
-            sidebarOverlay.addEventListener('click', function () {
-                sidebar.classList.remove('show');
-                sidebar.style.display = 'none';
-                sidebarToggle.classList.remove('active');
-                toggleOverlay(false);
-            });
-
-            // Ajuste de ventana mejorado
-            let resizeTimeout;
-            window.addEventListener('resize', function () {
-                clearTimeout(resizeTimeout);
-
-                resizeTimeout = setTimeout(() => {
-                    const newIsDesktop = window.innerWidth >= 992;
-
-                    if (newIsDesktop !== isDesktop) {
-                        isDesktop = newIsDesktop;
-                        sidebar.classList.remove('show', 'hide');
-                        sidebarToggle.classList.remove('active');
-                        toggleOverlay(false);
-
-                        // Actualizar visibilidad
-                        if (newIsDesktop) {
-                            sidebar.style.display = 'block';
-                        } else {
-                            sidebar.style.display = 'none';
-                        }
-                    }
-                }, 250);
-            });
-        });
-    </script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             $.ajax({
@@ -218,30 +140,3 @@
 <script src="~/js/reagregacionesfunctions.js?v=@DateTime.Now.Ticks"></script>
 <script src="~/js/accountfunctions.js?v=@DateTime.Now.Ticks"></script>
 <script src="~/js/generalfunctions.js?v=@DateTime.Now.Ticks"></script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let observer = new MutationObserver(function (mutations, observer) {
-            let menuItems = document.querySelectorAll(".sidebar-links .nav-link");
-
-            if (menuItems.length > 0) {
-                let path = window.location.pathname.toLowerCase();
-
-                menuItems.forEach(link => {
-                    let href = link.getAttribute("href").toLowerCase();
-                    if (path.includes(href)) {
-                        link.style.backgroundColor = "rgb(3, 40, 75)";
-                        link.classList.add("w-100");
-                    }
-                });
-
-                observer.disconnect();
-            }
-        });
-
-        let sidebar = document.querySelector(".sidebar-links");
-        if (sidebar) {
-            observer.observe(sidebar, { childList: true, subtree: true });
-        }
-    });
-</script>

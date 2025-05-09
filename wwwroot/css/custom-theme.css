@@ -1,0 +1,166 @@
+:root {
+    --ba-color-primary: #224589;
+    --ba-color-secondary: #183060;
+    --ba-color-light: #F9FBFE;
+    --ba-transition: all 0.3s ease;
+    --ba-border-radius: 0.375rem;
+}
+
+/* Colores */
+.ba-color-primary {
+    background-color: var(--ba-color-primary) !important;
+    color: var(--ba-color-light) !important;
+}
+
+.ba-color-secondary {
+    background-color: var(--ba-color-secondary) !important;
+    color: var(--ba-color-light) !important;
+}
+
+.ba-color-light {
+    background-color: var(--ba-color-light) !important;
+    color: var(--ba-color-primary) !important;
+}
+
+/* Sidebar Base */
+#sidebar {
+    background-color: var(--ba-color-primary);
+    color: var(--ba-color-light);
+    width: 250px;
+    min-width: 250px;
+    transition: var(--ba-transition);
+    padding-top: 1rem;
+    overflow-y: auto;
+    flex-grow: 1;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+#sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Enlaces del Sidebar */
+.nav-link {
+    text-decoration: none;
+    color: inherit;
+    transition: var(--ba-transition);
+    border-radius: var(--ba-border-radius);
+    padding: 0.75rem 1rem;
+    margin: 0.25rem 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+/* Hover, seleccionado, collapse abierto */
+.nav-link:hover,
+.nav-link.active,
+.nav-link[data-bs-toggle="collapse"][aria-expanded="true"] {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    color: var(--ba-color-light);
+    font-weight: bold;
+}
+/* Clic (:active) */
+    .nav-link:active {
+        color: var(--ba-color-light);
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+.nav-link i {
+    font-size: 1.25rem;
+    min-width: 24px;
+    text-align: center;
+}
+
+/* Contenido Principal */
+#content {
+    display: flex;
+    transition: var(--ba-transition);
+    min-height: calc(100vh - 56px);
+    position: relative;
+    overflow-x: hidden;
+}
+.main-content {
+    flex-grow: 1;
+    width: 100%;
+    transition: var(--ba-transition);
+    background-color: var(--ba-color-light);
+    overflow-x: hidden;
+}
+.content-wrapper {
+    overflow: hidden;
+}
+.content-scroll {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Botón toggle */
+.sidebar-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    cursor: pointer;
+    transition: var(--ba-transition);
+}
+
+/* Móviles (<992px): ocultar sidebar por defecto y overlay al abrir */
+@media (max-width: 991.98px) {
+    #sidebar {
+        position: fixed;
+        z-index: 1000;
+        transform: translateX(-100%);
+        height: 100%;
+    }
+    #sidebarToggle:checked ~ #content #sidebar {
+        transform: translateX(0);
+    }
+    #sidebarToggle:checked ~ #content .main-content::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        cursor: pointer;
+    }
+}
+
+/* Escritorio (≥992px): expandido/colapsado + hover-expand + ajuste de contenido */
+@media (min-width: 992px) {
+    /* Estado normal (expandido) */
+    #sidebar {
+        position: relative;
+        width: 250px;
+        min-width: 250px;
+    }
+    /* Estado colapsado */
+    #sidebarToggle:not(:checked) ~ #content #sidebar {
+        width: 70px;
+        min-width: 70px;
+    }
+    #sidebarToggle:not(:checked) ~ #content #sidebar .menu-text {
+        display: none;
+    }
+    #sidebarToggle:not(:checked) ~ #content #sidebar .nav-link {
+        justify-content: center;
+        padding: 0.75rem 0;
+    }
+    /* Hover-expand: sólo si está colapsado */
+    #sidebarToggle:not(:checked) ~ #content #sidebar:hover {
+        width: 250px;
+    }
+    #sidebarToggle:not(:checked) ~ #content #sidebar:hover .menu-text {
+        display: inline;
+    }
+    #sidebarToggle:not(:checked) ~ #content #sidebar:hover .nav-link {
+        justify-content: flex-start;
+        padding: 0.75rem 1rem;
+    }
+    /* Ajuste de contenido al hover */
+    #sidebarToggle:not(:checked) ~ #content #sidebar:hover ~ .main-content {
+        margin-left: 250px;
+    }
+}
