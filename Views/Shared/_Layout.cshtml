@@ -46,10 +46,10 @@
                 </span>
             </div>
             <div class="d-flex align-items-center">
-                <button class="btn btn-danger rounded-pill d-inline-flex align-items-center gap-2">
+                <a href="@Url.Action("CerrarSesion", "Vendedor")" class="btn btn-danger rounded-pill d-inline-flex align-items-center gap-2">
                     <i class="ri-logout-circle-r-line"></i>
                     <span class="d-none d-md-block">Cerrar Sesión</span>
-                </button>
+                </a>
             </div>
         </div>
     </nav>
@@ -65,7 +65,7 @@
                     @RenderBody()
                 </div>
             </div>
-            <div class="shadow-sm py-3 border-top footer">
+            <div class="shadow-sm py-3 border-top">
                 <div class="container-fluid text-center">
                     <span class="text-muted">
                         © 2024 - AppBancoAlFIN - <a href="#">Privacy</a>
@@ -76,13 +76,6 @@
     </div>
 
     
-
-    @* <main role="main" class="flex-grow-1 d-flex flex-column">
-        @RenderBody()
-    </main>
-    <footer class="@(ViewBag.isFooterAbsoluteAtBottom == true ? "tfoot-position-login" : "") text-center p-2">&copy; 2024 - AppBancoAlFIN - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></footer>
-    <!-- Agregar el script de SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.js?v=@DateTime.Now.Ticks"></script> *@
     <script src="~/lib/jquery/dist/jquery.min.js?v=@DateTime.Now.Ticks"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js?v=@DateTime.Now.Ticks"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.js?v=@DateTime.Now.Ticks"></script>
@@ -90,75 +83,8 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js?v=@DateTime.Now.Ticks"></script>
     <script src="~/js/site.js?v=@DateTime.Now.Ticks"></script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const sidebar = document.getElementById('sidebar');
-            const toggle = document.getElementById('sidebarToggle');
-            let expandedByHover = false;
+    <script src="~/js/sidebar.js"></script>
 
-            function isDesktop() {
-                return window.innerWidth >= 992;
-            }
-
-            // Manejo del hover para expandir/contraer el sidebar
-            sidebar.addEventListener('mouseenter', () => {
-                if (!isDesktop()) return;
-                if (!toggle.checked) {
-                    console.log('Expanding sidebar on hover'); // Depuración
-                    toggle.checked = true;
-                    expandedByHover = true;
-                }
-            });
-
-            sidebar.addEventListener('mouseleave', () => {
-                if (!isDesktop()) return;
-                if (expandedByHover) {
-                    console.log('Collapsing sidebar on mouseleave'); // Depuración
-                    toggle.checked = false;
-                    expandedByHover = false;
-                }
-            });
-
-            // Evitar que el hover interfiera cuando se expande manualmente
-            document.getElementById('toggleSidebar').addEventListener('click', () => {
-                expandedByHover = false;
-            });
-
-            // Manejo de la clase "active" para nav-links que no son toggles
-            document.querySelectorAll('#sidebar .nav-link:not([data-bs-toggle="collapse"])').forEach(link => {
-                link.addEventListener('click', function () {
-                    document.querySelectorAll('#sidebar .nav-link').forEach(l => l.classList.remove('active'));
-                    this.classList.add('active');
-                    // Mantener "active" en toggles de collapses ancestros
-                    let parentCollapse = this.closest('.collapse');
-                    while (parentCollapse) {
-                        const toggleLink = document.querySelector(
-                            `[data-bs-toggle="collapse"][href="#${parentCollapse.id}"], [data-bs-toggle="collapse"][data-bs-target="#${parentCollapse.id}"]`
-                        );
-                        if (toggleLink) toggleLink.classList.add('active');
-                        parentCollapse = parentCollapse.parentElement.closest('.collapse');
-                    }
-                });
-            });
-
-            // Manejo de la clase "active" para collapses
-            document.querySelectorAll('#sidebar .nav-link[data-bs-toggle="collapse"]').forEach(toggleLink => {
-                const collapseId = toggleLink.getAttribute('href') || toggleLink.getAttribute('data-bs-target');
-                const collapse = document.querySelector(collapseId);
-                if (collapse) {
-                    collapse.addEventListener('show.bs.collapse', () => {
-                        toggleLink.classList.add('active');
-                    });
-                    collapse.addEventListener('hide.bs.collapse', () => {
-                        // Solo remover "active" si no hay submenús activos dentro
-                        if (!collapse.querySelector('.nav-link.active')) {
-                            toggleLink.classList.remove('active');
-                        }
-                    });
-                }
-            });
-        });
-    </script>
 
 
 
@@ -214,30 +140,3 @@
 <script src="~/js/reagregacionesfunctions.js?v=@DateTime.Now.Ticks"></script>
 <script src="~/js/accountfunctions.js?v=@DateTime.Now.Ticks"></script>
 <script src="~/js/generalfunctions.js?v=@DateTime.Now.Ticks"></script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let observer = new MutationObserver(function (mutations, observer) {
-            let menuItems = document.querySelectorAll(".sidebar-links .nav-link");
-
-            if (menuItems.length > 0) {
-                let path = window.location.pathname.toLowerCase();
-
-                menuItems.forEach(link => {
-                    let href = link.getAttribute("href").toLowerCase();
-                    if (path.includes(href)) {
-                        link.style.backgroundColor = "rgb(3, 40, 75)";
-                        link.classList.add("w-100");
-                    }
-                });
-
-                observer.disconnect();
-            }
-        });
-
-        let sidebar = document.querySelector(".sidebar-links");
-        if (sidebar) {
-            observer.observe(sidebar, { childList: true, subtree: true });
-        }
-    });
-</script>
