@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.API.Models;
 using ALFINapp.Infrastructure.Persistence.Procedures;
 
@@ -15,7 +11,9 @@ namespace ALFINapp.Application.DTOs
             if (model != null)
             {
                 var detalleEtiqueta = new DetalleEtiqueta();
-                detalleEtiqueta.nombreEtiqueta = "Desembolsos e Importes";
+                detalleEtiqueta.nombreEtiqueta = "Desembolsos";
+                detalleEtiqueta.nombreEtiquetaCategoria = "Desembolsos";
+                detalleEtiqueta.nombrePorcentajeCategoria = "Importes";
                 detalleEtiqueta.cantidadEtiqueta = model.desembolsado ?? 0;
                 detalleEtiqueta.importeEtiquetas = model.Importe_Desembolsado ?? 0;
                 etiquetas.Add(detalleEtiqueta);
@@ -34,8 +32,11 @@ namespace ALFINapp.Application.DTOs
                 {
                     var detalleEtiqueta = new DetalleEtiqueta();
                     detalleEtiqueta.nombreEtiqueta = item.nombre_meta;
+                    detalleEtiqueta.nombrePorcentajeCategoria = item.nombre_porcentaje_categoria;
+                    detalleEtiqueta.nombreEtiquetaCategoria = "Porcentaje de Importe";
                     detalleEtiqueta.cantidadEtiqueta = item.cantidad_meta;
                     detalleEtiqueta.importeEtiquetas = item.importe_meta;
+                    detalleEtiqueta.porcentajeEtiqueta = item.porcentaje_importe;
                     etiquetas.Add(detalleEtiqueta);
                 }
             }
@@ -46,9 +47,20 @@ namespace ALFINapp.Application.DTOs
             foreach (var item in etiquetas)
             {
                 var etiquetaView = new ViewEtiquetas();
-                etiquetaView.nombreEtiqueta = item.nombreEtiqueta;
+                etiquetaView.nombreEtiqueta = item.nombreEtiqueta.ToUpper();
+                etiquetaView.nombreCategoria = item.nombreEtiquetaCategoria.ToUpper();
+                etiquetaView.nombrePorcentaje = item.nombrePorcentajeCategoria.ToUpper();
                 etiquetaView.cantidadEtiqueta = item.cantidadEtiqueta;
                 etiquetaView.importeEtiquetas = item.importeEtiquetas;
+                etiquetaView.porcentajeEtiqueta = item.porcentajeEtiqueta;
+                if (item.porcentajeEtiqueta > 0)
+                {
+                    etiquetaView.porcentajeEtiqueta = Math.Round(item.porcentajeEtiqueta, 2);
+                }
+                else
+                {
+                    etiquetaView.porcentajeEtiqueta = 0;
+                }
                 etiquetasView.Add(etiquetaView);
             }
             return etiquetasView;
@@ -59,10 +71,11 @@ namespace ALFINapp.Application.DTOs
             throw new NotImplementedException();
         }
     }
-
     public class DetalleEtiqueta 
     {
         public string nombreEtiqueta { get; set; } = string.Empty;
+        public string nombreEtiquetaCategoria { get; set; } = string.Empty;
+        public string nombrePorcentajeCategoria { get; set; } = string.Empty;
         public int cantidadEtiqueta { get; set; } = 0;
         public decimal importeEtiquetas { get; set; } = 0;
         public decimal porcentajeEtiqueta { get; set; } = 0;

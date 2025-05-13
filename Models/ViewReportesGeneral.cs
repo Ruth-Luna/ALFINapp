@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace ALFINapp.API.Models
 {
     public class ViewReportesGeneral
@@ -76,6 +71,7 @@ namespace ALFINapp.API.Models
     {
         public string? nombreEtiqueta { get; set; } = string.Empty;
         public string? nombrePorcentaje { get; set; } = string.Empty;
+        public string? nombreCategoria { get; set; } = string.Empty;
         public int cantidadEtiqueta { get; set; } = 0;
         public decimal importeEtiquetas { get; set; } = 0;
         public decimal porcentajeEtiqueta { get; set; } = 0;

@@ -212,15 +212,15 @@ namespace ALFINapp.Infrastructure.Repositories
             {
                 var parameters = new SqlParameter[]
                 {
-                    new SqlParameter("@Fecha", fecha),
+                    new SqlParameter("@FechaBusqueda", fecha),
                     new SqlParameter("@IdUsuario", idUsuario)
                 };
                 var getDataDer = await _context.reports_g_pie_derivados_desembolsados
-                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_POR_FECHAS_GESTION_DERIVACION_DESEMBOLSO @Fecha @IdUsuario",
+                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_POR_FECHAS_GESTION_DERIVACION_DESEMBOLSO @FechaBusqueda, @IdUsuario",
                         parameters)
                     .ToListAsync();
                 var getDataGes = await _context.reports_g_pie_gestion_asignados
-                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_POR_FECHAS_GESTIONADOS_SOBRE_ASIGNADOS @Fecha @IdUsuario",
+                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_POR_FECHAS_GESTIONADOS_SOBRE_ASIGNADOS @FechaBusqueda, @IdUsuario",
                         parameters)
                     .ToListAsync();
                 if (getDataDer == null || getDataDer.Count == 0)

@@ -35,16 +35,18 @@
                             </div>
                         </div>
                         
-
+                        
                         @if (Model.etiquetas != null && Model.etiquetas.Any())
                         {
-                            foreach (var item in Model.etiquetas)
+                            <div class="col-12 col-md-6">
+                            <div class="row g-3">
+                            @foreach (var item in Model.etiquetas)
                             {
-                                <div class="col-12 col-sm-6 col-md-3">
+                                <div class="col-md-3">
                                     <div class="card border-0 border-success-light bg-success-light">
                                         <div class="card-body">
                                             <div class="d-flex flex-column">
-                                                <label class="form-label text-muted">@item.nombreEtiqueta</label>
+                                                <label class="form-label text-muted">@item.nombreCategoria</label>
                                                 <label class="fs-4 fs-md-2 fs-lg-1 fw-bold">
                                                     @(item.cantidadEtiqueta != 0 ? item.cantidadEtiqueta : item.porcentajeEtiqueta)
                                                 </label>
@@ -52,7 +54,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-12 col-sm-6 col-md-3">
+                                <div class="col-md-3">
                                     <div class="card border-0 border-success-light bg-success-light">
                                         <div class="card-body">
                                             <div class="d-flex flex-column">
@@ -63,6 +65,8 @@
                                     </div>
                                 </div>
                             }
+                            </div>
+                            </div>
                         }
                         else
                         {

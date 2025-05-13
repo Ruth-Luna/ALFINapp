@@ -8,8 +8,9 @@ namespace ALFINapp.Infrastructure.Persistence.Procedures
     public class ReportsEtiquetaMetaImporte
     {
         public string nombre_meta { get; set; } = string.Empty;
-        public string nombre_porcentaje { get; set; } = string.Empty;
+        public string nombre_porcentaje_categoria { get; set; } = string.Empty;
         public decimal importe_meta { get; set; } = 0;
         public int cantidad_meta { get; set; } = 0;
+        public decimal porcentaje_importe { get; set; } = 0;
     }
 }
