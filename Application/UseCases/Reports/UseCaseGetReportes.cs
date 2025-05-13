@@ -68,13 +68,15 @@ namespace ALFINapp.Application.UseCases.Reports
                     var etiquetaDesembolsoMonto = await _repositoryReports.GetReportesEtiquetasDesembolsosNImportes(idUsuario);
                     */
                     var reportesAsync = await _repositoryReportsAsync.GetReportesAsync(idUsuario);
-                    
+                    var reportesEtiquetas = await _repositoryReports.GetReportesEtiquetasMetas();
                     reporteGeneral.lineaGestionVsDerivacion = reportesAsync.linea.toViewLineaGestionVsDerivacion();
                     reporteGeneral.ProgresoGeneral = reportesAsync.pie.toViewPie();
                     reporteGeneral.top5asesores = reportesAsync.bar.toViewListReporteBarGeneral();
                     reporteGeneral.reporteTablaGeneral = reportesAsync.tabla.toViewTabla();
                     reporteGeneral.pieContactabilidad = reportesAsync.pie2.toViewPieLista();
-                    reporteGeneral.etiquetas = reportesAsync.etiquetas.toViewEtiquetas();
+                    reporteGeneral.etiquetas = new List<ViewEtiquetas>();
+                    reporteGeneral.etiquetas.AddRange(reportesAsync.etiquetas.toViewEtiquetas());
+                    reporteGeneral.etiquetas.AddRange(reportesEtiquetas.toViewEtiquetas());
                     return (true, "Reportes obtenidos correctamente", reporteGeneral);
                 }
                 else if (user.IdRol == 3)

@@ -44,8 +44,10 @@
                                     <div class="card border-0 border-success-light bg-success-light">
                                         <div class="card-body">
                                             <div class="d-flex flex-column">
-                                                <label class="form-label text-muted">Desembolso total</label>
-                                                <label class="fs-4 fs-md-2 fs-lg-1 fw-bold">@item.cantidadEtiqueta</label>
+                                                <label class="form-label text-muted">@item.nombreEtiqueta</label>
+                                                <label class="fs-4 fs-md-2 fs-lg-1 fw-bold">
+                                                    @(item.cantidadEtiqueta != 0 ? item.cantidadEtiqueta : item.porcentajeEtiqueta)
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
@@ -54,7 +56,7 @@
                                     <div class="card border-0 border-success-light bg-success-light">
                                         <div class="card-body">
                                             <div class="d-flex flex-column">
-                                                <label class="form-label text-muted">Importe total</label>
+                                                <label class="form-label text-muted">@item.nombrePorcentaje</label>
                                                 <label class="fs-4 fs-md-2 fs-lg-1 fw-bold">@item.importeEtiquetas.ToString("C", CultureInfo.CreateSpecificCulture("es-PE"))</label>
                                             </div>
                                         </div>

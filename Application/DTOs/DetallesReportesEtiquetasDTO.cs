@@ -25,6 +25,21 @@ namespace ALFINapp.Application.DTOs
         {
             etiquetas = new List<DetalleEtiqueta>();
         }
+
+        public DetallesReportesEtiquetasDTO (List<ReportsEtiquetaMetaImporte> model)
+        {
+            if (model != null)
+            {
+                foreach (var item in model)
+                {
+                    var detalleEtiqueta = new DetalleEtiqueta();
+                    detalleEtiqueta.nombreEtiqueta = item.nombre_meta;
+                    detalleEtiqueta.cantidadEtiqueta = item.cantidad_meta;
+                    detalleEtiqueta.importeEtiquetas = item.importe_meta;
+                    etiquetas.Add(detalleEtiqueta);
+                }
+            }
+        }
         public List<ViewEtiquetas> toViewEtiquetas ()
         {
             var etiquetasView = new List<ViewEtiquetas>();
@@ -50,5 +65,6 @@ namespace ALFINapp.Application.DTOs
         public string nombreEtiqueta { get; set; } = string.Empty;
         public int cantidadEtiqueta { get; set; } = 0;
         public decimal importeEtiquetas { get; set; } = 0;
+        public decimal porcentajeEtiqueta { get; set; } = 0;
     }
 }

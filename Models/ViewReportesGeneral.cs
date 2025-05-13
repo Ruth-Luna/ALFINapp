@@ -75,7 +75,9 @@ namespace ALFINapp.API.Models
     public class ViewEtiquetas
     {
         public string? nombreEtiqueta { get; set; } = string.Empty;
+        public string? nombrePorcentaje { get; set; } = string.Empty;
         public int cantidadEtiqueta { get; set; } = 0;
         public decimal importeEtiquetas { get; set; } = 0;
+        public decimal porcentajeEtiqueta { get; set; } = 0;
     }
 }
