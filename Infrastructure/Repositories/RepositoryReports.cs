@@ -399,5 +399,65 @@ namespace ALFINapp.Infrastructure.Repositories
                 return new DetallesReportesEtiquetasDTO();
             }
         }
+
+        public async Task<DetallesReportesTablasDTO> GetReportesTablaGeneralFechaMeses(int idUsuario, int mes, int año)
+        {
+            try
+            {
+                var parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@IdUsuario", idUsuario),
+                    new SqlParameter("@mes", mes),
+                    new SqlParameter("@año", año)
+                };
+                var getData = await _context.reports_g_pie_derivados_desembolsados
+                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_POR_FECHAS_GESTION_DERIVACION_DESEMBOLSO_POR_MES @IdUsuario, @mes, @año",
+                        new SqlParameter("@IdUsuario", idUsuario),
+                        new SqlParameter("@mes", mes),
+                        new SqlParameter("@año", año))
+                    .AsNoTracking()
+                    .ToListAsync();
+                if (getData == null || getData.Count == 0)
+                {
+                    Console.WriteLine("No se encontraron datos para la consulta.");
+                    return new DetallesReportesTablasDTO();
+                }
+                return new DetallesReportesTablasDTO();
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine("Error al obtener los datos de etiquetas de metas: " + ex.Message);
+                return new DetallesReportesTablasDTO();
+            }
+        }
+        public async Task<DetallesReportesGpieDTO> GetReportesGpieGeneralFechaMeses(int idUsuario, int mes, int año)
+        {
+            try
+            {
+                var parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@mes", mes),
+                    new SqlParameter("@anio", año),
+                    new SqlParameter("@IdUsuario", idUsuario)
+                };
+                var getData = await _context.reports_g_pie_gestion_asignados
+                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_POR_FECHAS_GESTIONADOS_SOBRE_ASIGNADOS_POR_MES @mes, @anio, @IdUsuario",
+                        parameters)
+                    .AsNoTracking()
+                    .ToListAsync();
+                if (getData == null || getData.Count == 0)
+                {
+                    Console.WriteLine("No se encontraron datos para la consulta.");
+                    return new DetallesReportesGpieDTO();
+                }
+                var convertDto = new DetallesReportesGpieDTO(getData.FirstOrDefault());
+                return convertDto;
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new DetallesReportesGpieDTO();
+            }
+        }
     }
 }

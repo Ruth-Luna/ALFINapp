@@ -67,6 +67,16 @@ namespace ALFINapp.API.Models
         public int? contador_desembolsado { get; set; }
         public decimal? importe_desembolsado { get; set; }
     }
+    public class ViewReporteTablaMeses
+    {
+        public string? periodo { get; set; } = string.Empty;
+        public int? total_asignados { get; set; } = 0;
+        public int? total_gestionados { get; set; } = 0;
+        public int? total_desembolsados { get; set; } = 0;
+        public decimal? porcentaje_derivados { get; set; } = 0;
+        public decimal? porcentaje_desembolsados { get; set; } = 0;
+        public decimal? porcentaje_no_derivado { get; set; } = 0;
+    }
     public class ViewEtiquetas
     {
         public string? nombreEtiqueta { get; set; } = string.Empty;

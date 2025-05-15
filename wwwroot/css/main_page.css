@@ -416,3 +416,8 @@ header {
 .table-white tbody {
     color: white;
 }
+
+.custom-month-picker[readonly] {
+  background-color: white !important;
+  opacity: 1;
+}

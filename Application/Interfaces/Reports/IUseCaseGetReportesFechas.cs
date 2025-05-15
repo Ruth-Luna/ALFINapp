@@ -8,6 +8,6 @@ namespace ALFINapp.Application.Interfaces.Reports
 {
     public interface IUseCaseGetReportesFechas
     {
-        public Task<(bool IsSuccess, string Message, ViewReportesFecha Data)> Execute(string fecha, int idUsuario, int rol);
+        public Task<(bool IsSuccess, string Message, ViewReportesFecha Data)> Execute(string fecha, int idUsuario, int rol, int? mes = null, int? año = null);
     }
 }

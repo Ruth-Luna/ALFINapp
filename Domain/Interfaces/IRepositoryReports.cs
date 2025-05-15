@@ -16,5 +16,7 @@ namespace ALFINapp.Domain.Interfaces
         public Task<DetallesReportesGpieDTO> GetReportesByDate( int idUsuario, DateTime? fecha = null);
         public Task<DetallesReportesGpieDTO> GetReportesByActualMonth(int idUsuario);
         public Task<DetallesReportesEtiquetasDTO> GetReportesEtiquetasMetas();
+        public Task<DetallesReportesTablasDTO> GetReportesTablaGeneralFechaMeses(int idUsuario, int mes, int año);
+        public Task<DetallesReportesGpieDTO> GetReportesGpieGeneralFechaMeses(int idUsuario, int mes, int año);
     }
 }

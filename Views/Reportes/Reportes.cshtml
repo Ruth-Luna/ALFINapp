@@ -28,27 +28,37 @@
                 </div>
                 <div class="ba-card-body">
                     <div class="row g-3">
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-md-4">
                             <div class="card-body">
-                                <label for="lista-fechas" class="form-label">Filtro Por Fechas</label>
-                                <input type="date" class="form-control" name="lista-fechas" id="lista-fechas" onchange="cargarReportePorFechas(this.value)" />
+                                <div class="row g-3">
+                                    <div class="col-6">
+                                        <label for="lista-fechas" class="form-label">Filtro Por Fechas</label>
+                                        <input type="date" class="form-control" name="lista-fechas" id="lista-fechas"
+                                            onchange="cargarReportePorFechas(this.value)" />
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="lista-mes" class="form-label">Filtro por Mes</label>
+                                        <input id="mes-selector" class="custom-month-picker form-control"
+                                            onchange="cargarReportePorMeses(this.value)">
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        
-                        
                         @if (Model.etiquetas != null && Model.etiquetas.Any())
                         {
-                            <div class="col-12 col-md-6">
-                            <div class="row g-3">
-                            @foreach (var item in Model.etiquetas)
-                            {
-                                <div class="col-md-3">
-                                    <div class="card border-0 border-success-light bg-success-light">
-                                        <div class="card-body">
-                                            <div class="d-flex flex-column">
-                                                <label class="form-label text-muted">@item.nombreCategoria</label>
-                                                <label class="fs-4 fs-md-2 fs-lg-1 fw-bold">
-                                                    @(item.cantidadEtiqueta != 0 ? item.cantidadEtiqueta : item.porcentajeEtiqueta)
+                            <div class="col-12 col-md-8">
+                                <div class="row g-3">
+                                    @foreach (var item in Model.etiquetas)
+                                    {
+                                        <div class="col-md-3">
+                                            <div class="card border-0 border-success-light bg-success-light">
+                                                <div class="card-body">
+                                                    <div class="d-flex flex-column">
+                                                        <label class="form-label text-muted">@item.nombreCategoria</label>
+                                                        <label class="fs-4 fs-md-2 fs-lg-1 fw-bold">
+                                                            @(item.cantidadEtiqueta != 0 ? item.cantidadEtiqueta :
+                                                                                                                item.porcentajeEtiqueta.ToString() + "%")
+
                                                 </label>
                                             </div>
                                         </div>
@@ -59,13 +69,15 @@
                                         <div class="card-body">
                                             <div class="d-flex flex-column">
                                                 <label class="form-label text-muted">@item.nombrePorcentaje</label>
-                                                <label class="fs-4 fs-md-2 fs-lg-1 fw-bold">@item.importeEtiquetas.ToString("C", CultureInfo.CreateSpecificCulture("es-PE"))</label>
+                                                <label
+                                                    class="fs-4 fs-md-2 fs-lg-1 fw-bold">@item.importeEtiquetas.ToString("C",
+                                                                                                        CultureInfo.CreateSpecificCulture("es-PE"))</label>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            }
-                            </div>
+                                                                }
+                                </div>
                             </div>
                         }
                         else
@@ -97,8 +109,11 @@
             </div>
         </div>
 
-        <div class="col-12 d-none">
+        <div class="col-6 d-none">
             <div id="div-reporteria-fechas"></div>
+        </div>
+        <div class="col-6 d-none">
+            <div id="div-reporteria-fechas-por-meses"></div>
         </div>
 
         <div class="col-12 col-md-6">
@@ -225,7 +240,7 @@
                         <div>
                             <label for="lista-usuario-asesor" class="form-label">Filtro Por Asesor de Cr�ditos</label>
                             <select class="form-control" name="lista-usuario-asesor" id="lista-usuario-asesor"
-                                    onchange="cargarReporteAsesor(this.value)">
+                                onchange="cargarReporteAsesor(this.value)">
                                 <option value="">Seleccione un Asesor de Cr�ditos</option>
                                 @if (asesores != null)
                                 {
@@ -244,7 +259,7 @@
                         <div>
                             <label for="lista-usuario-supervisor" class="form-label">Filtro Por Supervisor</label>
                             <select class="form-control" name="lista-usuario-supervisor" id="lista-usuario-supervisor"
-                                    onchange="cargarReporteSupervisor(this.value)">
+                                onchange="cargarReporteSupervisor(this.value)">
                                 <option value=""> Seleccione un Supervisor </option>
                                 @if (supervisores != null)
                                 {
@@ -276,7 +291,7 @@
             <div class="ba-card-body">
                 <label for="lista-usuario-asesor" class="form-label">Filtro Por Asesor de Cr�ditos</label>
                 <select class="form-control mt-3" name="lista-usuario-asesor" id="lista-usuario-asesor"
-                        onchange="cargarReporteAsesor(this.value)">
+                    onchange="cargarReporteAsesor(this.value)">
                     <option value=""> Seleccione un Asesor de Cr�ditos </option>
                     @if (asesores != null)
                     {
@@ -292,7 +307,7 @@
             </div>
         }
     </div>
-    
+
     <div class="row g-3">
         <div class="col-12 col-md-6">
             <div class="d-none">
@@ -348,8 +363,8 @@
         agGrid.createGrid(myGridElement, gridOptions);
     </script>
     <script>
-        var rol = @(rol.HasValue ? rol.Value.ToString() : "null");
-        var idUsuario = @(idUsuario.HasValue ? idUsuario.Value.ToString() : "null");
+        var rol = @(rol.HasValue? rol.Value.ToString() : "null");
+        var idUsuario = @(idUsuario.HasValue? idUsuario.Value.ToString() : "null");
         document.addEventListener("DOMContentLoaded", function () {
             if (rol === 3) {
                 cargarReporteAsesor(idUsuario);

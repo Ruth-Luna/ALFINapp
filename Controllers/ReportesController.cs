@@ -115,5 +115,25 @@ namespace ALFINapp.API.Controllers
             var reportes = await _useCaseGetReportesMetas.Execute(id.Value);
             return View("Metas", reportes.Data);
         }
+        [HttpGet]
+        public async Task<IActionResult> ReportesPorMes(int mes, int año)
+        {
+            var rol = HttpContext.Session.GetInt32("RolUser");
+            if (rol == null)
+            {
+                return Json(new { success = false, message = "No se ha iniciado sesión" });
+            }
+            var idUsuario = HttpContext.Session.GetInt32("UsuarioId");
+            if (idUsuario == null)
+            {
+                return Json(new { success = false, message = "Id de usuario no valido." });
+            }
+            var reportesAdministrador = await _useCaseGetReportesFechas.Execute(DateTime.Now.ToString(), idUsuario.Value, rol.Value, mes, año);
+            if (!reportesAdministrador.IsSuccess)
+            {
+                return Json(new { success = false, message = reportesAdministrador.Message });
+            }
+            return PartialView("_ReportesMetas", reportesAdministrador.Data);
+        }
     }
 }

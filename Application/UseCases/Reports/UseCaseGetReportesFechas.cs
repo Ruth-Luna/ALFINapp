@@ -19,18 +19,48 @@ namespace ALFINapp.Application.UseCases.Reports
         public async Task<(bool IsSuccess, string Message, ViewReportesFecha Data)> Execute(
             string fecha, 
             int idUsuario, 
-            int rol)
+            int rol,
+            int? mes = null,
+            int? año = null)
         {
             try
             {
-                var getReportesPie = await _repositoryReports.GetReportesGpieGeneralFecha(DateOnly.Parse(fecha), idUsuario);
-                if (getReportesPie == null)
+                if (string.IsNullOrEmpty(fecha))
+                {
+                    return (false, "La fecha no puede estar vacía", new ViewReportesFecha());
+                }
+                if (año == null || mes == null)
+                {
+                    var getReportesPie = await _repositoryReports.GetReportesGpieGeneralFecha(DateOnly.Parse(fecha), idUsuario);
+                    if (getReportesPie == null)
+                    {
+                        return (false, "No se encontraron reportes para la fecha seleccionada", new ViewReportesFecha());
+                    }
+                    var getReportesFechas = new ViewReportesFecha();
+                    getReportesFechas.ProgresoGeneral = getReportesPie.toViewPie();
+                    return (true, "ok", getReportesFechas);
+                }
+                if (año != null || mes != null)
+                {
+                    var getReportesPie = await _repositoryReports.GetReportesGpieGeneralFechaMeses(idUsuario, mes.Value, año.Value);
+                    if (getReportesPie == null)
+                    {
+                        return (false, "No se encontraron reportes para la fecha seleccionada", new ViewReportesFecha());
+                    }
+                    var getReportesTabla = await _repositoryReports.GetReportesTablaGeneralFechaMeses(idUsuario, mes.Value, año.Value);
+                    if (getReportesTabla == null)
+                    {
+                        return (false, "No se encontraron reportes para la fecha seleccionada", new ViewReportesFecha());
+                    }
+                    var getReportesFechas = new ViewReportesFecha();
+                    getReportesFechas.ProgresoGeneral = getReportesPie.toViewPie();
+                    getReportesFechas.reporteTablaPorMeses = getReportesTabla.toViewTablaMeses();
+                    return (true, "ok", getReportesFechas);
+                }
+                else
                 {
                     return (false, "No se encontraron reportes para la fecha seleccionada", new ViewReportesFecha());
                 }
-                var getReportesFechas = new ViewReportesFecha();
-                getReportesFechas.ProgresoGeneral = getReportesPie.toViewPie();
-                return (true, "ok", getReportesFechas);
             }
             catch (System.Exception ex)
             {

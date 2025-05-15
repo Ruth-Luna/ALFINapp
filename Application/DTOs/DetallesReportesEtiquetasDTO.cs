@@ -33,7 +33,7 @@ namespace ALFINapp.Application.DTOs
                     var detalleEtiqueta = new DetalleEtiqueta();
                     detalleEtiqueta.nombreEtiqueta = item.nombre_meta;
                     detalleEtiqueta.nombrePorcentajeCategoria = item.nombre_porcentaje_categoria;
-                    detalleEtiqueta.nombreEtiquetaCategoria = "Porcentaje de Importe";
+                    detalleEtiqueta.nombreEtiquetaCategoria = "Porcentaje de Meta Alcanzada";
                     detalleEtiqueta.cantidadEtiqueta = item.cantidad_meta;
                     detalleEtiqueta.importeEtiquetas = item.importe_meta;
                     detalleEtiqueta.porcentajeEtiqueta = item.porcentaje_importe;
