@@ -406,15 +406,13 @@ namespace ALFINapp.Infrastructure.Repositories
             {
                 var parameters = new SqlParameter[]
                 {
-                    new SqlParameter("@IdUsuario", idUsuario),
                     new SqlParameter("@mes", mes),
-                    new SqlParameter("@año", año)
+                    new SqlParameter("@año", año),
+                    new SqlParameter("@IdUsuario", idUsuario),
                 };
                 var getData = await _context.reports_g_pie_derivados_desembolsados
-                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_POR_FECHAS_GESTION_DERIVACION_DESEMBOLSO_POR_MES @IdUsuario, @mes, @año",
-                        new SqlParameter("@IdUsuario", idUsuario),
-                        new SqlParameter("@mes", mes),
-                        new SqlParameter("@año", año))
+                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_POR_FECHAS_GESTION_DERIVACION_DESEMBOLSO_POR_MES @mes, @año, @IdUsuario",
+                        parameters)
                     .AsNoTracking()
                     .ToListAsync();
                 if (getData == null || getData.Count == 0)
@@ -422,7 +420,7 @@ namespace ALFINapp.Infrastructure.Repositories
                     Console.WriteLine("No se encontraron datos para la consulta.");
                     return new DetallesReportesTablasDTO();
                 }
-                return new DetallesReportesTablasDTO();
+                return new DetallesReportesTablasDTO(getData);
             }
             catch (System.Exception ex)
             {

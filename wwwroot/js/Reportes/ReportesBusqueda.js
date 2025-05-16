@@ -257,8 +257,8 @@ async function cargarReportePorMeses(date) {
             const html = await response.text();
             fechaElement.innerHTML = html;
             $(fechaElement).parent().removeClass('d-none');
-            gpiederivacionesFecha();
-            gpieasignacionFecha();
+            gtablamesinforme();
+            gpiemeses();
         }
     } catch (error) {
         Swal.close();

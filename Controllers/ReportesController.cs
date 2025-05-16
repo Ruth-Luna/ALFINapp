@@ -133,7 +133,7 @@ namespace ALFINapp.API.Controllers
             {
                 return Json(new { success = false, message = reportesAdministrador.Message });
             }
-            return PartialView("_ReportesMetas", reportesAdministrador.Data);
+            return PartialView("_ReportesMeses", reportesAdministrador.Data);
         }
     }
 }
