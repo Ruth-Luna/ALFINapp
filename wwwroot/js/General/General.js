@@ -1,3 +1,13 @@
+flatpickr("#mes-selector", {
+  plugins: [
+    new monthSelectPlugin({
+      shorthand: true,
+      dateFormat: "Y-m",
+      altFormat: "F Y"
+    })
+  ]
+});
+
 function show_options_refac(id) {
     let opcionesDiv = document.getElementById(id);
     opcionesDiv.style.display = opcionesDiv.style.display === "block" ? "none" : "block";

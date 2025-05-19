@@ -127,10 +127,123 @@ function cargarGestionInforme() {
     chart.render();
 }
 
+function cargarReporteDerivacionVsDesembolso() {
+    var reportesAsesor = document.getElementById('reportes-asesor');
+    var reportesData = JSON.parse(reportesAsesor.getAttribute("data-json"));
+    var totalDerivaciones = reportesData["totalDerivaciones"];
+    var totalDesembolsos = reportesData["totalDesembolsos"];
+    var sinDesembolsar = totalDerivaciones - totalDesembolsos;
+
+    var series = [
+        totalDesembolsos,
+        sinDesembolsar
+    ];
+    var labels = [
+        "Desembolsos",
+        "Sin Desembolsar"
+    ];
+    var totalGeneral = totalDerivaciones;
+    var options = {
+        series: series,
+        chart: {
+            type: 'donut',
+            height: 350
+        },
+        labels: labels,
+        colors: ["#FF4560", "#00E396"],
+        legend: {
+            position: 'bottom'
+        },
+        plotOptions: {
+            pie: {
+                donut: {
+                    size: '65%',
+                    labels: {
+                        show: true,
+                        total: {
+                            show: true,
+                            label: 'Total Derivaciones',
+                            formatter: function (w) {
+                                return totalGeneral;
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        tooltip: {
+            intersect: false,
+            y: {
+                formatter: function (value, { dataPointIndex }) {
+                    return `${labels[dataPointIndex]}: ${value} (Total Derivaciones: ${totalGeneral})`;
+                }
+            }
+        }
+    };
+    var chart = new ApexCharts(document.querySelector("#div-reporte-derivaciones-vs-desembolsos"), options);
+    chart.render();
+}
+
+function cargarReporteAsignacionVsGestion() {
+    var reportesAsesor = document.getElementById('reportes-asesor');
+    var reportesData = JSON.parse(reportesAsesor.getAttribute("data-json"));
+    var totalAsignado = reportesData["totalAsignado"];
+    var totalGestionado = reportesData["totalGestionado"];
+    // Calculate clients that haven't been managed yet
+    var sinGestionar = totalAsignado - totalGestionado;
+    var series = [
+        totalGestionado,
+        sinGestionar
+    ];
+    var labels = [
+        "Clientes Gestionados",
+        "Clientes Sin Gestionar"
+    ];
+    var totalGeneral = totalAsignado;
+    var options = {
+        series: series,
+        chart: {
+            type: 'donut',
+            height: 350
+        },
+        labels: labels,
+        colors: ["#008FFB", "#FEB019"],
+        legend: {
+            position: 'bottom'
+        },
+        plotOptions: {
+            pie: {
+                donut: {
+                    size: '65%',
+                    labels: {
+                        show: true,
+                        total: {
+                            show: true,
+                            label: 'Total Asignado',
+                            formatter: function (w) {
+                                return totalGeneral;
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        tooltip: {
+            intersect: false,
+            y: {
+                formatter: function (value, { dataPointIndex }) {
+                    return `${labels[dataPointIndex]}: ${value} (Total: ${totalGeneral})`;
+                }
+            }
+        }
+    };
+    var chart = new ApexCharts(document.querySelector("#div-reporte-asignaciones-vs-gestion"), options);
+    chart.render();
+}
+
 function cargarReporteGeneralAsesor() {
     var reportesAsesor = document.getElementById('reportes-asesor');
     var reportesData = JSON.parse(reportesAsesor.getAttribute("data-json"));
-    console.log(reportesData);
 
     var series = [
         reportesData["totalDerivaciones"],

@@ -7,6 +7,7 @@ namespace ALFINapp.Application.DTOs
     {
         public List <ReportsTablaGestionadoDerivadoDesembolsadoImporte> Reportes { get; set; } = new List<ReportsTablaGestionadoDerivadoDesembolsadoImporte>();
         public List <ReportsTablasMetas> Metas { get; set; } = new List<ReportsTablasMetas>();
+        public List <ReportsGPiePorcentajeGestionadoDerivadoDesembolsado> FechasReporte { get; set; } = new List<ReportsGPiePorcentajeGestionadoDerivadoDesembolsado>();
         public DetallesReportesTablasDTO(List<ReportsTablaGestionadoDerivadoDesembolsadoImporte> model)
         {
             Reportes = model;
@@ -14,6 +15,10 @@ namespace ALFINapp.Application.DTOs
         public DetallesReportesTablasDTO()
         {
             Reportes = new List<ReportsTablaGestionadoDerivadoDesembolsadoImporte>();
+        }
+        public DetallesReportesTablasDTO(List<ReportsGPiePorcentajeGestionadoDerivadoDesembolsado> model)
+        {
+            FechasReporte = model;
         }
         public DetallesReportesTablasDTO(List<ReportsTablasMetas> model)
         {
@@ -32,6 +37,23 @@ namespace ALFINapp.Application.DTOs
                 reporte.contador_derivado = item.derivado;
                 reporte.contador_desembolsado = item.desembolsado;
                 reporte.importe_desembolsado = item.Importe_Desembolsado;
+                reportes.Add(reporte);
+            }
+            return reportes;
+        }
+        public List<ViewReporteTablaMeses> toViewTablaMeses()
+        {
+            var reportes = new List<ViewReporteTablaMeses>();
+            foreach (var item in FechasReporte)
+            {
+                var reporte = new ViewReporteTablaMeses();
+                reporte.periodo = item.PERIODO;
+                reporte.total_asignados = 0;
+                reporte.total_gestionados = item.TOTAL_GESTIONADOS;
+                reporte.total_desembolsados = item.TOTAL_DESEMBOLSADOS;
+                reporte.porcentaje_derivados = item.PORCENTAJE_DERIVADOS;
+                reporte.porcentaje_desembolsados = item.PORCENTAJE_DESEMBOLSADOS;
+                reporte.porcentaje_no_derivado = item.PORCENTAJE_NO_DERIVADO;
                 reportes.Add(reporte);
             }
             return reportes;

@@ -3,6 +3,7 @@
 
 @{
     var rol = (int?)ViewData["RolUser"];
+    var filtroFecha = (bool?)Model.filtro_por_fechas;
     var asesores = Model.Asesores as List<ALFINapp.API.Models.ViewUsuario>;
     var supervisores = Model.Supervisores as List<ALFINapp.API.Models.ViewUsuario>;
     var idUsuario = (int?)ViewData["UsuarioId"];
@@ -17,7 +18,6 @@
 <!-- :::: :: :::: -->
 <div class="container-fluid">
     <div class="row g-3">
-
         <div class="col-12">
             <div class="ba-card h-100">
                 <div class="ba-card-header">
@@ -28,39 +28,52 @@
                 </div>
                 <div class="ba-card-body">
                     <div class="row g-3">
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-md-4">
                             <div class="card-body">
-                                <label for="lista-fechas" class="form-label">Filtro Por Fechas</label>
-                                <input type="date" class="form-control" name="lista-fechas" id="lista-fechas" onchange="cargarReportePorFechas(this.value)" />
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label for="lista-mes" class="form-label">Filtro por Mes</label>
+                                        <input id="mes-selector" class="custom-month-picker form-control"
+                                            onchange="cargarReportePorMeses(this.value)">
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        
-
                         @if (Model.etiquetas != null && Model.etiquetas.Any())
                         {
-                            foreach (var item in Model.etiquetas)
-                            {
-                                <div class="col-12 col-sm-6 col-md-3">
-                                    <div class="card border-0 border-success-light bg-success-light">
-                                        <div class="card-body">
-                                            <div class="d-flex flex-column">
-                                                <label class="form-label text-muted">Desembolso total</label>
-                                                <label class="fs-4 fs-md-2 fs-lg-1 fw-bold">@item.cantidadEtiqueta</label>
+                            <div class="col-12 col-md-8">
+                                <div class="row g-3">
+                                    @foreach (var item in Model.etiquetas)
+                                    {
+                                        <div class="col-md-3">
+                                            <div class="card border-0 border-success-light bg-success-light">
+                                                <div class="card-body">
+                                                    <div class="d-flex flex-column">
+                                                        <label class="form-label text-muted">@item.nombreCategoria</label>
+                                                        <label class="fs-4 fs-md-2 fs-lg-1 fw-bold">
+                                                            @(item.cantidadEtiqueta != 0 ? item.cantidadEtiqueta :
+                                                                                                                item.porcentajeEtiqueta.ToString() + "%")
+
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-12 col-sm-6 col-md-3">
+                                <div class="col-md-3">
                                     <div class="card border-0 border-success-light bg-success-light">
                                         <div class="card-body">
                                             <div class="d-flex flex-column">
-                                                <label class="form-label text-muted">Importe total</label>
-                                                <label class="fs-4 fs-md-2 fs-lg-1 fw-bold">@item.importeEtiquetas.ToString("C", CultureInfo.CreateSpecificCulture("es-PE"))</label>
+                                                <label class="form-label text-muted">@item.nombrePorcentaje</label>
+                                                <label
+                                                    class="fs-4 fs-md-2 fs-lg-1 fw-bold">@item.importeEtiquetas.ToString("C",
+                                                                                                        CultureInfo.CreateSpecificCulture("es-PE"))</label>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            }
+                                                                }
+                                </div>
+                            </div>
                         }
                         else
                         {
@@ -91,8 +104,25 @@
             </div>
         </div>
 
-        <div class="col-12 d-none">
+        <div class="col-12 col-md-6 d-none">
             <div id="div-reporteria-fechas"></div>
+        </div>
+        
+        <div class="col-12" id="div-derivaciones" style="display: none;">
+            <div class="ba-card h-100">
+                <div class="ba-card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
+                            <span>DERIVACIONES GENERALES</span>
+                        </h5>
+                    </div>
+                </div>
+                <div class="ba-card-body">
+                    <div id="chart-derivaciones">
+                        @*Aca se cargara las graficas del Asesor*@
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="col-12 col-md-6">
@@ -117,7 +147,7 @@
                 <div class="ba-card-header">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
-                            <span>REPORTE DE CONTACTABILIDAD</span>
+                            <span>CONTACTABILIDAD</span>
                         </h5>
                     </div>
                 </div>
@@ -149,7 +179,7 @@
                     <div class="ba-card-header">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
-                                <span>TOP 5 DE DERIVACIONES</span>
+                                <span>TOP 5 DERIVACIONES DE ASESORES</span>
                             </h5>
                         </div>
                     </div>
@@ -160,23 +190,7 @@
             </div>
         }
 
-        <div class="col-12" id="div-derivaciones" style="display: none;">
-            <div class="ba-card h-100">
-                <div class="ba-card-header">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
-                            <span>DERIVACIONES GENERALES</span>
-                        </h5>
-                    </div>
-                </div>
-                <div class="ba-card-body">
-                    <div id="chart-derivaciones">
-                        @*Aca se cargara las graficas del Asesor*@
-                    </div>
-                </div>
-            </div>
-        </div>
-
+        
         @if (rol == 1 || rol == 4 || rol == 2)
         {
             <div class="col-12">
@@ -194,7 +208,9 @@
                 </div>
             </div>
         }
-
+        <div class="col-12 col-md-12 d-none">
+            <div id="div-reporteria-fechas-por-meses"></div>
+        </div>
     </div>
 
     <hr />
@@ -219,7 +235,7 @@
                         <div>
                             <label for="lista-usuario-asesor" class="form-label">Filtro Por Asesor de Cr�ditos</label>
                             <select class="form-control" name="lista-usuario-asesor" id="lista-usuario-asesor"
-                                    onchange="cargarReporteAsesor(this.value)">
+                                onchange="cargarReporteAsesor(this.value)">
                                 <option value="">Seleccione un Asesor de Cr�ditos</option>
                                 @if (asesores != null)
                                 {
@@ -238,7 +254,7 @@
                         <div>
                             <label for="lista-usuario-supervisor" class="form-label">Filtro Por Supervisor</label>
                             <select class="form-control" name="lista-usuario-supervisor" id="lista-usuario-supervisor"
-                                    onchange="cargarReporteSupervisor(this.value)">
+                                onchange="cargarReporteSupervisor(this.value)">
                                 <option value=""> Seleccione un Supervisor </option>
                                 @if (supervisores != null)
                                 {
@@ -270,7 +286,7 @@
             <div class="ba-card-body">
                 <label for="lista-usuario-asesor" class="form-label">Filtro Por Asesor de Cr�ditos</label>
                 <select class="form-control mt-3" name="lista-usuario-asesor" id="lista-usuario-asesor"
-                        onchange="cargarReporteAsesor(this.value)">
+                    onchange="cargarReporteAsesor(this.value)">
                     <option value=""> Seleccione un Asesor de Cr�ditos </option>
                     @if (asesores != null)
                     {
@@ -286,7 +302,7 @@
             </div>
         }
     </div>
-    
+
     <div class="row g-3">
         <div class="col-12 col-md-6">
             <div class="d-none">
@@ -304,9 +320,10 @@
 
 <!-- :::: :: :::: -->
 
-
+<div id="filtro-por-fecha" data='@(filtroFecha.HasValue? filtroFecha.Value.ToString() : "null")'></div>
 <div id="reportes-data" data-json='@Html.Raw(Json.Serialize(Model))'></div>
 <div id="rol-general" data='@(rol.HasValue? rol.Value.ToString() : "null")'></div>
+<div id="fecha-filtro" data='@(Model.fecha_filtro.anio)-@(Model.fecha_filtro.mes)'></div>
 
 @section Scripts {
     <script>
@@ -342,8 +359,8 @@
         agGrid.createGrid(myGridElement, gridOptions);
     </script>
     <script>
-        var rol = @(rol.HasValue ? rol.Value.ToString() : "null");
-        var idUsuario = @(idUsuario.HasValue ? idUsuario.Value.ToString() : "null");
+        var rol = @(rol.HasValue? rol.Value.ToString() : "null");
+        var idUsuario = @(idUsuario.HasValue? idUsuario.Value.ToString() : "null");
         document.addEventListener("DOMContentLoaded", function () {
             if (rol === 3) {
                 cargarReporteAsesor(idUsuario);

@@ -10,10 +10,10 @@ namespace ALFINapp.Application.DTOs
 {
     public class DetallesReportesGpieDTO
     {
-        public ReportsGPiePorcentajeGestionadosSobreAsignados Reportes { get; set; }
-        public ReportsGPiePorcentajeGestionadoDerivadoDesembolsado Reportes2 { get; set; }
-        public List<ReportsPieContactabilidadCliente> ReportesGeneral { get; set; }
-        public List<ReportsGeneralDatosActualesPorIdUsuarioFecha> ReportesGralTemplate { get; set; }
+        public ReportsGPiePorcentajeGestionadosSobreAsignados? Reportes { get; set; } = new ReportsGPiePorcentajeGestionadosSobreAsignados();
+        public ReportsGPiePorcentajeGestionadoDerivadoDesembolsado? Reportes2 { get; set; } = new ReportsGPiePorcentajeGestionadoDerivadoDesembolsado();
+        public List<ReportsPieContactabilidadCliente> ReportesGeneral { get; set; } = new List<ReportsPieContactabilidadCliente>();
+        public List<ReportsGeneralDatosActualesPorIdUsuarioFecha> ReportesGralTemplate { get; set; } = new List<ReportsGeneralDatosActualesPorIdUsuarioFecha>();
         public DetallesReportesGpieDTO(
             ReportsGPiePorcentajeGestionadosSobreAsignados? model, 
             ReportsGPiePorcentajeGestionadoDerivadoDesembolsado? model2)
@@ -22,6 +22,11 @@ namespace ALFINapp.Application.DTOs
             Reportes2 = model2 ?? new ReportsGPiePorcentajeGestionadoDerivadoDesembolsado();
             ReportesGeneral = new List<ReportsPieContactabilidadCliente>();
             ReportesGralTemplate = new List<ReportsGeneralDatosActualesPorIdUsuarioFecha>();
+        }
+        public DetallesReportesGpieDTO(
+            ReportsGPiePorcentajeGestionadosSobreAsignados? model)
+        {
+            Reportes = model ?? new ReportsGPiePorcentajeGestionadosSobreAsignados();
         }
         public DetallesReportesGpieDTO(List<ReportsPieContactabilidadCliente> model)
         {

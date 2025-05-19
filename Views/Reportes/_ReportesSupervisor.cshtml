@@ -15,7 +15,7 @@
             <div class="ba-card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <h5 class="ba-card-title d-inline-flex align-items-baseline gap-2">
-                        <span>Reportes de Asignaciones</span>
+                        <span>Porcentaje de Derivaciones de lo Gestionado </span>
                     </h5>
                 </div>
             </div>
@@ -28,7 +28,7 @@
             <div class="ba-card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <h5 class="ba-card-title d-inline-flex align-items-baseline gap-2">
-                        <span>Reportes de Derivaciones</span>
+                        <span>Porcentaje de Desembolsos de lo Derivado</span>
                     </h5>
                 </div>
             </div>
@@ -41,7 +41,7 @@
             <div class="ba-card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <h5 class="ba-card-title d-inline-flex align-items-baseline gap-2">
-                        <span>Reportes de Supervisores</span>
+                        <span>Gestion de Asesores</span>
                     </h5>
                 </div>
             </div>
@@ -53,34 +53,18 @@
             <div class="ba-card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <h5 class="ba-card-title d-inline-flex align-items-baseline gap-2">
-                        <span>Derivaciones por Fecha</span>
+                        <span>DERIVACIONES Y DESEMBOLSOS POR FECHA</span>
                     </h5>
                 </div>
             </div>
             <div class="ba-card-body">
-                <div id="div-derivaciones-por-fecha-supervisor"></div>
-            </div>
-        </div>
-        <div class="ba-card h-100">
-            <div class="ba-card-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="ba-card-title d-inline-flex align-items-baseline gap-2">
-                        <span>Desembolsos por Fecha</span>
-                    </h5>
-                </div>
-            </div>
-            <div class="ba-card-body">
-                <div id="div-desembolsos-por-fecha-supervisor"></div>
+                <div id="div-movimientos-por-fecha-supervisor"></div>
             </div>
         </div>
     </div>
 </div>
 
 <div id="reportes-supervisor" data-json='@Html.Raw(Json.Serialize(Model))'></div>
-
-
-
-
 
 @* <div class="card">
     <div class="card-header">

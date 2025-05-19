@@ -22,7 +22,10 @@ namespace ALFINapp.Application.UseCases.Reports
             _repositoryUsuarios = repositoryUsuarios;
             _repositoryReportsAsync = repositoryReportsAsync;
         }
-        public async Task<(bool IsSuccess, string Message, ViewReportesGeneral? Data)> Execute(int idUsuario)
+        public async Task<(bool IsSuccess, string Message, ViewReportesGeneral? Data)> Execute(
+            int idUsuario,
+            int? anio = null,
+            int? mes = null)
         {
             try
             {
@@ -67,26 +70,36 @@ namespace ALFINapp.Application.UseCases.Reports
                     var pieContactabilidad = await _repositoryReports.GetReportesPieContactabilidadCliente(idUsuario);
                     var etiquetaDesembolsoMonto = await _repositoryReports.GetReportesEtiquetasDesembolsosNImportes(idUsuario);
                     */
-                    var reportesAsync = await _repositoryReportsAsync.GetReportesAsync(idUsuario);
-                    
+                    var reportesAsync = await _repositoryReportsAsync.GetReportesAsync(idUsuario, anio, mes);
+                    var reportesEtiquetas = await _repositoryReports.GetReportesEtiquetasMetas(anio,mes);
                     reporteGeneral.lineaGestionVsDerivacion = reportesAsync.linea.toViewLineaGestionVsDerivacion();
                     reporteGeneral.ProgresoGeneral = reportesAsync.pie.toViewPie();
                     reporteGeneral.top5asesores = reportesAsync.bar.toViewListReporteBarGeneral();
                     reporteGeneral.reporteTablaGeneral = reportesAsync.tabla.toViewTabla();
                     reporteGeneral.pieContactabilidad = reportesAsync.pie2.toViewPieLista();
-                    reporteGeneral.etiquetas = reportesAsync.etiquetas.toViewEtiquetas();
+                    reporteGeneral.etiquetas = new List<ViewEtiquetas>();
+                    reporteGeneral.etiquetas.AddRange(reportesAsync.etiquetas.toViewEtiquetas());
+                    reporteGeneral.etiquetas.AddRange(reportesEtiquetas.toViewEtiquetas());
+                    if (mes != null && anio != null)
+                    {
+                        reporteGeneral.filtro_por_fechas = true;
+                        var fechafiltro = new FechaDelFiltro();
+                        fechafiltro.mes = mes;
+                        fechafiltro.anio = anio;
+                        reporteGeneral.fecha_filtro = fechafiltro;
+                    }
                     return (true, "Reportes obtenidos correctamente", reporteGeneral);
                 }
                 else if (user.IdRol == 3)
                 {
-                    var lineasGestionDerivacion = await _repositoryReports.LineaGestionVsDerivacionDiaria(idUsuario);
-                    var pieGestionAsignados = await _repositoryReports.GetReportesGpieGeneral(idUsuario);
-                    var pieContactabilidad = await _repositoryReports.GetReportesPieContactabilidadCliente(idUsuario);
-                    var etiquetaDesembolsoMonto = await _repositoryReports.GetReportesEtiquetasDesembolsosNImportes(idUsuario);
-                    reporteGeneral.lineaGestionVsDerivacion = lineasGestionDerivacion.toViewLineaGestionVsDerivacion();
-                    reporteGeneral.ProgresoGeneral = pieGestionAsignados.toViewPie();
-                    reporteGeneral.pieContactabilidad = pieContactabilidad.toViewPieLista();
-                    reporteGeneral.etiquetas = etiquetaDesembolsoMonto.toViewEtiquetas();
+                    var reportesAsync = await _repositoryReportsAsync.GetReportesAsync(idUsuario, anio, mes);
+                    var reportesEtiquetas = await _repositoryReports.GetReportesEtiquetasMetas(anio,mes);
+                    reporteGeneral.lineaGestionVsDerivacion = reportesAsync.linea.toViewLineaGestionVsDerivacion();
+                    reporteGeneral.ProgresoGeneral = reportesAsync.pie.toViewPie();
+                    reporteGeneral.pieContactabilidad = reportesAsync.pie2.toViewPieLista();
+                    reporteGeneral.etiquetas = new List<ViewEtiquetas>();
+                    reporteGeneral.etiquetas.AddRange(reportesAsync.etiquetas.toViewEtiquetas());
+                    reporteGeneral.etiquetas.AddRange(reportesEtiquetas.toViewEtiquetas());
                     return (true, "Reportes obtenidos correctamente", reporteGeneral);
                 }
                 else

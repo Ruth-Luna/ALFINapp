@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace ALFINapp.API.Models
 {
     public class ViewReportesGeneral
@@ -23,6 +18,13 @@ namespace ALFINapp.API.Models
         public List<DerivacionesFecha>? NumDerivacionesXFecha { get; set; }
         public List<DerivacionesFecha>? NumDesembolsosXFecha { get; set; }
         public List<ViewReporteBarGeneral>? top5asesores { get; set; }
+        public bool? filtro_por_fechas { get; set; } = false;
+        public FechaDelFiltro? fecha_filtro { get; set; } = new FechaDelFiltro();
+    }
+    public class FechaDelFiltro
+    {
+        public int? mes { get; set; } = null;
+        public int? anio { get; set; } = null;
     }
     public class DerivacionesFecha
     {
@@ -72,10 +74,23 @@ namespace ALFINapp.API.Models
         public int? contador_desembolsado { get; set; }
         public decimal? importe_desembolsado { get; set; }
     }
+    public class ViewReporteTablaMeses
+    {
+        public string? periodo { get; set; } = string.Empty;
+        public int? total_asignados { get; set; } = 0;
+        public int? total_gestionados { get; set; } = 0;
+        public int? total_desembolsados { get; set; } = 0;
+        public decimal? porcentaje_derivados { get; set; } = 0;
+        public decimal? porcentaje_desembolsados { get; set; } = 0;
+        public decimal? porcentaje_no_derivado { get; set; } = 0;
+    }
     public class ViewEtiquetas
     {
         public string? nombreEtiqueta { get; set; } = string.Empty;
+        public string? nombrePorcentaje { get; set; } = string.Empty;
+        public string? nombreCategoria { get; set; } = string.Empty;
         public int cantidadEtiqueta { get; set; } = 0;
         public decimal importeEtiquetas { get; set; } = 0;
+        public decimal porcentajeEtiqueta { get; set; } = 0;
     }
 }

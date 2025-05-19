@@ -25,7 +25,7 @@ function cargarReportesSupervisor() {
     var options = {
         series: [
             { name: 'Sin Gestionar', data: totalSinGestionar },
-            { name: 'Gestionado (Máx 120)', data: totalGestionadoTrunc },
+            { name: 'Gestionado', data: totalGestionadoTrunc },
             { name: 'Derivaciones', data: totalDerivaciones },
             { name: 'Desembolsos', data: totalDesembolsos }
         ],
@@ -77,73 +77,92 @@ function cargarReportesSupervisor() {
 function cargarReportesDerivacionesSupervisor() {
     var reportesElement = document.getElementById('reportes-supervisor');
     var reportesData = JSON.parse(reportesElement.getAttribute("data-json"));
-
+    var totalDerivado = reportesData["totalDerivado"];
+    var totalGestionado = reportesData["totalGestionado"];
+    
+    var sinDerivar = totalGestionado - totalDerivado;
+    var series = [
+        totalDerivado,
+        sinDerivar
+    ];
+    var labels = [
+        "Derivaciones",
+        "Sin Derivar"
+    ];
+    
     var options = {
-        series: [
-            reportesData["totalDerivado"],
-            reportesData["totalDesembolsado"],
-            reportesData["totalGestionado"]
-        ],
+        series: series,
         chart: {
-            type: 'pie',
+            type: 'donut',
             height: 350
         },
-        labels: [
-            "Derivaciones",
-            "Desembolsos",
-            "Gestionado"
-        ],
-        colors: ["#00E396", "#FF4560", "#008FFB"],
+        labels: labels,
+        colors: ["#008FFB", "#00E396"],
         legend: {
             position: 'bottom'
         },
-        annotations: {
-            position: 'front',
-            texts: [
-                {
-                    x: '10%', 
-                    y: '10%', 
-                    text: `Asignaciones: ${reportesData["totalAsignaciones"]}`,
-                    textAnchor: 'middle',
-                    style: { color: "#333", fontSize: '12px', fontWeight: 'bold' }
-                },
-                {
-                    x: '10%', 
-                    y: '15%', 
-                    text: `Sin Gestionar: ${reportesData["totalSinGestionar"]}`,
-                    textAnchor: 'middle',
-                    style: { color: "#333", fontSize: '12px', fontWeight: 'bold' }
+        plotOptions: {
+            pie: {
+                donut: {
+                    size: '65%',
+                    labels: {
+                        show: true,
+                        total: {
+                            show: true,
+                            showAlways: true,
+                            label: 'Total Gestionado',
+                            formatter: function() { return totalGestionado; }
+                        }
+                    }
                 }
-            ]
+            }
+        },
+        title: {
+            text: 'Derivaciones vs Gestionado no Derivado',
+            align: 'center'
         }
     };
-
     var chart = new ApexCharts(document.querySelector("#div-asignaciones-general-supervisor"), options);
     chart.render();
 }
-
-
 
 function cargarGraficoDerivacionesVsDesembolsos() {
     var reportesElement = document.getElementById('reportes-supervisor');
     var reportesData = JSON.parse(reportesElement.getAttribute("data-json"));
 
+    var totalDerivado = reportesData["totalDerivado"];
+    var totalDesembolsado = reportesData["totalDesembolsado"];
+
     var options = {
-        series: [
-            reportesData["totalDerivado"],
-            reportesData["totalDesembolsado"]
-        ],
+        series: [totalDerivado, totalDesembolsado],
         chart: {
-            type: 'pie',
+            type: 'donut',
             height: 350
         },
-        labels: [
-            "Total Derivaciones",
-            "Total Desembolsos"
-        ],
+        labels: ["Total Derivaciones", "Total Desembolsos"],
         colors: ["#008FFB", "#00E396"],
         legend: {
             position: 'bottom'
+        },
+        plotOptions: {
+            pie: {
+                donut: {
+                    size: '65%',
+                    labels: {
+                        show: true,
+                        total: {
+                            show: true,
+                            showAlways: true,
+                            label: 'Total Derivaciones',
+                            formatter: function() { return totalDerivado; }
+                        }
+                    }
+                }
+            }
+        },
+        title: {
+            text: 'Derivaciones vs Desembolsos',
+            align: 'center'
         }
     };
 
@@ -151,90 +170,64 @@ function cargarGraficoDerivacionesVsDesembolsos() {
     chart.render();
 }
 
-function cargarDerivacionesSupervisorFecha() {
+function cargarMovimientosPorFechaSupervisor() {
     var reportesAsesor = document.getElementById('reportes-supervisor');
     var reportesData = JSON.parse(reportesAsesor.getAttribute("data-json"));
     var derivacionesFecha = reportesData["derivacionesFecha"];
+    var desembolsosFecha = reportesData["desembolsosFecha"];
 
-    var fechas = [];
-    var contador = [];
+    console.log(derivacionesFecha);
+    console.log(desembolsosFecha);
 
+    // Crear un mapa combinado de todas las fechas
+    var fechasMap = {};
+    
+    // Procesamos derivaciones
     derivacionesFecha.forEach(item => {
-        fechas.push(item["fecha"]);
-        contador.push(item["contador"]);
+        if (!fechasMap[item["fecha"]]) {
+            fechasMap[item["fecha"]] = { derivaciones: 0, desembolsos: 0 };
+        }
+        fechasMap[item["fecha"]].derivaciones = item["contador"];
     });
+    
+    // Procesamos desembolsos
+    desembolsosFecha.forEach(item => {
+        if (!fechasMap[item["fecha"]]) {
+            fechasMap[item["fecha"]] = { derivaciones: 0, desembolsos: 0 };
+        }
+        fechasMap[item["fecha"]].desembolsos = item["contador"];
+    });
+    
+    // Convertir el mapa a arrays ordenados por fecha
+    
+    var fechas = Object.keys(fechasMap);
+
+    var derivacionesData = fechas.map(fecha => fechasMap[fecha].derivaciones);
+    var desembolsosData = fechas.map(fecha => fechasMap[fecha].desembolsos);
 
     var options = {
         series: [
             {
                 name: 'Derivaciones',
-                data: contador
-            }
-        ],
-        chart: {
-            height: 350,
-            type: 'area'  
-        },
-        stroke: {
-            curve: 'smooth'
-        },
-        colors: ['#00E396'], 
-        xaxis: { 
-            categories: fechas,
-            title: {
-                text: 'Fechas'
-            }
-        },
-        yaxis: {
-            title: {
-                text: 'Número de Derivaciones'
-            }
-        },
-        dataLabels: { enabled: false },
-        legend: { position: 'top' },
-        title: {
-            text: 'Derivaciones por Fecha',
-            align: 'center'
-        },
-        tooltip: {
-            x: {
-                format: 'dd/MM/yyyy'
-            }
-        }
-    };
-
-    var chart = new ApexCharts(document.querySelector("#div-derivaciones-por-fecha-supervisor"), options);
-    chart.render();
-}
-
-function cargarDesembolsosSupervisorFecha() {
-    var reportesAsesor = document.getElementById('reportes-supervisor');
-    var reportesData = JSON.parse(reportesAsesor.getAttribute("data-json"));
-    var desembolsosFecha = reportesData["desembolsosFecha"];
-
-    var fechas = [];
-    var contador = [];
-
-    desembolsosFecha.forEach(item => {
-        fechas.push(item["fecha"]);
-        contador.push(item["contador"]);
-    });
-
-    var options = {
-        series: [
+                data: derivacionesData
+            },
             {
                 name: 'Desembolsos',
-                data: contador
+                data: desembolsosData
             }
         ],
         chart: {
             height: 350,
-            type: 'area'  
+            type: 'area',
+            toolbar: {
+                show: true
+            }
         },
         stroke: {
-            curve: 'smooth'
+            curve: 'smooth',
+            width: 2
         },
-        colors: ['#d64339'], 
+        colors: ['#00E396', '#d64339'], 
         xaxis: { 
             categories: fechas,
             title: {
@@ -243,22 +236,32 @@ function cargarDesembolsosSupervisorFecha() {
         },
         yaxis: {
             title: {
-                text: 'Número de Derivaciones'
+                text: 'Cantidad'
             }
         },
         dataLabels: { enabled: false },
         legend: { position: 'top' },
         title: {
-            text: 'Desembolsos por Fecha',
+            text: 'Derivaciones y Desembolsos por Fecha',
             align: 'center'
         },
         tooltip: {
+            shared: true,
+            intersect: false,
             x: {
                 format: 'dd/MM/yyyy'
+            }
+        },
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shadeIntensity: 1,
+                opacityFrom: 0.7,
+                opacityTo: 0.3
             }
         }
     };
 
-    var chart = new ApexCharts(document.querySelector("#div-desembolsos-por-fecha-supervisor"), options);
+    var chart = new ApexCharts(document.querySelector("#div-movimientos-por-fecha-supervisor"), options);
     chart.render();
 }
