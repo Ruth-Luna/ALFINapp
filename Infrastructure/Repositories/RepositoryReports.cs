@@ -190,51 +190,6 @@ namespace ALFINapp.Infrastructure.Repositories
                 return new DetallesReportesSupervisorDTO();
             }
         }
-
-        public async Task<DetallesReportesDerivacionesDTO> GetReportesGralAsesor(int idAsesor)
-        {
-            try
-            {
-                var getAsesor = await _context.usuarios
-                    .Where(x => x.IdUsuario == idAsesor)
-                    .FirstOrDefaultAsync();
-                if (getAsesor == null)
-                {
-                    Console.WriteLine("Asesor no encontrado");
-                    return new DetallesReportesDerivacionesDTO();
-                }
-                var getDerivacionesGral = await _context.derivaciones_asesores
-                    .Where(x => x.DniAsesor == getAsesor.Dni
-                        && x.FechaDerivacion.Year == DateTime.Now.Year
-                        && x.FechaDerivacion.Month == DateTime.Now.Month)
-                    .ToListAsync();
-                var getGestionDetalles = await _context.GESTION_DETALLE
-                    .Where(x => x.DocAsesor == getAsesor.Dni
-                        && x.FechaGestion.Year == DateTime.Now.Year
-                        && x.FechaGestion.Month == DateTime.Now.Month)
-                    .GroupBy(x => x.DocCliente)
-                    .Select(g => g.OrderByDescending(x => x.IdFeedback).First())
-                    .ToListAsync();
-                var getDesembolsos = await _context.desembolsos
-                    .Where(x => x.DocAsesor == getAsesor.Dni
-                        && x.FechaDesembolsos.HasValue
-                        && x.FechaDesembolsos.Value.Year == DateTime.Now.Year
-                        && x.FechaDesembolsos.Value.Month == DateTime.Now.Month
-                        && x.Sucursal != null)
-                    .ToListAsync();
-                var detallesReporte = new DetallesReportesDerivacionesDTO();
-                detallesReporte.DerivacionesGral = getDerivacionesGral;
-                detallesReporte.GestionDetalles = getGestionDetalles;
-                detallesReporte.Desembolsos = getDesembolsos;
-                return detallesReporte;
-            }
-            catch (System.Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return new DetallesReportesDerivacionesDTO();
-            }
-        }
-
         public async Task<DetallesReportesLineaGestionVsDerivacionDTO> LineaGestionVsDerivacionDiaria(int idUsuario)
         {
             try
@@ -259,51 +214,6 @@ namespace ALFINapp.Infrastructure.Repositories
                 return new DetallesReportesLineaGestionVsDerivacionDTO();
             }
         }
-
-        public async Task<DetallesReportesGpieDTO> GetReportesGpieGestionadosVsAsignados()
-        {
-            try
-            {
-                var getData = await _context.reports_g_pie_gestion_asignados
-                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_PORCENTAJE_GESTIONADOS_SOBRE_ASIGNADOS")
-                    .ToListAsync();
-                if (getData == null || getData.Count == 0)
-                {
-                    Console.WriteLine("No se encontraron datos para la consulta.");
-                    return new DetallesReportesGpieDTO();
-                }
-                var convertDto = new DetallesReportesGpieDTO(getData.FirstOrDefault(), null);
-                return convertDto;
-            }
-            catch (System.Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return new DetallesReportesGpieDTO();
-            }
-        }
-
-        public async Task<DetallesReportesGpieDTO> GetReportesGpieDerivadosVsDesembolsados()
-        {
-            try
-            {
-                var getData = await _context.reports_g_pie_derivados_desembolsados
-                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_PORCENTAJE_GESTIONADO_DERIVADO_DESEMBOLSADO")
-                    .ToListAsync();
-                if (getData == null || getData.Count == 0)
-                {
-                    Console.WriteLine("No se encontraron datos para la consulta.");
-                    return new DetallesReportesGpieDTO();
-                }
-                var convertDto = new DetallesReportesGpieDTO(null, getData.FirstOrDefault());
-                return convertDto;
-            }
-            catch (System.Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return new DetallesReportesGpieDTO();
-            }
-        }
-
         public async Task<DetallesReportesGpieDTO> GetReportesGpieGeneral(int idUsuario)
         {
             try
@@ -335,7 +245,6 @@ namespace ALFINapp.Infrastructure.Repositories
                 return new DetallesReportesGpieDTO();
             }
         }
-
         public async Task<DetallesReportesGpieDTO> GetReportesGpieGeneralFecha(DateOnly fecha, int idUsuario)
         {
             try
@@ -372,29 +281,6 @@ namespace ALFINapp.Infrastructure.Repositories
                 return new DetallesReportesGpieDTO();
             }
         }
-
-        public async Task<DetallesReportesBarDTO> GetReportesBarTop5General(int idUsuario)
-        {
-            try
-            {
-                var getData = await _context.reports_bar_top_5_derivaciones
-                    .FromSqlRaw("EXEC SP_REPORTES_BAR_TOP_5_DERIVACIONES @id_usuario", new SqlParameter("@id_usuario", idUsuario))
-                    .AsNoTracking()
-                    .ToListAsync();
-                if (getData == null || getData.Count == 0)
-                {
-                    Console.WriteLine("No se encontraron datos para la consulta.");
-                    return new DetallesReportesBarDTO();
-                }
-                var convertDto = new DetallesReportesBarDTO(getData);
-                return convertDto;
-            }
-            catch (System.Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return new DetallesReportesBarDTO();
-            }
-        }
         public async Task<DetallesReportesGpieDTO> GetReportesPieContactabilidadCliente(int idUsuario)
         {
             try
@@ -417,31 +303,6 @@ namespace ALFINapp.Infrastructure.Repositories
                 return new DetallesReportesGpieDTO();
             }
         }
-
-        public async Task<DetallesReportesTablasDTO> GetReportesTablaGestionDerivadoDesembolsoImporte()
-        {
-            try
-            {
-                var getData = await _context.reports_tabla_gestionado_derivado_desembolsado_importe
-                    .FromSqlRaw("EXEC SP_REPORTES_TABLA_GESTIONADO_DERIVADO_DESEMBOLSADO_IMPORTE")
-                    .AsNoTracking()
-                    .ToListAsync();
-                if (getData == null || getData.Count == 0)
-                {
-                    Console.WriteLine("No se encontraron datos para la consulta.");
-                    return new DetallesReportesTablasDTO();
-                }
-                var convertDto = new DetallesReportesTablasDTO(getData);
-                return convertDto;
-            }
-            catch (System.Exception)
-            {
-                Console.WriteLine("Error al obtener los datos de la tabla de gestión, derivación y desembolso por importe.");
-                return new DetallesReportesTablasDTO();
-            }
-
-        }
-
         public async Task<DetallesReportesEtiquetasDTO> GetReportesEtiquetasDesembolsosNImportes(int idUsuario)
         {
             try
@@ -453,6 +314,38 @@ namespace ALFINapp.Infrastructure.Repositories
                 };
                 var getData = await _context.reports_desembolsos_n_monto
                     .FromSqlRaw("EXEC SP_Reportes_desembolsos_n_y_monto @id_usuario, @doc_busqueda", parameters)
+                    .AsNoTracking()
+                    .ToListAsync();
+                if (getData == null || getData.Count == 0)
+                {
+                    Console.WriteLine("No se encontraron datos para la consulta.");
+                    return new DetallesReportesEtiquetasDTO();
+                }
+                var firstData = getData.FirstOrDefault();
+                if (firstData == null)
+                {
+                    Console.WriteLine("No se encontraron datos para la consulta.");
+                    return new DetallesReportesEtiquetasDTO();
+                }
+                var convertDto = new DetallesReportesEtiquetasDTO(firstData);
+                return convertDto;
+            }
+            catch (System.Exception)
+            {
+                Console.WriteLine("Error al obtener los datos de etiquetas de desembolsos por importe.");
+                return new DetallesReportesEtiquetasDTO();
+            }
+        }
+        public async Task<DetallesReportesEtiquetasDTO> GetReportesEtiquetasMetas(int idUsuario)
+        {
+            try
+            {
+                var parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@id_usuario", idUsuario),
+                };
+                var getData = await _context.reports_desembolsos_n_monto
+                    .FromSqlRaw("EXEC SP_Reportes_etiquetas_metas @id_usuario", parameters)
                     .AsNoTracking()
                     .ToListAsync();
                 if (getData == null || getData.Count == 0)
@@ -497,7 +390,6 @@ namespace ALFINapp.Infrastructure.Repositories
                 return new DetallesReportesTablasDTO();
             }
         }
-
         public async Task<DetallesReportesGpieDTO> GetReportesByDate(int idUsuario, DateTime? fecha = null)
         {
             try
@@ -526,7 +418,6 @@ namespace ALFINapp.Infrastructure.Repositories
                 return new DetallesReportesGpieDTO();
             }
         }
-
         public async Task<DetallesReportesGpieDTO> GetReportesByActualMonth(int idUsuario)
         {
             try
