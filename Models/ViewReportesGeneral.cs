@@ -18,6 +18,13 @@ namespace ALFINapp.API.Models
         public List<DerivacionesFecha>? NumDerivacionesXFecha { get; set; }
         public List<DerivacionesFecha>? NumDesembolsosXFecha { get; set; }
         public List<ViewReporteBarGeneral>? top5asesores { get; set; }
+        public bool? filtro_por_fechas { get; set; } = false;
+        public FechaDelFiltro? fecha_filtro { get; set; } = new FechaDelFiltro();
+    }
+    public class FechaDelFiltro
+    {
+        public int? mes { get; set; } = null;
+        public int? anio { get; set; } = null;
     }
     public class DerivacionesFecha
     {

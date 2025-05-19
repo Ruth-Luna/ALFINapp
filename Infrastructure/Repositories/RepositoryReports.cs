@@ -14,7 +14,10 @@ namespace ALFINapp.Infrastructure.Repositories
         {
             _context = context;
         }
-        public async Task<DetallesReportesAsesorDTO> GetReportesAsesor(int idUsuario)
+        public async Task<DetallesReportesAsesorDTO> GetReportesAsesor(
+            int idUsuario,
+            int? anio = null,
+            int? mes = null)
         {
             try
             {
@@ -26,24 +29,31 @@ namespace ALFINapp.Infrastructure.Repositories
                     Console.WriteLine("Usuario no encontrado");
                     return new DetallesReportesAsesorDTO();
                 }
+                var parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@DniAsesor", getUsuario.Dni),
+                    new SqlParameter("@mes", mes ?? (object)DBNull.Value),
+                    new SqlParameter("@anio", anio ?? (object)DBNull.Value)
+                };
+
                 var getAllAsignaciones = await _context.clientes_asignados
                     .FromSqlRaw(
-                        "EXEC SP_Reportes_Asesor_asignaciones @DniAsesor",
-                        new SqlParameter("@DniAsesor", getUsuario.Dni))
+                        "EXEC SP_Reportes_Asesor_asignaciones @DniAsesor, @mes, @anio",
+                        parameters)
                     .ToListAsync();
 
                 var getAllIds = getAllAsignaciones.Select(x => x.IdAsignacion).ToHashSet();
                 var getAllDerivaciones = await _context.derivaciones_asesores
                     .FromSqlRaw(
-                        "EXEC SP_Reportes_Asesor_derivacion @DniAsesor",
-                        new SqlParameter("@DniAsesor", getUsuario.Dni))
+                        "EXEC SP_Reportes_Asesor_derivacion @DniAsesor, @mes, @anio",
+                        parameters)
                     .AsNoTracking()
                     .ToListAsync();
 
                 var getAllGestionDetalle = await _context.GESTION_DETALLE
                     .FromSqlRaw(
-                        "EXEC SP_Reportes_Asesor_gestion @DniAsesor",
-                        new SqlParameter("@DniAsesor", getUsuario.Dni))
+                        "EXEC SP_Reportes_Asesor_gestion @DniAsesor, @mes, @anio",
+                        parameters)
                     .AsNoTracking()
                     .ToListAsync();
 
@@ -55,8 +65,8 @@ namespace ALFINapp.Infrastructure.Repositories
 
                 var getAllDesembolsos = await _context.desembolsos
                     .FromSqlRaw(
-                        "EXEC SP_Reportes_Asesor_desembolsos @DniAsesor",
-                        new SqlParameter("@DniAsesor", getUsuario.Dni))
+                        "EXEC SP_Reportes_Asesor_desembolsos @DniAsesor, @mes, @anio",
+                        parameters)
                     .AsNoTracking()
                     .ToListAsync();
 
@@ -74,7 +84,10 @@ namespace ALFINapp.Infrastructure.Repositories
                 return new DetallesReportesAsesorDTO();
             }
         }
-        public async Task<DetallesReportesSupervisorDTO> GetReportesEspecificoSupervisor(int idUsuario)
+        public async Task<DetallesReportesSupervisorDTO> GetReportesEspecificoSupervisor(
+            int idUsuario
+            , int? anio = null
+            , int? mes = null)
         {
             try
             {
@@ -88,7 +101,12 @@ namespace ALFINapp.Infrastructure.Repositories
                 }
                 var year = DateTime.Now.Year;
                 var month = DateTime.Now.Month;
-
+                if (anio != null && mes != null)
+                {
+                    year = anio.Value;
+                    month = mes.Value;
+                }
+                
                 var getAsignaciones = await _context.clientes_asignados
                     .AsNoTracking()
                     .Where(x => x.IdUsuarioS == idUsuario
@@ -377,12 +395,21 @@ namespace ALFINapp.Infrastructure.Repositories
             }
         }
 
-        public async Task<DetallesReportesEtiquetasDTO> GetReportesEtiquetasMetas()
+        public async Task<DetallesReportesEtiquetasDTO> GetReportesEtiquetasMetas(
+            int? anio = null,
+            int? mes = null
+        )
         {
             try
             {
+                var parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@mes", mes ?? (object)DBNull.Value),
+                    new SqlParameter("@anio", anio ?? (object)DBNull.Value)
+                };
                 var getData = await _context.reports_etiqueta_meta_importe
-                    .FromSqlRaw("EXEC SP_Reportes_etiqueta_meta_importe")
+                    .FromSqlRaw("EXEC SP_Reportes_etiqueta_meta_importe @mes, @anio",
+                        parameters)
                     .AsNoTracking()
                     .ToListAsync();
                 if (getData == null || getData.Count == 0)

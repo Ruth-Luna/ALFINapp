@@ -25,7 +25,7 @@ function cargarReportesSupervisor() {
     var options = {
         series: [
             { name: 'Sin Gestionar', data: totalSinGestionar },
-            { name: 'Gestionado (Máx 120)', data: totalGestionadoTrunc },
+            { name: 'Gestionado', data: totalGestionadoTrunc },
             { name: 'Derivaciones', data: totalDerivaciones },
             { name: 'Desembolsos', data: totalDesembolsos }
         ],
@@ -77,52 +77,38 @@ function cargarReportesSupervisor() {
 function cargarReportesDerivacionesSupervisor() {
     var reportesElement = document.getElementById('reportes-supervisor');
     var reportesData = JSON.parse(reportesElement.getAttribute("data-json"));
-
+    var totalDerivado = reportesData["totalDerivado"];
+    var totalGestionado = reportesData["totalGestionado"];
+    
+    var sinDerivar = totalGestionado - totalDerivado;
+    var series = [
+        totalDerivado,
+        sinDerivar
+    ];
+    var labels = [
+        "Derivaciones",
+        "Sin Derivar"
+    ];
+    var totalGeneral = totalGestionado;
     var options = {
-        series: [
-            reportesData["totalDerivado"],
-            reportesData["totalDesembolsado"],
-            reportesData["totalGestionado"]
-        ],
+        series: series,
         chart: {
             type: 'pie',
             height: 350
         },
-        labels: [
-            "Derivaciones",
-            "Desembolsos",
-            "Gestionado"
-        ],
-        colors: ["#00E396", "#FF4560", "#008FFB"],
+        labels: labels,
+        colors: ["#008FFB", "#00E396"],
         legend: {
             position: 'bottom'
         },
-        annotations: {
-            position: 'front',
-            texts: [
-                {
-                    x: '10%', 
-                    y: '10%', 
-                    text: `Asignaciones: ${reportesData["totalAsignaciones"]}`,
-                    textAnchor: 'middle',
-                    style: { color: "#333", fontSize: '12px', fontWeight: 'bold' }
-                },
-                {
-                    x: '10%', 
-                    y: '15%', 
-                    text: `Sin Gestionar: ${reportesData["totalSinGestionar"]}`,
-                    textAnchor: 'middle',
-                    style: { color: "#333", fontSize: '12px', fontWeight: 'bold' }
-                }
-            ]
+        title: {
+            text: 'Derivaciones vs Gestionado no Derivado',
+            align: 'center'
         }
     };
-
     var chart = new ApexCharts(document.querySelector("#div-asignaciones-general-supervisor"), options);
     chart.render();
 }
-
-
 
 function cargarGraficoDerivacionesVsDesembolsos() {
     var reportesElement = document.getElementById('reportes-supervisor');

@@ -3,6 +3,7 @@
 
 @{
     var rol = (int?)ViewData["RolUser"];
+    var filtroFecha = (bool?)Model.filtro_por_fechas;
     var asesores = Model.Asesores as List<ALFINapp.API.Models.ViewUsuario>;
     var supervisores = Model.Supervisores as List<ALFINapp.API.Models.ViewUsuario>;
     var idUsuario = (int?)ViewData["UsuarioId"];
@@ -17,7 +18,6 @@
 <!-- :::: :: :::: -->
 <div class="container-fluid">
     <div class="row g-3">
-
         <div class="col-12">
             <div class="ba-card h-100">
                 <div class="ba-card-header">
@@ -31,12 +31,7 @@
                         <div class="col-12 col-md-4">
                             <div class="card-body">
                                 <div class="row g-3">
-                                    <div class="col-6">
-                                        <label for="lista-fechas" class="form-label">Filtro Por Fechas</label>
-                                        <input type="date" class="form-control" name="lista-fechas" id="lista-fechas"
-                                            onchange="cargarReportePorFechas(this.value)" />
-                                    </div>
-                                    <div class="col-6">
+                                    <div class="col-12">
                                         <label for="lista-mes" class="form-label">Filtro por Mes</label>
                                         <input id="mes-selector" class="custom-month-picker form-control"
                                             onchange="cargarReportePorMeses(this.value)">
@@ -112,10 +107,7 @@
         <div class="col-12 col-md-6 d-none">
             <div id="div-reporteria-fechas"></div>
         </div>
-        <div class="col-12 col-md-6 d-none">
-            <div id="div-reporteria-fechas-por-meses"></div>
-        </div>
-
+        
         <div class="col-12" id="div-derivaciones" style="display: none;">
             <div class="ba-card h-100">
                 <div class="ba-card-header">
@@ -155,7 +147,7 @@
                 <div class="ba-card-header">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
-                            <span>REPORTE DE CONTACTABILIDAD</span>
+                            <span>CONTACTABILIDAD</span>
                         </h5>
                     </div>
                 </div>
@@ -187,7 +179,7 @@
                     <div class="ba-card-header">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
-                                <span>TOP 5 DE DERIVACIONES</span>
+                                <span>TOP 5 DERIVACIONES DE ASESORES</span>
                             </h5>
                         </div>
                     </div>
@@ -216,7 +208,9 @@
                 </div>
             </div>
         }
-
+        <div class="col-12 col-md-12 d-none">
+            <div id="div-reporteria-fechas-por-meses"></div>
+        </div>
     </div>
 
     <hr />
@@ -326,9 +320,10 @@
 
 <!-- :::: :: :::: -->
 
-
+<div id="filtro-por-fecha" data='@(filtroFecha.HasValue? filtroFecha.Value.ToString() : "null")'></div>
 <div id="reportes-data" data-json='@Html.Raw(Json.Serialize(Model))'></div>
 <div id="rol-general" data='@(rol.HasValue? rol.Value.ToString() : "null")'></div>
+<div id="fecha-filtro" data='@(Model.fecha_filtro.anio)-@(Model.fecha_filtro.mes)'></div>
 
 @section Scripts {
     <script>

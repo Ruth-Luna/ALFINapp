@@ -10,6 +10,9 @@ namespace ALFINapp.Infrastructure.Repositories.Async.Interfaces
             DetallesReportesBarDTO bar,
             DetallesReportesTablasDTO tabla,
             DetallesReportesGpieDTO pie2,
-            DetallesReportesEtiquetasDTO etiquetas)> GetReportesAsync(int idUsuario);
+            DetallesReportesEtiquetasDTO etiquetas)> GetReportesAsync(
+                int idUsuario,
+                int? anio = null,
+                int? mes = null);
     }
 }

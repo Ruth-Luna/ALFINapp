@@ -5,9 +5,21 @@ async function cargarReporteAsesor(idUsuario) {
     var asesorElement = document.getElementById('div-derivaciones-asesor');
     asesorElement.innerHTML = ''; // Limpiar el contenido previo
     $(asesorElement).parent().addClass('d-none'); // Ocultar el elemento inicialmente
+
+    var fecha = document.getElementById('fecha-filtro').getAttribute('data');
+    year = fecha.split('-')[0];
+    month = fecha.split('-')[1];
+
+    if (year === undefined || year === null || year === '') {
+        year = null;
+    }
+    if (month === undefined || month === null || month === '') {
+        month = null;
+    }
+
     const baseUrl = window.location.origin;
     const userId = parseInt(idUsuario, 10);
-    const url = `${baseUrl}/Reportes/AsesorReportes?idAsesor=${encodeURIComponent(userId)}`;
+    const url = `${baseUrl}/Reportes/AsesorReportes?idAsesor=${encodeURIComponent(userId)}&anio=${encodeURIComponent(year)}&mes=${encodeURIComponent(month)}`;
     let loadingSwal = Swal.fire({
         title: 'Enviando...',
         text: 'Por favor, espera mientras se procesa la solicitud.',
@@ -38,7 +50,8 @@ async function cargarReporteAsesor(idUsuario) {
             $(asesorElement).parent().removeClass('d-none');
             cargarDerivacionesAsesorFecha();
             cargarGestionInforme();
-            cargarReporteGeneralAsesor();
+            cargarReporteAsignacionVsGestion();
+            cargarReporteDerivacionVsDesembolso();
         }
     } catch (error) {
         Swal.fire({
@@ -57,9 +70,19 @@ async function cargarReporteSupervisor(idUsuario) {
     var supervisorElement = document.getElementById('div-derivaciones-supervisor');
     supervisorElement.innerHTML = ''; // Limpiar el contenido previo
     $(supervisorElement).parent().addClass('d-none'); // Ocultar el elemento inicialmente
+
+    var fecha = document.getElementById('fecha-filtro').getAttribute('data');
+    year = fecha.split('-')[0];
+    month = fecha.split('-')[1];
+    if (year === undefined || year === null || year === '') {
+        year = null;
+    }
+    if (month === undefined || month === null || month === '') {
+        month = null;
+    }
     const baseUrl = window.location.origin;
     const userId = parseInt(idUsuario, 10);
-    const url = `${baseUrl}/Reportes/SupervisorReportes?idSupervisor=${encodeURIComponent(userId)}`;
+    const url = `${baseUrl}/Reportes/SupervisorReportes?idSupervisor=${encodeURIComponent(userId)}&anio=${encodeURIComponent(year)}&mes=${encodeURIComponent(month)}`;
     let loadingSwal = Swal.fire({
         title: 'Enviando...',
         text: 'Por favor, espera mientras se procesa la solicitud.',
@@ -145,7 +168,6 @@ async function cargarReportePorFechas(fecha) {
             const html = await response.text();
             fechaElement.innerHTML = html;
             $(fechaElement).parent().removeClass('d-none');
-            gpiederivacionesFecha();
             gpieasignacionFecha();
         }
     } catch (error) {
@@ -199,7 +221,6 @@ async function cargarReportePorMetas(fecha) {
             const html = await response.text();
             fechaElement.innerHTML = html;
             $(fechaElement).parent().removeClass('d-none');
-            gpiederivacionesFecha();
             gpieasignacionFecha();
         }
     } catch (error) {
@@ -218,14 +239,32 @@ async function cargarReportePorMeses(date) {
     if (date === undefined || date === null || date === '') {
         return;
     }
-    var fechaElement = document.getElementById('div-reporteria-fechas-por-meses');
-    fechaElement.innerHTML = '';
-    $(fechaElement).parent().addClass('d-none');
-
     let dateParts = date.split('-');
 
     let year = parseInt(dateParts[0], 10);
     let month = parseInt(dateParts[1], 10);
+
+    const baseUrl = window.location.origin;
+    const url = `${baseUrl}/Reportes/Reportes?anio=${encodeURIComponent(year)}&mes=${encodeURIComponent(month)}`;
+    let loadingSwal = Swal.fire({
+        title: 'Enviando...',
+        text: 'Por favor, espera mientras se procesa la solicitud de reporteria.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    window.location.href = url;
+}
+
+async function cargarReporteParcialMeses(mes, anio) {
+    
+    var fechaElement = document.getElementById('div-reporteria-fechas-por-meses');
+    fechaElement.innerHTML = '';
+    $(fechaElement).parent().addClass('d-none');
+
+    let year = parseInt(anio, 10);
+    let month = parseInt(mes, 10);
 
     const baseUrl = window.location.origin;
     const url = `${baseUrl}/Reportes/ReportesPorMes?mes=${encodeURIComponent(month)}&año=${encodeURIComponent(year)}`;

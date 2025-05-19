@@ -27,7 +27,7 @@ namespace ALFINapp.API.Controllers
         }
         [HttpGet]
         [PermissionAuthorization("Reportes", "Reportes")]
-        public async Task<IActionResult> Reportes()
+        public async Task<IActionResult> Reportes(int? anio = null, int? mes = null)
         {
             var rol = HttpContext.Session.GetInt32("RolUser");
             if (rol == null)
@@ -43,7 +43,7 @@ namespace ALFINapp.API.Controllers
                 return RedirectToAction("Index", "Home");
             }
             ViewData["UsuarioId"] = idUsuario.Value;
-            var reportesAdministrador = await _useCaseGetReportes.Execute(idUsuario.Value);
+            var reportesAdministrador = await _useCaseGetReportes.Execute(idUsuario.Value, anio, mes);
             if (!reportesAdministrador.IsSuccess)
             {
                 TempData["MessageError"] = reportesAdministrador.Message;
@@ -53,14 +53,20 @@ namespace ALFINapp.API.Controllers
         }
         
         [HttpGet]
-        public async Task<IActionResult> AsesorReportes(int idAsesor)
+        public async Task<IActionResult> AsesorReportes(
+            int idAsesor,
+            int? anio = null,
+            int? mes = null)
         {
             var rol = HttpContext.Session.GetInt32("RolUser");
             if (rol == null)
             {
                 return Json(new { success = false, message = "No se ha iniciado sesión" });
             }
-            var reportesAdministrador = await _useCaseGetReportesAsesor.Execute(idAsesor);
+            var reportesAdministrador = await _useCaseGetReportesAsesor.Execute(
+                idAsesor,
+                anio ?? DateTime.Now.Year,
+                mes ?? DateTime.Now.Month);
             if (!reportesAdministrador.IsSuccess)
             {
                 return Json(new { success = false, message = reportesAdministrador.Message });
@@ -68,14 +74,14 @@ namespace ALFINapp.API.Controllers
             return PartialView("_ReportesAsesor", reportesAdministrador.Data);
         }
         [HttpGet]
-        public async Task<IActionResult> SupervisorReportes(int idSupervisor)
+        public async Task<IActionResult> SupervisorReportes(int idSupervisor, int? anio = null, int? mes = null)
         {
             var rol = HttpContext.Session.GetInt32("RolUser");
             if (rol == null)
             {
                 return Json(new { success = false, message = "No se ha iniciado sesión" });
             }
-            var reportesAdministrador = await _useCaseGetReportesSupervisor.Execute(idSupervisor);
+            var reportesAdministrador = await _useCaseGetReportesSupervisor.Execute(idSupervisor, anio, mes);
             if (!reportesAdministrador.IsSuccess)
             {
                 return Json(new { success = false, message = reportesAdministrador.Message });

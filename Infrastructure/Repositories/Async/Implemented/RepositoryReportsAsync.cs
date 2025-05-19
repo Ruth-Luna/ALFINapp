@@ -21,7 +21,10 @@ namespace ALFINapp.Infrastructure.Repositories.Async.Implemented
             DetallesReportesBarDTO bar,
             DetallesReportesTablasDTO tabla,
             DetallesReportesGpieDTO pie2,
-            DetallesReportesEtiquetasDTO etiquetas)> GetReportesAsync(int idUsuario)
+            DetallesReportesEtiquetasDTO etiquetas)> GetReportesAsync(
+                int idUsuario,
+                int? anio = null,
+                int? mes = null)
         {
             try
             {
@@ -33,45 +36,59 @@ namespace ALFINapp.Infrastructure.Repositories.Async.Implemented
                 var context6 = await _dbContextFactory.CreateDbContextAsync();
                 var context7 = await _dbContextFactory.CreateDbContextAsync();
 
+                var paramdates = new SqlParameter[]
+                {
+                    new SqlParameter("@id_usuario", idUsuario),
+                    new SqlParameter("@mes", mes ?? (object)DBNull.Value),
+                    new SqlParameter("@anio", anio ?? (object)DBNull.Value)
+                };
+                var dates = new SqlParameter[]
+                {
+                    new SqlParameter("@mes", mes ?? (object)DBNull.Value),
+                    new SqlParameter("@anio", anio ?? (object)DBNull.Value)
+                };
+
                 var param = new SqlParameter("@id_usuario", idUsuario);
 
-                var parameters = new SqlParameter[]
+                var param4etq = new SqlParameter[]
                     {
                     new SqlParameter("@id_usuario", idUsuario),
                     new SqlParameter("@doc_busqueda", DBNull.Value),
+                    new SqlParameter("@mes", mes ?? (object)DBNull.Value),
+                    new SqlParameter("@anio", anio ?? (object)DBNull.Value)
                     };
                 var taskLinea = context1.reports_g_lineas_gestion_vs_derivacion_diaria
-                    .FromSqlRaw("EXEC SP_REPORTES_GLINEAS_GESTION_VS_DERIVACION_DIARIA @id_usuario", param)
+                    .FromSqlRaw("EXEC SP_REPORTES_GLINEAS_GESTION_VS_DERIVACION_DIARIA @id_usuario, @mes, @anio", paramdates)
                     .AsNoTracking()
                     .ToListAsync();
 
                 var taskPie1 = context2.reports_g_pie_derivados_desembolsados
-                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_PORCENTAJE_GESTIONADO_DERIVADO_DESEMBOLSADO @id_usuario", param)
+                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_PORCENTAJE_GESTIONADO_DERIVADO_DESEMBOLSADO @id_usuario, @mes, @anio", paramdates)
                     .AsNoTracking()
                     .ToListAsync();
 
                 var taskPie2 = context3.reports_g_pie_gestion_asignados
-                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_PORCENTAJE_GESTIONADOS_SOBRE_ASIGNADOS @id_usuario", param)
+                    .FromSqlRaw("EXEC SP_REPORTES_GPIE_PORCENTAJE_GESTIONADOS_SOBRE_ASIGNADOS @id_usuario, @mes, @anio", paramdates)
                     .AsNoTracking()
                     .ToListAsync();
 
                 var taskBar1 = context4.reports_bar_top_5_derivaciones
-                    .FromSqlRaw("EXEC SP_REPORTES_BAR_TOP_5_DERIVACIONES @id_usuario", new SqlParameter("@id_usuario", idUsuario))
+                    .FromSqlRaw("EXEC SP_REPORTES_BAR_TOP_5_DERIVACIONES @id_usuario, @mes, @anio", paramdates)
                     .AsNoTracking()
                     .ToListAsync();
 
                 var taskTabla = context5.reports_tabla_gestionado_derivado_desembolsado_importe
-                    .FromSqlRaw("EXEC SP_REPORTES_TABLA_GESTIONADO_DERIVADO_DESEMBOLSADO_IMPORTE")
+                    .FromSqlRaw("EXEC SP_Reportes_TABLA_GESTIONADO_DERIVADO_DESEMBOLSADO_IMPORTE @mes, @anio", dates)
                     .AsNoTracking()
                     .ToListAsync();
 
                 var taskPie3 = context6.reports_pie_contactabilidad_cliente
-                    .FromSqlRaw("EXEC SP_REPORTES_PIE_CONTACTABILIDAD_CLIENTE @id_usuario", new SqlParameter("@id_usuario", idUsuario))
+                    .FromSqlRaw("EXEC SP_REPORTES_PIE_CONTACTABILIDAD_CLIENTE @id_usuario, @mes, @anio", paramdates)
                     .AsNoTracking()
                     .ToListAsync();
 
                 var taskEtiquetas = context7.reports_desembolsos_n_monto
-                    .FromSqlRaw("EXEC SP_Reportes_desembolsos_n_y_monto @id_usuario, @doc_busqueda", parameters)
+                    .FromSqlRaw("EXEC SP_Reportes_desembolsos_n_y_monto @id_usuario, @doc_busqueda, @mes, @anio", param4etq)
                     .AsNoTracking()
                     .ToListAsync();
 

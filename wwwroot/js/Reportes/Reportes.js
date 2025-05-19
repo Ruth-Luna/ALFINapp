@@ -5,7 +5,13 @@ document.addEventListener('DOMContentLoaded', function () {
     var idrol = roldiv.getAttribute("data");
     idrol = idrol === "null" ? null : parseInt(idrol);
     reportesData = JSON.parse(reportesElement.getAttribute("data-json"));
-    console.log(idrol);
+
+    var filtroFecha = document.getElementById("filtro-por-fecha").getAttribute("data");
+    filtroFecha = filtroFecha === "null" ? null : filtroFecha;
+    console.log(filtroFecha);
+
+    var fechafil = document.getElementById("filtro-por-fecha").getAttribute("data");
+    console.log(filtroFecha);
     if (idrol === 1 || idrol === 4 || idrol === 2) {
         cargarDerivacionesGenerales();
         cargarProgresoAsignacion();
@@ -24,6 +30,13 @@ document.addEventListener('DOMContentLoaded', function () {
             text: 'No tienes permisos para ver los reportes.',
             confirmButtonText: 'Aceptar'
         });
+    }
+    if (filtroFecha === 'True') {
+        console.log("filtro por fecha");
+        var fechafil = document.getElementById("fecha-filtro").getAttribute("data");
+        year = fechafil.split("-")[0];
+        month = fechafil.split("-")[1];
+        cargarReporteParcialMeses(parseInt(month, 10), parseInt(year, 10));
     }
 });
 
@@ -53,10 +66,11 @@ function cargarDerivacionesGenerales() {
     }
 
     // Obtener la fecha actual
-    var today = new Date();
-    var currentDateStr = formatDate(today);
+    var fechasDisponibles = lineaGestionVsDerivacion.map(item => new Date(item["fecha"]));
+    fechasDisponibles.sort((a, b) => b - a); // Orden descendente
+    var today = fechasDisponibles[0]; // Última fecha registrada
 
-    // Obtener el mes y año actuales
+    // Usar la fecha de referencia para determinar mes y año
     var year = today.getFullYear();
     var month = today.getMonth();
 
@@ -77,6 +91,7 @@ function cargarDerivacionesGenerales() {
         var formattedFecha = formatDate(item["fecha"]);
         derivacionMap[formattedFecha] = item["derivaciones"] || 0;
         gestionMap[formattedFecha] = item["gestiones"] || 0;
+        console.log(item["fecha"]);
     });
 
     // Generar la data para todos los días, usando 0 si no hay data y null para días futuros

@@ -22,7 +22,10 @@ namespace ALFINapp.Application.UseCases.Reports
             _repositoryUsuarios = repositoryUsuarios;
             _repositoryTipificaciones = repositoryTipificaciones;
         }
-        public async Task<(bool IsSuccess, string Message, ViewReportesAsesores? Data)> Execute(int idUsuario)
+        public async Task<(bool IsSuccess, string Message, ViewReportesAsesores? Data)> Execute(
+            int idUsuario,
+            int anio,
+            int mes)
         {
             try
             {
@@ -31,7 +34,7 @@ namespace ALFINapp.Application.UseCases.Reports
                 {
                     return (false, "Usuario no encontrado", null);
                 }
-                var reportes = await _repositoryReports.GetReportesAsesor(idUsuario);
+                var reportes = await _repositoryReports.GetReportesAsesor(idUsuario, anio, mes);
                 var viewReportes = new ViewReportesAsesores();
                 var detallesUsuarioDTO = new DetallesUsuarioDTO(usuario);
                 viewReportes.asesor = detallesUsuarioDTO.ToView();

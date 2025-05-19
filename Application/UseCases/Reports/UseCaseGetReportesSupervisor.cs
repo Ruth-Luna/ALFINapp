@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.API.Models;
 using ALFINapp.Application.DTOs;
 using ALFINapp.Application.Interfaces.Reports;
 using ALFINapp.Domain.Interfaces;
-using ALFINapp.Infrastructure.Persistence.Models;
 
 namespace ALFINapp.Application.UseCases.Reports
 {
@@ -24,7 +19,10 @@ namespace ALFINapp.Application.UseCases.Reports
             _repositoryUsuarios = repositoryUsuarios;
             _repositoryTipificaciones = repositoryTipificaciones;
         }
-        public async Task<(bool IsSuccess, string Message, ViewReportesSupervisor? Data)> Execute(int idUsuario)
+        public async Task<(bool IsSuccess, string Message, ViewReportesSupervisor? Data)> Execute(
+            int idUsuario,
+            int? anio = null,
+            int? mes = null)
         {
             try
             {
@@ -33,7 +31,7 @@ namespace ALFINapp.Application.UseCases.Reports
                 {
                     return (false, "Supervisor no encontrado", null);
                 }
-                var supervisorReportes = await _repositoryReports.GetReportesEspecificoSupervisor(idUsuario);
+                var supervisorReportes = await _repositoryReports.GetReportesEspecificoSupervisor(idUsuario, anio, mes);
                 var reportesSupervisor = new ViewReportesSupervisor();
                 reportesSupervisor.supervisor = new DetallesUsuarioDTO(supervisor).ToView();
                 reportesSupervisor.asesores = supervisorReportes?.Asesores.Select(x => new DetallesUsuarioDTO(x).ToView()).ToList();

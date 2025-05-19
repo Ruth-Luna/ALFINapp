@@ -52,7 +52,6 @@ function gpiederivacionesFecha() {
     chart.render();
 }
 
-
 function gtablamesinforme() {
     var reportes = document.getElementById('reportes-por-meses');
     var reportesData = JSON.parse(reportes.getAttribute("data-json"));
@@ -64,25 +63,24 @@ function gtablamesinforme() {
             { field: "periodo", headerName: "PERIODO" },
             {
                 field: "porcentaje_derivados",
-                headerName: "PORCENTAJE DE DERIVACION",
+                headerName: "% DERIVACION",
                 valueFormatter: params => {
                     return params.value + '%';
                 }
             },
             {
                 field: "porcentaje_desembolsados"
-                , headerName: "PORCENTAJE DE DESEMBOLSOS",
+                , headerName: "% DESEMBOLSOS",
                 valueFormatter: params => {
                     return params.value + '%';
                 }
             },
             {
-                field: "porcentaje_no_derivado", headerName: "PORCENTAJE NO DERIVADO",
+                field: "porcentaje_no_derivado", headerName: "% NO DERIVADO",
                 valueFormatter: params => {
                     return params.value + '%';
                 }
             },
-            { field: "total_asignados", headerName: "TOTAL ASIGNADOS" },
             { field: "total_desembolsados", headerName: "TOTAL DESEMBOLSOS" },
             { field: "total_gestionados", headerName: "TOTAL GESTIONADOS" },
         ],
@@ -103,10 +101,7 @@ function gpiemeses() {
     var reportes = document.getElementById('reportes-por-meses');
     var reportesData = JSON.parse(reportes.getAttribute("data-json"));
     var gpieData = reportesData["progresoGeneral"];
-    console.log(gpieData);
-    console.log(gpieData["totaL_ASIGNADOS"]);
-    console.log(gpieData["totaL_GESTIONADOS"]);
- 
+
     var options = {
         series: [
             gpieData["totaL_ASIGNADOS"],
@@ -127,13 +122,13 @@ function gpiemeses() {
         dataLabels: {
             enabled: true,
             formatter: function (val, opts) {
-                return val + "Leads";
+                return Math.round(val) + "%";
             }
         },
         tooltip: {
             y: {
                 formatter: function (val, opts) {
-                    return val + "Leads";
+                    return val + " Leads";
                 }
             }
         }
