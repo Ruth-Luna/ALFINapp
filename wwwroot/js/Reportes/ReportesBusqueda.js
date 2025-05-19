@@ -114,8 +114,7 @@ async function cargarReporteSupervisor(idUsuario) {
             cargarReportesSupervisor();
             cargarReportesDerivacionesSupervisor();
             cargarGraficoDerivacionesVsDesembolsos();
-            cargarDerivacionesSupervisorFecha();
-            cargarDesembolsosSupervisorFecha();
+            cargarMovimientosPorFechaSupervisor();
         }
     } catch (error) {
         Swal.close();
@@ -297,7 +296,6 @@ async function cargarReporteParcialMeses(mes, anio) {
             fechaElement.innerHTML = html;
             $(fechaElement).parent().removeClass('d-none');
             gtablamesinforme();
-            gpiemeses();
         }
     } catch (error) {
         Swal.close();

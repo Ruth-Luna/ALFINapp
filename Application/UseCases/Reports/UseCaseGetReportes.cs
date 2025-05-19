@@ -92,14 +92,14 @@ namespace ALFINapp.Application.UseCases.Reports
                 }
                 else if (user.IdRol == 3)
                 {
-                    var lineasGestionDerivacion = await _repositoryReports.LineaGestionVsDerivacionDiaria(idUsuario);
-                    var pieGestionAsignados = await _repositoryReports.GetReportesGpieGeneral(idUsuario);
-                    var pieContactabilidad = await _repositoryReports.GetReportesPieContactabilidadCliente(idUsuario);
-                    var etiquetaDesembolsoMonto = await _repositoryReports.GetReportesEtiquetasDesembolsosNImportes(idUsuario);
-                    reporteGeneral.lineaGestionVsDerivacion = lineasGestionDerivacion.toViewLineaGestionVsDerivacion();
-                    reporteGeneral.ProgresoGeneral = pieGestionAsignados.toViewPie();
-                    reporteGeneral.pieContactabilidad = pieContactabilidad.toViewPieLista();
-                    reporteGeneral.etiquetas = etiquetaDesembolsoMonto.toViewEtiquetas();
+                    var reportesAsync = await _repositoryReportsAsync.GetReportesAsync(idUsuario, anio, mes);
+                    var reportesEtiquetas = await _repositoryReports.GetReportesEtiquetasMetas(anio,mes);
+                    reporteGeneral.lineaGestionVsDerivacion = reportesAsync.linea.toViewLineaGestionVsDerivacion();
+                    reporteGeneral.ProgresoGeneral = reportesAsync.pie.toViewPie();
+                    reporteGeneral.pieContactabilidad = reportesAsync.pie2.toViewPieLista();
+                    reporteGeneral.etiquetas = new List<ViewEtiquetas>();
+                    reporteGeneral.etiquetas.AddRange(reportesAsync.etiquetas.toViewEtiquetas());
+                    reporteGeneral.etiquetas.AddRange(reportesEtiquetas.toViewEtiquetas());
                     return (true, "Reportes obtenidos correctamente", reporteGeneral);
                 }
                 else

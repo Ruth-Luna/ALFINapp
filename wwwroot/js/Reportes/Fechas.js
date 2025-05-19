@@ -25,33 +25,6 @@ function gpieasignacionFecha() {
     chart.render();
 }
 
-function gpiederivacionesFecha() {
-    var reportes = document.getElementById('reportes-por-fecha');
-    var reportesData = JSON.parse(reportes.getAttribute("data-json"));
-    var progresoGeneral = reportesData["progresoGeneral"];
-
-    var options = {
-        series: [
-            progresoGeneral["totaL_DERIVADOS"],
-            progresoGeneral["totaL_DESEMBOLSADOS"]
-        ],
-        chart: {
-            height: 350,
-            type: 'pie'
-        },
-        labels: [
-            "Total Derivaciones",
-            "Total Desembolsos"
-        ],
-        colors: ["#008FFB", "#00E396"],
-        legend: {
-            position: 'bottom'
-        }
-    };
-    var chart = new ApexCharts(document.querySelector("#div-asignaciones-der-des-general-por-fechas"), options);
-    chart.render();
-}
-
 function gtablamesinforme() {
     var reportes = document.getElementById('reportes-por-meses');
     var reportesData = JSON.parse(reportes.getAttribute("data-json"));
@@ -95,44 +68,4 @@ function gtablamesinforme() {
 
     const myGridElement = document.querySelector('#div-asignaciones-der-des-general-por-fechas-detalle');
     agGrid.createGrid(myGridElement, gridOptions);
-}
-
-function gpiemeses() {
-    var reportes = document.getElementById('reportes-por-meses');
-    var reportesData = JSON.parse(reportes.getAttribute("data-json"));
-    var gpieData = reportesData["progresoGeneral"];
-
-    var options = {
-        series: [
-            gpieData["totaL_ASIGNADOS"],
-            gpieData["totaL_GESTIONADOS"]
-        ],
-        chart: {
-            height: 350,
-            type: 'pie'
-        },
-        labels: [
-            "Total Asignados",
-            "Total Gestionados"
-        ],
-        colors: ["#008FFB", "#00E396"],
-        legend: {
-            position: 'bottom'
-        },
-        dataLabels: {
-            enabled: true,
-            formatter: function (val, opts) {
-                return Math.round(val) + "%";
-            }
-        },
-        tooltip: {
-            y: {
-                formatter: function (val, opts) {
-                    return val + " Leads";
-                }
-            }
-        }
-    };
-    var chart = new ApexCharts(document.querySelector("#div-asignaciones-der-des-general-por-fechas"), options);
-    chart.render();
 }

@@ -146,13 +146,30 @@ function cargarReporteDerivacionVsDesembolso() {
     var options = {
         series: series,
         chart: {
-            type: 'pie',
+            type: 'donut',
             height: 350
         },
         labels: labels,
         colors: ["#FF4560", "#00E396"],
         legend: {
             position: 'bottom'
+        },
+        plotOptions: {
+            pie: {
+                donut: {
+                    size: '65%',
+                    labels: {
+                        show: true,
+                        total: {
+                            show: true,
+                            label: 'Total Derivaciones',
+                            formatter: function (w) {
+                                return totalGeneral;
+                            }
+                        }
+                    }
+                }
+            }
         },
         tooltip: {
             intersect: false,
@@ -186,13 +203,30 @@ function cargarReporteAsignacionVsGestion() {
     var options = {
         series: series,
         chart: {
-            type: 'pie',
+            type: 'donut',
             height: 350
         },
         labels: labels,
         colors: ["#008FFB", "#FEB019"],
         legend: {
             position: 'bottom'
+        },
+        plotOptions: {
+            pie: {
+                donut: {
+                    size: '65%',
+                    labels: {
+                        show: true,
+                        total: {
+                            show: true,
+                            label: 'Total Asignado',
+                            formatter: function (w) {
+                                return totalGeneral;
+                            }
+                        }
+                    }
+                }
+            }
         },
         tooltip: {
             intersect: false,

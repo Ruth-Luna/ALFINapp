@@ -120,10 +120,17 @@ namespace ALFINapp.Infrastructure.Repositories
                     .usuarios
                     .Where(x => x.IDUSUARIOSUP == idUsuario)
                     .ToListAsync();
+                
+                var parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@DniSupervisor", usuario.Dni),
+                    new SqlParameter("@mes", month),
+                    new SqlParameter("@anio", year)
+                };
 
                 var getGestionDetalles = await _context.GESTION_DETALLE.FromSqlRaw(
-                    "EXEC SP_Reportes_Supervisor_gestion @DniSupervisor",
-                    new SqlParameter("@DniSupervisor", usuario.Dni))
+                    "EXEC SP_Reportes_Supervisor_gestion @DniSupervisor, @mes, @anio",
+                    parameters)
                     .AsNoTracking()
                     .ToListAsync();
 
@@ -142,15 +149,15 @@ namespace ALFINapp.Infrastructure.Repositories
                 var getDerivaciones = await _context
                     .derivaciones_asesores
                     .FromSqlRaw(
-                        "EXEC SP_Reportes_Supervisor_derivacion @DniSupervisor",
-                        new SqlParameter("@DniSupervisor", usuario.Dni))
+                        "EXEC SP_Reportes_Supervisor_derivacion @DniSupervisor, @mes, @anio",
+                        parameters)
                     .ToListAsync();
 
                 var getDesembolsos = await _context
                     .desembolsos
                     .FromSqlRaw(
-                        "EXEC SP_Reportes_Supervisor_desembolso @DniSupervisor",
-                        new SqlParameter("@DniSupervisor", usuario.Dni))
+                        "EXEC SP_Reportes_Supervisor_desembolso @DniSupervisor, @mes, @anio",
+                        parameters)
                     .AsNoTracking()
                     .ToListAsync();
 

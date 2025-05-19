@@ -21,7 +21,15 @@ namespace ALFINapp.Application.DTOs
         }
         public DetallesReportesEtiquetasDTO ()
         {
-            etiquetas = new List<DetalleEtiqueta>();
+            var listaetiquetas = new List<DetalleEtiqueta>();
+            var etiqueta = new DetalleEtiqueta();
+            etiqueta.nombreEtiqueta = "PORCENTAJE DE META ALCANZADA";
+            etiqueta.nombreEtiquetaCategoria = "PORCENTAJE DE META ALCANZADA";
+            etiqueta.nombrePorcentajeCategoria = "META DE IMPORTES";
+            etiqueta.cantidadEtiqueta = 0;
+            etiqueta.importeEtiquetas = 0;
+            listaetiquetas.Add(etiqueta);
+            etiquetas = listaetiquetas;
         }
 
         public DetallesReportesEtiquetasDTO (List<ReportsEtiquetaMetaImporte> model)
