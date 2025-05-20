@@ -53,7 +53,6 @@
     function cargarNumDeClientesPorTipificacion(tipificacion, idAsesorBusqueda) {
         var campodeClientes = document.getElementById('NumClientesAsignadosAsesor');
         
-        console.log(idAsesorBusqueda);
         $.ajax ({
             url: "/Asesor/ObtenerNumDeClientesPorTipificacion",
             type: "GET",
@@ -88,7 +87,6 @@
     function enviarModificarAsignacionesPorTipificaciones(tipificacion, idAsesor) {
         var camponumDeModificaciones = document.getElementById('AsignacionesPorTipificaciones').value;
         var idAsesorBusqueda = document.getElementById('selectAsesorTipificacion').value;
-        console.log(idAsesorBusqueda, camponumDeModificaciones, tipificacion);
         $.ajax ({
             url: "/Asesor/ModificarAsignacionesPorTipificaciones",
             type: "POST",

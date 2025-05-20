@@ -80,16 +80,12 @@ function guardarNuevoAsesor() {
         Correo: correo
     };
 
-    console.log(dataToSend);
-
-    // Send an AJAX request to the server
     $.ajax({
         url: "/Asesor/AgregarNuevoAsesor",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(dataToSend),
         success: function (response) {
-            // Check the response status and display a success or error message accordingly
             if (response.success === true) {
                 Swal.fire({
                     icon: 'success',

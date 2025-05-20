@@ -47,7 +47,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function cargarDerivacionesXAsesorSistema(DniAsesor) {
-    console.log("DniAsesor:", DniAsesor);
 
     const tablaGeneralSistema = document.getElementById("tablaGeneralSistema");
     const tablaDerivacionesGestion = document.getElementById("tablaDerivacionesGestion");

@@ -143,7 +143,6 @@ function cargarInterfazAsesor(idAsesor) {
                     });
                 }
                 else {
-                    console.log('Interfaz del asesor seleccionado cargada correctamente');
                     // Cargar la interfaz en el div correspondiente
                     $('#interfazAsesorSelect').html(response);
                     $('#interfazAsesorSelect').css('display', 'block'); // Asegurar que el contenedor sea visible
@@ -159,7 +158,6 @@ function cargarInterfazAsesor(idAsesor) {
             }
         });
     } else {
-        console.log('No se selecciono un asesor');
         // Si no se selecciona un asesor, limpiar el contenido
         $('#interfazAsesorSelect').html('');
     }
@@ -169,7 +167,6 @@ function cerrarInterfazAsesor() {
 }
 
 function cargarAsesoresTipificacionesView() {
-    console.log('TesteandoFUNCION');
     $.ajax({
         url: "/Tipificacionesasignacion/ModificarAsignacionPorTipificacionView",
         type: "GET",
@@ -184,7 +181,6 @@ function cargarAsesoresTipificacionesView() {
                 });
             }
             else {
-                console.log('Interfaz de modificación de asignación por tipificación cargada correctamente');
                 // Cargar la interfaz en el div correspondiente
                 $('#interfazTipificacionXAsesorSelect').html(response);
                 $('#interfazTipificacionXAsesorSelect').css('display', 'block'); // Asegurar que el contenedor sea visible
@@ -222,7 +218,6 @@ function cargarActualizacionDeAsignacionXAsesor(idUsuarioBusqueda) {
                 });
             }
             else {
-                console.log('Interfaz de actualización de asesor cargada correctamente');
                 // Cargar la interfaz en el div correspondiente
                 $('#cargarActualizacionDeAsignacionXAsesor').html(response);
                 $('#cargarActualizacionDeAsignacionXAsesor').css('display', 'block'); // Asegurar que el contenedor sea visible

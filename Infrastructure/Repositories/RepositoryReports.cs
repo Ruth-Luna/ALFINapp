@@ -520,5 +520,15 @@ namespace ALFINapp.Infrastructure.Repositories
                 return new DetallesReportesGpieDTO();
             }
         }
+
+        public Task<DetallesReportesAsesorDTO> GetReportesAsesor(int idUsuario)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<DetallesReportesSupervisorDTO> GetReportesEspecificoSupervisor(int idUsuario)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

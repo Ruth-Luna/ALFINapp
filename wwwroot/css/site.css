@@ -96,6 +96,7 @@ body {
   max-height: 40vh;
   overflow-y: auto;
   z-index: 1000;
+  top: 100%;
 }
 
 .custom-option {
@@ -114,6 +115,11 @@ body {
   border-bottom: 1px solid #ccc;
   outline: none;
   font-size: 16px;
+}
+
+.custom-options.open-up {
+  top: auto;
+  bottom: 100%;
 }
 
 @media (max-width: 768px) {

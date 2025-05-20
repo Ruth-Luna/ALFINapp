@@ -176,9 +176,6 @@ function cargarMovimientosPorFechaSupervisor() {
     var derivacionesFecha = reportesData["derivacionesFecha"];
     var desembolsosFecha = reportesData["desembolsosFecha"];
 
-    console.log(derivacionesFecha);
-    console.log(desembolsosFecha);
-
     // Crear un mapa combinado de todas las fechas
     var fechasMap = {};
     

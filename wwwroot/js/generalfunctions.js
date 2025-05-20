@@ -88,11 +88,9 @@ function showMyModal(apiName, controllerName, type, templateTitle) {
 function mostrarOpciones(id) {
     let opcionesDiv = document.getElementById("opciones_" + id);
     opcionesDiv.style.display = opcionesDiv.style.display === "block" ? "none" : "block";
-    console.log(opcionesDiv.style.display);
 }
 
 function seleccionarOpcion(id, value, text, index = null) {
-    console.log(id, value, text);
     document.getElementById("selectedOption_" + id).innerText = text;
     document.getElementById(id).value = value;
     let opciones = document.getElementById("opciones_" + id);

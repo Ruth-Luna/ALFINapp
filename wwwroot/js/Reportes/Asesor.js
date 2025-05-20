@@ -2,31 +2,57 @@ function cargarDerivacionesAsesorFecha() {
     var reportesAsesor = document.getElementById('reportes-asesor');
     var reportesData = JSON.parse(reportesAsesor.getAttribute("data-json"));
     var derivacionesFecha = reportesData["derivacionesFecha"];
-
-    var fechas = [];
-    var contador = [];
-
+    var desembolsosFecha = reportesData["desembolsosFecha"];
+    
+    // Crear un mapa combinado de todas las fechas
+    var fechasMap = {};
+    
+    // Procesamos derivaciones
     derivacionesFecha.forEach(item => {
-        fechas.push(item["fecha"]);
-        contador.push(item["contador"]);
+        if (!fechasMap[item["fecha"]]) {
+            fechasMap[item["fecha"]] = { derivaciones: 0, desembolsos: 0 };
+        }
+        fechasMap[item["fecha"]].derivaciones = item["contador"];
     });
+    
+    // Procesamos desembolsos
+    desembolsosFecha.forEach(item => {
+        if (!fechasMap[item["fecha"]]) {
+            fechasMap[item["fecha"]] = { derivaciones: 0, desembolsos: 0 };
+        }
+        fechasMap[item["fecha"]].desembolsos = item["contador"];
+    });
+    
+    // Convertir el mapa a arrays ordenados por fecha
+    var fechas = Object.keys(fechasMap);
+
+    var derivacionesData = fechas.map(fecha => fechasMap[fecha].derivaciones);
+    var desembolsosData = fechas.map(fecha => fechasMap[fecha].desembolsos);
 
     var options = {
         series: [
             {
                 name: 'Derivaciones',
-                data: contador
+                data: derivacionesData
+            },
+            {
+                name: 'Desembolsos',
+                data: desembolsosData
             }
         ],
         chart: {
             height: 350,
-            type: 'area'
+            type: 'area',
+            toolbar: {
+                show: true
+            }
         },
         stroke: {
-            curve: 'smooth'
+            curve: 'smooth',
+            width: 2
         },
-        colors: ['#00E396'],
-        xaxis: {
+        colors: ['#00E396', '#d64339'], 
+        xaxis: { 
             categories: fechas,
             title: {
                 text: 'Fechas'
@@ -34,18 +60,28 @@ function cargarDerivacionesAsesorFecha() {
         },
         yaxis: {
             title: {
-                text: 'Número de Derivaciones'
+                text: 'Cantidad'
             }
         },
         dataLabels: { enabled: false },
         legend: { position: 'top' },
         title: {
-            text: 'Derivaciones por Fecha',
+            text: 'Derivaciones y Desembolsos por Fecha',
             align: 'center'
         },
         tooltip: {
+            shared: true,
+            intersect: false,
             x: {
                 format: 'dd/MM/yyyy'
+            }
+        },
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shadeIntensity: 1,
+                opacityFrom: 0.7,
+                opacityTo: 0.3
             }
         }
     };

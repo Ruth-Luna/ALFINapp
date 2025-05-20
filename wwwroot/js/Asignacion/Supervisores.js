@@ -102,8 +102,6 @@ function BuscarAsignacionFiltrarBases() {
     GrupoMonto = document.getElementById("GrupoMonto").value;
     Deudas = document.getElementById("Deudas").value;
 
-    console.log(filterGroups);
-
     $.ajax({
         type: "GET",
         url: "/Asignacion/BuscarAsignacionFiltrarBases",
@@ -202,8 +200,6 @@ function InsertarAsignacionBases() {
             numeroClientesAsignados: parseInt(numeroClientes, 10) // Convertir a número entero
         });
     });
-    console.log(supervisoresData);
-    console.log(baseIds);
 
     $.ajax({
         type: "POST",

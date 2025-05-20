@@ -62,7 +62,6 @@ function filterByDate() {
     Array.from(rows).forEach(row => {
         const rowDateStr = row.cells[5].textContent.trim(); // Fecha de Asignación (columna 7)
         const rowDateObj = parseDate(rowDateStr); // Convertir la fecha de la fila a objeto Date
-        console.log(rowDateObj, startDateObj, endDateObj);
 
         // Verificar si la fecha está dentro del rango
         let match = false;
@@ -100,8 +99,6 @@ function filtrarPorRol(rol) {
     Array.from(rows).slice(1).forEach(row => {
         let cell = row.cells[6].textContent.trim();
         if (!cell) return; // Si no existe la celda, saltar
-
-        console.log(cell);
 
         if (rol === "") {
             row.style.display = ''; // Muestra todas las filas
@@ -143,7 +140,6 @@ document.getElementById('searchInput').addEventListener('input', function () {
         switch (searchField) {
             case 'apellidoPaterno':
                 cellValue = row.cells[2].textContent.toLowerCase(); // Apellido Paterno
-                console.log(row.cells[2]);
                 break;
             /*case 'apellidoMaterno':
                 cellValue = row.cells[3].textContent.toLowerCase(); // Columna de Apellido Materno
@@ -188,7 +184,6 @@ document.getElementById('searchInput').addEventListener('input', function () {
             const rowDateObj = parseDate(rowDate);
             const startDateObj = startDate ? parseDate(startDate) : null;
             const endDateObj = endDate ? parseDate(endDate) : null;
-            console.log(rowDateObj, startDateObj, endDateObj);
             // Verificar si la fecha de la fila está dentro del rango seleccionado
             if (startDateObj && rowDateObj < startDateObj) {
                 match = false;

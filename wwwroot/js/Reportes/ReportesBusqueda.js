@@ -64,6 +64,7 @@ async function cargarReporteAsesor(idUsuario) {
 }
 
 async function cargarReporteSupervisor(idUsuario) {
+    cargarAsesoresDelSupervisor(idUsuario);
     if (idUsuario === undefined || idUsuario === null || idUsuario === '') {
         return;
     }
@@ -80,6 +81,7 @@ async function cargarReporteSupervisor(idUsuario) {
     if (month === undefined || month === null || month === '') {
         month = null;
     }
+
     const baseUrl = window.location.origin;
     const userId = parseInt(idUsuario, 10);
     const url = `${baseUrl}/Reportes/SupervisorReportes?idSupervisor=${encodeURIComponent(userId)}&anio=${encodeURIComponent(year)}&mes=${encodeURIComponent(month)}`;
@@ -234,7 +236,6 @@ async function cargarReportePorMetas(fecha) {
 }
 
 async function cargarReportePorMeses(date) {
-    console.log(date);    
     if (date === undefined || date === null || date === '') {
         return;
     }
@@ -305,5 +306,34 @@ async function cargarReporteParcialMeses(mes, anio) {
             text: 'No se pudo cargar el reporte',
             confirmButtonText: 'Aceptar'
         });
+    }
+}
+
+function cargarAsesoresDelSupervisor(idSupervisor) {
+    var asesores_data = asesores_data_json;
+    var select = document.getElementById("lista-usuario-asesor");
+
+    select.innerHTML = '<option value="">Seleccione un Asesor de Créditos</option>';
+
+    let asesoresFiltrados = [];
+    console.log(asesores_data);
+    console.log(idSupervisor);
+    if (idSupervisor === null || idSupervisor === '' || idSupervisor === undefined) {
+        asesoresFiltrados = asesores_data.filter(a => a.estado === 'ACTIVO');
+        console.log(asesoresFiltrados);
+    } else {
+        asesoresFiltrados = asesores_data.filter(a => 
+            a.idusuariosup == idSupervisor && a.estado === 'ACTIVO'
+        );
+        console.log(asesoresFiltrados);
+    }
+
+    asesoresFiltrados.sort((a, b) => a["nombresCompletos"].localeCompare(b["nombresCompletos"]));
+
+    for (let asesor of asesoresFiltrados) {
+        const option = document.createElement('option');
+        option.value = asesor["idUsuario"];
+        option.textContent = asesor["nombresCompletos"];
+        select.appendChild(option);
     }
 }

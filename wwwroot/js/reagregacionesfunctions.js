@@ -1,5 +1,4 @@
 function TakeThisClient(DNIdatos, tipoBase) {
-    console.log("Función llamada", DNIdatos);
     DNIdatos = String(DNIdatos).padStart(8, '0');
 
     if (!DNIdatos || !tipoBase) {

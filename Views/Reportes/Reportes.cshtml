@@ -12,6 +12,7 @@
 @section Styles {
     <link rel="stylesheet" href="~/css/main_page.css?v=@DateTime.Now.Ticks">
     <link rel="stylesheet" href="~/css/Reportes/Reportes.css?v=@DateTime.Now.Ticks">
+    <link rel="stylesheet" href="~/css/site.css">
 }
 
 
@@ -107,7 +108,7 @@
         <div class="col-12 col-md-6 d-none">
             <div id="div-reporteria-fechas"></div>
         </div>
-        
+
         <div class="col-12" id="div-derivaciones" style="display: none;">
             <div class="ba-card h-100">
                 <div class="ba-card-header">
@@ -190,7 +191,6 @@
             </div>
         }
 
-        
         @if (rol == 1 || rol == 4 || rol == 2)
         {
             <div class="col-12">
@@ -233,12 +233,14 @@
                 <div class="row g-3">
                     <div class="col-12 col-md-6">
                         <div>
-                            <label for="lista-usuario-asesor" class="form-label">Filtro Por Asesor de Cr�ditos</label>
-                            <select class="form-control" name="lista-usuario-asesor" id="lista-usuario-asesor"
+                            <label for="lista-usuario-asesor" class="form-label">Filtro Por Asesor de Créditos</label>
+                            <select class="form-control mt-3" name="lista-usuario-asesor" id="lista-usuario-asesor"
                                 onchange="cargarReporteAsesor(this.value)">
-                                <option value="">Seleccione un Asesor de Cr�ditos</option>
+
+                                <option value=""> Seleccione un Asesor de Creditos </option>
                                 @if (asesores != null)
                                 {
+                                    asesores = asesores.OrderBy(x => x.NombresCompletos).ToList();
                                     @foreach (var usuario in asesores)
                                     {
                                         if (usuario.Estado == "ACTIVO")
@@ -252,12 +254,15 @@
                     </div>
                     <div class="col-12 col-md-6">
                         <div>
-                            <label for="lista-usuario-supervisor" class="form-label">Filtro Por Supervisor</label>
-                            <select class="form-control" name="lista-usuario-supervisor" id="lista-usuario-supervisor"
+                            <label for="lista-usuario-supervisor" class="form-label">Filtro Por Supervisor de
+                                Creditos</label>
+                            <select class="form-control mt-3" name="lista-usuario-supervisor" id="lista-usuario-supervisor"
                                 onchange="cargarReporteSupervisor(this.value)">
-                                <option value=""> Seleccione un Supervisor </option>
+
+                                <option value=""> Seleccione un Supervisor de Creditos </option>
                                 @if (supervisores != null)
                                 {
+                                    supervisores = supervisores.OrderBy(x => x.NombresCompletos).ToList();
                                     @foreach (var usuario in supervisores)
                                     {
                                         if (usuario.Estado == "ACTIVO")
@@ -284,12 +289,14 @@
 
             <!-- Contenido de la tarjeta -->
             <div class="ba-card-body">
-                <label for="lista-usuario-asesor" class="form-label">Filtro Por Asesor de Cr�ditos</label>
+                <label for="lista-usuario-asesor" class="form-label">Filtro Por Asesor de Creditos</label>
                 <select class="form-control mt-3" name="lista-usuario-asesor" id="lista-usuario-asesor"
                     onchange="cargarReporteAsesor(this.value)">
-                    <option value=""> Seleccione un Asesor de Cr�ditos </option>
+
+                    <option value=""> Seleccione un Asesor de Créditos </option>
                     @if (asesores != null)
                     {
+                        asesores = asesores.OrderBy(x => x.NombresCompletos).ToList();
                         @foreach (var usuario in asesores)
                         {
                             if (usuario.Estado == "ACTIVO")
@@ -315,7 +322,6 @@
             </div>
         </div>
     </div>
-
 </div>
 
 <!-- :::: :: :::: -->
@@ -350,9 +356,9 @@
                 sortable: true,
                 filter: true
             },
-            pagination: true, // Habilita la paginaci�n
-            paginationPageSize: 10, // N�mero de filas por p�gina
-            paginationPageSizeSelector: [10, 20, 50, 100], // Opciones de tama�o de p�gina
+            pagination: true,
+            paginationPageSize: 10,
+            paginationPageSizeSelector: [10, 20, 50, 100],
         };
 
         const myGridElement = document.querySelector('#myGrid');
@@ -368,6 +374,10 @@
                 cargarReporteSupervisor(idUsuario);
             }
         });
+    </script>
+    <script>
+        var asesores_data_json = @Html.Raw(Json.Serialize(Model.Asesores));
+        var supervisores_data_json = @Html.Raw(Json.Serialize(Model.Supervisores));
     </script>
     <script src="~/js/Reportes/Reportes.js?v=@DateTime.Now.Ticks"></script>
     <script src="~/js/Reportes/ReportesBusqueda.js?v=@DateTime.Now.Ticks"></script>

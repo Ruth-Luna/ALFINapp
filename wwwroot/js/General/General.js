@@ -9,8 +9,37 @@ flatpickr("#mes-selector", {
 });
 
 function show_options_refac(id) {
-    let opcionesDiv = document.getElementById(id);
-    opcionesDiv.style.display = opcionesDiv.style.display === "block" ? "none" : "block";
+    const opcionesDiv = document.getElementById(id);
+    const select = opcionesDiv.closest(".custom-select");
+
+    // Si no encuentra el contenedor, salir
+    if (!select || !opcionesDiv) return;
+
+    const isVisible = opcionesDiv.style.display === "block";
+
+    // Cerrar todos los demás dropdowns antes
+    document.querySelectorAll(".custom-options").forEach(opt => {
+        opt.style.display = "none";
+        opt.classList.remove("open-up");
+    });
+
+    if (!isVisible) {
+        opcionesDiv.style.display = "block";
+
+        // Medir espacio disponible
+        const rect = select.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+
+        if (spaceBelow < 250 && spaceAbove > 250) {
+            opcionesDiv.classList.add("open-up"); // Abrir hacia arriba
+        } else {
+            opcionesDiv.classList.remove("open-up"); // Abrir hacia abajo
+        }
+    } else {
+        opcionesDiv.style.display = "none";
+        opcionesDiv.classList.remove("open-up");
+    }
 }
 
 function select_option_refac(id, idSelect, idOptions, value, text, callback = null) {

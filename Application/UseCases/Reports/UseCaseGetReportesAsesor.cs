@@ -61,6 +61,7 @@ namespace ALFINapp.Application.UseCases.Reports
                     .Select(x => new DerivacionesFecha { Fecha = x.Key, Contador = x.Count() })
                     .OrderBy(x => DateTime.TryParseExact(x.Fecha, "d/M/yy", null, System.Globalization.DateTimeStyles.None, out var parsedDate) ? parsedDate : DateTime.MinValue)
                     .ToList();
+                viewReportes.desembolsosFecha = createDesembolsosFecha;
                 viewReportes.gestionDetalles = reportes.gESTIONDETALLEs.Select(x => new DetallesGestionDetalleDTO(x).toView()).ToList();
                 var TipificacionesGestion = new List<ViewTipificacionesGestion>();
                 var TipificacionesDescripcion = await _repositoryTipificaciones.GetTipificacionesDescripcion();

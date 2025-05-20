@@ -1,12 +1,9 @@
 function verificarTipificacion(index) {
-    console.log('Verificando tipificación...');
-    console.log(`tipificacionSelect_${index}`);
     const tipificacionInput = document.getElementById(`tipificacionSelect_${index}`);
     const fechaVisitaContainer = document.getElementById(`fechaVisitaContainer_${index}`);
     const buttonDerivacionContainer = document.getElementById(`buttonDerivacionContainer_${index}`);
 
     if (tipificacionInput.value == 2) {
-        console.log('Tipificación seleccionada: Derivación');
         fechaVisitaContainer.style.display = "block";
         buttonDerivacionContainer.style.display = "block";
     } else {
@@ -110,7 +107,6 @@ function enviarFormularioDerivacion(
 }
 
 function enviarDerivacion(agenciaComercial, FechaVisita, Telefono, idBase, typeTip, Asignacion, NombresCompletos = null) {
-    console.log('Enviando derivación...');
     let loadingSwal = Swal.fire({
         title: 'Enviando...',
         text: 'Por favor, espera mientras se procesa la solicitud.',
