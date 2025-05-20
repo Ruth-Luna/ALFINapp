@@ -46,7 +46,6 @@ function cargarDerivacionesGenerales() {
     var derivaciones = document.getElementById('div-derivaciones');
     derivaciones.style.display = 'block';
     var lineaGestionVsDerivacion = reportesData["lineaGestionVsDerivacion"];
-
     // Función para formatear fechas a 'dd/MM/yy'
     function formatDate(date) {
         var d = new Date(date);
@@ -66,8 +65,13 @@ function cargarDerivacionesGenerales() {
     }
 
     // Obtener la fecha actual
-    var fechasDisponibles = lineaGestionVsDerivacion.map(item => new Date(item["fecha"]));
+    var fechasDisponibles = lineaGestionVsDerivacion.map(item => {
+        const [year, month, day] = item["fecha"].split("-").map(Number);
+        return new Date(year, month - 1, day); // ¡mes - 1 porque en JS enero es 0!
+    });
     fechasDisponibles.sort((a, b) => b - a); // Orden descendente
+    console.log(lineaGestionVsDerivacion);
+    console.log(fechasDisponibles);
     var today = fechasDisponibles[0]; // Última fecha registrada
 
     // Usar la fecha de referencia para determinar mes y año
@@ -91,9 +95,7 @@ function cargarDerivacionesGenerales() {
         var formattedFecha = formatDate(item["fecha"]);
         derivacionMap[formattedFecha] = item["derivaciones"] || 0;
         gestionMap[formattedFecha] = item["gestiones"] || 0;
-        console.log(item["fecha"]);
     });
-
     // Generar la data para todos los días, usando 0 si no hay data y null para días futuros
     var contadorDerivacion = allDates.map(date => {
         var dateObj = parseDate(date);
@@ -103,6 +105,7 @@ function cargarDerivacionesGenerales() {
             return null;
         }
     });
+    console.log(contadorDerivacion);
     var contadorGestion = allDates.map(date => {
         var dateObj = parseDate(date);
         if (dateObj <= today) {
@@ -432,7 +435,7 @@ function cargarTop5DerivacionesGenerales() {
             position: "top"
         }
     };
-    
+
     var chart = new ApexCharts(document.querySelector("#chart-top-5-derivaciones"), options);
     chart.render();
 }
