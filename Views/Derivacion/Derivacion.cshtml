@@ -299,21 +299,32 @@
                                     style="background-color: white; border-left: 1px solid #2980b9; border-top: 1px solid white; border-bottom: 1px solid white;">
                                 </td>
                                 <td>
-                                    @if (derivacionAsesor.PuedeSerReagendado)
+                                    @if (RolActual == 3)
                                     {
                                         <a href="javascript:void(0)"
-                                            onclick="reagendarView(@derivacionAsesor.IdDerivacion, '@derivacionAsesor.PuedeSerReagendado')"
-                                            class="btn btn-primary" style="width: auto;" title="Reagendar este cliente">
+                                            onclick=""
+                                            class="btn btn-secondary" style="width: auto;" title="Reagendar este cliente">
                                             <i class="bi bi-clipboard2-plus"></i>
                                         </a>
                                     }
                                     else
                                     {
-                                        <a href="javascript:void(0)"
-                                            onclick="reagendarView(@derivacionAsesor.IdDerivacion, '@derivacionAsesor.PuedeSerReagendado')"
-                                            class="btn btn-secondary" style="width: auto;" title="Reagendar este cliente">
-                                            <i class="bi bi-clipboard2-plus"></i>
-                                        </a>
+                                        @if (derivacionAsesor.PuedeSerReagendado)
+                                        {
+                                            <a href="javascript:void(0)"
+                                                onclick="reagendarView(@derivacionAsesor.IdDerivacion, '@derivacionAsesor.PuedeSerReagendado')"
+                                                class="btn btn-primary" style="width: auto;" title="Reagendar este cliente">
+                                                <i class="bi bi-clipboard2-plus"></i>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="javascript:void(0)"
+                                                onclick=""
+                                                class="btn btn-secondary" style="width: auto;" title="Reagendar este cliente">
+                                                <i class="bi bi-clipboard2-plus"></i>
+                                            </a>
+                                        }
                                     }
                                     @* <a href="javascript:void(0)"
                                         onclick="reagendarView(@derivacionAsesor.IdDerivacion, 'False')"
