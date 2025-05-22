@@ -128,56 +128,6 @@ namespace ALFINapp.Infrastructure.Repositories
                 return null;
             }
         }
-
-        public async Task<bool> uploadDerivacion(DerivacionesAsesores derivacion)
-        {
-            try
-            {
-                var verificarDerivacion = (from ad in _context.derivaciones_asesores
-                                           where ad.DniAsesor == derivacion.DniAsesor
-                                                && ad.DniCliente == derivacion.DniCliente
-                                                && ad.FechaDerivacion.Year == DateTime.Now.Year
-                                                && ad.FechaDerivacion.Month == DateTime.Now.Month
-                                           select ad).FirstOrDefault();
-                if (verificarDerivacion != null)
-                {
-                    return false;
-                }
-
-                var idDni = await (from bc in _context.base_clientes
-                                   join ce in _context.clientes_enriquecidos on bc.IdBase equals ce.IdBase
-                                   where bc.Dni == derivacion.DniCliente
-                                   select (int?)ce.IdCliente).FirstOrDefaultAsync();
-
-                var parametros = new[]
-                {
-                    new SqlParameter("@fecha_visita_derivacion", derivacion.FechaVisita) { SqlDbType = SqlDbType.DateTime },
-                    new SqlParameter("@dni_asesor_derivacion", derivacion.DniAsesor),
-                    new SqlParameter("@DNI_cliente_derivacion", derivacion.DniCliente),
-                    new SqlParameter("@id_cliente", idDni != null ? idDni.Value : DBNull.Value),
-                    new SqlParameter("@nombre_cliente_derivacion", derivacion.NombreCliente),
-                    new SqlParameter("@telefono_derivacion", derivacion.TelefonoCliente),
-                    new SqlParameter("@agencia_derivacion", derivacion.NombreAgencia),
-                    new SqlParameter("@num_agencia", DBNull.Value)
-                };
-
-                var generarDerivacion = _context.Database.ExecuteSqlRaw(
-                    "EXEC SP_derivacion_insertar_derivacion @fecha_visita_derivacion, @dni_asesor_derivacion, @DNI_cliente_derivacion, @id_cliente, @nombre_cliente_derivacion, @telefono_derivacion, @agencia_derivacion, @num_agencia",
-                    parametros);
-
-                if (generarDerivacion == 0)
-                {
-                    return false;
-                }
-                return true;
-            }
-            catch (System.Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
-        }
-
         public async Task<(bool success, string message)> uploadNuevaDerivacion(
             DerivacionesAsesores derivacion, 
             int idBase, 
@@ -219,7 +169,7 @@ namespace ALFINapp.Infrastructure.Repositories
                 var parametros = new[]
                 {
                     new SqlParameter("@nueva_fecha_visita", fechaReagendamiento) { SqlDbType = SqlDbType.DateTime },
-                    new SqlParameter("@id_derivacion", idDer)
+                    new SqlParameter("@id_derivacion", idDer) { SqlDbType = SqlDbType.Int }
                 };
                 var generarReagendacion = _context.Database.ExecuteSqlRaw(
                     "EXEC sp_reagendamiento_upload_nueva_reagendacion @nueva_fecha_visita, @id_derivacion;",

@@ -51,7 +51,7 @@ namespace ALFINapp.Infrastructure.Services
                 };
 
                 var generarDerivacion = _context.Database.ExecuteSqlRaw(
-                    "EXEC SP_derivacion_insertar_derivacion_2 @fecha_visita_derivacion, @dni_asesor_derivacion, @DNI_cliente_derivacion, @id_cliente, @nombre_cliente_derivacion, @telefono_derivacion, @agencia_derivacion, @num_agencia",
+                    "EXEC SP_derivacion_insertar_derivacion_test @fecha_visita_derivacion, @dni_asesor_derivacion, @DNI_cliente_derivacion, @id_cliente, @nombre_cliente_derivacion, @telefono_derivacion, @agencia_derivacion, @num_agencia",
                     parametros);
 
                 if (generarDerivacion == 0)
@@ -65,34 +65,6 @@ namespace ALFINapp.Infrastructure.Services
                 return (false, ex.Message);
             }
         }
-        public async Task<(bool IsSuccess, string Message, List<DerivacionesAsesores>? Data)> GetClientesDerivadosGenerales(List<Usuario> asesores)
-        {
-            try
-            {
-                var dnis = new DataTable();
-                dnis.Columns.Add("Dni", typeof(string));
-                var getAllDnisClientes = asesores.Select(x => x.Dni).ToHashSet();
-                foreach (var dni in getAllDnisClientes)
-                {
-                    dnis.Rows.Add(dni);
-                }
-                var parameter = new SqlParameter("@Dni", SqlDbType.Structured)
-                {
-                    TypeName = "dbo.DniTableType",
-                    Value = dnis
-                };
-                var result = await _context.derivaciones_asesores
-                    .FromSqlRaw("EXEC sp_Derivacion_consulta_derivaciones_x_asesor_por_dni_REFACTORIZADO @Dni = {0}", 
-                        parameter)
-                    .ToListAsync();
-                return (true, "Derivaciones obtenidas correctamente", result);
-            }
-            catch (System.Exception ex)
-            {
-                return (false, ex.Message, null);
-            }
-        }
-
         public async Task<(bool IsSuccess, string Message, List<GestionDetalleDTO>? Data)> GetDerivacionInformationAll(List<DerivacionesAsesores> clientes)
         {
             try
@@ -207,24 +179,6 @@ namespace ALFINapp.Infrastructure.Services
                 return (false, ex.Message, null);
             }
         }
-        public async Task<(bool IsSuccess, string Message, List<GESTIONDETALLE>? Data)> GetEntradasBSDialXSupervisor(List<Usuario> asesores)
-        {
-            try
-            {
-                var getEntradasBSDial = new List<GESTIONDETALLE>();
-                foreach (var asesor in asesores)
-                {
-                    var entradas = await _context.GESTION_DETALLE.FromSqlRaw("EXEC sp_Derivacion_consulta_derivaciones_x_asesor_BS_dial_ACTUALIZADO {0}", asesor.Dni).ToListAsync();
-                    getEntradasBSDial.AddRange(entradas);
-                }
-                return (true, "Se encontraron las siguientes entradas en BSDIAL", getEntradasBSDial);
-            }
-            catch (System.Exception ex)
-            {
-                return (false, ex.Message, null);
-            }
-        }
-
         public async Task<(bool IsSuccess, string Message)> VerificarDerivacionEnviada(string dni)
         {
             try
