@@ -1,22 +1,36 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.Infrastructure.Persistence.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace ALFINapp.Infrastructure.Services
 {
-
+    /// <summary>
+    /// Service class that provides database operations for role management and permissions in the ALFINapp system.
+    /// Handles retrieving and managing views, permissions, and roles through database operations.
+    /// </summary>
     public class DBServicesRoles
     {
         private readonly MDbContext _context;
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DBServicesRoles"/> class.
+        /// </summary>
+        /// <param name="context">The database context used for database operations.</param>
         public DBServicesRoles(MDbContext context)
         {
             _context = context;
         }
 
+        /// <summary>
+        /// Retrieves all views associated with a specific role.
+        /// </summary>
+        /// <param name="idRol">ID of the role to query views for.</param>
+        /// <returns>
+        /// A tuple containing:
+        /// - Success status indicating if the operation was successful
+        /// - Message describing the result or error
+        /// - List of views associated with the role if successful, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, List<VistasPorRolDTO>? Data)> getVistasPorRol(int idRol)
         {
             try
@@ -38,6 +52,16 @@ namespace ALFINapp.Infrastructure.Services
             }
 
         }
+        /// <summary>
+        /// Retrieves the default view for a specific role.
+        /// </summary>
+        /// <param name="idRol">ID of the role to query the default view for.</param>
+        /// <returns>
+        /// A tuple containing:
+        /// - Success status indicating if the operation was successful
+        /// - Message describing the result or error
+        /// - Default view associated with the role if successful, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, VistasPorRolDTO? Data)> getVistaPorDefecto(int idRol)
         {
             try
@@ -64,6 +88,18 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Checks if a role has permission to access a specific view.
+        /// </summary>
+        /// <param name="idRol">ID of the role to check permissions for.</param>
+        /// <param name="controlador">Controller name to check permission against.</param>
+        /// <param name="vista">View name to check permission against.</param>
+        /// <returns>
+        /// A tuple containing:
+        /// - Success status indicating if the operation was successful
+        /// - Message describing the result or error
+        /// - Boolean indicating if the role has permission if successful, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, bool? Data)> tienePermiso(int idRol, string controlador, string vista)
         {
             try
@@ -84,6 +120,15 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves all available view routes in the system.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// - Success status indicating if the operation was successful
+        /// - Message describing the result or error
+        /// - List of all view routes if successful, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, List<VistaRutas>? Data)> getTodasLasVistasRutas()
         {
             try
@@ -102,6 +147,15 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves all roles in the system.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// - Success status indicating if the operation was successful
+        /// - Message describing the result or error
+        /// - List of all roles if successful, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, List<Roles>? Data)> getRoles()
         {
             try
@@ -120,6 +174,15 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves all roles in the system (alternative implementation).
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// - Success status indicating if the operation was successful
+        /// - Message describing the result or error
+        /// - List of all roles if successful, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, List<Roles>? Data)> getAllRoles()
         {
             try
@@ -138,6 +201,17 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Updates permission for a role to access a specific view.
+        /// If the permission exists, it will be removed; if it doesn't exist, it will be added.
+        /// </summary>
+        /// <param name="idVista">ID of the view to update permission for.</param>
+        /// <param name="idRol">ID of the role to update permission for.</param>
+        /// <returns>
+        /// A tuple containing:
+        /// - Success status indicating if the operation was successful
+        /// - Message describing the result or error
+        /// </returns>
         public async Task<(bool IsSuccess, string Message)> actualizarPermisoRol(int idVista, int idRol)
         {
             try

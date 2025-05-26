@@ -4,10 +4,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ALFINapp.Infrastructure.Services
 {
+    /// <summary>
+    /// Service class that provides database operations for managing referred clients in the ALFINapp system.
+    /// Handles creation, retrieval, and management of client referrals across different databases.
+    /// </summary>
     public class DBServicesReferido
     {
         private readonly MDbContext _context;
-
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DBServicesReferido"/> class.
+        /// </summary>
+        /// <param name="context">The database context used for database operations.</param>
         public DBServicesReferido(MDbContext context)
         {
             _context = context;
@@ -21,6 +29,17 @@ namespace ALFINapp.Infrastructure.Services
         /// <param name="nombres">Los nombres del asesor que refiere al cliente.</param>
         /// <param name="apellidos">Los apellidos del asesor que refiere al cliente.</param>
         /// <param name="dniUsuario">El DNI del usuario que refiere al cliente.</param>
+        /// <param name="telefono">Número de teléfono de contacto.</param>
+        /// <param name="agencia">Agencia asociada con el referido.</param>
+        /// <param name="fechaVisita">Fecha programada para la visita del cliente.</param>
+        /// <param name="nombresCliente">Nombres completos del cliente referido.</param>
+        /// <param name="OfertaEnviada">Monto de la oferta enviada al cliente.</param>
+        /// <param name="celular">Número de celular del asesor.</param>
+        /// <param name="correo">Correo electrónico del asesor.</param>
+        /// <param name="cci">Código de cuenta interbancario del asesor.</param>
+        /// <param name="departamento">Departamento geográfico del asesor.</param>
+        /// <param name="ubigeo">Código de ubicación geográfica del asesor.</param>
+        /// <param name="banco">Entidad bancaria del asesor.</param>
         /// <returns>Una tupla que indica si la operación fue exitosa y un mensaje asociado.</returns>
         public async Task<(bool IsSuccess, string Message)> GuardarClienteReferido(
             string dni,
@@ -348,6 +367,16 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Recupera todos los clientes referidos en el sistema.
+        /// </summary>
+        /// <returns>
+        /// Una tupla que contiene:
+        /// - IsSuccess: Indica si la operación fue exitosa
+        /// - Message: Mensaje descriptivo del resultado
+        /// - Data: Lista de todos los clientes referidos si la operación fue exitosa, null en caso contrario
+        /// </returns>
+        /// <exception cref="Exception">Se lanza cuando ocurre un error en la consulta a la base de datos</exception>
         public async Task<(bool IsSuccess, string Message, List<ClientesReferidos>? Data)> GetReferidosGeneral()
         {
             try
@@ -361,6 +390,16 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Actualiza el estado de un cliente referido a "procesado" y cambia su estado de referencia.
+        /// </summary>
+        /// <param name="idReferido">Identificador único del cliente referido</param>
+        /// <returns>
+        /// Una tupla que contiene:
+        /// - IsSuccess: Indica si la modificación fue exitosa
+        /// - Message: Mensaje descriptivo del resultado de la operación
+        /// </returns>
+        /// <exception cref="Exception">Se lanza cuando ocurre un error en la actualización de la base de datos</exception>
         public async Task<(bool IsSuccess, string Message)> ModificarEstadoReferido(int idReferido)
         {
             try
@@ -383,6 +422,17 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Obtiene la información detallada de un cliente referido específico por su ID.
+        /// </summary>
+        /// <param name="IdReferido">Identificador único del cliente referido</param>
+        /// <returns>
+        /// Una tupla que contiene:
+        /// - IsSuccess: Indica si la búsqueda fue exitosa
+        /// - Message: Mensaje descriptivo del resultado
+        /// - Data: Objeto ClientesReferidos con los datos del cliente si se encuentra, null en caso contrario
+        /// </returns>
+        /// <exception cref="Exception">Se lanza cuando ocurre un error en la consulta a la base de datos</exception>
         public async Task<(bool IsSuccess, string Message, ClientesReferidos? Data)> GetClienteReferidoPorId(int IdReferido)
         {
             try
@@ -401,6 +451,23 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Obtiene todos los clientes referidos por un asesor específico en el mes actual.
+        /// </summary>
+        /// <param name="DNI">DNI del asesor que refirió a los clientes</param>
+        /// <returns>
+        /// Una tupla que contiene:
+        /// - IsSuccess: Indica si la búsqueda fue exitosa
+        /// - Message: Mensaje descriptivo del resultado
+        /// - Data: Lista de clientes referidos con información adicional sobre estado de desembolso
+        /// </returns>
+        /// <remarks>
+        /// Este método:
+        /// 1. Recupera todos los referidos asociados al DNI del asesor para el mes actual
+        /// 2. Para cada referido, verifica si tiene desembolsos asociados en el mismo mes
+        /// 3. Actualiza el estado y la fecha de referencia según los desembolsos encontrados
+        /// </remarks>
+        /// <exception cref="Exception">Se lanza cuando ocurre un error en la consulta a la base de datos</exception>
         public async Task<(bool IsSuccess, string Message, List<ClientesReferidosDTO>? Data)> GetReferidosDelDNI(string DNI)
         {
             try

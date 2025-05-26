@@ -1,21 +1,35 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ALFINapp.Infrastructure.Persistence.Models;
 
 namespace ALFINapp.Infrastructure.Services
 {
+    /// <summary>
+    /// Service class that provides general database operations for the ALFINapp system.
+    /// Handles retrieving various lookup data, user information, and common database operations.
+    /// </summary>
     public class DBServicesGeneral
     {
         private readonly MDbContext _context;
-
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DBServicesGeneral"/> class.
+        /// </summary>
+        /// <param name="context">The database context used for database operations.</param>
         public DBServicesGeneral(MDbContext context)
         {
             _context = context;
         }
 
+        /// <summary>
+        /// Retrieves detailed information for a specific user by their ID.
+        /// </summary>
+        /// <param name="IdUsuario">ID of the user to retrieve information for.</param>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - Data: User information object if found, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, Usuario? Data)> GetUserInformation(int IdUsuario)
         {
             try
@@ -36,6 +50,16 @@ namespace ALFINapp.Infrastructure.Services
                 return (false, ex.Message, null);
             }
         }
+        /// <summary>
+        /// Updates a user's password in the database.
+        /// </summary>
+        /// <param name="IdUsuario">ID of the user whose password will be updated.</param>
+        /// <param name="password">The new password to set.</param>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the password update was successful
+        /// - Message: Descriptive message about the result
+        /// </returns>
         public async Task<(bool IsSuccess, string Message)> UpdatePasswordGeneralFunction(int IdUsuario, string password)
         {
             try
@@ -60,6 +84,15 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves all available agencies with their associated numbers.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - data: List of agencies with their numbers if found, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, List<AgenciasDisponiblesDTO>? data)> GetUAgenciasConNumeros()
         {
             try
@@ -80,6 +113,15 @@ namespace ALFINapp.Infrastructure.Services
                 return (false, ex.Message, null);
             }
         }
+        /// <summary>
+        /// Retrieves all available campaigns in the system.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - data: List of campaign names if found, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, List<StringDTO>? data)> GetUCampanas()
         {
             try
@@ -101,6 +143,15 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves all possible client status values.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - data: List of client status values if found, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, List<StringDTO>? data)> GetUClienteEstado()
         {
             try
@@ -122,6 +173,15 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves all available color classifications.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - data: List of color values if found, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, List<StringDTO>? data)> GetUColor()
         {
             try
@@ -143,6 +203,15 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves all available final color classifications.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - data: List of final color values if found, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, List<StringDTO>? data)> GetUColorFinal()
         {
             try
@@ -164,6 +233,15 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves all debt flag plus indicators.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - data: List of debt flag plus values if found, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, List<NumerosEnterosDTO>? data)> GetUFlgDeudaPlus()
         {
             try
@@ -185,6 +263,15 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves all freshness indicators for client data.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - data: List of freshness values if found, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, List<NumerosEnterosDTO>? data)> GetUFrescura()
         {
             try
@@ -206,6 +293,15 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves all amount group classifications.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - data: List of amount group values if found, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, List<StringDTO>? data)> GetUGrupoMonto()
         {
             try
@@ -226,6 +322,15 @@ namespace ALFINapp.Infrastructure.Services
                 return (false, ex.Message, null);
             }
         }
+        /// <summary>
+        /// Retrieves all rate group classifications.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - data: List of rate group values if found, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, List<StringDTO>? data)> GetUGrupoTasa()
         {
             try
@@ -247,6 +352,15 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves all propensity indicators.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - data: List of propensity values if found, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, List<NumerosEnterosDTO>? data)> GetUPropension()
         {
             try
@@ -268,6 +382,15 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves all age range classifications.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - data: List of age range values if found, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, List<StringDTO>? data)> GetURangoEdad()
         {
             try
@@ -288,6 +411,15 @@ namespace ALFINapp.Infrastructure.Services
                 return (false, ex.Message, null);
             }
         }
+        /// <summary>
+        /// Retrieves all offer range classifications.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - data: List of offer range values if found, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, List<StringDTO>? data)> GetURangoOferta()
         {
             try
@@ -308,6 +440,15 @@ namespace ALFINapp.Infrastructure.Services
                 return (false, ex.Message, null);
             }
         }
+        /// <summary>
+        /// Retrieves all salary range classifications.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - data: List of salary range values if found, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, List<StringDTO>? data)> GetURangoSueldo()
         {
             try
@@ -329,6 +470,15 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves all rate range classifications.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - data: List of rate range values if found, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, List<StringDTO>? data)> GetURangoTasas()
         {
             try
@@ -350,6 +500,15 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves all database type classifications.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - data: List of database type values if found, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, List<StringDTO>? data)> GetUTipoBase()
         {
             try
@@ -371,6 +530,15 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves all client type classifications.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - data: List of client type values if found, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, List<StringDTO>? data)> GetUTipoCliente()
         {
             try
@@ -392,6 +560,15 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves all users registered in the system.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - data: List of user names if found, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, List<StringDTO>? data)> GetUUsuario()
         {
             try

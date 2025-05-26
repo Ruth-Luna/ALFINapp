@@ -1,21 +1,32 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.Infrastructure.Persistence.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace ALFINapp.Infrastructure.Services
 {
+    /// <summary>
+    /// Service class that provides database operations for user management in the ALFINapp system.
+    /// Uses stored procedures to interact with the database for CRUD operations on users.
+    /// </summary>
     public class DBServicesUsuarios
     {
         private readonly MDbContext _context;
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DBServicesUsuarios"/> class.
+        /// </summary>
+        /// <param name="context">The database context used for database operations.</param>
         public DBServicesUsuarios(MDbContext context)
         {
             _context = context;
         }
 
+        /// <summary>
+        /// Updates an existing user's information in the database.
+        /// </summary>
+        /// <param name="usuario">The user object containing the updated information.</param>
+        /// <param name="IdUsuarioAccion">ID of the user performing the modification action.</param>
+        /// <returns>A tuple containing success status and a message describing the result.</returns>
         public async Task<(bool IsSuccess, string Message)> ModificarUsuario(Usuario usuario, int IdUsuarioAccion)
         {
             try
@@ -53,6 +64,12 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Deactivates a user in the system by changing their status.
+        /// </summary>
+        /// <param name="usuarioId">ID of the user to deactivate.</param>
+        /// <param name="idAccion">ID of the user performing the deactivation action.</param>
+        /// <returns>A tuple containing success status and a message describing the result.</returns>
         public async Task<(bool IsSuccess, string Message)> DesactivarUsuario(int usuarioId, int idAccion)
         {
             try
@@ -71,6 +88,12 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Activates a previously deactivated user in the system.
+        /// </summary>
+        /// <param name="usuarioId">ID of the user to activate.</param>
+        /// <param name="idAccion">ID of the user performing the activation action.</param>
+        /// <returns>A tuple containing success status and a message describing the result.</returns>
         public async Task<(bool IsSuccess, string Message)> ActivarUsuario(int usuarioId, int idAccion)
         {
             try
@@ -89,6 +112,20 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Creates a new user in the system with validation checks.
+        /// </summary>
+        /// <remarks>
+        /// Validates:
+        /// - Required role
+        /// - DNI format (8-9 digits)
+        /// - DNI uniqueness
+        /// - Required name
+        /// - Supervisor existence if specified
+        /// </remarks>
+        /// <param name="usuario">User object containing the information for the new user.</param>
+        /// <param name="IdUsuarioAccion">ID of the user performing the creation action.</param>
+        /// <returns>A tuple containing success status and a message describing the result.</returns>
         public async Task<(bool IsSuccess, string Message)> CrearUsuario(Usuario usuario, int IdUsuarioAccion)
         {
             try
@@ -151,6 +188,13 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Updates a specific field for a user in the database.
+        /// </summary>
+        /// <param name="usuarioId">ID of the user to update.</param>
+        /// <param name="campo">Name of the field/column to update.</param>
+        /// <param name="nuevoValor">New value to set for the specified field.</param>
+        /// <returns>A tuple containing success status and a message describing the result.</returns>
         public async Task<(bool IsSuccess, string Message)> UpdateUsuarioXCampo(int usuarioId, string campo, string nuevoValor)
         {
             try
@@ -175,6 +219,16 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves a hidden user by their DNI number.
+        /// </summary>
+        /// <param name="dni">Document identification number to search for.</param>
+        /// <returns>
+        /// A tuple containing:
+        /// - Success status
+        /// - Message describing the result
+        /// - User data if found, otherwise null
+        /// </returns>
         public async Task<(bool IsSuccess, string Message, AsesoresOcultos? Data)> GetUsuarioOculto(string dni)
         {
             try

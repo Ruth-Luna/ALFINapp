@@ -1,87 +1,42 @@
 using ALFINapp.Infrastructure.Persistence.Models;
-using ALFINapp.Infrastructure.Persistence.Procedures;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace ALFINapp.Infrastructure.Services
 {
+    /// <summary>
+    /// Service class that provides database operations for client query operations in the ALFINapp system.
+    /// Handles retrieval of client details for typification from different data sources (A365 and ALFIN).
+    /// </summary>
     public class DBServicesConsultasClientes
     {
         private readonly MDbContext _context;
-
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DBServicesConsultasClientes"/> class.
+        /// </summary>
+        /// <param name="context">The database context used for database operations.</param>
         public DBServicesConsultasClientes(MDbContext context)
         {
             _context = context;
         }
-        public async Task<(bool IsSuccess, string message, ConsultaObtenerCliente? Data)> GetClienteByTelefono(string telefono)
-        {
-            try
-            {
-                var detalleclienteExistenteBD = _context.detalle_base
-                    .FromSqlRaw("EXEC SP_Consulta_Obtener_detalle_cliente_por_telefono @Telefono",
-                        new SqlParameter("@Telefono", telefono))
-                    .AsEnumerable()
-                    .FirstOrDefault();
-
-                if (detalleclienteExistenteBD == null)
-                {
-                    var detalleclienteExistenteBDALFIN = _context.consulta_obtener_cliente
-                    .FromSqlRaw("EXEC SP_Consulta_Obtener_detalle_cliente_por_telefono_ALFIN_banco @Telefono",
-                        new SqlParameter("@Telefono", telefono))
-                    .AsEnumerable()
-                    .FirstOrDefault();
-                    if (detalleclienteExistenteBDALFIN == null)
-                    {
-                        return (false, "El cliente no tiene Detalles en la Base de Datos de A365, este TELEFONO no se encuentra en ninguna de nuestras bases de datos conocidas", null);
-                    }
-                    return (true, "El cliente fue encontrado en la base de Datos de ALFIN", detalleclienteExistenteBDALFIN); // Se devuelve la entrada correspondiente
-                }
-
-                var baseClienteExistenteBD = await _context.base_clientes.FirstOrDefaultAsync(c => c.IdBase == detalleclienteExistenteBD.IdBase);
-
-                if (baseClienteExistenteBD == null)
-                {
-                    return (false, "El cliente no tiene Detalles en la Base de Datos de A365, este TELEFONO no se encuentra en ninguna de nuestras bases de datos conocidas", null);
-                }
-
-                var clienteA365Encontrado = new ConsultaObtenerCliente
-                {
-                    Dni = baseClienteExistenteBD.Dni,
-                    ColorFinal = detalleclienteExistenteBD.ColorFinal,
-                    Color = detalleclienteExistenteBD.Color,
-                    Campaña = detalleclienteExistenteBD.Campaña,
-                    OfertaMax = detalleclienteExistenteBD.OfertaMax,
-                    Plazo = detalleclienteExistenteBD.Plazo,
-                    CapacidadMax = detalleclienteExistenteBD.CapacidadMax,
-                    SaldoDiferencialReeng = detalleclienteExistenteBD.SaldoDiferencialReeng,
-                    ClienteNuevo = detalleclienteExistenteBD.ClienteNuevo,
-                    Deuda1 = $"{detalleclienteExistenteBD.Deuda1} - {detalleclienteExistenteBD.Deuda2} - {detalleclienteExistenteBD.Deuda3}",
-                    Entidad1 = $"{detalleclienteExistenteBD.Entidad1} - {detalleclienteExistenteBD.Entidad2} - {detalleclienteExistenteBD.Entidad3}",
-                    Tasa1 = detalleclienteExistenteBD.Tasa1,
-                    Tasa2 = detalleclienteExistenteBD.Tasa2,
-                    Tasa3 = detalleclienteExistenteBD.Tasa3,
-                    Tasa4 = detalleclienteExistenteBD.Tasa4,
-                    Tasa5 = detalleclienteExistenteBD.Tasa5,
-                    Tasa6 = detalleclienteExistenteBD.Tasa6,
-                    Tasa7 = detalleclienteExistenteBD.Tasa7,
-                    GrupoTasa = detalleclienteExistenteBD.GrupoTasa,
-                    Usuario = detalleclienteExistenteBD.Usuario,
-                    SegmentoUser = detalleclienteExistenteBD.SegmentoUser,
-                    PerfilRo = detalleclienteExistenteBD.PerfilRo,
-                    TraidoDe = "BDA365",
-                    IdBase = detalleclienteExistenteBD.IdBase,
-                    ApellidoPaterno = baseClienteExistenteBD.XAppaterno,
-                    ApellidoMaterno = baseClienteExistenteBD.XApmaterno,
-                    Nombres = baseClienteExistenteBD.XNombre
-                };
-                return (true, "El cliente fue encontrado en la base de Datos de A365", clienteA365Encontrado); // Se devuelve la entrada correspondiente
-            }
-            catch (System.Exception ex)
-            {
-                return (false, ex.Message, null);
-            }
-        }
-
+        
+        /// <summary>
+        /// Retrieves detailed client information from the A365 database for typification purposes.
+        /// </summary>
+        /// <param name="IdBase">Base ID of the client record to retrieve.</param>
+        /// <param name="IdUsuarioV">ID of the user (advisor) retrieving the information.</param>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - message: Descriptive message about the result
+        /// - Data: DetalleTipificarClienteDTO object with client details if successful, otherwise null
+        /// </returns>
+        /// <remarks>
+        /// Uses the stored procedure SP_Consulta_Obtener_detalle_cliente_para_tipificar_A365 to retrieve client data.
+        /// Maps all client information including personal data, contact details, and financial information to a DTO.
+        /// </remarks>
+        /// <exception cref="Exception">Thrown when there is an error during the database operation.</exception>
         public async Task<(bool IsSuccess, string message, DetalleTipificarClienteDTO? Data)> GetDataParaTipificarClienteA365(int IdBase, int IdUsuarioV)
         {
             try
@@ -203,6 +158,21 @@ namespace ALFINapp.Infrastructure.Services
                 return (false, ex.Message, null);
             }
         }
+        /// <summary>
+        /// Retrieves manually added phone numbers for a specific client.
+        /// </summary>
+        /// <param name="IdCliente">ID of the client to retrieve phone numbers for.</param>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - message: Descriptive message about the result
+        /// - Data: List of TelefonosAgregadosDTO objects with phone details if found, otherwise null
+        /// </returns>
+        /// <remarks>
+        /// Queries the telefonos_agregados table to find records associated with the specified client.
+        /// Each phone record includes the number, comments, last typification, and typification date.
+        /// </remarks>
+        /// <exception cref="Exception">Thrown when there is an error during the database operation.</exception>
         public async Task<(bool IsSuccess, string message, List<TelefonosAgregadosDTO>? Data)> GetTelefonosTraidosManualmente(int IdCliente)
         {
             try
@@ -229,6 +199,34 @@ namespace ALFINapp.Infrastructure.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves detailed client information from the ALFIN database for typification purposes.
+        /// </summary>
+        /// <param name="IdBase">Base ID of the client record to retrieve.</param>
+        /// <param name="usuarioId">ID of the user (advisor) retrieving the information.</param>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - message: Descriptive message about the result
+        /// - Data: DetalleTipificarClienteDTO object with client details if successful, otherwise null
+        /// </returns>
+        /// <remarks>
+        /// Performs a complex join operation across multiple tables in the ALFIN database:
+        /// - base_clientes
+        /// - base_clientes_banco
+        /// - base_clientes_banco_campana_grupo
+        /// - base_clientes_banco_color
+        /// - base_clientes_banco_plazo
+        /// - base_clientes_banco_rango_deuda
+        /// - base_clientes_banco_usuario
+        /// - clientes_enriquecidos
+        /// - clientes_asignados
+        /// 
+        /// Maps financial offers with different terms (12m, 18m, 24m, 36m) and rates.
+        /// Multiplies the offer amount by 100 to standardize with A365 data.
+        /// Uses default "DESCONOCIDO" values for fields not available in the ALFIN database.
+        /// </remarks>
+        /// <exception cref="Exception">Thrown when there is an error during the database operation.</exception>
         public async Task<(bool IsSuccess, string message, DetalleTipificarClienteDTO? Data)> GetDataParaTipificarClienteAlfin(int IdBase, int usuarioId)
         {
             try

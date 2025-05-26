@@ -9,14 +9,50 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ALFINapp.Infrastructure.Services
 {
+    /// <summary>
+    /// Service class that provides database operations for advisor assignment management in the ALFINapp system.
+    /// Handles client reassignment processes between advisors and databases.
+    /// </summary>
     public class DBServicesAsignacionesAsesores
     {
         private readonly MDbContext _context;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DBServicesAsignacionesAsesores"/> class.
+        /// </summary>
+        /// <param name="context">The database context used for database operations.</param>
         public DBServicesAsignacionesAsesores(MDbContext context)
         {
             _context = context;
         }
+        /// <summary>
+        /// Reassigns a client to a specific advisor in the system.
+        /// </summary>
+        /// <param name="DNIBusqueda">DNI (identification number) of the client to reassign.</param>
+        /// <param name="BaseTipo">Source database type ("BDA365" or "BDALFIN").</param>
+        /// <param name="IdUsuarioVAsignar">ID of the advisor to assign the client to.</param>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the reassignment was successful
+        /// - message: Descriptive message about the result
+        /// </returns>
+        /// <remarks>
+        /// This method handles the reassignment process differently based on the database source:
+        /// 
+        /// For BDA365:
+        /// 1. Verifies the client exists in the A365 database
+        /// 2. Checks if the client is already enriched in the system
+        /// 3. If assigned to supervisor but not advisor, updates the assignment
+        /// 4. If not assigned at all, creates new enriched record and assignment
+        /// 
+        /// For BDALFIN:
+        /// 1. Verifies the client exists in the ALFIN bank database
+        /// 2. Creates or updates base_clientes record if needed
+        /// 3. Creates or retrieves the enriched client record
+        /// 4. Creates a new assignment record with ALFIN source
+        /// 
+        /// In both cases, the method prevents duplicate assignments within the same month.
+        /// </remarks>
+        /// <exception cref="Exception">Thrown when there is an error during the database operation.</exception>
         public async Task<(bool IsSuccess, string message)> GuardarReAsignacionCliente(string DNIBusqueda, string BaseTipo, int IdUsuarioVAsignar)
         {
             try
@@ -39,7 +75,7 @@ namespace ALFINapp.Infrastructure.Services
                     from ca in caGroup.DefaultIfEmpty()
                     where ca.IdUsuarioV == IdUsuarioVAsignar &&
                           bc.Dni == DNIBusqueda &&
-                        ca.FechaAsignacionVendedor.HasValue && 
+                        ca.FechaAsignacionVendedor.HasValue &&
                         ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year &&
                         ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month
                     select ca
@@ -63,7 +99,7 @@ namespace ALFINapp.Infrastructure.Services
                     {
                         return (false, "El cliente no tiene Detalle Base en la Base de Datos de A365, si el cliente tiene Datos en la base de Datos del banco Alfin puede hacer la consulta con los datos correspondientes");
                     }
-                    
+
                     var EnriquecidoClienteA365 = await _context.clientes_enriquecidos.FirstOrDefaultAsync(ce => ce.IdBase == ClienteDBA365.bc.IdBase);
                     if (EnriquecidoClienteA365 != null)
                     {

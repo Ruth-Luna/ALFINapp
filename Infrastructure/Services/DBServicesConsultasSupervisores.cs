@@ -1,47 +1,40 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.Infrastructure.Persistence.Models;
-using Microsoft.EntityFrameworkCore; // Assuming 'Usuario' is defined in the Models namespace
+using Microsoft.EntityFrameworkCore;
 
 namespace ALFINapp.Infrastructure.Services
 {
-
+    /// <summary>
+    /// Service class that provides database operations for supervisor-related queries in the ALFINapp system.
+    /// Handles retrieval of advisor data, client assignments, and supervisor performance metrics.
+    /// </summary>
     public class DBServicesConsultasSupervisores
     {
         private readonly MDbContext _context;
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DBServicesConsultasSupervisores"/> class.
+        /// </summary>
+        /// <param name="context">The database context used for database operations.</param>
         public DBServicesConsultasSupervisores(MDbContext context)
         {
             _context = context;
         }
-
+        
         /// <summary>
-        /// Obtiene la lista de asesores asignados a un supervisor específico
+        /// Retrieves all advisors (asesores) assigned to a specific supervisor.
         /// </summary>
-        /// <param name="IdSupervisor">ID del supervisor del cual se desean obtener los asesores asignados. Puede ser null</param>
+        /// <param name="IdSupervisor">ID of the supervisor to get assigned advisors for.</param>
         /// <returns>
-        /// Una tupla que contiene:
-        /// - IsSuccess: Indica si la operación fue exitosa
-        /// - Message: Mensaje descriptivo del resultado de la operación
-        /// - Data: Lista de usuarios (asesores) asignados al supervisor. Puede ser null si ocurre un error
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - Data: List of Usuario objects representing the assigned advisors if successful, otherwise null
         /// </returns>
         /// <remarks>
-        /// Este método consulta la base de datos para obtener todos los usuarios cuyo IDUSUARIOSUP
-        /// coincida con el ID del supervisor proporcionado.
+        /// Uses the stored procedure SP_asesores_conseguir_asesores_asignados_no_contador to retrieve advisors,
+        /// excluding those with counter roles.
         /// </remarks>
-        /// <exception cref="Exception">Se lanza cuando ocurre un error en la consulta a la base de datos</exception>
-        /// <example>
-        /// Ejemplo de uso:
-        /// <code>
-        /// var result = await GetAsesorsFromSupervisor(1);
-        /// if (result.IsSuccess)
-        /// {
-        ///     var asesores = result.Data;
-        ///     // Procesar la lista de asesores
-        /// }
-        /// </code>
-        /// </example>
+        /// <exception cref="Exception">Thrown when there is an error during the database operation.</exception>
         public async Task<(bool IsSuccess, string Message, List<Usuario>? Data)> GetAsesorsFromSupervisor(int IdSupervisor)
         {
             try
@@ -61,16 +54,24 @@ namespace ALFINapp.Infrastructure.Services
         }
 
         /// <summary>
-        /// This method retrieves the number of clients assigned to a specific asesor and supervisor.
-        /// It uses a stored procedure to get the data and maps it to a DTO object.
+        /// Retrieves the number of clients assigned to a specific advisor and supervisor.
         /// </summary>
-        /// <param name="AsesorBusqueda">The asesor for which the number of clients will be retrieved.</param>
-        /// <param name="IdSupervisor">The supervisor's id to filter the asesor.</param>
+        /// <param name="AsesorBusqueda">The advisor for which the number of clients will be retrieved.</param>
+        /// <param name="IdSupervisor">The supervisor's ID to filter the advisor.</param>
         /// <returns>
-        /// A tuple containing a boolean indicating success or failure, a message describing the outcome,
-        /// and a nullable VendedorConClientesDTO object containing the data.
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - Data: VendedorConClientesDTO object containing client assignment data if successful, otherwise null
         /// </returns>
+        /// <remarks>
+        /// Uses the stored procedure SP_CONSEGUIR_NUM_CLIENTES_POR_ASESOR to get client count data.
+        /// Maps results to a DTO that includes advisor information and activation status.
+        /// </remarks>
+        /// <exception cref="Exception">Thrown when there is an error during the database operation.</exception>
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<(bool IsSuccess, string Message, VendedorConClientesDTO? Data)> GetNumberTipificacionesPlotedOnDTO(Usuario AsesorBusqueda, int IdSupervisor)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             try
             {
@@ -97,7 +98,27 @@ namespace ALFINapp.Infrastructure.Services
                 return (false, $"Ocurrió un error al obtener los asesores: {ex.Message}", null);
             }
         }
-
+        
+        /// <summary>
+        /// Retrieves detailed information about all advisors assigned to a supervisor including client assignment metrics.
+        /// </summary>
+        /// <param name="idSupervisorActual">ID of the supervisor to query advisors for.</param>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - Data: List of UsuarioAsesorDTO objects with advisor details and client metrics if successful, otherwise null
+        /// </returns>
+        /// <remarks>
+        /// Performs a complex LINQ query that:
+        /// - Gets all users with role ID 3 (advisors) assigned to the specified supervisor
+        /// - Left joins with client assignments table
+        /// - Groups and aggregates data to calculate:
+        ///   - Total assigned clients for current month/year
+        ///   - Clients being worked on (those with tipificacion)
+        ///   - Clients not being worked on
+        /// </remarks>
+        /// <exception cref="Exception">Thrown when there is an error during the database operation.</exception>
         public async Task<(bool IsSuccess, string Message, List<UsuarioAsesorDTO>? Data)> ConsultaAsesoresDelSupervisor(int idSupervisorActual)
         {
             try
@@ -158,6 +179,27 @@ namespace ALFINapp.Infrastructure.Services
                 return (false, $"Ocurrió un error al obtener los asesores: {ex.Message}", null);
             }
         }
+        
+        /// <summary>
+        /// Retrieves all client leads assigned to a supervisor, optionally filtered by destination.
+        /// </summary>
+        /// <param name="idSupervisorActual">ID of the supervisor to query leads for.</param>
+        /// <param name="destino">Optional destination filter. If null, returns all leads.</param>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - Data: List of ClientesAsignado objects representing assigned leads if successful, otherwise null
+        /// </returns>
+        /// <remarks>
+        /// Filters clients based on multiple criteria:
+        /// - Assigned to the specified supervisor
+        /// - Not disbursed (ClienteDesembolso != true)
+        /// - Not withdrawn (ClienteRetirado != true)
+        /// - Assigned in the current year and month
+        /// - Matching the specified destination (if provided)
+        /// </remarks>
+        /// <exception cref="Exception">Thrown when there is an error during the database operation.</exception>
         public async Task<(bool IsSuccess, string Message, List<ClientesAsignado>? Data)> ConsultaLeadsDelSupervisorDestino(int idSupervisorActual, string destino)
         {
             try

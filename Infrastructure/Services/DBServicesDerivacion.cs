@@ -6,13 +6,40 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ALFINapp.Infrastructure.Services
 {
+    /// <summary>
+    /// Service class that provides database operations for client referral/derivation management in the ALFINapp system.
+    /// Handles creation, verification, and retrieval of derivation data between advisors and clients.
+    /// </summary>
     public class DBServicesDerivacion
     {
         private readonly MDbContext _context;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DBServicesDerivacion"/> class.
+        /// </summary>
+        /// <param name="context">The database context used for database operations.</param>
         public DBServicesDerivacion(MDbContext context)
         {
             _context = context;
         }
+        /// <summary>
+        /// Generates a new client derivation record in the system.
+        /// </summary>
+        /// <param name="FechaVisitaDerivacion">Scheduled date for the client visit.</param>
+        /// <param name="AgenciaDerivacion">Agency name where the derivation will be processed.</param>
+        /// <param name="DNIAsesorDerivacion">DNI of the advisor handling the derivation.</param>
+        /// <param name="TelefonoDerivacion">Contact phone number for the derivation.</param>
+        /// <param name="DNIClienteDerivacion">DNI of the client being derived.</param>
+        /// <param name="NombreClienteDerivacion">Full name of the client being derived.</param>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the derivation was successfully generated
+        /// - Message: Descriptive message about the result
+        /// </returns>
+        /// <remarks>
+        /// This method first checks if a derivation already exists for the same advisor-client pair in the current month.
+        /// If not, it creates a new derivation record through the stored procedure SP_derivacion_insertar_derivacion_test.
+        /// </remarks>
+        /// <exception cref="Exception">Thrown when there is an error during the database operation.</exception>
         public async Task<(bool IsSuccess, string Message)> GenerarDerivacion(DateTime FechaVisitaDerivacion,
                                                     string AgenciaDerivacion,
                                                     string DNIAsesorDerivacion,
@@ -65,120 +92,27 @@ namespace ALFINapp.Infrastructure.Services
                 return (false, ex.Message);
             }
         }
-        public async Task<(bool IsSuccess, string Message, List<GestionDetalleDTO>? Data)> GetDerivacionInformationAll(List<DerivacionesAsesores> clientes)
-        {
-            try
-            {
-                var getAllDnisClientes = clientes.Select(x => x.DniCliente).ToHashSet();
-                var getInformationDesem = await _context.desembolsos
-                    .Where(x => getAllDnisClientes.Contains(x.DniDesembolso)
-                        && x.FechaDesembolsos.HasValue
-                        && x.FechaDesembolsos.Value.Year == DateTime.Now.Year
-                        && x.FechaDesembolsos.Value.Month == DateTime.Now.Month
-                        && x.Sucursal != null
-                        && x.DocAsesor != null)
-                    .OrderByDescending(x => x.FechaDesembolsos)
-                    .ToListAsync();
-                var getInformationA365 = await _context.base_clientes
-                    .Join(_context.detalle_base, bc => bc.IdBase, db => db.IdBase, (bc, db) => new { bc, db })
-                    .Where(x => getAllDnisClientes.Contains(x.bc.Dni)
-                        && x.db.FechaCarga.HasValue
-                        && x.db.FechaCarga.Value.Year == DateTime.Now.Year
-                        && x.db.FechaCarga.Value.Month == DateTime.Now.Month)
-                    .OrderByDescending(x => x.db.FechaCarga)
-                    .AsNoTracking()
-                    .ToListAsync();
-                var getInformationAlfin = await _context.base_clientes_banco
-                    .Join(_context.base_clientes_banco_campana_grupo,
-                        bcb => bcb.IdCampanaGrupoBanco,
-                        bcg => bcg.IdCampanaGrupo,
-                        (bcb, bcg) => new { bcb, bcg })
-                    .Join(_context.base_clientes_banco_color,
-                        b => b.bcb.IdColorBanco,
-                        bcc => bcc.IdColor,
-                        (b, bcc) => new { b.bcb, b.bcg, bcc })
-                    .Join(_context.base_clientes_banco_plazo,
-                        b => b.bcb.IdPlazoBanco,
-                        bcp => bcp.IdPlazo,
-                        (b, bcp) => new { b.bcb, b.bcg, b.bcc, bcp })
-                    .Join(_context.base_clientes_banco_rango_deuda,
-                        b => b.bcb.IdRangoDeuda,
-                        bcr => bcr.IdRangoDeuda,
-                        (b, bcr) => new { b.bcb, b.bcg, b.bcc, b.bcp, bcr })
-                    .Join(_context.base_clientes_banco_usuario,
-                        b => b.bcb.IdUsuarioBanco,
-                        bcu => bcu.IdUsuario,
-                        (b, bcu) => new { b.bcb, b.bcg, b.bcc, b.bcp, b.bcr, bcu })
-                    .Where(b => getAllDnisClientes.Contains(b.bcb.Dni)
-                        && b.bcb.FechaSubida.HasValue
-                        && b.bcb.FechaSubida.Value.Year == DateTime.Now.Year
-                        && b.bcb.FechaSubida.Value.Month == DateTime.Now.Month)
-                    .OrderByDescending(b => b.bcb.FechaSubida)
-                    .AsNoTracking()
-                    .ToListAsync();
-
-                var joinInformation = (from cliente in clientes
-                                        join desem in getInformationDesem on cliente.DniCliente equals desem.DniDesembolso into desemGroup
-                                        from desem in desemGroup.DefaultIfEmpty()
-                                        join a365 in getInformationA365 on cliente.DniCliente equals a365.bc.Dni into a365Group
-                                        from a365 in a365Group.DefaultIfEmpty()
-                                        join alfin in getInformationAlfin on cliente.DniCliente equals alfin.bcb.Dni into alfinGroup
-                                        from alfin in alfinGroup.DefaultIfEmpty()
-                                        let ofertaA365 = a365?.db.OfertaMax ?? 0
-                                        let ofertaAlfin = alfin?.bcb.OfertaMax ?? 0
-                                        select new GestionDetalleDTO
-                                        {
-                                            ArchivoOrigen = a365 != null ? "A365" : alfin != null ? "ALFIN" : "NO SE ENCONTRO",
-                                            Canal = a365 != null ? a365.db.Canal : " ",
-                                            CodCampaña = a365 != null ? a365.db.Campaña : alfin?.bcg.NombreCampana ?? "NO SE ENCONTRO CAMPAÑA",
-                                            Oferta = ofertaA365 > 0 ? ofertaA365 : ofertaAlfin,
-                                            CodCanal = a365?.db.Canal ?? " ",
-                                            DocAsesor = cliente.DniAsesor,
-                                            DocCliente = cliente.DniCliente,
-                                            EstadoDerivacion = cliente.EstadoDerivacion,
-                                            FechaDerivacion = cliente.FechaDerivacion,
-                                            FechaEnvio = cliente.FechaVisita ?? DateTime.MinValue,
-                                            FechaGestion = cliente.FechaDerivacion,
-                                            FueProcesadaLaDerivacion = cliente.FueProcesado,
-                                            IdAsignacion = cliente.IdAsignacion,
-                                            IdDerivacion = cliente.IdDerivacion,
-                                            FechaCarga = a365?.db.FechaCarga ?? alfin?.bcb.FechaSubida ?? DateTime.MinValue,
-                                            IdSupervisor = 0,
-                                            Supervisor = "NO SE ENCONTRO SUPERVISOR ENCARGADO",
-                                            IdDesembolso = desem?.IdDesembolsos ?? 0,
-                                            FechaDesembolso = desem?.FechaDesembolsos,
-                                            FueDesembolsado = desem != null,
-                                            EstadoDesembolso = desem != null ? "DESEMBOLSADO" : "NO DESEMBOLSADO",
-                                            Observacion = "LA INFORMACION TRAIDA ES DE SISTEMA INTERNO",
-                                            NombreCompletoCliente = cliente.NombreCliente,
-                                            Telefono = cliente.TelefonoCliente,
-                                            OrigenTelefono = "A365",
-                                            DocAsesorDesembolso = desem != null ? desem.DocAsesor != null ? desem.DocAsesor : "NO SE ENCONTRO": "NO DESEMBOLSADO",
-                                        }).ToList();
-                foreach (var item in joinInformation)
-                {
-                    if (item.DocAsesor != item.DocAsesorDesembolso && item.FueDesembolsado == true)
-                    {
-                        item.IdDesembolso = 0;
-                        item.FechaDesembolso = null;
-                        item.FueDesembolsado = false;
-                        item.EstadoDesembolso = $"NO DESEMBOLSADO";
-                    }
-                }
-
-                joinInformation = joinInformation.OrderBy(x => x.FechaDerivacion).ToList();
-                joinInformation = joinInformation
-                    .GroupBy(x => x.DocCliente)
-                    .Select(g => g.First())
-                    .ToList();
-
-                return (true, "Información de las derivaciones obtenida correctamente", joinInformation);
-            }
-            catch (System.Exception ex)
-            {
-                return (false, ex.Message, null);
-            }
-        }
+        /// <summary>
+        /// Verifies if a client derivation has been sent and processed in the system.
+        /// </summary>
+        /// <param name="dni">DNI of the client to verify derivation status for.</param>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the derivation was successfully processed
+        /// - Message: Descriptive message about the result or current status
+        /// </returns>
+        /// <remarks>
+        /// This method implements a polling mechanism that checks the derivation status periodically:
+        /// - Maximum wait time: 40 seconds
+        /// - Polling interval: 1 second
+        /// - Uses stored procedure sp_Derivacion_verificar_derivacion_enviada to check status
+        /// 
+        /// The method returns different messages based on the verification outcome:
+        /// - Derivation not found
+        /// - Derivation processed successfully
+        /// - Derivation saved but not yet processed (timeout)
+        /// </remarks>
+        /// <exception cref="Exception">Thrown when there is an error during the database operation.</exception>
         public async Task<(bool IsSuccess, string Message)> VerificarDerivacionEnviada(string dni)
         {
             try

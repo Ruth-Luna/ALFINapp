@@ -1,38 +1,72 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.Infrastructure.Persistence.Models;
-using ALFINapp.Infrastructure.Persistence.Models.DTOs;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace ALFINapp.Infrastructure.Services
 {
+    /// <summary>
+    /// Service class that provides database operations for administrator-level queries in the ALFINapp system.
+    /// Handles database filtering, supervisor management, and user retrieval operations.
+    /// </summary>
     public class DBServicesConsultasAdministrador
     {
         private readonly MDbContext _context;
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DBServicesConsultasAdministrador"/> class.
+        /// </summary>
+        /// <param name="context">The database context used for database operations.</param>
         public DBServicesConsultasAdministrador(MDbContext context)
         {
             _context = context;
         }
 
+        /// <summary>
+        /// Filters client databases based on multiple criteria for assignment purposes.
+        /// </summary>
+        /// <param name="base_busqueda">Database source to filter by (DBA365 or DBALFIN).</param>
+        /// <param name="rango_edad">Age range filter.</param>
+        /// <param name="rango_tasas">Rate range filter.</param>
+        /// <param name="oferta">Minimum offer amount filter.</param>
+        /// <param name="tipo_cliente">Client type filter.</param>
+        /// <param name="cliente_estado">Client status filter.</param>
+        /// <param name="grupo_tasa">Rate group filter.</param>
+        /// <param name="grupo_monto">Amount group filter.</param>
+        /// <param name="deudas">Debt flag filter.</param>
+        /// <param name="campaña">List of campaign names to filter by.</param>
+        /// <param name="usuarios">List of user names to filter by.</param>
+        /// <param name="propension">List of propensity values to filter by.</param>
+        /// <param name="color">List of color classifications to filter by.</param>
+        /// <param name="color_final">List of final color classifications to filter by.</param>
+        /// <param name="frescura">List of data freshness indicators to filter by.</param>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - Data: List of AsignacionFiltrarBasesDTO objects matching the criteria if successful, otherwise null
+        /// </returns>
+        /// <remarks>
+        /// Uses the stored procedure sp_Asignacion_FiltrarBases to perform advanced filtering.
+        /// Parameters are optional - null values are passed as DBNull to the stored procedure.
+        /// List parameters are converted to comma-separated strings before passing to the stored procedure.
+        /// </remarks>
+        /// <exception cref="Exception">Thrown when there is an error during the database operation.</exception>
         public async Task<(bool IsSuccess, string Message, List<AsignacionFiltrarBasesDTO>? Data)> AsignacionFiltrarBases(
-                                    string? base_busqueda,
-                                    string? rango_edad,
-                                    string? rango_tasas,
-                                    decimal? oferta,
-                                    string? tipo_cliente,
-                                    string? cliente_estado,
-                                    string? grupo_tasa,
-                                    string? grupo_monto,
-                                    int? deudas,
-                                    List<string>? campaña,
-                                    List<string>? usuarios,
-                                    List<string>? propension,
-                                    List<string>? color,
-                                    List<string>? color_final,
-                                    List<string>? frescura)
+            string? base_busqueda,
+            string? rango_edad,
+            string? rango_tasas,
+            decimal? oferta,
+            string? tipo_cliente,
+            string? cliente_estado,
+            string? grupo_tasa,
+            string? grupo_monto,
+            int? deudas,
+            List<string>? campaña,
+            List<string>? usuarios,
+            List<string>? propension,
+            List<string>? color,
+            List<string>? color_final,
+            List<string>? frescura)
         {
             try
             {
@@ -70,6 +104,19 @@ namespace ALFINapp.Infrastructure.Services
                 return (false, ex.Message, null);
             }
         }
+        /// <summary>
+        /// Retrieves all users with supervisor role (role ID 2) from the system.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - Data: List of Usuario objects representing supervisors if successful, otherwise null
+        /// </returns>
+        /// <remarks>
+        /// Uses a LINQ query to filter users where IdRol equals 2 (supervisor role).
+        /// </remarks>
+        /// <exception cref="Exception">Thrown when there is an error during the database operation.</exception>
         public async Task<(bool IsSuccess, string Message, List<Usuario>? Data)> ConseguirTodosLosSupervisores()
         {
             try
@@ -91,6 +138,19 @@ namespace ALFINapp.Infrastructure.Services
                 return (false, ex.Message, null);
             }
         }
+        /// <summary>
+        /// Retrieves all users registered in the system regardless of role.
+        /// </summary>
+        /// <returns>
+        /// A tuple containing:
+        /// - IsSuccess: Indicates if the operation was successful
+        /// - Message: Descriptive message about the result
+        /// - Data: List of Usuario objects representing all system users if successful, otherwise null
+        /// </returns>
+        /// <remarks>
+        /// Uses the stored procedure sp_usuario_conseguir_todos to retrieve all users.
+        /// </remarks>
+        /// <exception cref="Exception">Thrown when there is an error during the database operation.</exception>
         public async Task<(bool IsSuccess, string Message, List<Usuario>? Data)> ConseguirTodosLosUsuarios()
         {
             try
