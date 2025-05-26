@@ -143,20 +143,23 @@
             </div>
         </div>
 
-        <div class="col-12 col-md-6" id="div-pie-contactabilidad-reporte" style="display: none;">
-            <div class="ba-card h-100">
-                <div class="ba-card-header">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
-                            <span>CONTACTABILIDAD</span>
-                        </h5>
+        @if (rol == 1 || rol == 4 || rol == 2)
+        {
+            <div class="col-12 col-md-6" id="div-pie-contactabilidad-reporte" style="display: none;">
+                <div class="ba-card h-100">
+                    <div class="ba-card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="ba-card-title ba-color-primary d-inline-flex align-items-baseline gap-2">
+                                <span>CONTACTABILIDAD</span>
+                            </h5>
+                        </div>
+                    </div>
+                    <div class="ba-card-body">
+                        <div id="chart-contactabilidad-reporte"></div>
                     </div>
                 </div>
-                <div class="ba-card-body">
-                    <div id="chart-contactabilidad-reporte"></div>
-                </div>
             </div>
-        </div>
+        }
 
         <div class="col-12 col-md-6">
             <div class="ba-card h-100">
@@ -311,9 +314,9 @@
     </div>
 
     <div class="row g-3">
-        <div class="col-12 col-md-6">
+        <div class="@(rol == 3 ? "col-12 col-md-12" : "col-12 col-md-6")">
             <div class="d-none">
-                <div id="div-derivaciones-asesor"></div>
+            <div id="div-derivaciones-asesor"></div>
             </div>
         </div>
         <div class="col-12 col-md-6">
