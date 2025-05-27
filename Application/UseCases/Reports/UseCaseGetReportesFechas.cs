@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.Application.Interfaces.Reports;
 using ALFINapp.Domain.Interfaces;
-using ALFINapp.Infrastructure.Repositories;
 using ALFINapp.API.Models;
 
 namespace ALFINapp.Application.UseCases.Reports

@@ -257,41 +257,6 @@ namespace ALFINapp.Infrastructure.Repositories
                 return (false, "Error en la base de datos");
             }
         }
-
-        public async Task<(bool success, string message)> verDisponibilidad(string DniCliente, string DniAsesor)
-        {
-            try
-            {
-                var parametros = new[]
-                {
-                    new SqlParameter("@dni_cliente", DniCliente),
-                    new SqlParameter("@dni_asesor", DniAsesor)
-                };
-                var verDerivacion = await _context.resultado_verificacion
-                    .FromSqlRaw("EXEC SP_verificar_disponibilidad_para_derivacion @dni_cliente, @dni_asesor", parametros)
-                    .AsNoTracking()
-                    .ToListAsync();
-                var resultadoVerificacion = verDerivacion.FirstOrDefault();
-                if (resultadoVerificacion == null)
-                {
-                    return (false, "Ha ocurrido un error en la base de datos, intentelo nuevamente");
-                }
-                if (resultadoVerificacion.Resultado == 0)
-                {
-                    return (false, resultadoVerificacion.Mensaje);
-                }
-                else 
-                {
-                    return (true, resultadoVerificacion.Mensaje);
-                }
-            }
-            catch (System.Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return (false, "Error en la base de datos");
-            }
-        }
-
         public async Task<(bool success, string message)> verDisponibilidad(int idBase)
         {
             try
