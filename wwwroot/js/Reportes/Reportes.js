@@ -6,12 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     idrol = idrol === "null" ? null : parseInt(idrol);
     reportesData = JSON.parse(reportesElement.getAttribute("data-json"));
 
-    var filtroFecha = document.getElementById("filtro-por-fecha").getAttribute("data");
-    filtroFecha = filtroFecha === "null" ? null : filtroFecha;
-    console.log(filtroFecha);
-
     var fechafil = document.getElementById("filtro-por-fecha").getAttribute("data");
-    console.log(filtroFecha);
     if (idrol === 1 || idrol === 4 || idrol === 2) {
         cargarDerivacionesGenerales();
         cargarProgresoAsignacion();
@@ -31,13 +26,12 @@ document.addEventListener('DOMContentLoaded', function () {
             confirmButtonText: 'Aceptar'
         });
     }
-    if (filtroFecha === 'True') {
-        console.log("filtro por fecha");
+    /*if (filtroFecha === 'True') {
         var fechafil = document.getElementById("fecha-filtro").getAttribute("data");
         year = fechafil.split("-")[0];
         month = fechafil.split("-")[1];
         cargarReporteParcialMeses(parseInt(month, 10), parseInt(year, 10));
-    }
+    }*/
 });
 
 
@@ -70,8 +64,6 @@ function cargarDerivacionesGenerales() {
         return new Date(year, month - 1, day); // ¡mes - 1 porque en JS enero es 0!
     });
     fechasDisponibles.sort((a, b) => b - a); // Orden descendente
-    console.log(lineaGestionVsDerivacion);
-    console.log(fechasDisponibles);
     var today = fechasDisponibles[0]; // Última fecha registrada
 
     // Usar la fecha de referencia para determinar mes y año
@@ -105,7 +97,6 @@ function cargarDerivacionesGenerales() {
             return null;
         }
     });
-    console.log(contadorDerivacion);
     var contadorGestion = allDates.map(date => {
         var dateObj = parseDate(date);
         if (dateObj <= today) {
@@ -311,7 +302,6 @@ function cargarProgreso() {
 
 function cargarProgresoAsignacion() {
     var progresoGeneral = reportesData["progresoGeneral"];
-    console.log(progresoGeneral);
     var totalAsignaciones = progresoGeneral["totaL_ASIGNADOS"];
     var totalGestionados = progresoGeneral["totaL_GESTIONADOS"];
     var porcentaje = Math.floor((totalGestionados / totalAsignaciones) * 100);

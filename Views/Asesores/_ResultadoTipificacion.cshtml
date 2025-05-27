@@ -1,4 +1,4 @@
-@model ResultadoTipificacionViewModelDTO
+@model ALFINapp.Infrastructure.Persistence.Models.ResultadoTipificacionViewModelDTO
 @{
     var AsesoresDelSupervisor = ViewData["AsesoresDelSupervisor"] as IEnumerable<UsuarioAsesorDTO>;
 }
@@ -16,11 +16,14 @@
             <label for="selectAsesorTipificacion" class="form-label">Asesor a Seleccionar</label>
             <select class="form-select" id="selectAsesorTipificacion" name="selectAsesorTipificacion"
                 onchange="cargarNumDeClientesPorTipificacion('@Model.DetalleTipificacion', this.value);">
-                @foreach (var AsesoresAsignados in AsesoresDelSupervisor)
+                @if (AsesoresDelSupervisor != null)
                 {
-                    if (AsesoresAsignados.Estado == "ACTIVO")
+                    @foreach (var AsesoresAsignados in AsesoresDelSupervisor)
                     {
-                        <option value="@AsesoresAsignados.IdUsuario">@AsesoresAsignados.NombresCompletos</option>
+                        if (AsesoresAsignados.Estado == "ACTIVO")
+                        {
+                            <option value="@AsesoresAsignados.IdUsuario">@AsesoresAsignados.NombresCompletos</option>
+                        }
                     }
                 }
             </select>

@@ -260,7 +260,7 @@ namespace ALFINapp.API.Controllers
                                                                                                 && g.ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month) // Diferencia entre asignados y trabajados
                                                         }).FirstOrDefault();
                 var asesoresAsignadosaSupervisor = (from u in _context.usuarios
-                                                    where u.Rol == "VENDEDOR" && u.IDUSUARIOSUP == idSupervisorActual && u.IdUsuario != idUsuario
+                                                    where u.IdRol == 3 && u.IDUSUARIOSUP == idSupervisorActual && u.IdUsuario != idUsuario
                                                     join ca in _context.clientes_asignados on u.IdUsuario equals ca.IdUsuarioV into caGroup
                                                     from ca in caGroup.DefaultIfEmpty()  // Realizamos un left join
                                                     group new { u, ca }

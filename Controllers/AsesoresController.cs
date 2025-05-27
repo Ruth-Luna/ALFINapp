@@ -109,8 +109,9 @@ namespace ALFINapp.API.Controllers
                 return RedirectToAction("Supervisor", "Inicio");
             }
 
-            ViewData["AsesoresDelSupervisor"] = AsesoresDelSupervisor;
+            ViewData["AsesoresDelSupervisor"] = AsesoresDelSupervisor.Data;
             return PartialView("_ResultadoTipificacion", viewModel);
         }
+        
     }
 }

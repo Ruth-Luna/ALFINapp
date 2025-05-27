@@ -57,6 +57,7 @@ public class MDbContext : DbContext
     public DbSet<ReportsTablasMetas> reports_tablas_metas { get; set; }
     public DbSet<ReportsGeneralDatosActualesPorIdUsuarioFecha> reports_general_datos_actuales { get; set; }
     public DbSet<ReportsEtiquetaMetaImporte> reports_etiqueta_meta_importe { get; set; }
+    public DbSet<ReportsSupervisorGestionFecha> reports_supervisor_gestion_fecha { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -88,15 +89,15 @@ public class MDbContext : DbContext
         modelBuilder.Entity<InicioDetallesClientesFromAsesor>()
             .HasNoKey()
             .ToView(null);
-        
+
         modelBuilder.Entity<ReportsSupervisorDerivacionFecha>()
             .HasNoKey()
             .ToView(null);
-        
+
         modelBuilder.Entity<ReportsSupervisorGestion>()
             .HasNoKey()
             .ToView(null);
-        
+
         modelBuilder.Entity<SupervisorGetAsignacionLeads>()
             .HasNoKey()
             .ToView(null);
@@ -140,6 +141,9 @@ public class MDbContext : DbContext
             .HasNoKey()
             .ToView(null);
         modelBuilder.Entity<ReportsEtiquetaMetaImporte>()
+            .HasNoKey()
+            .ToView(null);
+        modelBuilder.Entity<ReportsSupervisorGestionFecha>()
             .HasNoKey()
             .ToView(null);
     }

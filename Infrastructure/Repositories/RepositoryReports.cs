@@ -128,7 +128,7 @@ namespace ALFINapp.Infrastructure.Repositories
                     new SqlParameter("@anio", year)
                 };
 
-                var getGestionDetalles = await _context.GESTION_DETALLE.FromSqlRaw(
+                var getGestionDetalles = await _context.reports_supervisor_gestion_fecha.FromSqlRaw(
                     "EXEC SP_Reportes_Supervisor_gestion @DniSupervisor, @mes, @anio",
                     parameters)
                     .AsNoTracking()
@@ -161,12 +161,7 @@ namespace ALFINapp.Infrastructure.Repositories
                     .AsNoTracking()
                     .ToListAsync();
 
-                var detallesReporte = new DetallesReportesSupervisorDTO();
-                detallesReporte.Asesores = getAsesores;
-                detallesReporte.ClientesAsignados = getAsignaciones;
-                detallesReporte.DerivacionesSupervisor = getDerivaciones;
-                detallesReporte.Desembolsos = getDesembolsos;
-                detallesReporte.gESTIONDETALLEs = getGestionDetalles;
+                var detallesReporte = new DetallesReportesSupervisorDTO(getAsignaciones, getAsesores, getDerivaciones, getDesembolsos, new List<DetallesReportesAsesorDTO>(), getGestionDetalles);
                 return detallesReporte;
             }
             catch (System.Exception ex)

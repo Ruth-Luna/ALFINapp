@@ -26,7 +26,6 @@ function cambiarDatos(idUsuario) {
         return;
     }
 
-    console.log(datosUsuario);
     $.ajax({
         url: "/Usuarios/ModificarUsuario",
         type: "POST",

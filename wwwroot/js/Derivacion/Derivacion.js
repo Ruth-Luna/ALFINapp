@@ -292,7 +292,6 @@ function cargar_asesores_del_supervisor(idSupJson, idAseJson, asesorSelect, idSu
         try {
             const asesoresJson = document.getElementById(idAseJson);
             var asesoresData = JSON.parse(asesoresJson.getAttribute("data-json"));
-            console.log("Asesores Data:", asesoresData);
             asesoresData.forEach(asesor => {
                 asesoresSelect.innerHTML += `
                     <div class="custom-option" id="option-${asesor["dni"]}-select-derivacion" data-value="${asesor.dni}"

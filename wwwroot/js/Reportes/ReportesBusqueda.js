@@ -316,16 +316,12 @@ function cargarAsesoresDelSupervisor(idSupervisor) {
     select.innerHTML = '<option value="">Seleccione un Asesor de Créditos</option>';
 
     let asesoresFiltrados = [];
-    console.log(asesores_data);
-    console.log(idSupervisor);
     if (idSupervisor === null || idSupervisor === '' || idSupervisor === undefined) {
         asesoresFiltrados = asesores_data.filter(a => a.estado === 'ACTIVO');
-        console.log(asesoresFiltrados);
     } else {
         asesoresFiltrados = asesores_data.filter(a => 
             a.idusuariosup == idSupervisor && a.estado === 'ACTIVO'
         );
-        console.log(asesoresFiltrados);
     }
 
     asesoresFiltrados.sort((a, b) => a["nombresCompletos"].localeCompare(b["nombresCompletos"]));

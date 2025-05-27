@@ -36,7 +36,6 @@ async function registrarEmail(idForm) {
     }
 
     let dataJson = JSON.stringify(data);
-    console.log(dataJson);
     const baseUrl = window.location.origin;
     const url = `${baseUrl}/Email/RegisterEmail`;
 

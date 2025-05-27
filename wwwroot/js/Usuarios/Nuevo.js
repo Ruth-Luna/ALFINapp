@@ -30,7 +30,6 @@ function guardarNuevoUsuario() {
             title: 'Error',
             text: 'Existen errores en los campos.'
         });
-        console.log('Existen errores en los campos.');
         return;
     }
 
@@ -72,8 +71,6 @@ function guardarNuevoUsuario() {
         Correo: email
     };
 
-    console.log(dataToSend);
-
     // Send an AJAX request to the server
     $.ajax({
         url: "/Usuarios/CrearUsuario",
@@ -113,11 +110,9 @@ function guardarNuevoUsuario() {
 }
 
 function agregarCampoSupervisores(nuevoRol) {
-    console.log(nuevoRol);
     const campoSupervisores = document.getElementById('campoSupervisores');
     const Nuevo_Supervisor = document.getElementById('Nuevo_Supervisor');
     if (nuevoRol == 3) {
-        console.log("Entrando");
         campoSupervisores.style.display = 'block';
     }
     else {

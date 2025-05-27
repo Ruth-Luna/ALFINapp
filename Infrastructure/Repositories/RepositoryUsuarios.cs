@@ -24,7 +24,12 @@ namespace ALFINapp.Infrastructure.Repositories
                 var asesores = await _context
                     .usuarios
                     .AsNoTracking()
-                    .Where(x => x.IdRol == 3)
+                    .Where(
+                        x => x.IdRol == 3 &&
+                        x.Dni != "73393133" &&
+                        x.Dni !="74049517" &&
+                        x.Dni != "98985454" &&
+                        x.Dni != "87878744")
                     .ToListAsync();
                 var asesoresDTO = new List<DetallesUsuarioDTO>();
                 foreach (var item in asesores)
@@ -54,7 +59,14 @@ namespace ALFINapp.Infrastructure.Repositories
                 var asesores = await _context
                     .usuarios
                     .AsNoTracking()
-                    .Where(x => x.IdRol == 3 && x.IDUSUARIOSUP == idSupervisor)
+                    .Where(
+                        x => x.IdRol == 3 &&
+                        x.IDUSUARIOSUP == idSupervisor &&
+                        x.Dni != "73393133" &&
+                        x.Dni !="74049517" &&
+                        x.Dni != "98985454" &&
+                        x.Dni != "87878744"
+                        )
                     .ToListAsync();
                 var asesoresDTO = new List<DetallesUsuarioDTO>();
                 foreach (var item in asesores)
@@ -84,7 +96,12 @@ namespace ALFINapp.Infrastructure.Repositories
                 var supervisores = await _context
                     .usuarios
                     .AsNoTracking()
-                    .Where(x => x.IdRol == 2)
+                    .Where(
+                        x => x.IdRol == 2 &&
+                        x.Dni != "73393133" &&
+                        x.Dni !="74049517" &&
+                        x.Dni != "98985454" &&
+                        x.Dni != "87878744")
                     .ToListAsync();
                 var supervisoresDTO = new List<DetallesUsuarioDTO>();
                 foreach (var item in supervisores)
@@ -113,6 +130,11 @@ namespace ALFINapp.Infrastructure.Repositories
             {
                 var usuarios = await _context
                     .usuarios
+                    .Where (
+                        x => x.Dni != "73393133" &&
+                        x.Dni !="74049517" &&
+                        x.Dni != "98985454" &&
+                        x.Dni != "87878744")
                     .AsNoTracking()
                     .ToListAsync();
                 var usuariosDTO = new List<DetallesUsuarioDTO>();

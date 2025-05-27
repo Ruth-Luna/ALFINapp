@@ -67,7 +67,6 @@ function createTableMetas(idData, idTable) {
 function createGpieByDates(idData, idDiv) {
     var dataId = document.getElementById(idData);
     var data = JSON.parse(dataId.getAttribute("data-json"));
-    console.log(data);
     var options = {
         chart: {
             type: 'pie',
@@ -102,7 +101,6 @@ function createGpieByDates(idData, idDiv) {
 function createGpieByImportes(idData, idDiv) {
     var dataId = document.getElementById(idData);
     var data = JSON.parse(dataId.getAttribute("data-json"));
-    console.log(data);
     var options = {
         chart: {
             type: 'pie',
