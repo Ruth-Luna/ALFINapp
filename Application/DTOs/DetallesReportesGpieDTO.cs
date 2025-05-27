@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ALFINapp.API.Models;
 using ALFINapp.Infrastructure.Persistence.Procedures;
 
@@ -53,12 +48,12 @@ namespace ALFINapp.Application.DTOs
         {
             return new ViewReportePieGeneral
             {
-                PERIODO = Reportes.PERIODO,
-                TOTAL_ASIGNADOS = Reportes.TOTAL_ASIGNADOS,
-                TOTAL_GESTIONADOS = Reportes.TOTAL_GESTIONADOS,
-                TOTAL_DERIVADOS = Reportes2.TOTAL_DERIVADOS,
-                TOTAL_DESEMBOLSADOS = Reportes2.TOTAL_DESEMBOLSADOS,
-                PORCENTAJE_GESTIONADOS = Reportes.PORCENTAJE_GESTIONADOS,
+                PERIODO = Reportes != null ? Reportes.PERIODO : DateTime.Now.ToString("dd/MM/yyyy"),
+                TOTAL_ASIGNADOS = Reportes != null ? Reportes.TOTAL_ASIGNADOS : 0,
+                TOTAL_GESTIONADOS = Reportes != null ? Reportes.TOTAL_GESTIONADOS : 0,
+                TOTAL_DERIVADOS = Reportes2 != null ? Reportes2.TOTAL_DERIVADOS : 0,
+                TOTAL_DESEMBOLSADOS = Reportes2 != null ? Reportes2.TOTAL_DESEMBOLSADOS : 0,
+                PORCENTAJE_GESTIONADOS = Reportes != null ? Reportes.PORCENTAJE_GESTIONADOS : 0,
                 PORCENTAJE_NO_GESTIONADOS = Reportes.PORCENTAJE_NO_GESTIONADOS,
                 PORCENTAJE_DERIVADOS = Reportes2.PORCENTAJE_DERIVADOS,
                 PORCENTAJE_DESEMBOLSADOS = Reportes2.PORCENTAJE_DESEMBOLSADOS,
