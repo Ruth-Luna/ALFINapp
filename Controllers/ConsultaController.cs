@@ -64,18 +64,18 @@ namespace ALFINapp.API.Controllers
                 {
                     return Json(new { success = false, message = "Debe de iniciar la sesion." });
                 }
-                var baseClienteReasignar = await _dbServicesAsignacionesAsesores.GuardarReAsignacionCliente(DniAReasignar, BaseTipo, usuarioId.Value);
-                /*var asignar = await _useCaseAsignarClienteManual.exec(DniAReasignar, usuarioId.Value, BaseTipo);
+                // var baseClienteReasignar = await _dbServicesAsignacionesAsesores.GuardarReAsignacionCliente(DniAReasignar, BaseTipo, usuarioId.Value);
+                var asignar = await _useCaseAsignarClienteManual.exec(DniAReasignar, usuarioId.Value, BaseTipo);
                 if (asignar.success == false)
                 {
                     return Json(new { success = false, message = $"{asignar.message}" });
-                }*/
-                if (baseClienteReasignar.IsSuccess == false)
+                }
+                if (asignar.success == false)
                 {
-                    return Json(new { success = false, message = $"{baseClienteReasignar.message}" });
+                    return Json(new { success = false, message = $"{asignar.message}" });
                 }
 
-                return Json(new { success = true, message = $"{baseClienteReasignar.message}" });
+                return Json(new { success = true, message = $"{asignar.message}" });
             }
             catch (System.Exception ex)
             {

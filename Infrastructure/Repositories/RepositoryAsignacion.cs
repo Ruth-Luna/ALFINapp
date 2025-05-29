@@ -27,7 +27,7 @@ namespace ALFINapp.Infrastructure.Repositories
                 var result = await _context
                     .Database
                     .ExecuteSqlRawAsync("EXEC sp_Asignacion_cliente_manual @DNIBusqueda, @IdUsuarioV, @BaseTipo", param);
-                if (result > 0)
+                if (result < 0)
                 {
                     return (true, "Asignación manual exitosa");
                 }
