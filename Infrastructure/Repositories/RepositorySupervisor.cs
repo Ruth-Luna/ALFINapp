@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.Application.DTOs;
 using ALFINapp.Domain.Interfaces;
 using ALFINapp.Infrastructure.Persistence.Models;
@@ -198,6 +194,33 @@ namespace ALFINapp.Infrastructure.Repositories
             {
                 Console.WriteLine($"Error: {ex.Message}");
                 return new List<DetalleBaseClienteDTO>();
+            }
+        }
+
+        public async Task<(int total, int totalAsignados, int totalPendientes)> GetCantidadClientesGeneralTotalFromSupervisor(int idUsuario)
+        {
+            try
+            {
+                var result = await _context.supervisor_get_number_of_leads
+                    .FromSqlRaw("EXEC sp_supervisor_get_number_of_leads @IdUsuario", new SqlParameter("@IdUsuario", idUsuario))
+                    .ToListAsync();
+                if (result == null || !result.Any())
+                {
+                    Console.WriteLine("No se encontraron datos de clientes.");
+                    return (0, 0, 0);
+                }
+                var resultado = result.FirstOrDefault();
+                if (resultado == null)
+                {
+                    Console.WriteLine("No se encontraron datos de clientes.");
+                    return (0, 0, 0);
+                }
+                return (resultado.TotalClientes, resultado.TotalClientesAsignados, resultado.TotalClientesPendientes);
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return (0, 0, 0);
             }
         }
     }

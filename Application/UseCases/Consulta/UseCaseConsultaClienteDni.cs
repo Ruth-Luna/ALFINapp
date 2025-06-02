@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.Application.Interfaces.Consulta;
 using ALFINapp.Domain.Interfaces;
 using ALFINapp.API.Models;

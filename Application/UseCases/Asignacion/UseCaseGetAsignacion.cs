@@ -29,10 +29,11 @@ namespace ALFINapp.Application.UseCases.Asignacion
                     return (true, "No se encontraron asesores asignados.", new ViewAsignacionSupervisor());
                 }
                 var supervisorData = await _repositorySupervisor.GetContadorAllAsignacionesFromVendedor(GetAsesoresAsignados.Select(x => x.IdUsuario).ToList(), idUsuario);
+                var cantidades = await _repositorySupervisor.GetCantidadClientesGeneralTotalFromSupervisor(idUsuario);
                 
-                int totalClientes = supervisorData.DetallesClientesAsignados.Count();
-                int clientesPendientesSupervisor = supervisorData.DetallesClientesAsignados.Count(cliente => cliente.IdUsuarioV == null);
-                int clientesAsignadosSupervisor = supervisorData.DetallesClientesAsignados.Count(cliente => cliente.IdUsuarioV != null);
+                int totalClientes = cantidades.total;
+                int clientesPendientesSupervisor = cantidades.totalPendientes;
+                int clientesAsignadosSupervisor = cantidades.totalAsignados;
 
                 var asesores = supervisorData.DetallesAsignacionContadorFromVendedor
                     .Select(x => new ViewAsignacionAsesor

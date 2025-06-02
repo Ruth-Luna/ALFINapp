@@ -1,13 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using ALFINapp.API.Filters;
-using ALFINapp.Infrastructure.Persistence.Models;
+using ALFINapp.API.DTOs;
+using ALFINapp.Application.Interfaces.Consulta;
+using ALFINapp.Application.Interfaces.Referidos;
+using ALFINapp.Domain.Entities;
+using ALFINapp.Domain.Interfaces;
 using ALFINapp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace ALFINapp.API.Controllers
 {
@@ -15,11 +12,21 @@ namespace ALFINapp.API.Controllers
     {
         public DBServicesGeneral _dbServicesGeneral;
         public DBServicesReferido _dbServicesReferido;
-        public ReferidoController(DBServicesGeneral dbServicesGeneral, DBServicesReferido dbServicesReferido)
+        public IUseCaseConsultaClienteDni _useCaseConsultaClienteDni;
+        public IUseCaseReferirCliente _useCaseReferirCliente;
+        public IRepositoryMiscellaneous _repositoryMiscellaneous;
+        public ReferidoController(
+            DBServicesGeneral dbServicesGeneral,
+            DBServicesReferido dbServicesReferido,
+            IUseCaseConsultaClienteDni useCaseConsultaClienteDni,
+            IRepositoryMiscellaneous repositoryMiscellaneous,
+            IUseCaseReferirCliente useCaseReferirCliente)
         {
             _dbServicesGeneral = dbServicesGeneral;
             _dbServicesReferido = dbServicesReferido;
-
+            _useCaseConsultaClienteDni = useCaseConsultaClienteDni;
+            _repositoryMiscellaneous = repositoryMiscellaneous;
+            this._useCaseReferirCliente = useCaseReferirCliente;
         }
         [HttpGet]
         public IActionResult Referido()
@@ -29,59 +36,66 @@ namespace ALFINapp.API.Controllers
         [HttpGet]
         public async Task<IActionResult> BuscarDNIReferido(string dniBusqueda)
         {
-            var getDNIReferido = await _dbServicesReferido.GetDataFromDNI(dniBusqueda);
-            var getBases = await _dbServicesGeneral.GetUAgenciasConNumeros();
+            var getDniReferido = await _useCaseConsultaClienteDni.Execute(dniBusqueda);
+            var getBases = await _repositoryMiscellaneous.GetUAgenciasConNumeros();
 
-            if (getDNIReferido.IsSuccess == false)
+            if (getDniReferido.IsSuccess == false || getDniReferido.Data == null)
             {
-                return Json(new { success = false, message = getDNIReferido.Message });
+                return Json(new { success = false, message = getDniReferido.Message });
             }
-
-            ViewData["Agencias"] = getBases.data;
-
-            return PartialView("DetalleDNIReferido", getDNIReferido.data);
+            ViewData["Agencias"] = getBases;
+            return PartialView("_Detalle", getDniReferido.Data);
         }
 
-        public async Task<IActionResult> ReferirCliente(string dniReferir,
-                                                                        string fuenteBase,
-                                                                        string nombresUsuario,
-                                                                        string apellidosUsuario,
-                                                                        string nombrescliente,
-                                                                        string dniUsuario,
-                                                                        string telefono,
-                                                                        string agencia,
-                                                                        DateTime fechaVisita,
-                                                                        string celular,
-                                                                        string correo,
-                                                                        string cci,
-                                                                        string departamento,
-                                                                        string ubigeo,
-                                                                        string banco)
+        public async Task<IActionResult> ReferirCliente(DtoVReferirCliente cliente)
         {
-            var getReferido = await _dbServicesReferido.GetDataParaReferir(dniReferir);
+            var clienteEnt = new Cliente 
+            {
+                Dni = cliente.dni_cliente,
+                FuenteBase = cliente.fuente_base,
+                NombresCompletosV = cliente.nombres_vendedor + " " + cliente.apellidos_vendedor,
+                DniVendedor = cliente.dni_vendedor,
+                Telefono = cliente.telefono,
+                AgenciaComercial = cliente.agencia,
+                FechaVisita = cliente.fecha_visita,
+                XNombre = cliente.nombres_clientes,
+                Correo = cliente.correo,
+                Cci = cliente.cci,
+                Departamento = cliente.departamento,
+                Ubigeo = cliente.ubigeo,
+                Banco = cliente.banco
+            };
+            var getReferido = await _useCaseConsultaClienteDni.Execute(cliente.dni_cliente);
             if (getReferido.IsSuccess == false || getReferido.Data == null)
             {
                 return Json(new { success = false, message = getReferido.Message });
             }
 
-            var mandarReferido = await _dbServicesReferido.GuardarClienteReferido(dniReferir, 
-                fuenteBase, 
-                nombresUsuario, 
-                apellidosUsuario, 
-                dniUsuario, 
-                telefono, 
-                agencia, 
-                fechaVisita, 
-                nombrescliente, 
-                getReferido.Data?.OfertaMax ?? 0,
-                celular,
-                correo,
-                cci,
-                departamento,
-                ubigeo,
-                banco);
+            var referirCliente = await _useCaseReferirCliente.Execute(clienteEnt);
+            if (referirCliente.IsSuccess == false)
+            {
+                return Json(new { success = false, message = referirCliente.Message });
+            }
 
-            if (!mandarReferido.Item1) // Accede al primer valor de la tupla (bool IsSuccess)
+            var mandarReferido = await _dbServicesReferido.GuardarClienteReferido(
+                cliente.dni_cliente ?? string.Empty, 
+                cliente.fuente_base,
+                cliente.nombres_vendedor,
+                cliente.apellidos_vendedor,
+                cliente.dni_vendedor,
+                cliente.telefono, 
+                cliente.agencia, 
+                cliente.fecha_visita,
+                cliente.nombres_clientes, 
+                getReferido.Data.OfertaMax ?? 0,
+                cliente.telefono,
+                cliente.correo,
+                cliente.cci,
+                cliente.departamento,
+                cliente.ubigeo,
+                cliente.banco);
+
+            if (!mandarReferido.Item1)
             {
                 return Json(new { success = false, message = mandarReferido.Item2 }); // Segundo valor de la tupla (string Message)
             }
@@ -94,35 +108,35 @@ namespace ALFINapp.API.Controllers
                 </tr>
                 <tr>
                     <td>CODIGO EJECUTIVO</td>
-                    <td>{dniUsuario}</td>
+                    <td>{cliente.dni_vendedor}</td>
                 </tr>
                 <tr>
                     <td>CDV ALFINBANCO</td>
-                    <td>{nombresUsuario} {apellidosUsuario}</td>
+                    <td>{cliente.nombres_vendedor} {cliente.apellidos_vendedor}</td>
                 </tr>
                 <tr>
                     <td>DNI CLIENTE</td>
-                    <td>{dniReferir}</td>
+                    <td>{cliente.dni_cliente}</td>
                 </tr>
                 <tr>
                     <td>NOMBRE CLIENTE</td>
-                    <td>{nombrescliente}</td>
+                    <td>{cliente.nombres_clientes}</td>
                 </tr>
                 <tr>
                     <td>MONTO SOLICITADO</td>
-                    <td>{getReferido.Data?.OfertaMax ?? "No especificada"}</td>
+                    <td>{getReferido.Data.OfertaMax}</td>
                 </tr>
                 <tr>
                     <td>CELULAR</td>
-                    <td>{telefono}</td>
+                    <td>{cliente.telefono}</td>
                 </tr>
                 <tr>
                     <td>AGENCIA</td>
-                    <td>{agencia}</td>
+                    <td>{cliente.agencia}</td>
                 </tr>
                 <tr>
                     <td>FECHA DE VISITA A AGENCIA</td>
-                    <td>{fechaVisita}</td>
+                    <td>{cliente.fecha_visita}</td>
                 </tr>
                 <tr>
                     <td>HORA DE VISITA A AGENCIA</td>

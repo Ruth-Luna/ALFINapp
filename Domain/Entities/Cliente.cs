@@ -12,8 +12,15 @@ namespace ALFINapp.Domain.Entities
         public string? XApmaterno { get; set; }
         public string? XNombre { get; set; }
         public int? Edad { get; set; }
+        public string? Telefono { get; set; }
+        public string? Correo { get; set; }
+        public string? Cci { get; set; }
+        public string? Ubigeo { get; set; }
+        public string? Banco { get; set; }
         public decimal? OfertaMax { get; set; }
         public string? Campaña { get; set; }
+        public DateTime? FechaVisita { get; set; }
+        public DateTime? FechaSubido { get; set; }
         public decimal? Cuota { get; set; }
         public decimal? Oferta12m { get; set; }
         public decimal? Tasa12m { get; set; }
@@ -25,14 +32,13 @@ namespace ALFINapp.Domain.Entities
         public decimal? Oferta36m { get; set; }
         public decimal? Tasa36m { get; set; }
         public decimal? Cuota36m { get; set; }
-
+        public string? FuenteBase { get; set; }
         //Detalles relevantes de Bse Cliente
         public string? Departamento { get; set; }
         public string? Provincia { get; set; }
         public string? Distrito { get; set; }
 
         //Detalles relevantes de DetalleBase
-
         public string? Sucursal { get; set; }
         public string? AgenciaComercial { get; set; }
         public string? TipoCliente { get; set; }
@@ -41,6 +47,7 @@ namespace ALFINapp.Domain.Entities
         public string? GrupoMonto { get; set; }
         public int? Propension { get; set; }
         public string? PrioridadSistema { get; set; }
+
         //Ids y demas NO MOSTRABLE
         public int? IdAsignacion { get; set; }
         public int? IdBase { get; set; }
@@ -56,6 +63,7 @@ namespace ALFINapp.Domain.Entities
         public int? PesoTipificacionMayor { get; set; }
         public DateTime? FechaTipificacionDeMayorPeso { get; set; }
         public string? TraidoDe { get; set; }
+        
         //DETALLES DEL VENDEDOR ASIGNADO
         public string? DniVendedor { get; set; }
         public string NombresCompletosV { get; set; } = "";

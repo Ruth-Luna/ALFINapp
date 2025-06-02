@@ -58,6 +58,7 @@ public class MDbContext : DbContext
     public DbSet<ReportsGeneralDatosActualesPorIdUsuarioFecha> reports_general_datos_actuales { get; set; }
     public DbSet<ReportsEtiquetaMetaImporte> reports_etiqueta_meta_importe { get; set; }
     public DbSet<ReportsSupervisorGestionFecha> reports_supervisor_gestion_fecha { get; set; }
+    public DbSet<SupervisorGetNumberOfLeads> supervisor_get_number_of_leads { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -144,6 +145,9 @@ public class MDbContext : DbContext
             .HasNoKey()
             .ToView(null);
         modelBuilder.Entity<ReportsSupervisorGestionFecha>()
+            .HasNoKey()
+            .ToView(null);
+        modelBuilder.Entity<SupervisorGetNumberOfLeads>()
             .HasNoKey()
             .ToView(null);
     }

@@ -1,4 +1,4 @@
-function BuscarDNIAReferir(idDniLabel) {
+async function BuscarDNIAReferir(idDniLabel) {
     const dniBusqueda = document.getElementById(idDniLabel);
     const datosClienteExistente = document.getElementById('datosClienteExistente');
 
@@ -13,64 +13,128 @@ function BuscarDNIAReferir(idDniLabel) {
     }
 
     const dni = dniBusqueda.value;
-    $.ajax({
-        url: '/Referido/BuscarDNIReferido',
-        type: 'GET',
-        data: {
-            dniBusqueda: dni
-        },
-        success: function (response) {
-            if (response.success === false) {
+
+    const baseUrl = window.location.origin;
+    const url = `${baseUrl}/Referido/BuscarDNIReferido?dniBusqueda=${dni}`;
+
+    // Mostrar el mensaje de carga
+    let loadingSwal = Swal.fire({
+        title: 'Buscando...',
+        text: 'Por favor, espera mientras se procesa la búsqueda.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading(); // Activa la animación de carga
+        }
+    });
+
+    try {
+        const response = await fetch(url, {
+            method: 'GET'
+        });
+        const contentType = response.headers.get("Content-Type");
+        Swal.close(); // Cierra el mensaje de carga
+        if (contentType.includes("application/json") && contentType) {
+            const result = await response.json();
+            if (result.success === false) {
                 Swal.fire({
                     title: 'Error al buscar',
-                    text: response.message,
+                    text: result.message,
                     icon: 'error',
                     confirmButtonText: 'Aceptar'
                 });
-            } else {
-                Swal.fire({
-                    title: 'Busqueda Exitosa',
-                    text: "El DNI ha sido encontrado",
-                    icon: 'success',
-                    confirmButtonText: 'Aceptar'
-                });
-                datosClienteExistente.innerHTML = response;
-                datosClienteExistente.style.display = 'block';
-            }
-        },
-        error: function () {
+                datosClienteExistente.style.display = 'none';
+                return;
+            } 
+        }
+        else if (contentType.includes("text/html")) {
+            Swal.fire({
+                title: 'Búsqueda exitosa',
+                text: "El DNI ha sido encontrado",
+                icon: 'success',
+                confirmButtonText: 'Aceptar'
+            });
+            const result = await response.text();
+            datosClienteExistente.innerHTML = result;
+            datosClienteExistente.style.display = 'block';
+            return;
+        } else {
             Swal.fire({
                 title: 'Error al buscar',
-                text: 'Ocurrió un error al buscar el DNI.',
+                text: 'Formato de respuesta inesperado.',
                 icon: 'error',
                 confirmButtonText: 'Aceptar'
             });
+            datosClienteExistente.style.display = 'none';
+            return;
         }
-    });
+    } catch (error) {
+        Swal.fire({
+            title: 'Error al buscar',
+            text: 'Ocurrió un error al buscar el DNI.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+
+    // $.ajax({
+    //     url: '/Referido/BuscarDNIReferido',
+    //     type: 'GET',
+    //     data: {
+    //         dniBusqueda: dni
+    //     },
+    //     success: function (response) {
+    //         if (response.success === false) {
+    //             Swal.fire({
+    //                 title: 'Error al buscar',
+    //                 text: response.message,
+    //                 icon: 'error',
+    //                 confirmButtonText: 'Aceptar'
+    //             });
+    //         } else {
+    //             Swal.fire({
+    //                 title: 'Busqueda Exitosa',
+    //                 text: "El DNI ha sido encontrado",
+    //                 icon: 'success',
+    //                 confirmButtonText: 'Aceptar'
+    //             });
+    //             datosClienteExistente.innerHTML = response;
+    //             datosClienteExistente.style.display = 'block';
+    //         }
+    //     },
+    //     error: function () {
+    //         Swal.fire({
+    //             title: 'Error al buscar',
+    //             text: 'Ocurrió un error al buscar el DNI.',
+    //             icon: 'error',
+    //             confirmButtonText: 'Aceptar'
+    //         });
+    //     }
+    // });
 }
 
 function ReferirDNI(dni, fuenteBase) {
     const baseFuente = fuenteBase;
     
-    const NombresCompletosUsuario = document.getElementById('NombresCompletosUsuario');
-    const ApellidosCompletosUsuario = document.getElementById('ApellidosCompletosUsuario');
-    const DNIUsuario = document.getElementById('DNIUsuario');
+    const NombresCompletosAsesor = document.getElementById('NombresCompletosUsuario');
+    const ApellidosCompletosAsesor = document.getElementById('ApellidosCompletosUsuario');
+    const DNIAsesor = document.getElementById('DNIUsuario');
     const NombresCompletosCliente = document.getElementById('NombresCompletosCliente');
     const CelularCliente = document.getElementById('CelularCliente');
     const AgenciaAtencion = document.getElementById('AgenciaAtencion');
     const FechaVisitaAgencia = document.getElementById('FechaVisitaAgencia');
     //MAS CAMPOS
-    const CelularUsuario = document.getElementById('CelularUsuario');
-    const CorreoUsuario = document.getElementById('CorreoUsuario');
-    const CCIUsuario = document.getElementById('CCIUsuario');
-    const DepartamentoUsuario = document.getElementById('DepartamentoUsuario');
-    const UbigeoUsuario = 'NO DEFINIDO';
-    const BancoUsuario = document.getElementById('BancoUsuario');
+    const CelularAsesor = document.getElementById('CelularUsuario');
+    const CorreoAsesor = document.getElementById('CorreoUsuario');
+    const CCIAsesor = document.getElementById('CCIUsuario');
+    const DepartamentoAsesor = document.getElementById('DepartamentoUsuario');
+    const UbigeoAsesor = 'NO DEFINIDO';
+    const BancoAsesor = document.getElementById('BancoUsuario');
 
     const dniRegex = /^\d{8,11}$/;
     const celularRegex = /^9\d{8}$/;
 
-    if (!dniRegex.test(DNIUsuario.value)) {
+    if (!dniRegex.test(DNIAsesor.value)) {
         Swal.fire({
             title: 'Error al referir',
             text: 'El DNI debe contener exactamente 8 dígitos numéricos.',
@@ -80,7 +144,7 @@ function ReferirDNI(dni, fuenteBase) {
         return;
     }
 
-    if (!celularRegex.test(CelularCliente.value) || !celularRegex.test(CelularUsuario.value)) {
+    if (!celularRegex.test(CelularCliente.value) || !celularRegex.test(CelularAsesor.value)) {
         Swal.fire({
             title: 'Error al referir',
             text: 'El número de celular debe contener exactamente 9 dígitos numéricos, y no puede estar vacio.',
@@ -92,18 +156,18 @@ function ReferirDNI(dni, fuenteBase) {
 
     if (dni == "" || 
         fuenteBase == "" || 
-        NombresCompletosUsuario.value == "" || 
-        ApellidosCompletosUsuario.value == "" || 
-        DNIUsuario.value == "" || 
+        NombresCompletosAsesor.value == "" || 
+        ApellidosCompletosAsesor.value == "" || 
+        DNIAsesor.value == "" || 
         CelularCliente.value == "" || 
         AgenciaAtencion.value == "" || 
         FechaVisitaAgencia.value == "" || 
-        CelularUsuario.value == "" ||
-        CorreoUsuario.value == "" ||
-        CCIUsuario.value == "" ||
-        DepartamentoUsuario.value == "" ||
-        UbigeoUsuario.value == "" ||
-        BancoUsuario.value == "") {
+        CelularAsesor.value == "" ||
+        CorreoAsesor.value == "" ||
+        CCIAsesor.value == "" ||
+        DepartamentoAsesor.value == "" ||
+        UbigeoAsesor.value == "" ||
+        BancoAsesor.value == "") {
         Swal.fire({
             title: 'Error al referir',
             text: 'No se han completado todos los campos. Asegurese de llenar todos los campos',
@@ -119,20 +183,20 @@ function ReferirDNI(dni, fuenteBase) {
         data: {
             dniReferir: dni,
             fuenteBase: baseFuente,
-            nombresUsuario: NombresCompletosUsuario.value.toUpperCase(),
-            apellidosUsuario: ApellidosCompletosUsuario.value.toUpperCase(),
+            nombresUsuario: NombresCompletosAsesor.value.toUpperCase(),
+            apellidosUsuario: ApellidosCompletosAsesor.value.toUpperCase(),
             nombrescliente: NombresCompletosCliente.value.toUpperCase(),
-            dniUsuario: DNIUsuario.value,
+            dniUsuario: DNIAsesor.value,
             telefono: CelularCliente.value,
             agencia: AgenciaAtencion.value,
             fechaVisita: FechaVisitaAgencia.value,
 
-            celular: CelularUsuario.value,
-            correo: CorreoUsuario.value,
-            cci: CCIUsuario.value,
-            departamento: DepartamentoUsuario.value.toUpperCase(),
-            ubigeo: UbigeoUsuario,
-            banco: BancoUsuario.value
+            celular: CelularAsesor.value,
+            correo: CorreoAsesor.value,
+            cci: CCIAsesor.value,
+            departamento: DepartamentoAsesor.value.toUpperCase(),
+            ubigeo: UbigeoAsesor,
+            banco: BancoAsesor.value
         },
         success: function (response) {
             if (response.success === false) {

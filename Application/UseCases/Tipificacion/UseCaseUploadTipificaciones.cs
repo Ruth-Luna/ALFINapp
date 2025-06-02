@@ -114,7 +114,7 @@ namespace ALFINapp.Application.UseCases.Tipificacion
                     if (tipificacion.TipificacionId == 0)
                     {
                         Console.WriteLine("TipificacionId es 0, omitiendo inserción.");
-                        continue; // Salta al siguiente registro sin hacer la inserción
+                        continue;
                     }
                     if (tipificacion.TipificacionId == 2)
                     {

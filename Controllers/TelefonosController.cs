@@ -1,11 +1,16 @@
-using System.Security;
-using System.Text.RegularExpressions;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.API.Filters;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
+/// <summary>
+/// Controller responsible for managing client phone number operations.
+/// </summary>
+  
+/// <summary>
+/// Initializes a new instance of the <see cref="TelefonosController"/> class with the specified database context.
+/// </summary>
+/// <param name="context">The database context used for data operations.</param>
+  
 namespace ALFINapp.API.Controllers
 {
     [RequireSession]
@@ -17,6 +22,17 @@ namespace ALFINapp.API.Controllers
         {
             _context = context;
         }
+
+        /// <summary>
+        /// Adds a phone number for a client on behalf of an advisor. This method validates that the provided phone number is non-empty
+        /// and exactly 9 digits long (starting with a digit between 1 and 9) before adding it to the database.
+        /// </summary>
+        /// <param name="numeroTelefono">The phone number to be added. It must be non-empty and match the required format.</param>
+        /// <param name="idClienteTelefono">The identifier of the client associated with the phone number.</param>
+        /// <returns>
+        /// A JSON response indicating whether the operation was successful. If successful, the response contains a success flag and a confirmation message;
+        /// if not, it contains an error message explaining the failure.
+        /// </returns>
         [HttpPost]
         public IActionResult AgregarTelefonoPorAsesor(string numeroTelefono, int idClienteTelefono)
         {
@@ -32,14 +48,16 @@ namespace ALFINapp.API.Controllers
                 string telefono = numeroTelefono;
                 int idCliente = idClienteTelefono;
 
-                // Validar que el idCliente es un número entero
-                // Validar que el teléfono no esté vacío
                 if (string.IsNullOrWhiteSpace(telefono))
                 {
                     return Json(new { success = false, message = "El número de teléfono no puede estar vacío" });
                 }
 
-                // Validar que el teléfono tenga exactamente 9 dígitos y comience con un número entre 1 y 9
+                telefono = telefono.Trim().Replace(" ", "")
+                                        .Replace("\t", "")
+                                        .Replace("\n", "")
+                                        .Replace("\r", "");
+
                 if (!System.Text.RegularExpressions.Regex.IsMatch(telefono, @"^[1-9]\d{8}$"))
                 {
                     return Json(new { success = false, message = "El número de teléfono debe tener exactamente 9 dígitos, comenzando con un número entre 1 y 9" });
