@@ -172,9 +172,11 @@ BEGIN
         @body = @mensaje, 
         @body_format = 'HTML', 
         @subject = @subject;
+    
+    RETURN;
 END
 
-
+EXEC sp_referir_enviar_emails_de_referencia '20568075';
 
 
 SELECT TOP 500 dni FROM base_clientes 
@@ -186,3 +188,6 @@ ORDER BY base_clientes.id_base DESC;
 
 celularRegex
 select * from clientes_referidos order by fecha_referido desc;
+
+
+select * from usuarios where id_rol = 4

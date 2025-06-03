@@ -16,7 +16,7 @@ namespace ALFINapp.Application.UseCases.Referidos
             _repositoryReferidos = repositoryReferidos;
             _useCaseConsultaClienteDni = useCaseConsultaClienteDni;
         }
-        public async Task<(bool IsSuccess, string Message)> Execute(Cliente cliente)
+        public async Task<(bool IsSuccess, string Message)> Execute(Cliente cliente, Vendedor asesor)
         {
             try
             {
@@ -25,15 +25,20 @@ namespace ALFINapp.Application.UseCases.Referidos
                     return (false, "Cliente no puede ser nulo");
                 }
 
+                if (asesor == null)
+                {
+                    return (false, "Asesor no puede ser nulo");
+                }
+
                 var getReferido = await _useCaseConsultaClienteDni.Execute(cliente.Dni ?? string.Empty);
                 if (getReferido.IsSuccess == false || getReferido.Data == null)
                 {
                     return (false, getReferido.Message);
                 }
-
+                
                 if (cliente.FuenteBase == "BDA365" || cliente.FuenteBase == "BDALFIN")
                 {
-                    var result = await _repositoryReferidos.ReferirCliente(cliente);
+                    var result = await _repositoryReferidos.ReferirCliente(cliente, asesor);
                     if (result.IsSuccess == false)
                     {
                         return (false, result.Message);

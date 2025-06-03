@@ -25,7 +25,7 @@ namespace ALFINapp.Infrastructure.Repositories
                     "EXEC dbo.sp_referir_enviar_emails_de_referencia @dni",
                     parameters
                 );
-                if (result <= 0)
+                if (result > 0)
                 {
                     return (false, "No se pudo enviar el correo de referido, verifique el DNI ingresado.");
                 }
@@ -55,12 +55,12 @@ namespace ALFINapp.Infrastructure.Repositories
                     new SqlParameter("@telefono_cliente", cliente.Telefono ?? (object)DBNull.Value),
                     new SqlParameter("@agencia_referido", cliente.AgenciaComercial ?? (object)DBNull.Value),
                     new SqlParameter("@fecha_visita_agencia", cliente.FechaVisita ?? (object)DBNull.Value),
-                    new SqlParameter("@celular_asesor", DBNull.Value),
-                    new SqlParameter("@correo_asesor", DBNull.Value),
-                    new SqlParameter("@cci_asesor", DBNull.Value),
-                    new SqlParameter("@ubigeo_asesor", DBNull.Value),
-                    new SqlParameter("@departamento_asesor", DBNull.Value),
-                    new SqlParameter("@banco_asesor", DBNull.Value),
+                    new SqlParameter("@celular_asesor", asesor.Telefono ?? (object)DBNull.Value),
+                    new SqlParameter("@correo_asesor", asesor.Correo ?? (object)DBNull.Value),
+                    new SqlParameter("@cci_asesor", asesor.Cci ?? (object)DBNull.Value),
+                    new SqlParameter("@ubigeo_asesor", asesor.Ubigeo ?? (object)DBNull.Value),
+                    new SqlParameter("@departamento_asesor", asesor.Departamento ?? (object)DBNull.Value),
+                    new SqlParameter("@banco_asesor", asesor.Banco ?? (object)DBNull.Value),
                 };
                 var result = await _context.Database.ExecuteSqlRawAsync(
                     "EXEC dbo.sp_referir_cliente_guardar_referencia @dni, @dni_asesor, @nombre_completo_asesor, @traido_de, @telefono_cliente, @agencia_referido, @fecha_visita_agencia, @celular_asesor, @correo_asesor, @cci_asesor, @ubigeo_asesor, @departamento_asesor, @banco_asesor",
