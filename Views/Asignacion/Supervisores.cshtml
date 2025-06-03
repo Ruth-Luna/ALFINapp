@@ -1,11 +1,120 @@
 @model ALFINapp.Infrastructure.Persistence.Models.AsignacionSupervisoresDTO
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/main_page.css">
 }
 
 
-<h5>Hola mundo</h5>
+
+<div class="card border-0 shadow-sm rounded-3 mb-3">
+    <div class="card-header bg-white fw-bold">
+        IMPORTAR ASIGNACIONES
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-auto">
+                <input class="form-control" type="file" id="formFile">
+            </div>
+            <div class="col-auto align-self-end">
+                <div class="d-grid">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalListaDeAsignaciones">
+                        VER ASIGNACIONES
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-3 mb-3">
+    <div class="card-header bg-white fw-bold">
+        <div class="d-flex justify-content-between align-items-center">
+            <span>VISUALIZACIÓN DE CARGA</span>
+            <div>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white">TOTAL</span>
+                    <input type="text" class="form-control">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">DNI CLIENTE</th>
+                        <th scope="col">DNI SUPERVISOR</th>
+                        <th scope="col">CELULAR 1</th>
+                        <th scope="col">CELULAR 2</th>
+                        <th scope="col">CELULAR 3</th>
+                        <th scope="col">CELULAR 4</th>
+                        <th scope="col">CELULAR 5</th>
+                        <th scope="col">D. BASE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="8" class="text-center">
+                            Sin datos disponibles por el momento
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="text-end mb-3">
+    <button type="button" class="btn btn-primary">CRUZAR ASIGNACIÓN</button>
+</div>
+
+<div class="card border-0 shadow-sm rounded-3 mb-3">
+    <div class="card-header bg-white fw-bold">
+        <div class="d-flex justify-content-between align-items-center">
+            <span>VISUALIZACIÓN DE CARGA</span>
+            <div>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white">TOTAL</span>
+                    <input type="text" class="form-control">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th scope="col">DNI CLIENTE</th>
+                    <th scope="col">NOM. CLIENTE</th>
+                    <th scope="col">CAMPAÑA</th>
+                    <th scope="col">OFERTA MAX.</th>
+                    <th scope="col">AGENCIA</th>
+                    <th scope="col">TIPO BASE</th>
+                    <th scope="col">NOMBRE SUP</th>
+                    <th scope="col">NOMBRE LISTA</th>
+                    <th scope="col">D. BASE</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="9" class="text-center">
+                        Sin datos disponibles por el momento
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="text-center">
+    <button type="button" class="btn btn-primary btn-lg">ASIGNAR</button>
+</div>
+
+
+<!-- modals -->
+
+<partial name="modals/_modalListaDeAsignaciones" />
+
 
 @section Scripts {
     <script src="~/js/Asignacion/Supervisores.js?v=@DateTime.Now.Ticks"></script>
