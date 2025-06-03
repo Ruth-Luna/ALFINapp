@@ -33,6 +33,12 @@ function sortTable(tableId, colIndex, type) {
                 ? aText.toLowerCase() === 'true' ? -1 : 1
                 : aText.toLowerCase() === 'true' ? 1 : -1;
         }
+        if (type === 'string') {
+            // Normalize text for case-insensitive comparison
+            return isAscending
+                ? aText.toLowerCase().localeCompare(bText.toLowerCase())
+                : bText.toLowerCase().localeCompare(aText.toLowerCase());
+        }
         return isAscending
             ? aText.localeCompare(bText)
             : bText.localeCompare(aText);

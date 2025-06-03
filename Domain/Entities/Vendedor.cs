@@ -29,5 +29,8 @@ namespace ALFINapp.Domain.Entities
         public DateTime? FechaInicio { get; set; }
         public DateTime? FechaCese { get; set; }
         public String? Correo { get; set; }
+        public string? Cci { get; set; }
+        public string? Ubigeo { get; set; }
+        public string? Banco { get; set; }
     }
 }
