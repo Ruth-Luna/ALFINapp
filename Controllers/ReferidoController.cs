@@ -65,19 +65,13 @@ namespace ALFINapp.API.Controllers
                 Ubigeo = cliente.ubigeo,
                 Banco = cliente.banco
             };
-            var getReferido = await _useCaseConsultaClienteDni.Execute(cliente.dni_cliente);
-            if (getReferido.IsSuccess == false || getReferido.Data == null)
-            {
-                return Json(new { success = false, message = getReferido.Message });
-            }
-
             var referirCliente = await _useCaseReferirCliente.Execute(clienteEnt);
             if (referirCliente.IsSuccess == false)
             {
                 return Json(new { success = false, message = referirCliente.Message });
             }
 
-            var mandarReferido = await _dbServicesReferido.GuardarClienteReferido(
+            /*var mandarReferido = await _dbServicesReferido.GuardarClienteReferido(
                 cliente.dni_cliente ?? string.Empty, 
                 cliente.fuente_base,
                 cliente.nombres_vendedor,
@@ -152,9 +146,9 @@ namespace ALFINapp.API.Controllers
             if (enviarCorreo.IsSuccess == false)
             {
                 return Json(new { success = false, message = enviarCorreo.Message });
-            }
+            }*/
 
-            return Json(new { success = true, message = getReferido.Message + ". " + enviarCorreo.Message });
+            return Json(new { success = true, message = referirCliente.Message });
         }
 
         public IActionResult Consulta()

@@ -1,10 +1,21 @@
+using ALFINapp.Application.Interfaces.Consulta;
 using ALFINapp.Application.Interfaces.Referidos;
 using ALFINapp.Domain.Entities;
+using ALFINapp.Domain.Interfaces;
 
 namespace ALFINapp.Application.UseCases.Referidos
 {
     public class UseCaseReferirCliente : IUseCaseReferirCliente
     {
+        private readonly IRepositoryReferidos _repositoryReferidos;
+        private readonly IUseCaseConsultaClienteDni _useCaseConsultaClienteDni;
+        public UseCaseReferirCliente(
+            IRepositoryReferidos repositoryReferidos,
+            IUseCaseConsultaClienteDni useCaseConsultaClienteDni)
+        {
+            _repositoryReferidos = repositoryReferidos;
+            _useCaseConsultaClienteDni = useCaseConsultaClienteDni;
+        }
         public async Task<(bool IsSuccess, string Message)> Execute(Cliente cliente)
         {
             try
@@ -14,21 +25,30 @@ namespace ALFINapp.Application.UseCases.Referidos
                     return (false, "Cliente no puede ser nulo");
                 }
 
-                // Aquí se podría agregar la lógica para referir al cliente, como guardarlo en una base de datos o enviar una notificación.
-                // Por ahora, simplemente retornamos un mensaje de éxito.
-
-                if (cliente.FuenteBase == "DBA365")
+                var getReferido = await _useCaseConsultaClienteDni.Execute(cliente.Dni ?? string.Empty);
+                if (getReferido.IsSuccess == false || getReferido.Data == null)
                 {
-                    
+                    return (false, getReferido.Message);
                 }
-                else if (cliente.FuenteBase == "DBALFIN")
+
+                if (cliente.FuenteBase == "BDA365" || cliente.FuenteBase == "BDALFIN")
                 {
-                    
+                    var result = await _repositoryReferidos.ReferirCliente(cliente);
+                    if (result.IsSuccess == false)
+                    {
+                        return (false, result.Message);
+                    }
                 }
                 else
                 {
                     return (false, "Fuente de referencia no válida");
                 }
+                var emailResult = await _repositoryReferidos.EnviarCorreoReferido(cliente.Dni ?? string.Empty);
+                if (emailResult.IsSuccess == false)
+                {
+                    return (false, emailResult.Message);
+                }
+
                 return (true, "Cliente referido correctamente");
             }
             catch (System.Exception ex)

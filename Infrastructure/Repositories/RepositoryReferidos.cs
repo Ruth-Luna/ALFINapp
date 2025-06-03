@@ -12,7 +12,33 @@ namespace ALFINapp.Infrastructure.Repositories
         {
             _context = context;
         }
-        public async Task<(bool, string)> ReferirCliente(Cliente cliente)
+
+        public async Task<(bool IsSuccess, string Message)> EnviarCorreoReferido(string dni)
+        {
+            try
+            {
+                var parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@dni", dni ?? (object)DBNull.Value)
+                };
+                var result = await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC dbo.sp_referir_enviar_emails_de_referencia @dni",
+                    parameters
+                );
+                if (result <= 0)
+                {
+                    return (false, "No se pudo enviar el correo de referido, verifique el DNI ingresado.");
+                }
+                return (true, "Correo de referido enviado correctamente");
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine($"Error al referir cliente: {ex.Message}");
+                return (false, $"Error al referir cliente: {ex.Message}");
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message)> ReferirCliente(Cliente cliente, Vendedor asesor)
         {
             try
             {
@@ -22,55 +48,34 @@ namespace ALFINapp.Infrastructure.Repositories
                 }
                 var parameters = new SqlParameter[]
                 {
-                    new SqlParameter("@Dni", cliente.Dni ?? (object)DBNull.Value),
-                    new SqlParameter("@XAppaterno", cliente.XAppaterno ?? (object)DBNull.Value),
-                    new SqlParameter("@XApmaterno", cliente.XApmaterno ?? (object)DBNull.Value),
-                    new SqlParameter("@XNombre", cliente.XNombre ?? (object)DBNull.Value),
-                    new SqlParameter("@Telefono", cliente.Telefono ?? (object)DBNull.Value),
-                    new SqlParameter("@Correo", cliente.Correo ?? (object)DBNull.Value),
-                    new SqlParameter("@Cci", cliente.Cci ?? (object)DBNull.Value),
-                    new SqlParameter("@Ubigeo", cliente.Ubigeo ?? (object)DBNull.Value),
-                    new SqlParameter("@Banco", cliente.Banco ?? (object)DBNull.Value),
-                    new SqlParameter("@OfertaMax", cliente.OfertaMax ?? (object)DBNull.Value),
-                    new SqlParameter("@Campaña", cliente.Campaña ?? (object)DBNull.Value),
-                    new SqlParameter("@FechaVisita", cliente.FechaVisita ?? (object)DBNull.Value),
-                    new SqlParameter("@FechaSubido", DateTime.Now), // Fecha actual
-                    new SqlParameter("@Cuota", cliente.Cuota ?? (object)DBNull.Value),
-                    new SqlParameter("@Oferta12m", cliente.Oferta12m ?? (object)DBNull.Value),
-                    new SqlParameter("@Tasa12m", cliente.Tasa12m ?? (object)DBNull.Value),
-                    new SqlParameter("@Tasa18m", cliente.Tasa18m ?? (object)DBNull.Value),
-                    new SqlParameter("@Cuota18m", cliente.Cuota18m ?? (object)DBNull.Value),
-                    new SqlParameter("@Oferta24m", cliente.Oferta24m ?? (object)DBNull.Value),
-                    new SqlParameter("@Tasa24m", cliente.Tasa24m ?? (object)DBNull.Value),
-                    new SqlParameter("@Cuota24m", cliente.Cuota24m ?? (object)DBNull.Value),
-                    new SqlParameter("@Oferta36m", cliente.Oferta36m ?? (object)DBNull.Value),
-                    new SqlParameter("@Tasa36m", cliente.Tasa36m ?? (object)DBNull.Value),
-                    new SqlParameter("@Cuota36m", cliente.Cuota36m ?? (object)DBNull.Value),
-                    new SqlParameter("@FuenteBase", cliente.FuenteBase ?? (object)DBNull.Value),
+                    new SqlParameter("@dni", cliente.Dni ?? (object)DBNull.Value),
+                    new SqlParameter("@dni_asesor", cliente.DniVendedor ?? (object)DBNull.Value),
+                    new SqlParameter("@nombre_completo_asesor", cliente.NombresCompletosV ?? (object)DBNull.Value),
+                    new SqlParameter("@traido_de", cliente.FuenteBase ?? (object)DBNull.Value),
+                    new SqlParameter("@telefono_cliente", cliente.Telefono ?? (object)DBNull.Value),
+                    new SqlParameter("@agencia_referido", cliente.AgenciaComercial ?? (object)DBNull.Value),
+                    new SqlParameter("@fecha_visita_agencia", cliente.FechaVisita ?? (object)DBNull.Value),
+                    new SqlParameter("@celular_asesor", DBNull.Value),
+                    new SqlParameter("@correo_asesor", DBNull.Value),
+                    new SqlParameter("@cci_asesor", DBNull.Value),
+                    new SqlParameter("@ubigeo_asesor", DBNull.Value),
+                    new SqlParameter("@departamento_asesor", DBNull.Value),
+                    new SqlParameter("@banco_asesor", DBNull.Value),
                 };
-
-                if (cliente.FuenteBase == "DBA365")
+                var result = await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC dbo.sp_referir_cliente_guardar_referencia @dni, @dni_asesor, @nombre_completo_asesor, @traido_de, @telefono_cliente, @agencia_referido, @fecha_visita_agencia, @celular_asesor, @correo_asesor, @cci_asesor, @ubigeo_asesor, @departamento_asesor, @banco_asesor",
+                    parameters
+                );
+                
+                if (result <= 0)
                 {
-                    var result = await _context
-                        .Database
-                        .ExecuteSqlRawAsync("EXEC dbo.sp_referir_cliente @Dni, @XAppaterno, @XApmaterno, @XNombre, @Telefono, @Correo, @Cci, @Ubigeo, @Banco, @OfertaMax, @Campaña, @FechaVisita, @FechaSubido, @Cuota, @Oferta12m, @Tasa12m, @Tasa18m, @Cuota18m, @Oferta24m, @Tasa24m, @Cuota24m, @Oferta36m, @Tasa36m, @Cuota36m, @FuenteBase", parameters);
+                    return (false, "No se pudo referir el cliente, verifique los datos ingresados.");
                 }
-                else if (cliente.FuenteBase == "DBALFIN")
-                {
-
-                }
-                else
-                {
-                    return (false, "Fuente de referencia no válida");
-                }
-
                 return (true, "Cliente referido correctamente");
             }
             catch (System.Exception ex)
             {
                 Console.WriteLine($"Error al referir cliente: {ex.Message}");
-                // Aquí podrías registrar el error en un log o manejarlo de otra manera.
-                // Por ahora, simplemente retornamos un mensaje de error.
                 return (false, $"Error al referir cliente: {ex.Message}");
             }
         }
