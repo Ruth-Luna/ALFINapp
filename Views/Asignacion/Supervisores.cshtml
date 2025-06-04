@@ -5,19 +5,20 @@
 
 
 
+
 <div class="card border-0 shadow-sm rounded-3 mb-3">
     <div class="card-header bg-white fw-bold">
         IMPORTAR ASIGNACIONES
     </div>
     <div class="card-body">
-        <div class="row">
+        <div class="row g-3">
             <div class="col-auto">
-                <input class="form-control" type="file" id="formFile">
+                <input class="form-control" type="file" id="import-assignments-file-input">
             </div>
-            <div class="col-auto align-self-end">
+            <div class="col col-sm-auto align-self-end">
                 <div class="d-grid">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalListaDeAsignaciones">
-                        VER ASIGNACIONES
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignments-list-modal">
+                        <i class="fa-regular fa-eye me-2"></i>VER ASIGNACIONES
                     </button>
                 </div>
             </div>
@@ -25,21 +26,22 @@
     </div>
 </div>
 
+
 <div class="card border-0 shadow-sm rounded-3 mb-3">
     <div class="card-header bg-white fw-bold">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-center gap-3">
             <span>VISUALIZACIÓN DE CARGA</span>
             <div>
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-white">TOTAL</span>
-                    <input type="text" class="form-control">
+                    <input type="text" class="form-control" id="load-visualization-total-input">
                 </div>
             </div>
         </div>
     </div>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table mb-0">
+            <table class="table mb-0" id="load-visualization-table">
                 <thead>
                     <tr>
                         <th scope="col">DNI CLIENTE</th>
@@ -64,24 +66,27 @@
     </div>
 </div>
 
-<div class="text-end mb-3">
-    <button type="button" class="btn btn-primary">CRUZAR ASIGNACIÓN</button>
+
+<div class="text-center text-sm-end mb-3">
+    <button type="button" class="btn btn-primary" id="cross-assignment-button"><i class="fa-solid fa-shuffle me-2"></i>CRUZAR ASIGNACIÓN</button>
 </div>
+
 
 <div class="card border-0 shadow-sm rounded-3 mb-3">
     <div class="card-header bg-white fw-bold">
-        <div class="d-flex justify-content-between align-items-center">
-            <span>VISUALIZACIÓN DE CARGA</span>
+        <div class="d-flex justify-content-between align-items-center gap-3">
+            <span>VISUALIZACIÓN CRUCE DE ASIGNACIÓN</span>
             <div>
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-white">TOTAL</span>
-                    <input type="text" class="form-control">
+                    <input type="text" class="form-control" id="client-list-total-input">
                 </div>
             </div>
         </div>
     </div>
     <div class="card-body">
-        <table class="table mb-0">
+        <div class="table-responsive">
+            <table class="table mb-0" id="client-list-table">
             <thead>
                 <tr>
                     <th scope="col">DNI CLIENTE</th>
@@ -103,12 +108,15 @@
                 </tr>
             </tbody>
         </table>
+        </div>
     </div>
 </div>
 
+
 <div class="text-center">
-    <button type="button" class="btn btn-primary btn-lg">ASIGNAR</button>
+    <button type="button" class="btn btn-primary btn-lg" id="assign-button"><i class="fa-regular fa-circle-check me-2"></i>ASIGNAR</button>
 </div>
+
 
 
 <!-- modals -->

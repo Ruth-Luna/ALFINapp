@@ -1,19 +1,36 @@
-﻿
-
-<!-- Modal -->
-<div class="modal fade" id="modalListaDeAsignaciones" tabindex="-1" aria-labelledby="exampleModalListaDeAsignaciones" aria-hidden="true">
-    <div class="modal-dialog">
+﻿<!-- Modal -->
+<div class="modal fade" id="assignments-list-modal" tabindex="-1" aria-labelledby="assignments-list-title" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalListaDeAsignaciones">Modal title</h5>
+                <h5 class="modal-title" id="assignments-list-title">VER ASIGNACIONES</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                ...
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <div class="d-inline-flex gap-3 mb-3">
+                    <input type="text" class="form-control" id="supervisor-filter-input" placeholder="FILTRAR SUP.">
+                    <button type="submit" class="btn btn-primary" id="supervisor-search-button">BUSCAR</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table" id="assignments-list-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">DNI SUP</th>
+                                <th scope="col">NOM. SUP</th>
+                                <th scope="col">NOMBRE LISTA</th>
+                                <th scope="col">CANTIDAD</th>
+                                <th scope="col">FECHA ASIGNACIÓN</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="5" class="text-center">
+                                    Sin datos disponibles por el momento
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
