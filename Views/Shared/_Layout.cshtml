@@ -22,12 +22,16 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" />
 
     <!-- AG GRID -->
-    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+    @* <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script> *@
 
 
     <!-- CUSTEM THEME -->
     <link rel="stylesheet" href="~/css/custom-theme.css" />
 
+
+
+    <!-- GRID.JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridjs/dist/theme/mermaid.min.css" />
 
 </head>
 
@@ -77,13 +81,12 @@
         </div>
     </div>
 
-    
-    @* <main role="main" class="flex-grow-1 d-flex flex-column">
-        @RenderBody()
-    </main>
-    <footer class="@(ViewBag.isFooterAbsoluteAtBottom == true ? "tfoot-position-login" : "") text-center p-2">&copy; 2024 - AppBancoAlFIN - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></footer>
-    <!-- Agregar el script de SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.js?v=@DateTime.Now.Ticks"></script> *@
+
+
+    <!-- GRID.JS -->
+    <script src="https://cdn.jsdelivr.net/npm/gridjs/dist/gridjs.umd.js"></script>
+
+    <!-- OTROS SCRIPTS -->
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>

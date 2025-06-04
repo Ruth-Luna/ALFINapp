@@ -5,6 +5,11 @@
 
 
 
+<div class="mb-3">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignments-list-modal">
+        <i class="fa-regular fa-eye me-2"></i>VER ASIGNACIONES
+    </button>
+</div>
 
 <div class="card border-0 shadow-sm rounded-3 mb-3">
     <div class="card-header bg-white fw-bold">
@@ -14,13 +19,6 @@
         <div class="row g-3">
             <div class="col-auto">
                 <input class="form-control" type="file" id="import-assignments-file-input">
-            </div>
-            <div class="col col-sm-auto align-self-end">
-                <div class="d-grid">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignments-list-modal">
-                        <i class="fa-regular fa-eye me-2"></i>VER ASIGNACIONES
-                    </button>
-                </div>
             </div>
         </div>
     </div>
@@ -40,7 +38,10 @@
         </div>
     </div>
     <div class="card-body">
-        <div class="table-responsive">
+
+        <div id="load-visualization-table"></div>
+
+        @* <div class="table-responsive">
             <table class="table mb-0" id="load-visualization-table">
                 <thead>
                     <tr>
@@ -62,7 +63,7 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
+        </div> *@
     </div>
 </div>
 
@@ -85,7 +86,9 @@
         </div>
     </div>
     <div class="card-body">
-        <div class="table-responsive">
+        <div id="client-list-table"></div>
+
+        @* <div class="table-responsive">
             <table class="table mb-0" id="client-list-table">
             <thead>
                 <tr>
@@ -108,7 +111,7 @@
                 </tr>
             </tbody>
         </table>
-        </div>
+        </div> *@
     </div>
 </div>
 
