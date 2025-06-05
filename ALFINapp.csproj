@@ -23,9 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="wwwroot\css\custom-theme.css">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
+    <Folder Include="wwwroot\lib\lucide\dist\" />
   </ItemGroup>
 </Project>
