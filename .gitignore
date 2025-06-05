@@ -45,3 +45,7 @@ msbuild.wrn
 .fake
 
 appsettings.Local.json
+appsettings.Development.json
+
+# Tests Units
+/Tests/
