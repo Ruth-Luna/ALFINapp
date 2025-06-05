@@ -12,21 +12,21 @@ namespace ALFINapp.API.Controllers
     {
         private MDbContext _context;
         private IUseCaseGetAsignacion _useCaseGetAsignacion;
-        private DBServicesConsultasSupervisores _dbServicesConsultasSupervisores;
+        // private DBServicesConsultasSupervisores _dbServicesConsultasSupervisores; // Comentado porque está relacionado con supervisores
         private DBServicesGeneral _dbServicesGeneral;
         private DBServicesConsultasAdministrador _dbServicesConsultasAdministrador;
         private DBServicesAsignacionesAdministrador _dbServicesAsignacionesAdministrador;
 
         public AsignacionController(
             MDbContext context,
-            DBServicesConsultasSupervisores dbServicesConsultasSupervisores,
+            // DBServicesConsultasSupervisores dbServicesConsultasSupervisores, // Comentado
             DBServicesGeneral dbServicesGeneral,
             DBServicesConsultasAdministrador dbServicesConsultasAdministrador,
             DBServicesAsignacionesAdministrador dbServicesAsignacionesAdministrador,
             IUseCaseGetAsignacion useCaseGetAsignacion)
         {
             _context = context;
-            _dbServicesConsultasSupervisores = dbServicesConsultasSupervisores;
+            // _dbServicesConsultasSupervisores = dbServicesConsultasSupervisores; // Comentado
             _dbServicesGeneral = dbServicesGeneral;
             _dbServicesConsultasAdministrador = dbServicesConsultasAdministrador;
             _dbServicesAsignacionesAdministrador = dbServicesAsignacionesAdministrador;
@@ -58,7 +58,7 @@ namespace ALFINapp.API.Controllers
             return View("Asignacion", executeUseCase.Data);
         }
 
-        [HttpGet]
+        /*[HttpGet]
         [PermissionAuthorization("Asignacion", "Supervisores")]
         public async Task<IActionResult> Supervisores()
         {
@@ -181,20 +181,6 @@ namespace ALFINapp.API.Controllers
                     UFlgDeudaPlus = GetUFlgDeudaPlus.data
                 };
 
-                /*if (GetSupervisores.IsSuccess == false)
-                {
-                    TempData["MessageError"] = GetSupervisores.Message;
-                    return RedirectToAction("Index", "Home");
-                }
-    
-                var supervisores = GetSupervisores.Data;
-    
-                if (supervisores == null)
-                {
-                    TempData["MessageError"] = GetSupervisores.Message;
-                    return RedirectToAction("Index", "Home");
-                }*/
-
                 return View("Supervisores", GetDataLabels);
             }
             catch (System.Exception ex)
@@ -202,7 +188,8 @@ namespace ALFINapp.API.Controllers
                 TempData["MessageError"] = ex.Message;
                 return RedirectToAction("Redireccionar", "Error");
             }
-        }
+        }*/
+
         [HttpGet]
         public async Task<IActionResult> BuscarAsignacionFiltrarBases(
                                 string? base_busqueda = null,
@@ -223,11 +210,6 @@ namespace ALFINapp.API.Controllers
         {
             try
             {
-                /*if (base_busqueda != null)
-                {
-                    base_busqueda = "'" + base_busqueda + "'";
-                }*/
-
                 var getAsignacionFiltrarBases = await _dbServicesConsultasAdministrador.AsignacionFiltrarBases(
                                                     base_busqueda,
                                                     rango_edad,
@@ -257,15 +239,14 @@ namespace ALFINapp.API.Controllers
             }
         }
 
-        [HttpPost]
+        /*[HttpPost]
         public async Task<IActionResult> InsertarAsignacionASupervisores(
-            [FromBody] InsertarAsignacionRequest request) // Recibe los datos desde el cuerpo de la solicitud
+            [FromBody] InsertarAsignacionRequest request)
         {
             try
             {
                 var ultimoIndiceGuardado = 0;
 
-                // Accede a los datos desde el objeto request
                 var idClientes = request.IdClientes;
                 var SupervisoresData = request.SupervisoresData;
                 var fuenteBase = request.FuenteBase;
@@ -322,9 +303,9 @@ namespace ALFINapp.API.Controllers
             {
                 return Json(new { success = false, message = ex.Message });
             }
-        }
+        }*/
 
-        [HttpGet]
+        /*[HttpGet]
         public async Task<IActionResult> BuscarSupervisoresYDestinos()
         {
             try
@@ -355,8 +336,9 @@ namespace ALFINapp.API.Controllers
             {
                 return Json(new { success = false, message = ex.Message });
             }
-        }
-        [HttpGet]
+        }*/
+
+        /*[HttpGet]
         public async Task<IActionResult> ObtenerBaseDisponibleDelDestino(string destino)
         {
             try
@@ -380,6 +362,14 @@ namespace ALFINapp.API.Controllers
             {
                 return Json(new { success = false, message = ex.Message });
             }
+        }*/
+
+        [HttpGet]
+        [PermissionAuthorization("Asignacion", "Supervisores")]
+        public IActionResult Supervisores()
+        {
+            // Este retornará la vista ~/Views/Asignacion/Supervisores.cshtml
+            return View("Supervisores");
         }
     }
 }
