@@ -76,41 +76,6 @@ async function BuscarDNIAReferir(idDniLabel) {
         });
         return;
     }
-
-    // $.ajax({
-    //     url: '/Referido/BuscarDNIReferido',
-    //     type: 'GET',
-    //     data: {
-    //         dniBusqueda: dni
-    //     },
-    //     success: function (response) {
-    //         if (response.success === false) {
-    //             Swal.fire({
-    //                 title: 'Error al buscar',
-    //                 text: response.message,
-    //                 icon: 'error',
-    //                 confirmButtonText: 'Aceptar'
-    //             });
-    //         } else {
-    //             Swal.fire({
-    //                 title: 'Busqueda Exitosa',
-    //                 text: "El DNI ha sido encontrado",
-    //                 icon: 'success',
-    //                 confirmButtonText: 'Aceptar'
-    //             });
-    //             datosClienteExistente.innerHTML = response;
-    //             datosClienteExistente.style.display = 'block';
-    //         }
-    //     },
-    //     error: function () {
-    //         Swal.fire({
-    //             title: 'Error al buscar',
-    //             text: 'Ocurrió un error al buscar el DNI.',
-    //             icon: 'error',
-    //             confirmButtonText: 'Aceptar'
-    //         });
-    //     }
-    // });
 }
 
 function ReferirDNI(dni, fuenteBase) {

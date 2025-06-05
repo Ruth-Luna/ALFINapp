@@ -1,6 +1,6 @@
 function sortTable(tableId, colIndex, type) {
     const table = document.getElementById(tableId);
-    const rows = Array.from(table.rows).slice(2); // Exclude header
+    const rows = Array.from(table.rows).slice(2); 
     const isAscending = table.dataset.sortOrder !== 'asc';
     table.dataset.sortOrder = isAscending ? 'asc' : 'desc';
     rows.sort((a, b) => {
@@ -34,7 +34,7 @@ function sortTable(tableId, colIndex, type) {
                 : aText.toLowerCase() === 'true' ? 1 : -1;
         }
         if (type === 'string') {
-            // Normalize text for case-insensitive comparison
+            
             return isAscending
                 ? aText.toLowerCase().localeCompare(bText.toLowerCase())
                 : bText.toLowerCase().localeCompare(aText.toLowerCase());
@@ -43,7 +43,7 @@ function sortTable(tableId, colIndex, type) {
             ? aText.localeCompare(bText)
             : bText.localeCompare(aText);
     });
-    rows.forEach(row => table.tBodies[0].appendChild(row)); // Re-attach sorted rows
+    rows.forEach(row => table.tBodies[0].appendChild(row)); 
 }
 
 document.getElementById('startDate').addEventListener('input', filterByDate);
@@ -52,48 +52,48 @@ document.getElementById('endDate').addEventListener('input', filterByDate);
 function filterByDate() {
     const table = document.getElementById('clientesTable');
     const rows = table.tBodies[0].rows;
-    // Obtener las fechas de los campos de fecha
+    
     const startDate = document.getElementById('startDate').value;
     const endDate = document.getElementById('endDate').value;
-    // Función para convertir la fecha a un formato Date que JavaScript pueda comparar
+    
     function parseDate(dateStr) {
-        const [date, time] = dateStr.split(' '); // Divide la fecha y la hora
-        const [day, month, year] = date.split('/'); // Divide el día, mes y año
-        // Devolvemos la fecha en formato yyyy-mm-dd (sin la hora)
+        const [date, time] = dateStr.split(' '); 
+        const [day, month, year] = date.split('/'); 
+        
         return new Date(`${year}-${month}-${day}`);
     }
-    // Convertir las fechas seleccionadas a objetos Date
-    const startDateObj = new Date(startDate); // Asumimos 00:00:00 como hora por defecto
-    const endDateObj = new Date(endDate); // Asumimos 23:59:59 como hora por defecto
+    
+    const startDateObj = new Date(startDate); 
+    const endDateObj = new Date(endDate); 
     Array.from(rows).forEach(row => {
-        const rowDateStr = row.cells[5].textContent.trim(); // Fecha de Asignación (columna 7)
-        const rowDateObj = parseDate(rowDateStr); // Convertir la fecha de la fila a objeto Date
+        const rowDateStr = row.cells[5].textContent.trim(); 
+        const rowDateObj = parseDate(rowDateStr); 
 
-        // Verificar si la fecha está dentro del rango
+        
         let match = false;
         if (startDateObj instanceof Date && !isNaN(startDateObj) && endDateObj instanceof Date && !isNaN(endDateObj)) {
-            // Si ambos startDateObj y endDateObj son válidos, comparamos el rango
+            
             if (rowDateObj >= startDateObj && rowDateObj <= endDateObj) {
-                match = true; // La fecha de la fila está dentro del rango
+                match = true; 
             }
         } else if (startDateObj instanceof Date && !isNaN(startDateObj)) {
-            // Si solo startDateObj es válido, comparamos solo con la fecha inicial
+            
             if (rowDateObj >= startDateObj) {
-                match = true; // La fecha de la fila es posterior o igual a la fecha inicial
+                match = true; 
             }
         } else if (endDateObj instanceof Date && !isNaN(endDateObj)) {
-            // Si solo endDateObj es válido, comparamos solo con la fecha final
+            
             if (rowDateObj <= endDateObj) {
-                match = true; // La fecha de la fila es anterior o igual a la fecha final
+                match = true; 
             }
         } else {
-            match = true; // Si no se seleccionó ninguna fecha, se muestra la fila
+            match = true; 
         }
-        // Mostrar u ocultar la fila según el resultado de la comparación
+        
         if (match) {
-            row.style.display = ''; // Mostrar la fila
+            row.style.display = ''; 
         } else {
-            row.style.display = 'none'; // Ocultar la fila
+            row.style.display = 'none'; 
         }
     });
 }
@@ -104,17 +104,17 @@ function filtrarPorRol(rol) {
 
     Array.from(rows).slice(1).forEach(row => {
         let cell = row.cells[6].textContent.trim();
-        if (!cell) return; // Si no existe la celda, saltar
+        if (!cell) return; 
 
         if (rol === "") {
-            row.style.display = ''; // Muestra todas las filas
+            row.style.display = ''; 
             return;
         }
         let match = cell === rol;
         if (rol === "ASESOR") {
             match = cell.includes("VENDEDOR") || cell.includes("ASESOR");
         }
-        row.style.display = match ? '' : 'none'; // Muestra u oculta la fila
+        row.style.display = match ? '' : 'none'; 
     });
 }
 
@@ -124,11 +124,11 @@ document.getElementById('searchInput').addEventListener('input', function () {
     const table = document.getElementById('clientesTable');
     const rows = table.tBodies[0].rows;
 
-    // Obtener fechas del filtro si se seleccionaron
+    
     const startDate = document.getElementById('startDate').value;
     const endDate = document.getElementById('endDate').value;
 
-    // Función para convertir la fecha a un formato Date que JavaScript pueda comparar
+    
     function parseDate(dateStr) {
         const [day, month, year, time] = dateStr.split(/[\/\s:]+/);
         if (time) {
@@ -145,52 +145,52 @@ document.getElementById('searchInput').addEventListener('input', function () {
 
         switch (searchField) {
             case 'apellidoPaterno':
-                cellValue = row.cells[2].textContent.toLowerCase(); // Apellido Paterno
+                cellValue = row.cells[2].textContent.toLowerCase(); 
                 break;
             /*case 'apellidoMaterno':
-                cellValue = row.cells[3].textContent.toLowerCase(); // Columna de Apellido Materno
+                cellValue = row.cells[3].textContent.toLowerCase(); 
                 break;
             case 'nombre':
-                cellValue = row.cells[4].textContent.toLowerCase(); // Columna de Nombre
+                cellValue = row.cells[4].textContent.toLowerCase(); 
                 break;*/
             case 'ofertaMax':
-                cellValue = row.cells[3].textContent.toLowerCase(); // Columna de Oferta Max
+                cellValue = row.cells[3].textContent.toLowerCase(); 
                 break;
             case 'comentarioPrincipal':
-                cellValue = row.cells[5].textContent.toLowerCase(); // Columna de Comentario Principal
+                cellValue = row.cells[5].textContent.toLowerCase(); 
                 break;
             case 'dni':
-                cellValue = row.cells[1].textContent.toLowerCase(); // DNI
+                cellValue = row.cells[1].textContent.toLowerCase(); 
                 break;
             case 'campaña':
-                cellValue = row.cells[4].textContent.toLowerCase(); // Campaña
+                cellValue = row.cells[4].textContent.toLowerCase(); 
                 break;
             case 'tipificacionRelevante':
-                cellValue = row.cells[7].textContent.toLowerCase(); // Tipificación más Relevante
+                cellValue = row.cells[7].textContent.toLowerCase(); 
                 break;
             case 'fechaAsignacion':
-                rowDate = row.cells[5].textContent.trim(); // Fecha de Asignación
+                rowDate = row.cells[5].textContent.trim(); 
                 break;
             case 'nombres':
-                //cellValue = row.cells[1].textContent.toLowerCase(); // Nombres
-                cellValue = row.cells[3].textContent.toLowerCase(); // Nombres
+                //cellValue = row.cells[1].textContent.toLowerCase(); 
+                cellValue = row.cells[3].textContent.toLowerCase(); 
                 break;
             case 'dniadm':
-                cellValue = row.cells[2].textContent.toLowerCase(); // Nombres
+                cellValue = row.cells[2].textContent.toLowerCase(); 
                 break;
             default:
-                cellValue = ''; // En caso de no coincidir con ninguna opción
+                cellValue = ''; 
                 break;
         }
 
         let match = false;
 
         if (searchField === 'fechaAsignacion') {
-            // Convertir la fecha en el formato de la tabla a un objeto Date
+            
             const rowDateObj = parseDate(rowDate);
             const startDateObj = startDate ? parseDate(startDate) : null;
             const endDateObj = endDate ? parseDate(endDate) : null;
-            // Verificar si la fecha de la fila está dentro del rango seleccionado
+            
             if (startDateObj && rowDateObj < startDateObj) {
                 match = false;
             } else if (endDateObj && rowDateObj > endDateObj) {
@@ -203,9 +203,9 @@ document.getElementById('searchInput').addEventListener('input', function () {
         }
 
         if (match) {
-            row.style.display = ''; // Muestra la fila
+            row.style.display = ''; 
         } else {
-            row.style.display = 'none'; // Oculta la fila
+            row.style.display = 'none'; 
         }
     });
 });
@@ -217,7 +217,7 @@ document.getElementById('searchField').addEventListener('change', function () {
     const searchInput = document.getElementById('searchInput');
     const rolFiltro = document.getElementById('rolFiltro');
 
-    // Mostrar u ocultar los campos de fecha según la opción seleccionada
+    
     if (searchField === 'fechaAsignacion') {
         startDateInput.style.display = 'block';
         endDateInput.style.display = 'block';
