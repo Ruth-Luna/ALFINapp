@@ -1,6 +1,11 @@
 @model ALFINapp.Infrastructure.Persistence.Models.AsignacionSupervisoresDTO
 
 @section Styles {
+    <style>
+        .gridjs-table tr:hover td {
+            background-color: #f0f0f0;
+        }
+    </style>
 }
 
 
@@ -38,32 +43,7 @@
         </div>
     </div>
     <div class="card-body">
-
         <div id="load-visualization-table"></div>
-
-        @* <div class="table-responsive">
-            <table class="table mb-0" id="load-visualization-table">
-                <thead>
-                    <tr>
-                        <th scope="col">DNI CLIENTE</th>
-                        <th scope="col">DNI SUPERVISOR</th>
-                        <th scope="col">CELULAR 1</th>
-                        <th scope="col">CELULAR 2</th>
-                        <th scope="col">CELULAR 3</th>
-                        <th scope="col">CELULAR 4</th>
-                        <th scope="col">CELULAR 5</th>
-                        <th scope="col">D. BASE</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="8" class="text-center">
-                            Sin datos disponibles por el momento
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div> *@
     </div>
 </div>
 
@@ -87,31 +67,6 @@
     </div>
     <div class="card-body">
         <div id="client-list-table"></div>
-
-        @* <div class="table-responsive">
-            <table class="table mb-0" id="client-list-table">
-            <thead>
-                <tr>
-                    <th scope="col">DNI CLIENTE</th>
-                    <th scope="col">NOM. CLIENTE</th>
-                    <th scope="col">CAMPAÑA</th>
-                    <th scope="col">OFERTA MAX.</th>
-                    <th scope="col">AGENCIA</th>
-                    <th scope="col">TIPO BASE</th>
-                    <th scope="col">NOMBRE SUP</th>
-                    <th scope="col">NOMBRE LISTA</th>
-                    <th scope="col">D. BASE</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td colspan="9" class="text-center">
-                        Sin datos disponibles por el momento
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        </div> *@
     </div>
 </div>
 

@@ -48,6 +48,32 @@ function fetchClientListData() {
 // Wrapper para la segunda tabla
 const clientListTableData = () => fetchClientListData();
 
+
+// Función que simula la obtención de datos para la tercera tabla
+function fetchAssignmentsListData() {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve([
+                ["12345678", "Luis Pérez", "Lista 1", "10", "2025-05-01"],
+                ["23456789", "María López", "Lista 2", "15", "2025-05-03"],
+                ["34567890", "Carlos Ruiz", "Lista 3", "12", "2025-04-25"],
+                ["45678901", "Sofía Torres", "Lista 4", "18", "2025-04-28"],
+                ["56789012", "Ricardo Díaz", "Lista 1", "11", "2025-05-02"],
+                ["67890123", "Patricia Herrera", "Lista 2", "16", "2025-05-04"],
+                ["78901234", "Fernando Paredes", "Lista 3", "13", "2025-04-26"],
+                ["89012345", "Valeria Rojas", "Lista 4", "19", "2025-04-29"],
+                ["90123456", "Eduardo Vega", "Lista 1", "12", "2025-05-05"],
+                ["01234567", "Marina Ramos", "Lista 2", "17", "2025-05-06"],
+                ["11223344", "Jorge Lima", "Lista 3", "14", "2025-04-27"],
+                ["22334455", "Natalia Bravo", "Lista 4", "20", "2025-04-30"]
+            ]);
+        }, 400);
+    });
+}
+
+// Wrapper para la tercera tabla
+const assignmentsListTableData = () => fetchAssignmentsListData();
+
 // Inicialización de las tablas Grid.js
 document.addEventListener("DOMContentLoaded", function () {
     // Primera tabla: “loadVisualizationTableData”
@@ -88,4 +114,33 @@ document.addEventListener("DOMContentLoaded", function () {
             limit: 10
         }
     }).render(document.getElementById("client-list-table"));
+
+    // tabla del modal
+    new gridjs.Grid({
+        columns: [
+            "DNI SUP",
+            "NOM. SUP",
+            "NOMBRE LISTA",
+            "CANTIDAD",
+            "FECHA ASIGNACIÓN"
+        ],
+        data: assignmentsListTableData,
+        sort: true,
+        pagination: {
+            limit: 7
+        }
+    }).render(document.getElementById("assignments-list-table"));
+
+});
+
+
+
+/* EVENTOS */
+document.getElementById("assign-button").addEventListener("click", function () {
+    Swal.fire({
+        icon: 'success',
+        title: 'Asignado correctamente',
+        showConfirmButton: false,
+        timer: 1500
+    });
 });
