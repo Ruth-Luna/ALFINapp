@@ -1,5 +1,121 @@
+/* FUNCIONES PARA LEER Y MOSTRAR DATOS */
+parsedData = [];
+function import_assignments_file (event) {
+    const fileInput = event.target;
+    const file = fileInput.files[0];
+    if (!file) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Por favor, selecciona un archivo para importar.',
+        });
+        return;
+    }
+    const allowedExtensions = ['csv', 'txt'];
+    const fileName = file.name;
+    const fileExtension = fileName.split('.').pop().toLowerCase();
+    if (!allowedExtensions.includes(fileExtension)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Formato de archivo no permitido. Por favor, sube un archivo CSV o TXT.',
+        });
+        return;
+    } 
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        const content = e.target.result;
+        var parsedData = [];
+        parsedData = parseCSV(content);
+        Swal.fire({
+            icon: 'success',
+            title: 'Archivo importado correctamente',
+            text: 'Se han importado ' + parsedData.length + ' registros. Puedes proceder a asignar supervisores.',
+            showConfirmButton: true,
+            timer: 2000
+        })
+        load_visualization_data(parsedData);
+    }
+    reader.onerror = function() {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al leer el archivo',
+            text: 'Por favor, verifica el archivo y vuelve a intentarlo.',
+        });
+    }
+    reader.readAsText(file);
+    fileInput.value = ''; // Limpiar el input para permitir la carga del mismo archivo nuevamente
+    document.getElementById("imported-file-name").textContent = fileName;
+    document.getElementById("imported-file-name").style.display = "block";
+}
+
+function parseCSV(text) {
+    const lines = text.trim().split('\n');
+    if (lines.length <= 1) return [];
+    return lines.slice(1).map(line => line.split(',').map(cell => cell.trim()));
+}
+
+function load_visualization_data(data) {
+    const tableContainer = document.getElementById("load-visualization-table");
+    tableContainer.innerHTML = ""; // Limpiar antes de volver a renderizar
+
+    new gridjs.Grid({
+        columns: [
+            "DNI CLIENTE",
+            "DNI SUPERVISOR",
+            "CELULAR 1",
+            "CELULAR 2",
+            "CELULAR 3",
+            "CELULAR 4",
+            "CELULAR 5",
+            "D. BASE"
+        ],
+        data: data,
+        sort: true,
+        pagination: {
+            limit: 10
+        },
+        search: true
+    }).render(tableContainer);
+
+    document.getElementById("load-visualization-total-input").value = "";
+    document.getElementById("load-visualization-total-input").value = data.length;
+}
+
+async function cross_assignments() {
+    const dataJson = JSON.stringify(parsedData);
+    if (parsedData.length === 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al cruzar asignaciones',
+            text: 'No hay datos para cruzar. Por favor, importa un archivo primero.',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+    const baseUrl = window.location.origin;
+    const url = baseUrl + "/Asignaciones/CrossAssignments";
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: dataJson
+        });
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al cruzar asignaciones',
+            text: 'Ocurrió un error al intentar cruzar las asignaciones. Por favor, inténtalo de nuevo más tarde.',
+            confirmButtonText: 'Aceptar'
+        });
+    }
+}
+
 // Función que simula la obtención de datos para la primera tabla
-function fetchLoadVisualizationData() {
+/*function fetchLoadVisualizationData() {
     return new Promise((resolve) => {
         setTimeout(() => {
             resolve([
@@ -44,13 +160,13 @@ function fetchClientListData() {
         }, 400);
     });
 }
-
+*/
 // Wrapper para la segunda tabla
 const clientListTableData = () => fetchClientListData();
 
 
 // Función que simula la obtención de datos para la tercera tabla
-function fetchAssignmentsListData() {
+/*function fetchAssignmentsListData() {
     return new Promise((resolve) => {
         setTimeout(() => {
             resolve([
@@ -73,10 +189,11 @@ function fetchAssignmentsListData() {
 
 // Wrapper para la tercera tabla
 const assignmentsListTableData = () => fetchAssignmentsListData();
-
+*/
+/*
 // Inicialización de las tablas Grid.js
 document.addEventListener("DOMContentLoaded", function () {
-    // Primera tabla: “loadVisualizationTableData”
+    //Primera tabla: “loadVisualizationTableData”
     new gridjs.Grid({
         columns: [
             "DNI CLIENTE",
@@ -130,11 +247,8 @@ document.addEventListener("DOMContentLoaded", function () {
             limit: 7
         }
     }).render(document.getElementById("assignments-list-table"));
-
 });
-
-
-
+*/
 /* EVENTOS */
 document.getElementById("assign-button").addEventListener("click", function () {
     Swal.fire({
@@ -144,3 +258,4 @@ document.getElementById("assign-button").addEventListener("click", function () {
         timer: 1500
     });
 });
+

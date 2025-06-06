@@ -23,7 +23,12 @@
     <div class="card-body">
         <div class="row g-3">
             <div class="col-auto">
-                <input class="form-control" type="file" id="import-assignments-file-input">
+                <input class="form-control" type="file" id="import-assignments-file-input" onchange="import_assignments_file(event);">
+            </div>
+            <div class="col-auto" id="imported-file-name">
+                <span>
+                    
+                </span>
             </div>
         </div>
     </div>
@@ -49,7 +54,7 @@
 
 
 <div class="text-center text-sm-end mb-3">
-    <button type="button" class="btn btn-primary" id="cross-assignment-button"><i class="fa-solid fa-shuffle me-2"></i>CRUZAR ASIGNACIÓN</button>
+    <a href="javascrip:void(0)" type="button" class="btn btn-primary" id="cross-assignment-button" onclick="cross_assignments()"><i class="fa-solid fa-shuffle me-2"></i>CRUZAR ASIGNACIÓN</a>
 </div>
 
 

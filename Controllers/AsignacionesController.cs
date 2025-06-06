@@ -2,6 +2,8 @@ using ALFINapp.API.Filters;
 using ALFINapp.Infrastructure.Services;
 using ALFINapp.Infrastructure.Persistence.Models;
 using Microsoft.AspNetCore.Mvc;
+using ALFINapp.API.DTOs;
+using ALFINapp.Application.Interfaces.Asignaciones;
 
 namespace ALFINapp.API.Controllers
 {
@@ -10,14 +12,20 @@ namespace ALFINapp.API.Controllers
     {
         private readonly DBServicesGeneral _dbServicesGeneral;
         private readonly DBServicesConsultasSupervisores _dbServicesConsultasSupervisores;
+        private readonly IUseCaseCrossAssignments _useCaseCrossAssignments;
         private readonly MDbContext _context;
-        public AsignacionesController(DBServicesGeneral dbServicesGeneral, 
+        private readonly ILogger<AsignacionesController> _logger;
+        public AsignacionesController(DBServicesGeneral dbServicesGeneral,
             MDbContext context,
-            DBServicesConsultasSupervisores dbServicesConsultasSupervisores)
+            DBServicesConsultasSupervisores dbServicesConsultasSupervisores,
+            IUseCaseCrossAssignments useCaseCrossAssignments,
+            ILogger<AsignacionesController> logger)
         {
             _dbServicesGeneral = dbServicesGeneral;
             _context = context;
             _dbServicesConsultasSupervisores = dbServicesConsultasSupervisores;
+            _useCaseCrossAssignments = useCaseCrossAssignments;
+            _logger = logger;
         }
         [HttpGet]
         public IActionResult CargarActualizarAsignacion(int idUsuario)
@@ -53,7 +61,7 @@ namespace ALFINapp.API.Controllers
                                                                 && ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
                                                                 && ca.FechaAsignacionVendedor.Value.Month == DateTime.Now.Month
                                                                 ) -
-                                                            _context.clientes_asignados.Count(ca => ca.IdUsuarioV == idUsuario 
+                                                            _context.clientes_asignados.Count(ca => ca.IdUsuarioV == idUsuario
                                                                 && ca.TipificacionMayorPeso != null
                                                                 && ca.FechaAsignacionVendedor.HasValue
                                                                 && ca.FechaAsignacionVendedor.Value.Year == DateTime.Now.Year
@@ -78,7 +86,7 @@ namespace ALFINapp.API.Controllers
         public async Task<IActionResult> Modificar()
         {
             var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId == null )
+            if (usuarioId == null)
             {
                 TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
                 return RedirectToAction("Index", "Home");
@@ -113,13 +121,49 @@ namespace ALFINapp.API.Controllers
         public IActionResult Tipificar()
         {
             var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId == null )
+            if (usuarioId == null)
             {
                 TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
                 return RedirectToAction("Index", "Home");
             }
-            
+
             return View("Tipificar");
+        }
+        [HttpGet]
+        public async Task<IActionResult> CrossAssignments([FromBody] List<DtoVAsignarClientesSupervisores> asignaciones)
+        {
+            try
+            {
+                var result = await _useCaseCrossAssignments.Execute(new Application.DTOs.DetallesAssignmentsMasive(asignaciones));
+                if (result.IsSuccess)
+                {
+                    return Json(new
+                    {
+                        Message = result.Message,
+                        Data = result.Data
+                    });
+                }
+                else
+                {
+                    _logger.LogError("Error al procesar las asignaciones: {Message}", result.Message);
+                    // Aquí puedes registrar el error en un sistema de logging o manejarlo de otra manera
+                    // Retorna un mensaje de error genérico
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        Message = result.Message,
+                    });
+                }
+            }
+            catch (System.Exception)
+            {
+                _logger.LogError("Error al procesar las asignaciones");
+                return Json(new
+                {
+                    IsSuccess = false,
+                    Message = "Ha ocurrido un error al procesar las asignaciones. Por favor, inténtelo de nuevo más tarde."
+                });
+            }
         }
     }
 }
