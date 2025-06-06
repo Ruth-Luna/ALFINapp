@@ -18,10 +18,11 @@
     <partial name="Components/_Header" />
 
     <main>
-        @RenderBody()
+        <div class="content">
+            @RenderBody()
+        </div>
         <partial name="Components/_Footer" />
     </main>
-
 
     @RenderSection("Script", required: false)
 

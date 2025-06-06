@@ -1,4 +1,72 @@
-﻿
-<nav id="sidebar">
-    
+﻿<nav id="sidebar">
+    <div class="sidebar__header">
+        s
+    </div>
+
+    <div class="sidebar__content">
+        <div class="sidebar__group">
+            <div class="sidebar__group-label">Grupo</div>
+
+            <ul class="sidebar__menu">
+
+                <li class="sidebar__menu-item">
+                    <a href="#" class="sidebar__menu-button">
+                        <i data-lucide="house"></i>
+                        <span class="sidebar__menu-text">Dashboard</span>
+                    </a>
+                </li>
+
+                <li class="sidebar__menu-item">
+                    <button class="sidebar__menu-button collapsible-trigger" data-target="submenu-derivaciones" aria-expanded="true" aria-controls="submenu-derivaciones">
+                        <i data-lucide="airplay"></i>
+                        <span class="sidebar__menu-text">Derivaciones</span>
+                        <i class="chevron" data-lucide="chevron-down"></i>
+                    </button>
+
+                    <ul class="sidebar__submenu" id="submenu-derivaciones" role="menu" aria-labelledby="submenu-derivaciones">
+                        <li class="sidebar__submenu-item">
+                            <a href="#" class="sidebar__submenu-button active">
+                                <span class="sidebar__submenu-text">Todas</span>
+                            </a>
+                        </li>
+                        <li class="sidebar__submenu-item">
+                            <a href="#" class="sidebar__submenu-button">
+                                <span class="sidebar__submenu-text">Pendientes</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="sidebar__menu-item">
+                    <button class="sidebar__menu-button collapsible-trigger" data-target="submenu-reportes" aria-expanded="false" aria-controls="submenu-reportes">
+                        <i data-lucide="file-text"></i>
+                        <span class="sidebar__menu-text">Reportes</span>
+                        <i class="chevron" data-lucide="chevron-down"></i>
+                    </button>
+
+                    <ul class="sidebar__submenu" id="submenu-reportes" role="menu" aria-labelledby="submenu-reportes">
+                        <li class="sidebar__submenu-item">
+                            <a href="#" class="sidebar__submenu-button">
+                                <span class="sidebar__submenu-text">Mensuales</span>
+                            </a>
+                        </li>
+                        <li class="sidebar__submenu-item">
+                            <a href="#" class="sidebar__submenu-button">
+                                <span class="sidebar__submenu-text">Anuales</span>
+                            </a>
+                        </li>
+                        <li class="sidebar__submenu-item">
+                            <a href="#" class="sidebar__submenu-button">
+                                <span class="sidebar__submenu-text">Personalizados</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    @*
+    <div class="sidebar__footer">
+    s
+    </div> *@
 </nav>
