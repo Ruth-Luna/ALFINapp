@@ -129,7 +129,7 @@ namespace ALFINapp.API.Controllers
 
             return View("Tipificar");
         }
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> CrossAssignments([FromBody] List<DtoVAsignarClientesSupervisores> asignaciones)
         {
             try
@@ -139,6 +139,7 @@ namespace ALFINapp.API.Controllers
                 {
                     return Json(new
                     {
+                        IsSuccess = true,
                         Message = result.Message,
                         Data = result.Data
                     });
@@ -146,8 +147,6 @@ namespace ALFINapp.API.Controllers
                 else
                 {
                     _logger.LogError("Error al procesar las asignaciones: {Message}", result.Message);
-                    // Aquí puedes registrar el error en un sistema de logging o manejarlo de otra manera
-                    // Retorna un mensaje de error genérico
                     return Json(new
                     {
                         IsSuccess = false,

@@ -1,5 +1,5 @@
 /* FUNCIONES PARA LEER Y MOSTRAR DATOS */
-parsedData = [];
+parsedDataGral = [];
 function import_assignments_file (event) {
     const fileInput = event.target;
     const file = fileInput.files[0];
@@ -28,6 +28,17 @@ function import_assignments_file (event) {
         const content = e.target.result;
         var parsedData = [];
         parsedData = parseCSV(content);
+        const loading = Swal.fire({
+            title: 'Cargando datos...',
+            text: 'Por favor, espera mientras se procesan los datos.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        load_visualization_data(parsedData);
+        parsedDataGral = parsedData; // Guardar los datos globalmente
+        loading.close();
         Swal.fire({
             icon: 'success',
             title: 'Archivo importado correctamente',
@@ -35,7 +46,6 @@ function import_assignments_file (event) {
             showConfirmButton: true,
             timer: 2000
         })
-        load_visualization_data(parsedData);
     }
     reader.onerror = function() {
         Swal.fire({
@@ -84,8 +94,7 @@ function load_visualization_data(data) {
 }
 
 async function cross_assignments() {
-    const dataJson = JSON.stringify(parsedData);
-    if (parsedData.length === 0) {
+    if (!parsedDataGral || parsedDataGral.length === 0) {
         Swal.fire({
             icon: 'error',
             title: 'Error al cruzar asignaciones',
@@ -94,17 +103,54 @@ async function cross_assignments() {
         });
         return;
     }
+
+    const dataToSend = parsedDataGral.map(row => ({
+        dni_cliente: row[0] ?? "",
+        dni_supervisor: row[1] ?? "",
+        telefono_1: row[2] === "NULL" ? "" : row[2],
+        telefono_2: row[3] === "NULL" ? "" : row[3],
+        telefono_3: row[4] === "NULL" ? "" : row[4],
+        telefono_4: row[5] === "NULL" ? "" : row[5],
+        telefono_5: row[6] === "NULL" ? "" : row[6],
+        d_base: row[7] ?? ""
+    }));
+
+    const dataJson = JSON.stringify(dataToSend);
+    console.log("Datos a cruzar:", dataJson);
+
     const baseUrl = window.location.origin;
     const url = baseUrl + "/Asignaciones/CrossAssignments";
+
     try {
         const response = await fetch(url, {
-            method: 'GET',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: dataJson
         });
+
+        const result = await response.json();
+        console.log("Respuesta del servidor:", result);
+
+        if (result.IsSuccess) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Asignaciones cruzadas con éxito',
+                text: result.Message,
+                confirmButtonText: 'Aceptar'
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error en el servidor',
+                text: result.Message,
+                confirmButtonText: 'Aceptar'
+            });
+        }
+
     } catch (error) {
+        console.error("Error en fetch:", error);
         Swal.fire({
             icon: 'error',
             title: 'Error al cruzar asignaciones',
