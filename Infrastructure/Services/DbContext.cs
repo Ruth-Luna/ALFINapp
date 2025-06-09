@@ -32,6 +32,7 @@ public class MDbContext : DbContext
     public DbSet<PermisosRolesVistas> Permisos_Roles_Vistas { get; set; }
     public DbSet<Retiros> retiros { get; set; }
     public DbSet<AsesoresOcultos> Asesores_Ocultos { get; set; }
+    public DbSet<ListasAsignacion> listas_asignacion { get; set; }
     //PROCEDIMIENTOS ALMACENADOS NO BORRAR
     public DbSet<StringDTO> string_dto { get; set; }
     public DbSet<NumerosEnterosDTO> numeros_enteros_dto { get; set; }

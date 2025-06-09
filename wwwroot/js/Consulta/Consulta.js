@@ -17,17 +17,25 @@ function validarTelefono() {
         data: {
             telefono: campobusqueda
         },
-        success: function (data) {
-            if (data.success === false) {
+        success: function (response) {
+            if (response.existe === false) {
                 Swal.fire({
-                    title: 'Error',
-                    text: data.message,
+                    title: 'Cliente no encontrado',
+                    text: response.message,
+                    icon: 'info',
+                    confirmButtonText: 'Aceptar'
+                });
+                return;
+            } else if (response.error === true) {
+                Swal.fire({
+                    title: 'Error en la búsqueda',
+                    text: response.message,
                     icon: 'error',
                     confirmButtonText: 'Aceptar'
                 });
-
                 return;
-            } else {
+            }
+            else {
                 Swal.fire({
                     title: 'Cliente encontrado',
                     text: 'El cliente ha sido encontrado en la base de datos.',
@@ -36,7 +44,7 @@ function validarTelefono() {
                 });
                 const datosClienteExistente = document.getElementById("datos-cliente-existente");
                 datosClienteExistente.style.display = "block";
-                datosClienteExistente.innerHTML = data; // Carga la vista parcial
+                datosClienteExistente.innerHTML = response; // Carga la vista parcial
             }
         },
         error: function (error) {

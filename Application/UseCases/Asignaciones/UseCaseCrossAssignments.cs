@@ -12,24 +12,38 @@ namespace ALFINapp.Application.UseCases.Asignaciones
         {
             _repositoryAsignaciones = repositoryAsignaciones;
         }
-        public async Task<(bool IsSuccess, string Message, List<Cliente> Data)> Execute(DetallesAssignmentsMasive clientes)
+        public async Task<(bool IsSuccess, string Message, DetallesAssignmentsMasive? ClientesCruzados)> Execute(DetallesAssignmentsMasive clientes)
         {
             try
             {
                 if (clientes == null || clientes.SupervisoresConClientes.Count == 0)
                 {
-                    return (false, "No se proporcionaron asignaciones para procesar.", new List<Cliente>());
+                    return (false, "No se proporcionaron asignaciones para procesar.", null);
                 }
-                // Validar que los clientes tengan un DNI válido
+                foreach (var supervisor in clientes.SupervisoresConClientes)
+                {
+                    if (string.IsNullOrEmpty(supervisor.DniSupervisor))
+                    {
+                        return (false, "Todos los supervisores deben tener un DNI válido.", null);
+                    }
+                    if (supervisor.DniSupervisor.Length > 8)
+                    {
+                        return (false, $"Hay un DNI de un supervisor que tiene mas de 8 caracteres {supervisor.DniSupervisor}.", null);
+                    }
+                    if (supervisor.DniSupervisor.Length != 8)
+                    {
+                        supervisor.DniSupervisor = supervisor.DniSupervisor.PadLeft(8, '0');
+                    }
+                }
                 foreach (var cliente in clientes.SupervisoresConClientes.SelectMany(s => s.Clientes))
                 {
                     if (string.IsNullOrEmpty(cliente.Dni))
                     {
-                        return (false, "Todos los clientes deben tener un DNI válido.", new List<Cliente>());
+                        return (false, "Todos los clientes deben tener un DNI válido.", null);
                     }
                     if (cliente.Dni.Length > 8)
                     {
-                        return (false, "El DNI de un cliente no puede tener más de 8 caracteres.", new List<Cliente>());
+                        return (false, "El DNI de un cliente no puede tener más de 8 caracteres.", null);
                     }
                     if (cliente.Dni.Length != 8)
                     {
@@ -39,13 +53,26 @@ namespace ALFINapp.Application.UseCases.Asignaciones
                 var cross = await _repositoryAsignaciones.CrossAssignments(clientes);
                 if (!cross.IsSuccess)
                 {
-                    return (false, cross.Message, new List<Cliente>());
+                    return (false, cross.Message, null);
                 }
-                return (true, "Asignaciones cruzadas procesadas correctamente", clientes.SupervisoresConClientes.SelectMany(s => s.Clientes).ToList());
+                foreach (var supervisor in clientes.SupervisoresConClientes)
+                {
+                    if (string.IsNullOrEmpty(supervisor.DniSupervisor))
+                    {
+                        continue;
+                    }
+                    var listed = await _repositoryAsignaciones.CreateListName(supervisor.DniSupervisor);
+                    if (!listed.IsSuccess)
+                    {
+                        return (false, listed.Message, null);
+                    }
+                    supervisor.NombreLista = listed.NombreLista;
+                }
+                return (true, "Asignaciones cruzadas procesadas correctamente", clientes);
             }
             catch (System.Exception ex)
             {
-                return (false, ex.Message, new List<Cliente>());
+                return (false, ex.Message, null);
             }
         }
     }

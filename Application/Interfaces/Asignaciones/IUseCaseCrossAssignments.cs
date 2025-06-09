@@ -5,6 +5,6 @@ namespace ALFINapp.Application.Interfaces.Asignaciones
 {
     public interface IUseCaseCrossAssignments
     {
-        public Task<(bool IsSuccess, string Message, List<Cliente> Data)> Execute(DetallesAssignmentsMasive clientes);
+        public Task<(bool IsSuccess, string Message, DetallesAssignmentsMasive? ClientesCruzados)> Execute(DetallesAssignmentsMasive clientes);
     }
 }

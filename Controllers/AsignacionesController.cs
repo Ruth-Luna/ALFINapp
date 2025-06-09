@@ -13,19 +13,22 @@ namespace ALFINapp.API.Controllers
         private readonly DBServicesGeneral _dbServicesGeneral;
         private readonly DBServicesConsultasSupervisores _dbServicesConsultasSupervisores;
         private readonly IUseCaseCrossAssignments _useCaseCrossAssignments;
+        private readonly IUseCaseAsignarClientesSup _useCaseAsignarClientesSup;
         private readonly MDbContext _context;
         private readonly ILogger<AsignacionesController> _logger;
         public AsignacionesController(DBServicesGeneral dbServicesGeneral,
             MDbContext context,
             DBServicesConsultasSupervisores dbServicesConsultasSupervisores,
             IUseCaseCrossAssignments useCaseCrossAssignments,
-            ILogger<AsignacionesController> logger)
+            ILogger<AsignacionesController> logger,
+            IUseCaseAsignarClientesSup useCaseAsignarClientesSup)
         {
             _dbServicesGeneral = dbServicesGeneral;
             _context = context;
             _dbServicesConsultasSupervisores = dbServicesConsultasSupervisores;
             _useCaseCrossAssignments = useCaseCrossAssignments;
             _logger = logger;
+            _useCaseAsignarClientesSup = useCaseAsignarClientesSup;
         }
         [HttpGet]
         public IActionResult CargarActualizarAsignacion(int idUsuario)
@@ -141,7 +144,7 @@ namespace ALFINapp.API.Controllers
                     {
                         IsSuccess = true,
                         Message = result.Message,
-                        Data = result.Data
+                        Data = result.ClientesCruzados != null ? result.ClientesCruzados : null,
                     });
                 }
                 else
@@ -162,6 +165,35 @@ namespace ALFINapp.API.Controllers
                     IsSuccess = false,
                     Message = "Ha ocurrido un error al procesar las asignaciones. Por favor, inténtelo de nuevo más tarde."
                 });
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> AssignBaseSupervisors([FromBody] List<DtoVAsignarClientesSupervisores> asignaciones)
+        {
+            if (asignaciones == null || asignaciones.Count == 0)
+            {
+                TempData["MessageError"] = "No se proporcionaron asignaciones para procesar.";
+                return RedirectToAction("Modificar");
+            }
+
+            try
+            {
+                var result = await _useCaseAsignarClientesSup.AsignarMasivoAsync(new Application.DTOs.DetallesAssignmentsMasive(asignaciones));
+                if (result.IsSuccess)
+                {
+                    TempData["MessageSuccess"] = result.Message;
+                    return RedirectToAction("Modificar");
+                }
+                else
+                {
+                    TempData["MessageError"] = result.Message;
+                    return RedirectToAction("Modificar");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                TempData["MessageError"] = $"Ha ocurrido un error al procesar las asignaciones: {ex.Message}";
+                return RedirectToAction("Modificar");
             }
         }
     }

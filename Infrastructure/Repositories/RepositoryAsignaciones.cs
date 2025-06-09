@@ -9,20 +9,58 @@ namespace ALFINapp.Infrastructure.Repositories
     public class RepositoryAsignaciones : IRepositoryAsignaciones
     {
         private readonly MDbContext _context;
-        public RepositoryAsignaciones(MDbContext context)
+        private readonly IRepositoryUsuarios _repositoryUsuarios;
+        public RepositoryAsignaciones(
+            MDbContext context,
+            IRepositoryUsuarios repositoryUsuarios)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _repositoryUsuarios = repositoryUsuarios ?? throw new ArgumentNullException(nameof(repositoryUsuarios));
+        }
+        private object ToDbValue(string input)
+        {
+            return string.IsNullOrWhiteSpace(input) ? DBNull.Value : input;
         }
         public async Task<(bool IsSuccess, string Message, string NombreLista)> CreateListName(string dni_supervisor)
         {
             try
             {
-                throw new NotImplementedException();
+
+                var nombreLista = $"{dni_supervisor}_{DateTime.Now:yyyyMMdd}_1";
+                var getSupervisor = await _repositoryUsuarios.GetUser(dni_supervisor);
+
+                if (getSupervisor.IsSuccess == false || getSupervisor.user == null)
+                {
+                    return (false, "El supervisor no existe o no se pudo encontrar.", string.Empty);
+                }
+
+                var existingList = await _context.listas_asignacion
+                    .FirstOrDefaultAsync(l => l.NombreLista == nombreLista && l.IdUsuarioSup == getSupervisor.user.IdUsuario);
+
+                if (existingList != null)
+                {
+                    nombreLista = $"{dni_supervisor}_{DateTime.Now:yyyyMMdd}_{existingList.IdLista + 1}";
+                }
+
+                var parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@nombre_lista", nombreLista),
+                    new SqlParameter("@id_usuario_sup", getSupervisor.user.IdUsuario)
+                };
+
+                var createList = _context.Database.ExecuteSqlRaw(
+                    "EXEC dbo.SP_GESTION_ASIGNACION_CREAR_LISTAS_DE_ASIGNACION @nombre_lista, @id_usuario_sup",
+                    parameters
+                    );
+                if (createList < 0)
+                {
+                    return (false, "Error al crear la lista de asignación.", string.Empty);
+                }
+                return (true, "Lista de asignación creada correctamente.", nombreLista);
             }
             catch (System.Exception ex)
             {
-
-                throw;
+                return (false, ex.Message, string.Empty);
             }
         }
 
@@ -70,11 +108,11 @@ namespace ALFINapp.Infrastructure.Repositories
                         dataTable.Rows.Add(
                             cliente.Dni ?? throw new ArgumentNullException(nameof(cliente.Dni)),
                             supervisor.DniSupervisor ?? throw new ArgumentNullException(nameof(supervisor.DniSupervisor)),
-                            cliente.Telefonos.ElementAtOrDefault(0),
-                            cliente.Telefonos.ElementAtOrDefault(1),
-                            cliente.Telefonos.ElementAtOrDefault(2),
-                            cliente.Telefonos.ElementAtOrDefault(3),
-                            cliente.Telefonos.ElementAtOrDefault(4),
+                            ToDbValue(cliente.Telefonos.ElementAtOrDefault(0) ?? string.Empty),
+                            ToDbValue(cliente.Telefonos.ElementAtOrDefault(1) ?? string.Empty),
+                            ToDbValue(cliente.Telefonos.ElementAtOrDefault(2) ?? string.Empty),
+                            ToDbValue(cliente.Telefonos.ElementAtOrDefault(3) ?? string.Empty),
+                            ToDbValue(cliente.Telefonos.ElementAtOrDefault(4) ?? string.Empty),
                             cliente.FuenteBase ?? string.Empty
                         );
                     }
@@ -104,6 +142,27 @@ namespace ALFINapp.Infrastructure.Repositories
             catch (System.Exception ex)
             {
                 return (false, ex.Message);
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message)> AssignLeads(string dni_supervisor, string nombre_lista)
+        {
+            try
+            {
+                var parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@DniSup", dni_supervisor),
+                    new SqlParameter("@NombreLista", nombre_lista)
+                };
+                var result = await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC dbo.SP_GESTION_ASIGNACION_AUTO_REFACTORIZADA @DniSup, @NombreLista",
+                    parameters
+                );
+                return (true, "Clientes asignados correctamente.");
+            }
+            catch (System.Exception ex)
+            {
+                return (false, $"Error al asignar clientes: {ex.Message}");
             }
         }
     }

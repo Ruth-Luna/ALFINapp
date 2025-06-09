@@ -39,6 +39,10 @@ namespace ALFINapp.Application.DTOs
 
                 SupervisoresConClientes.AddRange(groupedBySupervisor);
             }
+            else
+            {
+                SupervisoresConClientes = new List<DetallesAssignmentsSupervisor>();
+            }
         }
     }
     public class DetallesAssignmentsSupervisor
