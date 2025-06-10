@@ -117,10 +117,18 @@ async function cross_assignments() {
     }));
 
     const dataJson = JSON.stringify(dataToSend);
-    console.log("Datos a cruzar:", dataJson);
 
     const baseUrl = window.location.origin;
     const url = baseUrl + "/Asignaciones/CrossAssignments";
+
+    const loading = Swal.fire({
+        title: 'Cruzando asignaciones...',
+        text: 'Por favor, espera mientras se procesan los datos.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
     try {
         const response = await fetch(url, {
@@ -133,25 +141,26 @@ async function cross_assignments() {
 
         const result = await response.json();
 
-        if (result.IsSuccess === true) {
+        loading.close();
+
+        if (result.isSuccess === true) {
             Swal.fire({
                 icon: 'success',
                 title: 'Asignaciones cruzadas con éxito',
-                text: result.Message,
+                text: result.message,
                 confirmButtonText: 'Aceptar'
             });
-            parsedDataCruzada = result.Data;
+            parsedDataCruzada = result.data;
         } else {
             Swal.fire({
                 icon: 'error',
-                title: 'Error en el servidor',
-                text: result.Message,
+                title: 'Error',
+                text: result.message,
                 confirmButtonText: 'Aceptar'
             });
         }
 
     } catch (error) {
-        console.error("Error en fetch:", error);
         Swal.fire({
             icon: 'error',
             title: 'Error al cruzar asignaciones',
@@ -171,16 +180,42 @@ async function assign_supervisors() {
         });
         return;
     }
-    const dataToSend = parsedDataCruzada.map(row => ({
-        dni_cliente: row[0] ?? "",
-        dni_supervisor: row[1] ?? "",
-        telefono_1: row[2] === "NULL" ? "" : row[2],
-        telefono_2: row[3] === "NULL" ? "" : row[3],
-        telefono_3: row[4] === "NULL" ? "" : row[4],
-        telefono_4: row[5] === "NULL" ? "" : row[5],
-        telefono_5: row[6] === "NULL" ? "" : row[6],
-        d_base: row[7] ?? ""
-    }));
+
+    if (!parsedDataGral || parsedDataGral.length === 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al asignar supervisores',
+            text: 'No hay datos generales para asignar. Por favor, importa un archivo primero.',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+
+    const supervisoresConClientes = parsedDataCruzada.supervisoresConClientes;
+
+    if (!supervisoresConClientes || supervisoresConClientes.length === 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al asignar supervisores',
+            text: 'No hay datos cruzados para asignar. Por favor, cruce las asignaciones primero.',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+
+    const dataToSend = supervisoresConClientes.flatMap(supervisor => {
+        return supervisor.clientes.map(cliente => ({
+            dni_cliente: cliente.dni ?? "",
+            dni_supervisor: supervisor.dniSupervisor ?? "",
+            telefono_1: "",
+            telefono_2: "",
+            telefono_3: "",
+            telefono_4: "",
+            telefono_5: "",
+            d_base: supervisor.nombreLista ?? ""
+        }));
+    });
+
     const dataJson = JSON.stringify(dataToSend);
     console.log("Datos a asignar:", dataJson);
     const baseUrl = window.location.origin;
@@ -196,19 +231,19 @@ async function assign_supervisors() {
 
         const result = await response.json();
 
-        if (result.IsSuccess === true) {
+        if (result.isSuccess === true) {
             Swal.fire({
                 icon: 'success',
-                title: 'Supervisores asignados con éxito',
-                text: result.Message,
+                title: 'Leads asignados con éxito a supervisores',
+                text: result.message,
                 confirmButtonText: 'Aceptar'
             });
             // Aquí podrías actualizar la tabla o realizar otras acciones necesarias
         } else {
             Swal.fire({
                 icon: 'error',
-                title: 'Error en el servidor',
-                text: result.Message,
+                title: 'Error al asignar leads a supervisores',
+                text: result.message,
                 confirmButtonText: 'Aceptar'
             });
         }
@@ -360,13 +395,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }).render(document.getElementById("assignments-list-table"));
 });
 */
-/* EVENTOS */
-document.getElementById("assign-button").addEventListener("click", function () {
-    Swal.fire({
-        icon: 'success',
-        title: 'Asignado correctamente',
-        showConfirmButton: false,
-        timer: 1500
-    });
-});
+// /* EVENTOS */
+// document.getElementById("assign-button").addEventListener("click", function () {
+//     Swal.fire({
+//         icon: 'success',
+//         title: 'Asignado correctamente',
+//         showConfirmButton: false,
+//         timer: 1500
+//     });
+// });
 

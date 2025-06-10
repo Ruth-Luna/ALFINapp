@@ -52,10 +52,7 @@ namespace ALFINapp.Infrastructure.Repositories
                     "EXEC dbo.SP_GESTION_ASIGNACION_CREAR_LISTAS_DE_ASIGNACION @nombre_lista, @id_usuario_sup",
                     parameters
                     );
-                if (createList < 0)
-                {
-                    return (false, "Error al crear la lista de asignación.", string.Empty);
-                }
+                    
                 return (true, "Lista de asignación creada correctamente.", nombreLista);
             }
             catch (System.Exception ex)

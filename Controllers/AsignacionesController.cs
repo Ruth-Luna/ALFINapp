@@ -181,19 +181,30 @@ namespace ALFINapp.API.Controllers
                 var result = await _useCaseAsignarClientesSup.AsignarMasivoAsync(new Application.DTOs.DetallesAssignmentsMasive(asignaciones));
                 if (result.IsSuccess)
                 {
-                    TempData["MessageSuccess"] = result.Message;
-                    return RedirectToAction("Modificar");
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        Message = result.Message
+                    });
                 }
                 else
                 {
-                    TempData["MessageError"] = result.Message;
-                    return RedirectToAction("Modificar");
+                    _logger.LogError("Error al asignar clientes: {Message}", result.Message);
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        Message = result.Message
+                    });
                 }
             }
             catch (System.Exception ex)
             {
-                TempData["MessageError"] = $"Ha ocurrido un error al procesar las asignaciones: {ex.Message}";
-                return RedirectToAction("Modificar");
+                _logger.LogError("Error al asignar clientes: {Message}", ex.Message);
+                return Json(new
+                {
+                    IsSuccess = false,
+                    Message = "Ha ocurrido un error al asignar los clientes. Por favor, inténtelo de nuevo más tarde."
+                });
             }
         }
     }
