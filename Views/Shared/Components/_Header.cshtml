@@ -1,12 +1,19 @@
-﻿
-<header class="border-bottom">
-    <nav class="navbar navbar-expand">
-        <div class="container-fluid">
-            <label for="sidebar-toggle">
+﻿<header class="custom-header">
+    <nav class="custom-nav">
+        <div class="custom-nav__container">
+            <!-- Toggle sidebar button -->
+            <label for="sidebar-toggle" class="custom-nav__toggle">
                 <i data-lucide="menu"></i>
             </label>
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
+
+            <!-- Right side controls -->
+            <ul class="custom-nav__actions">
+                <li class="custom-nav__item">
+                    <a href="#" class="custom-nav__logout">
+                        <i data-lucide="log-out"></i>
+                        <span class="custom-nav__text">Cerrar sesión</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </nav>
