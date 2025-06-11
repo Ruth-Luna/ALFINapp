@@ -63,6 +63,7 @@ function import_assignments_file (event) {
             }
         });
         load_visualization_data(parsedData);
+        Cargar_Cruce_Clientes();
         parsedDataGral = parsedData; // Guardar los datos globalmente
         loading.close();
         Swal.fire({
