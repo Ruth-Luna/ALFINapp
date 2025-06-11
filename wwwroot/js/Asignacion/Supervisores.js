@@ -1,3 +1,28 @@
+document.addEventListener("DOMContentLoaded", async function () {
+    Cargar_Cruce_Clientes();
+});
+
+
+function Cargar_Cruce_Clientes() {
+    $.ajax({
+        url: '/Asignaciones/ObtenerCruceFinal',
+        type: 'GET',
+        dataType: 'json',
+        success: function (result) {
+            if (result.isSuccess && Array.isArray(result.data)) {
+                load_visualization_Assign(result.data);
+
+                $('#client-list-total-input').val(result.data.length);
+            } else {
+                console.error("Error en la respuesta del servidor:", result.message);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("Error al cargar el cruce final:", error);
+        }
+    });
+}
+
 /* FUNCIONES PARA LEER Y MOSTRAR DATOS */
 parsedDataGral = [];
 parsedDataCruzada = [];
@@ -259,6 +284,44 @@ async function assign_supervisors() {
     }
 
 }
+
+function load_visualization_Assign(data) {
+    const tableContainer = document.getElementById("client-list-table");
+    tableContainer.innerHTML = ""; 
+
+    const rows = data.map(item => [
+        item.dniCliente,
+        item.clienteNombre,
+        item.campaña,
+        item.ofertaMax,
+        item.agencia,
+        item.tipoBase,
+        item.supervisorNombre,
+        item.nombreLista,
+        item.fuenteBase
+    ]);
+
+    new gridjs.Grid({
+        columns: [
+            "DNI. CLIENTE",
+            "NOM. CLIENTE",
+            "CAMPAÑA",
+            "OFERTA MAX",
+            "AGENCIA",
+            "TIPO BASE",
+            "NOMBRE SUPERVISOR",
+            "NOMBRE LISTA",
+            "D.BASE"
+        ],
+        data: rows,
+        sort: true,
+        pagination: {
+            limit: 10
+        },
+        search: true
+    }).render(tableContainer);
+}
+
 
 // Función que simula la obtención de datos para la primera tabla
 /*function fetchLoadVisualizationData() {

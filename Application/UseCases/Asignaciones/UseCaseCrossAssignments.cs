@@ -2,6 +2,7 @@ using ALFINapp.Application.DTOs;
 using ALFINapp.Application.Interfaces.Asignaciones;
 using ALFINapp.Domain.Entities;
 using ALFINapp.Domain.Interfaces;
+using NuGet.Protocol.Core.Types;
 
 namespace ALFINapp.Application.UseCases.Asignaciones
 {
@@ -12,6 +13,11 @@ namespace ALFINapp.Application.UseCases.Asignaciones
         {
             _repositoryAsignaciones = repositoryAsignaciones;
         }
+        public async Task<List<ClienteCruceDTO>> GetCrossed()
+        {
+            return await _repositoryAsignaciones.GetCrossed();
+        }
+
         public async Task<(bool IsSuccess, string Message, DetallesAssignmentsMasive? ClientesCruzados)> Execute(DetallesAssignmentsMasive clientes)
         {
             try
