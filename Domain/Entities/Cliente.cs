@@ -13,6 +13,7 @@ namespace ALFINapp.Domain.Entities
         public string? XNombre { get; set; } = String.Empty;
         public int? Edad { get; set; } = 0;
         public string? Telefono { get; set; } = String.Empty;
+        public List<string> Telefonos { get; set; } = new List<string>();
         public string? Correo { get; set; } = String.Empty;
         public string? Cci { get; set; } = String.Empty;
         public string? Ubigeo { get; set; } = String.Empty;

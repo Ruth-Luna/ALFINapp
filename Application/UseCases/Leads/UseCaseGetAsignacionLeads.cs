@@ -83,20 +83,15 @@ namespace ALFINapp.Application.UseCases.Leads
                         return (true, "No se encontraron clientes", new ViewGestionLeads());
                     }
                     var destinos = clientes.Select(c => c.Destino).Distinct().ToList();
+                    var cantidades = await _repositorySupervisor.GetCantidadClientesGeneralTotalFromSupervisor(usuarioId);
                     var convertView = new ViewGestionLeads
                     {
                         ClientesA365 = clientes.Select(c => c.DtoToCliente()).ToList(),
                         Supervisor = usuarioDTO.ToEntitySupervisor(),
                         ClientesAlfin = new List<Cliente>(),
-                        clientesPendientes = clientes.Count(dc =>
-                            (!dc.FechaTipificacionDeMayorPeso.HasValue ||
-                            (dc.FechaTipificacionDeMayorPeso.Value.Year != currentYear &&
-                            dc.FechaTipificacionDeMayorPeso.Value.Month != currentMonth))),
-                        clientesTipificados = clientes.Count(dc =>
-                            dc.FechaTipificacionDeMayorPeso.HasValue &&
-                            dc.FechaTipificacionDeMayorPeso.Value.Year == currentYear &&
-                            dc.FechaTipificacionDeMayorPeso.Value.Month == currentMonth),
-                        clientesTotal = clientes.Count(),
+                        clientesPendientes = cantidades.totalPendientes,
+                        clientesTipificados = cantidades.totalAsignados,
+                        clientesTotal = cantidades.total,
                         destinoBases = destinos
                             .Where(destino => destino != null)
                             .Cast<string>()

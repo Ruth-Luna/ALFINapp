@@ -145,7 +145,7 @@ namespace ALFINapp.Infrastructure.Repositories
                     new SqlParameter("@nombre_completos", derivacion.NombreCliente ?? string.Empty)
                 };
                 var generarDerivacion = await _context.Database.ExecuteSqlRawAsync(
-                    "EXEC SP_derivacion_insertar_derivacion_test_ONLY_SVL @agencia_derivacion, @fecha_visita, @telefono, @id_base, @id_usuario, @nombre_completos",
+                    "EXEC SP_derivacion_insertar_derivacion_test_N @agencia_derivacion, @fecha_visita, @telefono, @id_base, @id_usuario, @nombre_completos",
                     parametros);
                 if (generarDerivacion == 0)
                 {

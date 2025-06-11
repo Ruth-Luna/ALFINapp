@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.Application.DTOs;
 using ALFINapp.Infrastructure.Persistence.Models;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace ALFINapp.Infrastructure.Repositories
@@ -179,6 +174,30 @@ namespace ALFINapp.Infrastructure.Repositories
             {
                 Console.WriteLine(ex.Message);
                 return null;
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message, Usuario? user)> GetUser(string dni)
+        {
+            try
+            {
+                var usuario = await _context
+                    .usuarios
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.Dni == dni);
+                if (usuario != null)
+                {
+                    return (true, "Usuario encontrado", usuario);
+                }
+                else
+                {
+                    return (false, "Usuario no encontrado", null);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return (false, "Error al buscar el usuario", null);
             }
         }
 

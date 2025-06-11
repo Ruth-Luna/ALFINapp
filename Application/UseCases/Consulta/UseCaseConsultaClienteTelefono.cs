@@ -19,6 +19,18 @@ namespace ALFINapp.Application.UseCases.Consulta
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(telefono))
+                {
+                    return (false, "El telefono no puede estar vacio", new ViewClienteDetalles());
+                }
+                if (telefono.Length < 7 || telefono.Length > 15)
+                {
+                    return (false, "El telefono debe tener entre 7 y 15 caracteres", new ViewClienteDetalles());
+                }
+                if (!telefono.All(char.IsDigit))
+                {
+                    return (false, "El telefono solo puede contener numeros", new ViewClienteDetalles());
+                }
                 var cliente = await _repositoryClientes.getClientesFromTelefono(telefono);
                 if (!cliente.IsSuccess)
                 {
