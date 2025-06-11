@@ -2,48 +2,56 @@
     lucide.createIcons();
 
     const sidebarToggle = document.getElementById('sidebar-toggle');
-    const collapsibleTriggers = document.querySelectorAll('.collapsible-trigger');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const triggers = document.querySelectorAll('.collapsible-trigger');
 
-    // Estado actual del sidebar (expandido o colapsado)
-    const isSidebarCollapsed = () => sidebarToggle?.checked;
+    const isDesktopCollapsed = () => sidebarToggle.checked && window.innerWidth >= 576;
 
-    // Función para abrir/cerrar submenu por click
-    const toggleSubmenu = (trigger) => {
-        const targetId = trigger.getAttribute('data-target');
-        const submenu = document.getElementById(targetId);
-        const chevron = trigger.querySelector('.chevron');
+    const toggleSubmenu = (t) => {
+        const submenu = document.getElementById(t.dataset.target);
+        const chevron = t.querySelector('.chevron');
+        const open = submenu.classList.contains('open');
 
-        const isOpen = submenu.classList.contains('open');
-
-        // Cierra todos los demás submenus si el sidebar no está colapsado
-        if (!isSidebarCollapsed()) {
-            document.querySelectorAll('.sidebar__submenu.open').forEach(sm => {
-                if (sm !== submenu) sm.classList.remove('open');
-            });
-            document.querySelectorAll('.chevron.rotated').forEach(ch => {
-                if (ch !== chevron) ch.classList.remove('rotated');
-            });
+        if (!isDesktopCollapsed()) {
+            document
+                .querySelectorAll('.sidebar__submenu.open')
+                .forEach(sm => sm !== submenu && sm.classList.remove('open'));
+            document
+                .querySelectorAll('.chevron.rotated')
+                .forEach(ch => ch !== chevron && ch.classList.remove('rotated'));
         }
 
-        submenu.classList.toggle('open', !isOpen);
-        chevron.classList.toggle('rotated', !isOpen);
+        submenu.classList.toggle('open', !open);
+        chevron.classList.toggle('rotated', !open);
     };
 
-    collapsibleTriggers.forEach(trigger => {
-        trigger.addEventListener('click', (e) => {
-            // Si el sidebar está colapsado, no usar JS (CSS hover lo maneja)
-            if (isSidebarCollapsed()) return;
+    triggers.forEach(t => {
+        t.addEventListener('click', e => {
+            if (isDesktopCollapsed()) {
+                return;
+            }
             e.preventDefault();
-            toggleSubmenu(trigger);
+            toggleSubmenu(t);
         });
     });
 
-    // Opcional: actualiza los íconos si el sidebar cambia de estado
-    sidebarToggle?.addEventListener('change', () => {
-        // Cierra todos los submenús abiertos si colapsa
-        if (isSidebarCollapsed()) {
-            document.querySelectorAll('.sidebar__submenu.open').forEach(sm => sm.classList.remove('open'));
-            document.querySelectorAll('.chevron.rotated').forEach(ch => ch.classList.remove('rotated'));
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', () => {
+            sidebarToggle.checked = false;
+            sidebarToggle.dispatchEvent(new Event('change'));
+        });
+    }
+
+    sidebarToggle.addEventListener('change', () => {
+        if (isDesktopCollapsed()) {
+            document
+                .querySelectorAll('.sidebar__submenu.open')
+                .forEach(sm => sm.classList.remove('open'));
+            document
+                .querySelectorAll('.chevron.rotated')
+                .forEach(ch => ch.classList.remove('rotated'));
         }
+        localStorage.setItem('sidebarCollapsed', sidebarToggle.checked);
+        document.cookie = `sidebarCollapsed=${sidebarToggle.checked};path=/;max-age=${60 * 60 * 24 * 365}`;
     });
 });
