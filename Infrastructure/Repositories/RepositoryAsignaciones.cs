@@ -142,6 +142,42 @@ namespace ALFINapp.Infrastructure.Repositories
             }
         }
 
+        public async Task<List<ClienteCruceDTO>> GetCrossed()
+        {
+            var resultado = new List<ClienteCruceDTO>();
+
+            var connection = _context.Database.GetDbConnection();
+            if (connection.State == ConnectionState.Closed)
+                await connection.OpenAsync();
+
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandText = "SP_ASIGNACION_CRUCE_DNIS";
+                command.CommandType = CommandType.StoredProcedure;
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        resultado.Add(new ClienteCruceDTO
+                        {
+                            DniCliente = reader["dni"]?.ToString(),
+                            ClienteNombre = reader["CLIENTE"]?.ToString(),
+                            Campaña = reader["campaña"]?.ToString(),
+                            OfertaMax = reader["oferta_max"]?.ToString(),
+                            Agencia = reader["agencia_comercial"]?.ToString(),
+                            TipoBase = reader["tipo_base"]?.ToString(),
+                            SupervisorNombre = reader["Nombres_Completos"]?.ToString(),
+                            NombreLista = reader["nombre_lista"]?.ToString(),
+                            FuenteBase = reader["d_base"]?.ToString()
+                        });
+                    }
+                }
+            }
+
+            return resultado;
+        }
+
         public async Task<(bool IsSuccess, string Message)> AssignLeads(string dni_supervisor, string nombre_lista)
         {
             try

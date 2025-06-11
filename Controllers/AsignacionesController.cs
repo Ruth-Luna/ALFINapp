@@ -167,6 +167,31 @@ namespace ALFINapp.API.Controllers
                 });
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerCruceFinal()
+        {
+            try
+            {
+                var data = await _useCaseCrossAssignments.GetCrossed();
+                return Json(new
+                {
+                    IsSuccess = true,
+                    Message = "Cruce recuperado correctamente",
+                    Data = data
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error al obtener cruce: {Message}", ex.Message);
+                return Json(new
+                {
+                    IsSuccess = false,
+                    Message = "Error al obtener el cruce final"
+                });
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> AssignBaseSupervisors([FromBody] List<DtoVAsignarClientesSupervisores> asignaciones)
         {
