@@ -9,7 +9,7 @@ namespace ALFINapp.Infrastructure.Persistence.Models
         [Column("id_lista")]
         public int IdLista { get; set; }
         [Column("nombre_lista")]
-        public string NombreLista { get; set; } = string.Empty;
+        public string? NombreLista { get; set; }
         [Column("id_usuario_sup")]
         public int IdUsuarioSup { get; set; }
         [Column("fecha_creacion")]

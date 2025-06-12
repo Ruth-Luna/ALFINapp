@@ -142,7 +142,8 @@ async function cross_assignments() {
         telefono_3: row[4] === "NULL" ? "" : row[4],
         telefono_4: row[5] === "NULL" ? "" : row[5],
         telefono_5: row[6] === "NULL" ? "" : row[6],
-        d_base: row[7] ?? ""
+        d_base: row[7] ?? "",
+        lista_asignada: ""
     }));
 
     Swal.fire({
@@ -153,6 +154,15 @@ async function cross_assignments() {
         confirmButtonText: 'Sí, cruzar',
         cancelButtonText: 'Cancelar'
     }).then(async (result) => {
+        if (!result.isConfirmed) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Cruzamiento cancelado',
+                text: 'El proceso de cruzamiento ha sido cancelado.',
+                confirmButtonText: 'Aceptar'
+            });
+            return;
+        }
 
         const dataJson = JSON.stringify(dataToSend);
 

@@ -9,6 +9,11 @@ builder.Configuration
     .AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true) 
     .AddEnvironmentVariables();
 
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.Limits.MaxRequestBodySize = 524288000; // 500 MB
+});
+
 var defaultCulture = new CultureInfo("es-ES");
 CultureInfo.DefaultThreadCurrentCulture = defaultCulture;
 CultureInfo.DefaultThreadCurrentUICulture = defaultCulture;

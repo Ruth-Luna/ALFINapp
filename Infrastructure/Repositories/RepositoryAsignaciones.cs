@@ -33,16 +33,17 @@ namespace ALFINapp.Infrastructure.Repositories
                 }
 
                 var existingList = await _context.listas_asignacion
-                    .FirstOrDefaultAsync(
-                        l => l.IdUsuarioSup == getSupervisor.user.IdUsuario
-                        && l.FechaCreacion.HasValue
-                        && l.FechaCreacion.Value.Year == DateTime.Now.Year
-                        && l.FechaCreacion.Value.Month == DateTime.Now.Month
-                        && l.FechaCreacion.Value.Day == DateTime.Now.Day
-                    );
-                
+                    .Where(l => l.IdUsuarioSup == getSupervisor.user.IdUsuario)
+                    .Where(l => l.FechaCreacion != null)
+                    .OrderByDescending(l => l.FechaCreacion.Value)
+                    .FirstOrDefaultAsync();
+
                 var nombreLista = String.Empty;
-                if (existingList != null)
+                if (existingList != null
+                    && existingList.FechaCreacion != null
+                    && existingList.FechaCreacion.Value.Date == DateTime.Now.Date
+                    && existingList.FechaCreacion.Value.Month == DateTime.Now.Month
+                    && existingList.FechaCreacion.Value.Year == DateTime.Now.Year)
                 {
                     nombreLista = existingList.NombreLista;
                     if (string.IsNullOrWhiteSpace(nombreLista))
@@ -55,18 +56,26 @@ namespace ALFINapp.Infrastructure.Repositories
                     return (true, $"Lista de asignación ya existe, puede usar la lista {nombreLista}.", nombreLista);
                 }
 
-                var parameters = new SqlParameter[]
+                var idParam = new SqlParameter("@id_lista", SqlDbType.Int)
                 {
-                    new SqlParameter("@id_usuario_sup", getSupervisor.user.IdUsuario)
+                    Direction = ParameterDirection.Output
                 };
 
-                var createList = _context.Database.ExecuteSqlRaw(
-                    "EXEC dbo.SP_GESTION_ASIGNACION_CREAR_LISTAS_DE_ASIGNACION @id_usuario_sup",
-                    parameters
-                    );
+                var supParam = new SqlParameter("@id_usuario_sup", SqlDbType.Int)
+                {
+                    Value = getSupervisor.user.IdUsuario
+                };
+
+                await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC dbo.SP_GESTION_ASIGNACION_CREAR_LISTAS_DE_ASIGNACION @id_usuario_sup, @id_lista OUTPUT",
+                    supParam, idParam
+                );
+
+                int idLista = (int)idParam.Value;
+
 
                 var listaActualizra = await _context.listas_asignacion
-                    .FirstOrDefaultAsync(l => l.IdLista == createList);
+                    .FirstOrDefaultAsync(l => l.IdLista == idLista);
                 if (listaActualizra == null)
                 {
                     return (false, "No se pudo crear la lista de asignación.", string.Empty);
