@@ -13,9 +13,9 @@ namespace ALFINapp.Application.UseCases.Asignaciones
         {
             _repositoryAsignaciones = repositoryAsignaciones;
         }
-        public async Task<List<ClienteCruceDTO>> GetCrossed()
+        public async Task<List<ClienteCruceDTO>> GetCrossed(int page = 1)
         {
-            return await _repositoryAsignaciones.GetCrossed();
+            return await _repositoryAsignaciones.GetCrossed(page);
         }
 
         public async Task<(bool IsSuccess, string Message, DetallesAssignmentsMasive? ClientesCruzados)> Execute(DetallesAssignmentsMasive clientes)

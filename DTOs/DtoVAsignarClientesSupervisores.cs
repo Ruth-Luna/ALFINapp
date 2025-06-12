@@ -10,5 +10,6 @@ namespace ALFINapp.API.DTOs
         public string? telefono_4 { get; set; } = string.Empty;
         public string? telefono_5 { get; set; } = string.Empty;
         public string? d_base { get; set; } = string.Empty;
+        public string? lista_asignada { get; set; } = string.Empty;
     }
 }

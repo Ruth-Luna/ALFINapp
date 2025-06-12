@@ -25,8 +25,6 @@ namespace ALFINapp.Infrastructure.Repositories
         {
             try
             {
-
-                var nombreLista = $"{dni_supervisor}_{DateTime.Now:yyyyMMdd}_1";
                 var getSupervisor = await _repositoryUsuarios.GetUser(dni_supervisor);
 
                 if (getSupervisor.IsSuccess == false || getSupervisor.user == null)
@@ -35,24 +33,49 @@ namespace ALFINapp.Infrastructure.Repositories
                 }
 
                 var existingList = await _context.listas_asignacion
-                    .FirstOrDefaultAsync(l => l.NombreLista == nombreLista && l.IdUsuarioSup == getSupervisor.user.IdUsuario);
-
+                    .FirstOrDefaultAsync(
+                        l => l.IdUsuarioSup == getSupervisor.user.IdUsuario
+                        && l.FechaCreacion.HasValue
+                        && l.FechaCreacion.Value.Year == DateTime.Now.Year
+                        && l.FechaCreacion.Value.Month == DateTime.Now.Month
+                        && l.FechaCreacion.Value.Day == DateTime.Now.Day
+                    );
+                
+                var nombreLista = String.Empty;
                 if (existingList != null)
                 {
-                    nombreLista = $"{dni_supervisor}_{DateTime.Now:yyyyMMdd}_{existingList.IdLista + 1}";
+                    nombreLista = existingList.NombreLista;
+                    if (string.IsNullOrWhiteSpace(nombreLista))
+                    {
+                        nombreLista = $"{dni_supervisor}_{DateTime.Now:yyyyMMdd}_{existingList.IdLista}";
+                        existingList.NombreLista = nombreLista;
+                        _context.listas_asignacion.Update(existingList);
+                        await _context.SaveChangesAsync();
+                    }
+                    return (true, $"Lista de asignación ya existe, puede usar la lista {nombreLista}.", nombreLista);
                 }
 
                 var parameters = new SqlParameter[]
                 {
-                    new SqlParameter("@nombre_lista", nombreLista),
                     new SqlParameter("@id_usuario_sup", getSupervisor.user.IdUsuario)
                 };
 
                 var createList = _context.Database.ExecuteSqlRaw(
-                    "EXEC dbo.SP_GESTION_ASIGNACION_CREAR_LISTAS_DE_ASIGNACION @nombre_lista, @id_usuario_sup",
+                    "EXEC dbo.SP_GESTION_ASIGNACION_CREAR_LISTAS_DE_ASIGNACION @id_usuario_sup",
                     parameters
                     );
-                    
+
+                var listaActualizra = await _context.listas_asignacion
+                    .FirstOrDefaultAsync(l => l.IdLista == createList);
+                if (listaActualizra == null)
+                {
+                    return (false, "No se pudo crear la lista de asignación.", string.Empty);
+                }
+                nombreLista = $"{dni_supervisor}_{DateTime.Now:yyyyMMdd}_{listaActualizra.IdLista}";
+                listaActualizra.NombreLista = nombreLista;
+                _context.listas_asignacion.Update(listaActualizra);
+                await _context.SaveChangesAsync();
+                
                 return (true, "Lista de asignación creada correctamente.", nombreLista);
             }
             catch (System.Exception ex)
@@ -142,7 +165,7 @@ namespace ALFINapp.Infrastructure.Repositories
             }
         }
 
-        public async Task<List<ClienteCruceDTO>> GetCrossed()
+        public async Task<List<ClienteCruceDTO>> GetCrossed(int page = 1)
         {
             var resultado = new List<ClienteCruceDTO>();
 
@@ -153,6 +176,7 @@ namespace ALFINapp.Infrastructure.Repositories
             using (var command = connection.CreateCommand())
             {
                 command.CommandText = "SP_ASIGNACION_CRUCE_DNIS";
+                command.Parameters.Add(new SqlParameter("@Page", SqlDbType.Int) { Value = page });
                 command.CommandType = CommandType.StoredProcedure;
 
                 using (var reader = await command.ExecuteReaderAsync())
@@ -161,15 +185,15 @@ namespace ALFINapp.Infrastructure.Repositories
                     {
                         resultado.Add(new ClienteCruceDTO
                         {
-                            DniCliente = reader["dni"]?.ToString(),
-                            ClienteNombre = reader["CLIENTE"]?.ToString(),
-                            Campaña = reader["campaña"]?.ToString(),
-                            OfertaMax = reader["oferta_max"]?.ToString(),
-                            Agencia = reader["agencia_comercial"]?.ToString(),
-                            TipoBase = reader["tipo_base"]?.ToString(),
-                            SupervisorNombre = reader["Nombres_Completos"]?.ToString(),
-                            NombreLista = reader["nombre_lista"]?.ToString(),
-                            FuenteBase = reader["d_base"]?.ToString()
+                            DniCliente = reader["dni"]?.ToString() ?? string.Empty,
+                            ClienteNombre = reader["CLIENTE"]?.ToString() ?? string.Empty,
+                            Campaña = reader["campaña"]?.ToString() ?? string.Empty,
+                            OfertaMax = reader["oferta_max"]?.ToString() ?? string.Empty,
+                            Agencia = reader["agencia_comercial"]?.ToString() ?? string.Empty,
+                            TipoBase = reader["tipo_base"]?.ToString() ?? string.Empty,
+                            SupervisorNombre = reader["Nombres_Completos"]?.ToString() ?? string.Empty,
+                            NombreLista = reader["nombre_lista"]?.ToString() ?? string.Empty,
+                            FuenteBase = reader["d_base"]?.ToString() ?? string.Empty,
                         });
                     }
                 }
@@ -178,7 +202,7 @@ namespace ALFINapp.Infrastructure.Repositories
             return resultado;
         }
 
-        public async Task<(bool IsSuccess, string Message)> AssignLeads(string dni_supervisor, string nombre_lista)
+        public async Task<(bool IsSuccess, string Message, int numAsignaciones)> AssignLeads(string dni_supervisor, string nombre_lista)
         {
             try
             {
@@ -187,15 +211,16 @@ namespace ALFINapp.Infrastructure.Repositories
                     new SqlParameter("@DniSup", dni_supervisor),
                     new SqlParameter("@NombreLista", nombre_lista)
                 };
+                _context.Database.SetCommandTimeout(600);
                 var result = await _context.Database.ExecuteSqlRawAsync(
                     "EXEC dbo.SP_GESTION_ASIGNACION_AUTO_REFACTORIZADA @DniSup, @NombreLista",
                     parameters
                 );
-                return (true, "Clientes asignados correctamente.");
+                return (true, "Clientes asignados correctamente.", result);
             }
             catch (System.Exception ex)
             {
-                return (false, $"Error al asignar clientes: {ex.Message}");
+                return (false, $"Error al asignar clientes: {ex.Message}", 0);
             }
         }
     }

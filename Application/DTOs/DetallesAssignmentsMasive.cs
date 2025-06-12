@@ -12,10 +12,12 @@ namespace ALFINapp.Application.DTOs
             {
                 var groupedBySupervisor = dtoView
                     .GroupBy(x => x.dni_supervisor)
-                    .Select(g => new DetallesAssignmentsSupervisor(g.Key, g.Select(c => new Cliente
-                    {
-                        Dni = c.dni_cliente,
-                        Telefonos = new List<string>
+                    .Select(g => new DetallesAssignmentsSupervisor(
+                        g.Key,
+                        g.Select(c => new Cliente
+                        {
+                            Dni = c.dni_cliente,
+                            Telefonos = new List<string>
                         {
                             !string.IsNullOrWhiteSpace(c.telefono_1) && c.telefono_1 != "NULL"
                                 ? c.telefono_1
@@ -33,10 +35,19 @@ namespace ALFINapp.Application.DTOs
                                 ? c.telefono_5
                                 : string.Empty
                         },
-                        FuenteBase = c.d_base
-                    }).ToList()))
+                            FuenteBase = c.d_base
+                        }).ToList()))
                     .ToList();
 
+                if (dtoView.Any(x => !string.IsNullOrWhiteSpace(x.lista_asignada)))
+                {
+                    foreach (var supervisor in groupedBySupervisor)
+                    {
+                        supervisor.NombreLista = dtoView
+                            .FirstOrDefault(x => x.dni_supervisor == supervisor.DniSupervisor && !string.IsNullOrWhiteSpace(x.lista_asignada))?.lista_asignada ?? string.Empty;
+                    }
+                }
+                
                 SupervisoresConClientes.AddRange(groupedBySupervisor);
             }
             else

@@ -169,11 +169,11 @@ namespace ALFINapp.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObtenerCruceFinal()
+        public async Task<IActionResult> ObtenerCruceFinal(int pagina = 1)
         {
             try
             {
-                var data = await _useCaseCrossAssignments.GetCrossed();
+                var data = await _useCaseCrossAssignments.GetCrossed(pagina);
                 return Json(new
                 {
                     IsSuccess = true,

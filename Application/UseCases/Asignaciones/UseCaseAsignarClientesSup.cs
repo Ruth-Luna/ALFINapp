@@ -30,6 +30,8 @@ namespace ALFINapp.Application.UseCases.Asignaciones
                         return (false, "El nombre de la lista no puede ser nulo o vacío.");
                     }
                 }
+                var asignaciones = 0;
+                string mensajeAsignacion = string.Empty;
                 foreach (var supervisor in clientes.SupervisoresConClientes)
                 {
                     var assignLeadsResult = await _repositoryAsignaciones.AssignLeads(supervisor.DniSupervisor
@@ -38,8 +40,12 @@ namespace ALFINapp.Application.UseCases.Asignaciones
                     {
                         return (false, assignLeadsResult.Message);
                     }
+                    mensajeAsignacion = "El Supervisor " +
+                        $"{supervisor.DniSupervisor} ha sido asignado a la lista {supervisor.NombreLista} " +
+                        $"con {assignLeadsResult.numAsignaciones} leads." + mensajeAsignacion;
+                    asignaciones += assignLeadsResult.numAsignaciones;
                 }
-                return (true, "Clientes asignados correctamente.");
+                return (true, $"Se han asignado {asignaciones} Leads. {mensajeAsignacion}");
             }
             catch (System.Exception ex)
             {
