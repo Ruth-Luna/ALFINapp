@@ -1,0 +1,13 @@
+﻿main {
+    grid-area: main;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.content {
+    flex: 1;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
