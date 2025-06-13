@@ -316,7 +316,7 @@
     <div class="row g-3">
         <div class="@(rol == 3 ? "col-12 col-md-12" : "col-12 col-md-6")">
             <div class="d-none">
-            <div id="div-derivaciones-asesor"></div>
+                <div id="div-derivaciones-asesor"></div>
             </div>
         </div>
         <div class="col-12 col-md-6">
@@ -338,6 +338,7 @@
     <script>
         const rowData = @Html.Raw(Json.Serialize(Model.reporteTablaGeneral));
 
+        const totalImporteDesembolsado = rowData.reduce((sum, row) => sum + (row.importe_desembolsado || 0), 0);
         const gridOptions = {
             rowData: rowData,
             columnDefs: [
@@ -351,7 +352,21 @@
                     field: "importe_desembolsado",
                     headerName: "Importe Desembolsado",
                     valueFormatter: params => {
-                        return params.value ? params.value.toLocaleString('es-PE', { style: 'currency', currency: 'PEN' }) : '';
+                        return params.value
+                            ? params.value.toLocaleString('es-PE', { style: 'currency', currency: 'PEN' })
+                            : '';
+                    }
+                },
+                {
+                    headerName: "Porcentaje del Total Desembolsado",
+                    valueGetter: params => {
+                        const value = params.data.importe_desembolsado || 0;
+                        return totalImporteDesembolsado > 0
+                            ? (value / totalImporteDesembolsado) * 100
+                            : 0;
+                    },
+                    valueFormatter: params => {
+                        return params.value.toFixed(2) + '%';
                     }
                 }
             ],

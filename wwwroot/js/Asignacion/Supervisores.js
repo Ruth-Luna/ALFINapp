@@ -186,14 +186,12 @@ async function cross_assignments() {
                 },
                 body: dataJson
             });
-
             const result = await response.json();
-
-            loading.close();
 
             if (result.isSuccess === true) {
                 parsedDataCruzada = result.data;
                 Cargar_Cruce_Clientes();
+                loading.close();
                 Swal.fire({
                     icon: 'success',
                     title: 'Asignaciones cruzadas con éxito',
@@ -201,6 +199,7 @@ async function cross_assignments() {
                     confirmButtonText: 'Aceptar'
                 });
             } else {
+                loading.close();
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
@@ -210,6 +209,7 @@ async function cross_assignments() {
             }
 
         } catch (error) {
+            loading.close();
             Swal.fire({
                 icon: 'error',
                 title: 'Error al cruzar asignaciones',

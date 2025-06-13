@@ -33,10 +33,15 @@ namespace ALFINapp.Application.DTOs
                 reporte.dni = item.dni_asesor;
                 reporte.nombres_asesor = item.asesor;
                 reporte.nombres_supervisor = item.supervisor;
+                reporte.contador_asignados = item.asignados;
                 reporte.contador_gestionado = item.gestionado;
                 reporte.contador_derivado = item.derivado;
                 reporte.contador_desembolsado = item.desembolsado;
                 reporte.importe_desembolsado = item.Importe_Desembolsado;
+                reporte.porcentaje_desembolsos_derivados = item.desembolsado / (item.derivado == 0 ? 1 : item.derivado) * 100;
+                reporte.porcentaje_derivados_asignados = item.derivado / (item.asignados == 0 ? 1 : item.asignados) * 100;
+                reporte.porcentaje_derivados_gestionados = item.derivado / (item.gestionado == 0 ? 1 : item.gestionado) * 100;
+                reporte.porcentaje_gestionados_asignados = item.gestionado / (item.asignados == 0 ? 1 : item.asignados) * 100;
                 reportes.Add(reporte);
             }
             return reportes;

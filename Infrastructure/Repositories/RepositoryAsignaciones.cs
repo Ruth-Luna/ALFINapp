@@ -178,6 +178,8 @@ namespace ALFINapp.Infrastructure.Repositories
         {
             var resultado = new List<ClienteCruceDTO>();
 
+            _context.Database.SetCommandTimeout(600);
+            if (page < 1) page = 1;
             var connection = _context.Database.GetDbConnection();
             if (connection.State == ConnectionState.Closed)
                 await connection.OpenAsync();
