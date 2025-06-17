@@ -1,4 +1,4 @@
-function Cargar_Cruce_Clientes(pagina = 0) {
+async function Cargar_Cruce_Clientes(pagina = 0) {
     $.ajax({
         url: '/Asignaciones/ObtenerCruceFinal',
         type: 'GET',
@@ -190,7 +190,7 @@ async function cross_assignments() {
 
             if (result.isSuccess === true) {
                 parsedDataCruzada = result.data;
-                Cargar_Cruce_Clientes();
+                await Cargar_Cruce_Clientes();
                 loading.close();
                 Swal.fire({
                     icon: 'success',
@@ -269,7 +269,7 @@ async function assign_supervisors() {
                 Swal.showLoading();
             }
         });
-        loading.showLoading();
+        // loading.showLoading();
         const dataToSend = supervisoresConClientes.flatMap(supervisor => {
             return supervisor.clientes.map(cliente => ({
                 dni_cliente: cliente.dni ?? "",
@@ -439,75 +439,91 @@ function fetchClientListData() {
     });
 }
 
-// Wrapper para la tercera tabla
-const assignmentsListTableData = () => fetchAssignmentsListData();
 */
-/*
-// Inicialización de las tablas Grid.js
-document.addEventListener("DOMContentLoaded", function () {
-    //Primera tabla: “loadVisualizationTableData”
-    new gridjs.Grid({
-        columns: [
-            "DNI CLIENTE",
-            "DNI SUPERVISOR",
-            "CELULAR 1",
-            "CELULAR 2",
-            "CELULAR 3",
-            "CELULAR 4",
-            "CELULAR 5",
-            "D. BASE"
-        ],
-        data: loadVisualizationTableData,
-        sort: true,
-        pagination: {
-            limit: 10
-        }
-    }).render(document.getElementById("load-visualization-table"));
 
-    // Segunda tabla: “clientListTableData”
-    new gridjs.Grid({
-        columns: [
-            "DNI CLIENTE",
-            "NOM. CLIENTE",
-            "CAMPAÑA",
-            "OFERTA MAX.",
-            "AGENCIA",
-            "TIPO BASE",
-            "NOMBRE SUP",
-            "NOMBRE LISTA",
-            "D. BASE"
-        ],
-        data: clientListTableData,
-        sort: true,
-        pagination: {
-            limit: 10
-        }
-    }).render(document.getElementById("client-list-table"));
+function load_visualization_assignments(data) {
+    const tableContainer = document.getElementById("assignments-list-table");
+    tableContainer.innerHTML = ""; // Limpiar antes de volver a renderizar
 
-    // tabla del modal
     new gridjs.Grid({
         columns: [
-            "DNI SUP",
-            "NOM. SUP",
-            "NOMBRE LISTA",
-            "CANTIDAD",
-            "FECHA ASIGNACIÓN"
+            "Dni Supervisor",
+            "Non. Supervisor",
+            "Nombre Lista",
+            "Cantidad",
+            "Fecha de Creación de Lista",
+            "Total",
+            "Total Gestionadas",
+            "Total Asignadas a Asesores",
+            {
+                name: "Descargar",
+                formatter: (_, row) => {
+                    const nombreLista = row.cells[2].data;
+                    const baseUrl = window.location.origin;
+                    return gridjs.html(`
+                <a 
+                    class="btn btn-info btn-sm" 
+                    href="${baseUrl}/Excel/DownloadAsignaciones?nombre_lista=${encodeURIComponent(nombreLista)}"
+                    data-nombre-lista="${nombreLista}"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    title="Descargar asignaciones de la lista ${nombreLista}"
+                    style="color: white; text-decoration: none;">
+                    Descargar
+                </a>
+            `);
+                }
+            },
         ],
-        data: assignmentsListTableData,
+        data: data,
         sort: true,
         pagination: {
             limit: 7
-        }
-    }).render(document.getElementById("assignments-list-table"));
-});
-*/
-// /* EVENTOS */
-// document.getElementById("assign-button").addEventListener("click", function () {
-//     Swal.fire({
-//         icon: 'success',
-//         title: 'Asignado correctamente',
-//         showConfirmButton: false,
-//         timer: 1500
-//     });
-// });
+        },
+        search: true
+    }).render(tableContainer);
+}
 
+async function load_assignments_list_modal() {
+    const url = window.location.origin + '/Asignaciones/GetAsignaciones';
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!response.ok) {
+            console.error('Error en la respuesta del servidor:', response.statusText);
+            throw new Error('Error en la respuesta del servidor');
+        }
+        const result = await response.json();
+        console.log('Resultado de la solicitud:', result.data);
+        if (result.isSuccess === true) {
+            const data = result.data.asignaciones.map(item => [
+                item.dni,
+                item.nombres_supervisor,
+                item.nombre_lista,
+                item.total_asignaciones,
+                item.fecha_creacion_lista,
+                item.total_asignaciones_gestionadas,
+                item.total_asignaciones_asignadas_a_asesores,
+            ]);
+            load_visualization_assignments(data);
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al cargar las asignaciones',
+                text: result.message || 'No se pudieron cargar los datos de asignaciones.',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al cargar las asignaciones',
+            text: error.message || 'Ocurrió un error al intentar cargar los datos de asignaciones.',
+            confirmButtonText: 'Aceptar'
+        });
+    }
+}

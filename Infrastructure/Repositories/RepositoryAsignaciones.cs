@@ -234,5 +234,62 @@ namespace ALFINapp.Infrastructure.Repositories
                 return (false, $"Error al asignar clientes: {ex.Message}", 0);
             }
         }
+
+        public async Task<(bool IsSuccess, string Message, List<DetallesAsignacionesDelSupDTO> asignaciones)> GetAllAssignmentsFromSupervisor()
+        {
+            try
+            {
+                var result = await _context.gestion_conseguir_todas_las_asignaciones_por_listas
+                    .FromSqlRaw("EXEC dbo.SP_GESTION_CONSEGUIR_TODAS_LAS_ASIGNACIONES_POR_LISTAS")
+                    .ToListAsync();
+                if (result == null || result.Count == 0)
+                {
+                    return (false, "No se encontraron asignaciones para el supervisor. O es probable que no hayan listas existentes durante este mes", new List<DetallesAsignacionesDelSupDTO>());
+                }
+                var detallesAsignaciones = result.Select(x => new DetallesAsignacionesDelSupDTO(x)).ToList();
+                return (true, "Asignaciones obtenidas correctamente.", detallesAsignaciones);
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine($"Error al obtener las asignaciones: {ex.Message}");
+                return (false, $"Error en la base de datos al obtener las listas de asignacion", new List<DetallesAsignacionesDelSupDTO>());
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message, DetallesAsignacionesDescargaSupDTO asignaciones)> GetDetailedAssignmentsFromSupervisor(string nombre_lista, int page = -1)
+        {
+            try
+            {
+                var dni_supervisor = nombre_lista.Split('_')[0];
+                var usuarioinfo = await _repositoryUsuarios.GetUser(dni_supervisor);
+                if (!usuarioinfo.IsSuccess || usuarioinfo.user == null)
+                {
+                    return (false, "El supervisor no existe o no se pudo encontrar.", new DetallesAsignacionesDescargaSupDTO());
+                }
+                var parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@NombreLista", nombre_lista),
+                    new SqlParameter("@Pagina", page)
+                };
+                _context.Database.SetCommandTimeout(600);
+                var result = await _context.gestion_conseguir_o_descargar_asignacion_de_leads_de_sup
+                    .FromSqlRaw("EXEC dbo.SP_GESTION_CONSEGUIR_O_DESCARGAR_ASIGNACION_DE_LEADS_DE_SUPERVISORES @NombreLista, @Pagina", parameters)
+                    .AsNoTracking()
+                    .ToListAsync();
+                if (result == null || result.Count == 0)
+                {
+                    return (false, "No se encontraron asignaciones detalladas para el supervisor.", new DetallesAsignacionesDescargaSupDTO());
+                }
+                var detallesAsignaciones = new DetallesAsignacionesDescargaSupDTO(result);
+                detallesAsignaciones.dni_supervisor = dni_supervisor;
+                detallesAsignaciones.nombres_supervisor = usuarioinfo.user.NombresCompletos ?? "INGRESAR NOMBRE DEL SUPERVISOR";
+                return (true, "Asignaciones detalladas obtenidas correctamente.", detallesAsignaciones);
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine($"Error al obtener las asignaciones detalladas: {ex.Message}");
+                return (false, "Error al obtener las asignaciones detalladas del supervisor.", new DetallesAsignacionesDescargaSupDTO());
+            }
+        }
     }
 }

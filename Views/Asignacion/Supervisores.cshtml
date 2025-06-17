@@ -11,7 +11,11 @@
 
 
 <div class="mb-3">
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignments-list-modal">
+    <button type="button" 
+            class="btn btn-primary" 
+            data-bs-toggle="modal" 
+            data-bs-target="#assignments-list-modal"
+            onclick="load_assignments_list_modal()">
         <i class="fa-regular fa-eye me-2"></i>VER ASIGNACIONES
     </button>
 </div>
@@ -86,7 +90,8 @@
 
 <!-- modals -->
 
-<partial name="modals/_modalListaDeAsignaciones" />
+<partial name="modals/_modalListaAsignaciones" />
+<partial name="modals/_modalDescargaAsignaciones" />
 
 
 @section Scripts {

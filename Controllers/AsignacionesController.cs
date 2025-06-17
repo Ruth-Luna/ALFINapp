@@ -14,6 +14,8 @@ namespace ALFINapp.API.Controllers
         private readonly DBServicesConsultasSupervisores _dbServicesConsultasSupervisores;
         private readonly IUseCaseCrossAssignments _useCaseCrossAssignments;
         private readonly IUseCaseAsignarClientesSup _useCaseAsignarClientesSup;
+        private readonly IUseCaseGetAsignacionesDelSup _useCaseGetAsignacionesDelSup;
+        private readonly IUseCaseDownloadAsignaciones useCaseDownloadAsignaciones;
         private readonly MDbContext _context;
         private readonly ILogger<AsignacionesController> _logger;
         public AsignacionesController(DBServicesGeneral dbServicesGeneral,
@@ -21,7 +23,9 @@ namespace ALFINapp.API.Controllers
             DBServicesConsultasSupervisores dbServicesConsultasSupervisores,
             IUseCaseCrossAssignments useCaseCrossAssignments,
             ILogger<AsignacionesController> logger,
-            IUseCaseAsignarClientesSup useCaseAsignarClientesSup)
+            IUseCaseAsignarClientesSup useCaseAsignarClientesSup,
+            IUseCaseGetAsignacionesDelSup useCaseGetAsignacionesDelSup,
+            IUseCaseDownloadAsignaciones useCaseDownloadAsignaciones)
         {
             _dbServicesGeneral = dbServicesGeneral;
             _context = context;
@@ -29,6 +33,8 @@ namespace ALFINapp.API.Controllers
             _useCaseCrossAssignments = useCaseCrossAssignments;
             _logger = logger;
             _useCaseAsignarClientesSup = useCaseAsignarClientesSup;
+            _useCaseGetAsignacionesDelSup = useCaseGetAsignacionesDelSup;
+            this.useCaseDownloadAsignaciones = useCaseDownloadAsignaciones;
         }
         [HttpGet]
         public IActionResult CargarActualizarAsignacion(int idUsuario)
@@ -232,5 +238,38 @@ namespace ALFINapp.API.Controllers
                 });
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAsignaciones()
+        {
+            try
+            {
+                var asignaciones = await _useCaseGetAsignacionesDelSup.exec();
+                if (!asignaciones.success)
+                {
+                    _logger.LogError("Error al obtener asignaciones: {Message}", asignaciones.message);
+                    return Json(new
+                    {
+                        isSuccess = false,
+                        message = asignaciones.message
+                    });
+                }
+                return Json(new
+                {
+                    isSuccess = true,
+                    message = "Asignaciones recuperadas correctamente",
+                    data = asignaciones.data
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error al obtener asignaciones: {Message}", ex.Message);
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = "Error al obtener las asignaciones"
+                });
+            }
+        }
+        
     }
 }
