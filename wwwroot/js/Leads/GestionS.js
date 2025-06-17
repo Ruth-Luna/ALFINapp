@@ -1,23 +1,3 @@
-function loadModificarVendedorAsignado(idAsignacion) {
-    $.ajax({
-        url: '/Supervisor/ModificarAsignacionVendedorView',
-        type: 'GET',
-        data: { id_asignacion: idAsignacion },
-        success: function (result) {
-            $('#modalContentModificarVendAsignar').html(result);
-            $('#modificarVendModal').modal('show');
-        },
-        error: function () {
-            Swal.fire({
-                title: 'Error al cargar los datos',
-                text: 'Error al cargar los datos del cliente.',
-                icon: 'error',
-                confirmButtonText: 'Aceptar'
-            });
-        }
-    });
-}
-
 function descargarDatos() {
     const fechaInicio = document.getElementById('fechaInicio').value;
     const fechaFin = document.getElementById('fechaFin').value;
@@ -27,7 +7,7 @@ function descargarDatos() {
     if (fechaInicio == "" || fechaFin == "") {
         messages.push("No se ha seleccionado un rango de fechas.");
     }
-    
+
     if (destinoBase == "") {
         messages.push("No ha seleccionado una base destino.");
     }
@@ -40,6 +20,14 @@ function descargarDatos() {
             confirmButtonText: 'Aceptar'
         });
     }
-    
+
     window.location.href = '/Excel/DescargarClientesAsignados?fechaInicio=' + fechaInicio + '&fechaFin=' + fechaFin + '&destinoBase=' + destinoBase;
 }
+
+$(document).ready(function () {
+    $('#BaseDestino').select2({
+        placeholder: "Seleccione una base o lista",
+        allowClear: true,
+        width: '100%'
+    });
+});

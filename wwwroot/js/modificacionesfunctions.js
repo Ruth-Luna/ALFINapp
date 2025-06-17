@@ -121,10 +121,6 @@ function modificarAsignacionesAsesor(IdUsuario, dni) {
     });
 }
 
-function cerrarmodificarAsignacionesAsesor(IdUsuario) {
-    $('#seccionModificarAsignaciones_' + idUsuario).css('display', 'none'); // Asegurar que el contenedor sea visible
-}
-
 function cargarInterfazAsesor(idAsesor) {
     // Realiza una llamada AJAX para cargar la vista parcial
     if (idAsesor) {

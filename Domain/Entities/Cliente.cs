@@ -64,11 +64,15 @@ namespace ALFINapp.Domain.Entities
         public int? PesoTipificacionMayor { get; set; } = 0;
         public DateTime? FechaTipificacionDeMayorPeso { get; set; } = null;
         public string? TraidoDe { get; set; } = String.Empty; // Indica de dónde se trajo el cliente, por ejemplo, "DBA365" o "DBALFIN"
-        
+
         //DETALLES DEL VENDEDOR ASIGNADO
         public string? DniVendedor { get; set; } = String.Empty;
         public string NombresCompletosV { get; set; } = "";
         public string? ApellidoPaternoV { get; set; } = "";
-        
+
+        //Detalles de la lista de asignación
+        public int? IdLista { get; set; } = 0;
+        public string? NombreLista { get; set; } = String.Empty;
+        public DateTime? FechaCreacionLista { get; set; } = DateTime.MinValue;
     }
 }

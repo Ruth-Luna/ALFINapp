@@ -58,6 +58,10 @@ namespace ALFINapp.Application.DTOs
         public string? Destino { get; set; }
         public string? TraidoDe { get; set; }
         public string? UltimaTipificacion { get; set; }
+        //Tabla Listas Asignacion
+        public int? IdLista { get; set; }
+        public string? NombreLista { get; set; }
+        public DateTime? FechaCreacionLista { get; set; }
         public DetalleBaseClienteDTO() { }
         public DetalleBaseClienteDTO(SupervisorGetAsignacionLeads model)
         {
@@ -74,6 +78,9 @@ namespace ALFINapp.Application.DTOs
             TipificacionDeMayorPeso = model.TipificacionMasRelevante;
             DniVendedor = model.DniVendedor;
             Destino = model.Destino;
+            IdLista = model.IdLista;
+            NombreLista = model.NombreLista;
+            FechaCreacionLista = model.FechaCreacionLista;
         }
         public DetalleBaseClienteDTO(InicioDetallesClientesFromAsesor model)
         {
@@ -172,6 +179,9 @@ namespace ALFINapp.Application.DTOs
             cliente.PesoTipificacionMayor = PesoTipificacionMayor;
             cliente.FechaTipificacionDeMayorPeso = FechaTipificacionDeMayorPeso;
             cliente.TraidoDe = TraidoDe;
+            cliente.IdLista = IdLista;
+            cliente.NombreLista = NombreLista;
+            cliente.FechaCreacionLista = FechaCreacionLista;
             return cliente;
         }
     }

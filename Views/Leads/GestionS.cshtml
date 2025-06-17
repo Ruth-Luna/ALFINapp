@@ -7,6 +7,7 @@
     var totalClientes = Model.clientesTotal;
     var clientesAsignadosSupervisor = Model.clientesTipificados;
     var destinoBases = Model.destinoBases;
+    var listasAsignacion = Model.listasAsignacion;
 }
 
 @section Styles {
@@ -46,15 +47,28 @@
                             <input type="date" id="fechaInicio" class="form-control" />
                             <label for="fechaFin">Fecha Fin:</label>
                             <input type="date" id="fechaFin" class="form-control" />
-                            <label for="BaseDestino">Destino</label>
+                            <label for="BaseDestino">Filtro:</label>
                             <select class="form-control" name="BaseDestino" id="BaseDestino">
-                                <option value="">Seleccione una Base de Destino</option>
+                                <option value="">Seleccione una opción</option>
+
                                 @if (destinoBases != null)
                                 {
-                                    @foreach (var destinoBase in destinoBases)
-                                    {
-                                        <option value="@destinoBase">@destinoBase</option>
-                                    }
+                                    <optgroup label="Destinos">
+                                        @foreach (var destinoBase in destinoBases)
+                                        {
+                                            <option value="@destinoBase">@destinoBase</option>
+                                        }
+                                    </optgroup>
+                                }
+
+                                @if (listasAsignacion != null)
+                                {
+                                    <optgroup label="Listas de Asignación">
+                                        @foreach (var lista in listasAsignacion)
+                                        {
+                                            <option value="@lista">@lista</option>
+                                        }
+                                    </optgroup>
                                 }
                             </select>
                         </div>
@@ -92,11 +106,6 @@
                     <th>
                         Tipificacion mas Relevante
                     </th>
-
-                    <!--<th>Asigne o Modifique la Asignacion</th>
-                        <td><a href="javascript:void(0);" class="btn btn-primary"
-                                onclick="loadModificarVendedorAsignado(clientes.IdAsignacion)">Modificar</a>
-                    </td>-->
                 </tr>
             </thead>
             <tbody id="data-table">
@@ -104,8 +113,8 @@
                 {
                     <tr>
                         <td>@clientes.Dni</td>
-                        <td>@clientes.XNombre.ToUpper() @clientes.XAppaterno.ToUpper()
-                            @clientes.XApmaterno.ToUpper()</td>
+                        <td>@clientes.XNombre?.ToUpper() @clientes.XAppaterno?.ToUpper()
+                            @clientes.XApmaterno?.ToUpper()</td>
                         <td>@clientes.NombresCompletosV.ToUpper()</td>
                         <td>@clientes.UltimaTipificacion</td>
                         <td>@clientes.TipificacionDeMayorPeso</td>
@@ -159,4 +168,5 @@
             });
         </script>
     }
+    <script src="~/js/Gestion/GestionS.js"></script>
 }

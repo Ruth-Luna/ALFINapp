@@ -35,3 +35,34 @@ function sortTableGestionLeads(filter, searchfield, order, orderAsc) {
     url = `${baseUrl}/Leads/Gestion?&filter=${encodeURIComponent(filter)}&searchfield=${encodeURIComponent(searchfield)}&order=${encodeURIComponent(order)}&orderAsc=${encodeURIComponent(orderAsc)}&paginaInicio=0&paginaFinal=1`;
     window.location.href = url;
 }
+
+function loadTipificarCliente(idBase, functionToExecute) {
+    $.ajax({
+        url: `/Vendedor/${functionToExecute}`, // Controlador y acción
+        type: 'GET',
+        data: { id_base: idBase },
+        success: function (result) {
+            if (result.success === false) {
+                Swal.fire({
+                    title: 'Error al cargar los datos',
+                    text: result.message,
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+                return;
+
+            }
+            $('#modalContentGeneralTemplate').html(result); // Inserta el contenido de la vista en el modal
+            $('#GeneralTemplateModal').modal('show'); // Muestra el modal
+            $('#GeneralTemplateTitleModalLabel').text("Tipificaciones al Usuario"); // Inserta el contenido de la vista en el modal
+        },
+        error: function () {
+            Swal.fire({
+                title: 'Error al cargar los datos',
+                text: 'Hubo un error al intentar cargar los datos. Por favor, inténtalo nuevamente.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    });
+}

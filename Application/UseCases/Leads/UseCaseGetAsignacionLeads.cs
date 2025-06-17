@@ -11,12 +11,15 @@ namespace ALFINapp.Application.UseCases.Leads
     {
         private readonly IRepositoryVendedor _repositoryVendedor;
         private readonly IRepositorySupervisor _repositorySupervisor;
+        private readonly IRepositoryUsuarios _repositoryUsuarios;
         public UseCaseGetAsignacionLeads(
             IRepositoryVendedor repositoryVendedor,
-            IRepositorySupervisor repositorySupervisor)
+            IRepositorySupervisor repositorySupervisor,
+            IRepositoryUsuarios repositoryUsuarios)
         {
             _repositoryVendedor = repositoryVendedor;
             _repositorySupervisor = repositorySupervisor;
+            _repositoryUsuarios = repositoryUsuarios;
         }
         public async Task<(bool IsSuccess, string Message, ViewGestionLeads Data)> Execute(
             int usuarioId,
@@ -32,7 +35,7 @@ namespace ALFINapp.Application.UseCases.Leads
             {
                 int currentYear = DateTime.Now.Year;
                 int currentMonth = DateTime.Now.Month;
-                var usuario = await _repositoryVendedor.GetVendedor(usuarioId);
+                var usuario = await _repositoryUsuarios.GetUser(usuarioId);
                 if (usuario == null)
                 {
                     return (false, "No se encontró el usuario", new ViewGestionLeads());
@@ -83,6 +86,7 @@ namespace ALFINapp.Application.UseCases.Leads
                         return (true, "No se encontraron clientes", new ViewGestionLeads());
                     }
                     var destinos = clientes.Select(c => c.Destino).Distinct().ToList();
+                    var listas = clientes.Select(c => c.NombreLista).Distinct().ToList();
                     var cantidades = await _repositorySupervisor.GetCantidadClientesGeneralTotalFromSupervisor(usuarioId);
                     var convertView = new ViewGestionLeads
                     {
@@ -95,7 +99,11 @@ namespace ALFINapp.Application.UseCases.Leads
                         destinoBases = destinos
                             .Where(destino => destino != null)
                             .Cast<string>()
-                            .ToList()
+                            .ToList(),
+                        listasAsignacion = listas
+                            .Where(lista => lista != null)
+                            .Cast<string>()
+                            .ToList(),
                     };
                     return (true, "Se encontraron los siguientes clientes", convertView);
                 }
