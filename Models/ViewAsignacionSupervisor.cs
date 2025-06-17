@@ -12,6 +12,8 @@ namespace ALFINapp.API.Models
         public int TotalClientesAsignados { get; set; } = 0;
         public int TotalClientesPendientes { get; set; } = 0;
         public List<string> Destinos { get; set; } = new List<string>();
+        public List<string> ListasAsignacion { get; set; } = new List<string>();
+        public List<string> BasesAsignacion { get; set; } = new List<string>();
     }
     public class ViewAsignacionAsesor
     {

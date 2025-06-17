@@ -1,9 +1,8 @@
-using ALFINapp.Infrastructure.Persistence.Models;
 using Microsoft.AspNetCore.Mvc;
 using ALFINapp.Infrastructure.Services;
-using Microsoft.EntityFrameworkCore;
 using ALFINapp.API.Filters;
 using ALFINapp.Application.Interfaces.Asignacion;
+using ALFINapp.API.DTOs;
 
 namespace ALFINapp.API.Controllers
 {
@@ -12,25 +11,28 @@ namespace ALFINapp.API.Controllers
     {
         private MDbContext _context;
         private IUseCaseGetAsignacion _useCaseGetAsignacion;
-        // private DBServicesConsultasSupervisores _dbServicesConsultasSupervisores; // Comentado porque está relacionado con supervisores
+        private IUseCaseAsignarClientes _useCaseAsignarClientes;
+        private DBServicesConsultasSupervisores _dbServicesConsultasSupervisores; // Comentado porque está relacionado con supervisores
         private DBServicesGeneral _dbServicesGeneral;
         private DBServicesConsultasAdministrador _dbServicesConsultasAdministrador;
         private DBServicesAsignacionesAdministrador _dbServicesAsignacionesAdministrador;
 
         public AsignacionController(
             MDbContext context,
-            // DBServicesConsultasSupervisores dbServicesConsultasSupervisores, // Comentado
+            DBServicesConsultasSupervisores dbServicesConsultasSupervisores, // Comentado
             DBServicesGeneral dbServicesGeneral,
             DBServicesConsultasAdministrador dbServicesConsultasAdministrador,
             DBServicesAsignacionesAdministrador dbServicesAsignacionesAdministrador,
+            IUseCaseAsignarClientes useCaseAsignarClientes,
             IUseCaseGetAsignacion useCaseGetAsignacion)
         {
             _context = context;
-            // _dbServicesConsultasSupervisores = dbServicesConsultasSupervisores; // Comentado
+            _dbServicesConsultasSupervisores = dbServicesConsultasSupervisores; // Comentado
             _dbServicesGeneral = dbServicesGeneral;
             _dbServicesConsultasAdministrador = dbServicesConsultasAdministrador;
             _dbServicesAsignacionesAdministrador = dbServicesAsignacionesAdministrador;
             _useCaseGetAsignacion = useCaseGetAsignacion;
+            _useCaseAsignarClientes = useCaseAsignarClientes;
         }
 
         [HttpGet]
@@ -52,143 +54,8 @@ namespace ALFINapp.API.Controllers
                 return RedirectToAction("Redireccionar", "Error");
             }
 
-            var NumLeads = new List<int> { executeUseCase.Data.TotalClientes, executeUseCase.Data.TotalClientesPendientes, executeUseCase.Data.TotalClientesAsignados };
-            ViewData["NumLeads"] = NumLeads;
-            ViewData["DestinoBases"] = executeUseCase.Data.Destinos;
             return View("Asignacion", executeUseCase.Data);
         }
-
-        /*[HttpGet]
-        [PermissionAuthorization("Asignacion", "Supervisores")]
-        public async Task<IActionResult> Supervisores()
-        {
-            try
-            {
-                var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-                if (usuarioId == null)
-                {
-                    TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
-                    return RedirectToAction("Index", "Home");
-                }
-
-                var GetUCampanas = await _dbServicesGeneral.GetUCampanas();
-                var GetUClienteEstado = await _dbServicesGeneral.GetUClienteEstado();
-                var GetUColor = await _dbServicesGeneral.GetUColor();
-                var GetUColorFinal = await _dbServicesGeneral.GetUColorFinal();
-                var GetUFrescura = await _dbServicesGeneral.GetUFrescura();
-                var GetUGrupoMonto = await _dbServicesGeneral.GetUGrupoMonto();
-                var GetUGrupoTasa = await _dbServicesGeneral.GetUGrupoTasa();
-                var GetUPropension = await _dbServicesGeneral.GetUPropension();
-                var GetURangoEdad = await _dbServicesGeneral.GetURangoEdad();
-                var GetURangoOferta = await _dbServicesGeneral.GetURangoOferta();
-                var GetURangoTasas = await _dbServicesGeneral.GetURangoTasas();
-                var GetUTipoCliente = await _dbServicesGeneral.GetUTipoCliente();
-                var GetUUsuario = await _dbServicesGeneral.GetUUsuario();
-                var GetUTipoBase = await _dbServicesGeneral.GetUTipoBase();
-                var GetUFlgDeudaPlus = await _dbServicesGeneral.GetUFlgDeudaPlus();
-
-                if (GetUCampanas.IsSuccess == false || GetUCampanas.data == null)
-                {
-                    TempData["MessageError"] = GetUCampanas.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                if (GetUClienteEstado.IsSuccess == false || GetUClienteEstado.data == null)
-                {
-                    TempData["MessageError"] = GetUClienteEstado.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                if (GetUColor.IsSuccess == false || GetUColor.data == null)
-                {
-                    TempData["MessageError"] = GetUColor.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                if (GetUColorFinal.IsSuccess == false || GetUColorFinal.data == null)
-                {
-                    TempData["MessageError"] = GetUColorFinal.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                if (GetUFrescura.IsSuccess == false || GetUFrescura.data == null)
-                {
-                    TempData["MessageError"] = GetUFrescura.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                if (GetUGrupoMonto.IsSuccess == false || GetUGrupoMonto.data == null)
-                {
-                    TempData["MessageError"] = GetUGrupoMonto.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                if (GetUGrupoTasa.IsSuccess == false || GetUGrupoTasa.data == null)
-                {
-                    TempData["MessageError"] = GetUGrupoTasa.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                if (GetUPropension.IsSuccess == false || GetUPropension.data == null)
-                {
-                    TempData["MessageError"] = GetUPropension.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                if (GetURangoEdad.IsSuccess == false || GetURangoEdad.data == null)
-                {
-                    TempData["MessageError"] = GetURangoEdad.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                if (GetURangoOferta.IsSuccess == false || GetURangoOferta.data == null)
-                {
-                    TempData["MessageError"] = GetURangoOferta.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                if (GetURangoTasas.IsSuccess == false || GetURangoTasas.data == null)
-                {
-                    TempData["MessageError"] = GetURangoTasas.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                if (GetUTipoCliente.IsSuccess == false || GetUTipoCliente.data == null)
-                {
-                    TempData["MessageError"] = GetUTipoCliente.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                if (GetUUsuario.IsSuccess == false || GetUUsuario.data == null)
-                {
-                    TempData["MessageError"] = GetUUsuario.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                if (GetUTipoBase.IsSuccess == false || GetUTipoBase.data == null)
-                {
-                    TempData["MessageError"] = GetUTipoBase.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                if (GetUFlgDeudaPlus.IsSuccess == false || GetUFlgDeudaPlus.data == null)
-                {
-                    TempData["MessageError"] = GetUFlgDeudaPlus.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                var GetDataLabels = new AsignacionSupervisoresDTO
-                {
-                    UCampanas = GetUCampanas.data,
-                    UClienteEstado = GetUClienteEstado.data,
-                    UColor = GetUColor.data,
-                    UColorFinal = GetUColorFinal.data,
-                    UFrescura = GetUFrescura.data,
-                    UGrupoMonto = GetUGrupoMonto.data,
-                    UGrupoTasa = GetUGrupoTasa.data,
-                    UPropension = GetUPropension.data,
-                    URangoEdad = GetURangoEdad.data,
-                    URangoOferta = GetURangoOferta.data,
-                    URangoTasas = GetURangoTasas.data,
-                    UTipoCliente = GetUTipoCliente.data,
-                    UUsuario = GetUUsuario.data,
-                    UTipoBase = GetUTipoBase.data,
-                    UFlgDeudaPlus = GetUFlgDeudaPlus.data
-                };
-
-                return View("Supervisores", GetDataLabels);
-            }
-            catch (System.Exception ex)
-            {
-                TempData["MessageError"] = ex.Message;
-                return RedirectToAction("Redireccionar", "Error");
-            }
-        }*/
 
         [HttpGet]
         public async Task<IActionResult> BuscarAsignacionFiltrarBases(
@@ -338,8 +205,8 @@ namespace ALFINapp.API.Controllers
             }
         }*/
 
-        /*[HttpGet]
-        public async Task<IActionResult> ObtenerBaseDisponibleDelDestino(string destino)
+        [HttpGet]
+        public async Task<IActionResult> ObtenerBaseDestino(string filtro)
         {
             try
             {
@@ -348,7 +215,7 @@ namespace ALFINapp.API.Controllers
                 {
                     return Json(new { success = false, message = "No se ha iniciado sesión" });
                 }
-                var supervisorData = await _dbServicesConsultasSupervisores.ConsultaLeadsDelSupervisorDestino(idSupervisor.Value, destino);
+                var supervisorData = await _dbServicesConsultasSupervisores.ConsultaLeadsDelSupervisorDestino(idSupervisor.Value, filtro);
                 if (!supervisorData.IsSuccess)
                 {
                     return Json(new { success = false, message = supervisorData.Message });
@@ -362,7 +229,7 @@ namespace ALFINapp.API.Controllers
             {
                 return Json(new { success = false, message = ex.Message });
             }
-        }*/
+        }
 
         [HttpGet]
         [PermissionAuthorization("Asignacion", "Supervisores")]
@@ -371,5 +238,56 @@ namespace ALFINapp.API.Controllers
             // Este retornará la vista ~/Views/Asignacion/Supervisores.cshtml
             return View("Supervisores");
         }
+
+        /// <summary>
+        /// Activates an advisor based on the provided DNI and user ID.
+        /// </summary>
+        /// <param name="DNI">The DNI of the advisor to be activated.</param>
+        /// <param name="idUsuario">The ID of the user performing the activation.</param>
+        /// <returns>A JSON result indicating the success or failure of the activation process.</returns>
+        /// <remarks>
+        /// This method checks if the user is authenticated and verifies the provided DNI and user ID.
+        /// If the advisor is already active, it returns a message indicating so.
+        /// Otherwise, it attempts to activate the advisor and returns the result.
+        /// </remarks>
+        /// <exception cref="System.Exception">
+        /// Se capturan todas las excepciones y se devuelven como un mensaje de error en el JSON de respuesta.
+        /// </exception>
+        /// <example>
+        /// Ejemplo de uso:
+        /// <code>
+        /// var asignaciones = new List<AsignarAsesorDTO> {
+        ///     new AsignarAsesorDTO { IdVendedor = 1, NumClientes = 5 },
+        ///     new AsignarAsesorDTO { IdVendedor = 2, NumClientes = 3 }
+        /// };
+        /// var resultado = await AsignarClientesAAsesores(asignaciones, "BaseClientes2024");
+        /// </code>
+        /// </example>
+        [HttpPost]
+        public async Task<IActionResult> AsignarClientesAAsesores(List<DtoVAsignarClientes> asignacionasesor, string filter, string type_filter = "lista")
+        {
+            try
+            {
+                int? idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
+                if (idSupervisorActual == null)
+                {
+                    return Json(new { success = false, message = "No se pudo obtener el ID del supervisor actual recuerde Iniciar Sesion." });
+                }
+                var execute = await _useCaseAsignarClientes.exec(asignacionasesor, filter, type_filter, idSupervisorActual.Value);
+                if (!execute.success)
+                {
+                    return Json(new { success = false, message = $"{execute.message}" });
+                }
+                else
+                {
+                    return Json(new { success = true, message = $"{execute.message}" });
+                }
+            }
+            catch (System.Exception ex)
+            {
+                return Json(new { success = false, message = $"Ha ocurrido un error inesperado al modificar las asignaciones. {ex.Message}" });
+            }
+        }
+
     }
 }

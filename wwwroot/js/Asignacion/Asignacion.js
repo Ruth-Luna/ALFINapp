@@ -1,9 +1,9 @@
 function cargarBaseDisponible(destino) {
     $.ajax({
-        url: "/Asignacion/ObtenerBaseDisponibleDelDestino",
+        url: "/Asignacion/ObtenerBaseDestino",
         type: "GET",
         data: {
-            destino: destino != '' ? destino : ''
+            filtro: destino != '' ? destino : ''
         },
         success: function (response) {
             if (response.success === false) {
@@ -64,14 +64,20 @@ function EnviarDatos() {
         }
     });
 
-    const selectAsesorBase = document.getElementById('BaseDestino').value;
+    const selectElement = document.getElementById('BaseDestino');
+    const selectedOption = selectElement.options[selectElement.selectedIndex];
+    const optgroup = selectedOption.parentElement;
+
+    const type_filter = optgroup.getAttribute('data-type');
+    const selectAsesorBase = selectedOption.value;
 
     $.ajax({
         url: '/Asesor/AsignarClientesAAsesores',
         type: 'POST',
         data: {
             asignacionasesor: asignaciones,
-            selectAsesorBase: selectAsesorBase,
+            filter: selectAsesorBase,
+            type_filter: type_filter
         },
         success: function (response) {
             Swal.close();
@@ -106,3 +112,11 @@ function EnviarDatos() {
         }
     });
 }
+
+$(document).ready(function () {
+    $('#BaseDestino').select2({
+        placeholder: "Seleccione una base o lista",
+        allowClear: true,
+        width: '100%'
+    });
+});
