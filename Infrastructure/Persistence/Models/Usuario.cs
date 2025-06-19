@@ -11,8 +11,13 @@ public partial class Usuario
     [Key]
     [Column("id_usuario")]
     public int IdUsuario { get; set; }
+    [Column("Apellido_Paterno")]
+    public string? Apellido_Paterno { get; set; } = null!;
+    [Column("Apellido_Materno")]
+    public string? Apellido_Materno { get; set; } = null!;
+    [Column("Nombres")]
+    public string? Nombres { get; set; } = null!;
     [Column("dni")]
-
     public string? Dni { get; set; } = null!;
     [Column("Nombres_Completos")]
     public string? NombresCompletos { get; set; } = null!;

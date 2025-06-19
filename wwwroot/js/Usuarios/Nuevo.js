@@ -1,3 +1,12 @@
+document.addEventListener('DOMContentLoaded', function () {
+
+});
+
+$('#btnAgregarUsuario').on('click', function () {
+    guardarNuevoUsuario();
+});
+
+
 function guardarNuevoUsuario() {
     var dni = document.getElementById('Nuevo_dni').value.trim();
     if (!/^[0-9]{8}$/.test(dni) && !/^[0-9]{9}$|^[A-Z]{1}[0-9]{8}$/i.test(dni)) {
@@ -54,23 +63,29 @@ function guardarNuevoUsuario() {
         return;
     }
 
+    var idRolValue = $('#Nuevo_rol').val().trim();
+    var rol = '';
+    if (idRolValue === '2') rol = 'SUPERVISOR';
+    else if (idRolValue === '3') rol = 'ASESOR';
+    else rol = 'DESCONOCIDO';
+
     // Prepare the data to be sent in the AJAX request
     var dataToSend = {
-        Dni: dni.toUpperCase(),
-        Departamento: document.getElementById('Nuevo_departamento').value.trim().toUpperCase(),
-        Provincia: document.getElementById('Nuevo_provincia').value.trim().toUpperCase(),
-        Distrito: document.getElementById('Nuevo_distrito').value.trim().toUpperCase(),
-        REGION: document.getElementById('Nuevo_region').value.trim().toUpperCase(),
-        NombresCompletos: (document.getElementById('Nuevo_nombres').value.trim() + ' ' 
-            + document.getElementById('Nuevo_apellido_paterno').value.trim() + ' ' 
-            + document.getElementById('Nuevo_apellido_materno').value.trim()).toUpperCase(),
+        Dni: $('#Nuevo_dni').val().trim().toUpperCase(),
+        Departamento: $('#Nuevo_departamento').val().trim().toUpperCase(),
+        Provincia: $('#Nuevo_provincia').val().trim().toUpperCase(),
+        Distrito: $('#Nuevo_distrito').val().trim().toUpperCase(),
+        REGION: $('#Nuevo_region').val().trim().toUpperCase(),
+        Apellido_Paterno: $('#Nuevo_apellido_paterno').val().trim().toUpperCase(),
+        Apellido_Materno: $('#Nuevo_apellido_materno').val().trim().toUpperCase(),
+        Nombres: $('#Nuevo_nombres').val().trim().toUpperCase(),
         Telefono: telefono,
-        IdRol: document.getElementById('Nuevo_rol').value.trim().toUpperCase(),
-        IDUSUARIOSUP: parseInt(document.getElementById('Nuevo_Supervisor').value),
-        TipoDocumento: document.getElementById('tipo_documento').value.trim().toUpperCase(),
+        Rol: rol,
+        IdRol: $('#Nuevo_rol').val().trim().toUpperCase(),
+        IDUSUARIOSUP: parseInt($('#Nuevo_Supervisor').val()),
+        TipoDocumento: $('#tipo_documento').val().trim().toUpperCase(),
         Correo: email
     };
-
     // Send an AJAX request to the server
     $.ajax({
         url: "/Usuarios/CrearUsuario",

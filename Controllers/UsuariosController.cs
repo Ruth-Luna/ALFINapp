@@ -1,4 +1,5 @@
 using ALFINapp.API.Filters;
+using ALFINapp.Datos;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,8 @@ namespace ALFINapp.API.Controllers
     [RequireSession]
     public class UsuariosController : Controller
     {
+        DA_Usuario _daUsuario = new DA_Usuario();
+
         private readonly DBServicesConsultasAdministrador _DBServicesConsultasAdministrador;
         private readonly DBServicesUsuarios _DBServicesUsuarios;
         private readonly DBServicesGeneral _DBServicesGeneral;
@@ -116,7 +119,7 @@ namespace ALFINapp.API.Controllers
                 {
                     return Json(new { success = false, message = "No se ha podido crear el usuario" });
                 }
-                var result = await _DBServicesUsuarios.CrearUsuario(usuario, UsuarioIdJefe.Value);
+                var result = await _daUsuario.CrearUsuario(usuario, UsuarioIdJefe.Value);
                 if (result.IsSuccess)
                 {
                     return Json(new { success = true, message = "Usuario creado correctamente" });
@@ -128,6 +131,7 @@ namespace ALFINapp.API.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+
         [HttpGet]
         public async Task<IActionResult> ModificarUsuarioVista(int IdUsuario)
         {
