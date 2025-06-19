@@ -236,7 +236,14 @@ namespace ALFINapp.Infrastructure.Repositories
         }
 
 
-        public async Task<List<DetalleBaseClienteDTO>> GetClientesGeneralPaginadoFromSupervisor(int idUsuario)
+        public async Task<List<DetalleBaseClienteDTO>> GetClientesGeneralPaginadoYFiltradoFromSupervisor(
+            int idUsuario,
+            string filter = "",
+            string search = "",
+            string order = "tipificacion",
+            bool orderAsc = true,
+            int intervaloInicio = 0,
+            int intervaloFin = 1)
         {
             try
             {
@@ -262,12 +269,23 @@ namespace ALFINapp.Infrastructure.Repositories
             }
         }
 
-        public async Task<(int total, int totalAsignados, int totalPendientes)> GetCantidadClientesGeneralTotalFromSupervisor(int idUsuario)
+        public async Task<(int total, int totalAsignados, int totalPendientes)> GetCantidadClientesGeneralTotalFromSupervisor(
+            int idUsuario,
+            string filter = "",
+            string search = ""
+            )
         {
             try
             {
+                var parameters = new[]
+                {
+                    new SqlParameter("@IdUsuario", idUsuario),
+                    new SqlParameter("@Filter", string.IsNullOrEmpty(filter) ? (object)DBNull.Value : filter),
+                    new SqlParameter("@Search", string.IsNullOrEmpty(search) ? (object)DBNull.Value : search)
+                };
                 var result = await _context.supervisor_get_number_of_leads
-                    .FromSqlRaw("EXEC sp_supervisor_get_number_of_leads @IdUsuario", new SqlParameter("@IdUsuario", idUsuario))
+                    .FromSqlRaw("EXEC sp_supervisor_get_number_of_leads @IdUsuario = @IdUsuario, @Filter = @Filter, @Search = @Search", parameters)
+                    .AsNoTracking()
                     .ToListAsync();
                 if (result == null || !result.Any())
                 {
@@ -286,6 +304,70 @@ namespace ALFINapp.Infrastructure.Repositories
             {
                 Console.WriteLine($"Error: {ex.Message}");
                 return (0, 0, 0);
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message, List<string?> Destinos)> GetDestinos(int idUsuario)
+        {
+            try
+            {
+                var destinos = await _context.clientes_asignados
+                    .Where(c =>
+                        c.IdUsuarioS == idUsuario
+                        && c.Destino != null
+                        && c.FechaAsignacionSup.HasValue
+                        && c.FechaAsignacionSup.Value.Year == DateTime.Now.Year
+                        && c.FechaAsignacionSup.Value.Month == DateTime.Now.Month)
+                    .AsNoTracking()
+                    .Select(c => c.Destino)
+                    .Distinct()
+                    .ToListAsync();
+
+                if (destinos == null || !destinos.Any())
+                {
+                    return (false, "No se encontraron destinos para el usuario especificado.", new List<string?>());
+                }
+                return (true, "Destinos obtenidos correctamente.", destinos);
+            }
+            catch (System.Exception)
+            {
+                return (false, "Ha ocurrido un error al obtener los destinos.", new List<string?>());
+            }
+        }
+
+        public async Task<(bool IsSuccess, string Message, List<string?> Listas)> GetListas(int idUsuario)
+        {
+            try
+            {
+                var listas_id = await _context.clientes_asignados
+                    .Where(c =>
+                        c.IdUsuarioS == idUsuario
+                        && c.IdLista != null
+                        && c.FechaAsignacionSup.HasValue
+                        && c.FechaAsignacionSup.Value.Year == DateTime.Now.Year
+                        && c.FechaAsignacionSup.Value.Month == DateTime.Now.Month)
+                    .AsNoTracking()
+                    .Select(c => c.IdLista)
+                    .Distinct()
+                    .ToListAsync();
+                if (listas_id == null || !listas_id.Any())
+                {
+                    return (false, "No se encontraron listas para el usuario especificado.", new List<string?>());
+                }
+                var listas = await _context.listas_asignacion
+                    .Where(l => listas_id.Contains(l.IdLista))
+                    .Select(l => l.NombreLista)
+                    .Distinct()
+                    .ToListAsync();
+                if (listas == null || !listas.Any())
+                {
+                    return (false, "No se encontraron listas con los IDs especificados.", new List<string?>());
+                }
+                return (true, "Listas obtenidas correctamente.", listas);
+            }
+            catch (System.Exception)
+            {
+                return (false, "Ha ocurrido un error al obtener las listas.", new List<string?>());
             }
         }
     }

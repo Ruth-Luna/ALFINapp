@@ -1,6 +1,7 @@
 using ALFINapp.API.Filters;
 using ALFINapp.Application.Interfaces.Asignaciones;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System.Drawing;
@@ -31,7 +32,11 @@ namespace ALFINapp.API.Controllers
 
 
         [HttpGet]
-        public IActionResult DescargarClientesAsignados(DateTime? fechaInicio, DateTime? fechaFin, string? destinoBase)
+        public IActionResult DescargarClientesAsignados(
+            DateTime? fechaInicio,
+            DateTime? fechaFin,
+            string? filtroDescarga,
+            string? typeFilter)
         {
             try
             {
@@ -50,10 +55,7 @@ namespace ALFINapp.API.Controllers
                     fechaInicio = fechaInicio.Value.Date.AddMinutes(-1); // Reducir un minuto
                 }
 
-                DateTime fechaInicioMes = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-                DateTime fechaFinMes = fechaInicioMes.AddMonths(1).AddDays(-1).Date.AddHours(23).AddMinutes(59).AddSeconds(59);
-
-                var query = from ca in _context.clientes_asignados
+                var query = (from ca in _context.clientes_asignados
                             join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
                             join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
                             join db in _context.detalle_base on bc.IdBase equals db.IdBase
@@ -116,25 +118,35 @@ namespace ALFINapp.API.Controllers
                                 ca.FechaAsignacionSup,
                                 ca.IdUsuarioS,
                                 ca.Destino,
-                                ca.IdAsignacion
-                            };
+                                ca.IdAsignacion,
+                                ca.IdLista
+                            }).AsNoTracking();
 
                 // Aplicar filtros antes de ejecutar la consulta
                 if (fechaInicio.HasValue)
                 {
-                    query = query.Where(ca => ca.FechaAsignacionSup >= fechaInicio);
+                    query = query.Where(ca => ca.FechaAsignacionSup >= fechaInicio).AsNoTracking();
                 }
                 if (fechaFin.HasValue)
                 {
-                    query = query.Where(ca => ca.FechaAsignacionSup <= fechaFin);
+                    query = query.Where(ca => ca.FechaAsignacionSup <= fechaFin).AsNoTracking();
                 }
-                if (!string.IsNullOrEmpty(destinoBase))
+                if (!string.IsNullOrEmpty(filtroDescarga) && typeFilter == "destino")
                 {
-                    query = query.Where(ca => ca.Destino == destinoBase);
+                    query = query.Where(ca => ca.Destino == filtroDescarga).AsNoTracking();
+                }
+                if (!string.IsNullOrEmpty(filtroDescarga) && typeFilter == "lista")
+                {
+                    var idLista = _context.listas_asignacion
+                        .Where(l => l.NombreLista == filtroDescarga)
+                        .Select(l => l.IdLista)
+                        .FirstOrDefault();
+                    query = query.Where(ca => ca.IdLista == idLista)
+                        .AsNoTracking();
                 }
 
                 var result = query.GroupBy(ca => ca.IdAsignacion)
-                  .Select(group => group.OrderByDescending(ca => ca.FechaAsignacionSup).FirstOrDefault());
+                    .Select(group => group.OrderByDescending(ca => ca.FechaAsignacionSup).FirstOrDefault());
 
                 // Ejecutar la consulta
                 var supervisorData = result.ToList();
@@ -216,7 +228,7 @@ namespace ALFINapp.API.Controllers
                     TELEFONO5 = detallesClientes.Telefono5,
                 }).ToList();
 
-                // Genera el csvFile Excel
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 using (var package = new ExcelPackage())
                 {
                     var worksheet = package.Workbook.Worksheets.Add("Clientes Asignados");
@@ -331,7 +343,7 @@ namespace ALFINapp.API.Controllers
 
                     // Devuelve el csvFile
                     var excelBytes = package.GetAsByteArray();
-                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{supervisorUsuario.NombresCompletos} - {destinoBase} - ({detallesClientesSupervisor.Count()}).xlsx");
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{supervisorUsuario.NombresCompletos} - {filtroDescarga} - ({detallesClientesSupervisor.Count()}).xlsx");
                 }
             }
             catch (Exception ex)

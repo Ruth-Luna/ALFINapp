@@ -80,14 +80,17 @@ namespace ALFINapp.Application.UseCases.Leads
                 }
                 else if (rol == 2)
                 {
-                    clientes = await _repositorySupervisor.GetClientesGeneralPaginadoFromSupervisor(usuarioId);
+                    clientes = await _repositorySupervisor.GetClientesGeneralPaginadoYFiltradoFromSupervisor(usuarioId);
                     if (clientes == null)
                     {
                         return (true, "No se encontraron clientes", new ViewGestionLeads());
                     }
-                    var destinos = clientes.Select(c => c.Destino).Distinct().ToList();
-                    var listas = clientes.Select(c => c.NombreLista).Distinct().ToList();
-                    var cantidades = await _repositorySupervisor.GetCantidadClientesGeneralTotalFromSupervisor(usuarioId);
+                    var destinos = await _repositorySupervisor.GetDestinos(usuarioId);
+                    var listas = await _repositorySupervisor.GetListas(usuarioId);
+                    var cantidades = await _repositorySupervisor.GetCantidadClientesGeneralTotalFromSupervisor(
+                        usuarioId,
+                        filter,
+                        search);
                     var convertView = new ViewGestionLeads
                     {
                         ClientesA365 = clientes.Select(c => c.DtoToCliente()).ToList(),
@@ -96,12 +99,12 @@ namespace ALFINapp.Application.UseCases.Leads
                         clientesPendientes = cantidades.totalPendientes,
                         clientesTipificados = cantidades.totalAsignados,
                         clientesTotal = cantidades.total,
-                        destinoBases = destinos
-                            .Where(destino => destino != null)
+                        destinoBases = destinos.Destinos
+                            .Where(d => d != null)
                             .Cast<string>()
                             .ToList(),
-                        listasAsignacion = listas
-                            .Where(lista => lista != null)
+                        listasAsignacion = listas.Listas
+                            .Where(l => l != null)
                             .Cast<string>()
                             .ToList(),
                     };

@@ -19,9 +19,44 @@
         <div class="row align-items-center">
             <div class="col-12 col-md-6 mb-3 mb-md-0">
                 <h2 class="mb-0">Supervisor - @usuarioNombre</h2>
-                <div class="spacing"></div>
-                <div>
-                    <table class="table table-bordered">
+                <div class="ba-card mt-2">
+                    <div class="ba-card-header">
+                        <h4 class="mb-0">Resumen de Clientes</h4>
+                    </div>
+                    <div class="ba-card-body">
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <p class="badge bg-primary">Total de Clientes:</p> 
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <p>
+                                    <strong>@totalClientes</strong>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <p class="badge bg-success">Clientes Asignados a Asesores:</p>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <p>
+                                    <strong>@clientesAsignadosSupervisor</strong>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <p class="badge bg-warning">Clientes Pendientes:</p>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <p>
+                                    <strong>@clientesPendientesSupervisor</strong>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @* <table class="table table-bordered">
                         <thead>
                             <tr>
                                 <th>Base</th>
@@ -36,46 +71,70 @@
                                 <td>@clientesPendientesSupervisor</td>
                             </tr>
                         </tbody>
-                    </table>
-                </div>
+                    </table> *@
             </div>
             <div class="col-12 col-md-6 d-flex flex-column align-items-center">
-                <div class="d-flex flex-column align-items-center w-100">
-                    <div class="d-flex justify-content-between w-100 mb-3">
-                        <div class="me-2">
-                            <label for="fechaInicio">Fecha Inicio:</label>
-                            <input type="date" id="fechaInicio" class="form-control" />
-                            <label for="fechaFin">Fecha Fin:</label>
-                            <input type="date" id="fechaFin" class="form-control" />
-                            <label for="BaseDestino">Filtro:</label>
-                            <select class="form-control" name="BaseDestino" id="BaseDestino">
-                                <option value="">Seleccione una opción</option>
-
-                                @if (destinoBases != null)
-                                {
-                                    <optgroup label="Destinos">
-                                        @foreach (var destinoBase in destinoBases)
-                                        {
-                                            <option value="@destinoBase">@destinoBase</option>
-                                        }
-                                    </optgroup>
-                                }
-
-                                @if (listasAsignacion != null)
-                                {
-                                    <optgroup label="Listas de Asignación">
-                                        @foreach (var lista in listasAsignacion)
-                                        {
-                                            <option value="@lista">@lista</option>
-                                        }
-                                    </optgroup>
-                                }
-                            </select>
-                        </div>
+                <div class="ba-card h-100 me-2">
+                    <div class="ba-card-header">
+                        <h4 class="mb-0">Filtros de Datos</h4>
                     </div>
-                    <div class="d-flex justify-content-between w-100">
-                        <a href="javascript:void(0);" class="btn btn-primary mb-3 ms-2"
-                            onclick="descargarDatos()">Descargar Datos</a>
+                    <div class="ba-card-body">
+                        <div class="row mb-3">
+                            <div class="form-group col-6 col-md-4">
+                                <label for="fechaInicio">Fecha Inicio:</label>
+                                <input type="date" id="fechaInicio" class="form-control" />
+                            </div>
+                            <div class="form-group col-6 col-md-4">
+                                <label for="fechaFin">Fecha Fin:</label>
+                                <input type="date" id="fechaFin" class="form-control" />
+                            </div>
+                            <div class="form-group col-6 col-md-4">
+                                <label for="filtro-descarga-general">Filtro:</label>
+                                <select class="form-control" name="filtro-descarga-general"
+                                    id="filtro-descarga-general">
+                                    <option value="">Seleccione una opción</option>
+                                    @if (listasAsignacion != null)
+                                    {
+                                        <optgroup label="Listas de Asignación" data-type="lista">
+                                            @foreach (var lista in listasAsignacion)
+                                            {
+                                                <option value="@lista">@lista</option>
+                                            }
+                                        </optgroup>
+                                    }
+
+                                    @if (destinoBases != null)
+                                    {
+                                        <optgroup label="Destinos" data-type="destino">
+                                            @foreach (var destinoBase in destinoBases)
+                                            {
+                                                <option value="@destinoBase">@destinoBase</option>
+                                            }
+                                        </optgroup>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row g-2 mb-0">
+                            <div class="col-12 col-md-4">
+                                <a href="javascript:void(0);" class="btn btn-info w-100"
+                                    onclick="filtrar_datos_en_tabla()">
+                                    <i class="bi bi-search"></i> Filtrar
+                                </a>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <a href="javascript:void(0)" class="btn btn-info w-100" id="btn-clean-filters"
+                                    onclick="restart_table()">
+                                    <i class="bi bi-trash"></i> Limpiar
+                                </a>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <a href="javascript:void(0);" class="btn btn-success w-100" onclick="descargarDatos()">
+                                    <i class="bi bi-file-earmark-excel"></i> Exportar
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -168,5 +227,5 @@
             });
         </script>
     }
-    <script src="~/js/Gestion/GestionS.js"></script>
+    <script src="~/js/Leads/GestionS.js" asp-append-version="true"></script>
 }
