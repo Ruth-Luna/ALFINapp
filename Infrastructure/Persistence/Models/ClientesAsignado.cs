@@ -13,7 +13,7 @@ public partial class ClientesAsignado
     [Column("id_cliente")]
     public int IdCliente { get; set; }
     [Column("id_usuarioS")]
-    public int? IdUsuarioS { get; set; }    
+    public int? IdUsuarioS { get; set; }
     [Column("fecha_asignacion_sup")]
     public DateTime? FechaAsignacionSup { get; set; }
     [Column("id_usuarioV")]
@@ -43,4 +43,12 @@ public partial class ClientesAsignado
     public string? IdentificadorBase { get; set; }
     [Column("destino")]
     public string? Destino { get; set; }
+    [Column("id_NombreBase")]
+    public int? IdNombreBase { get; set; }
+    [Column("id_detalle_base")]
+    public int? IdDetalleBase { get; set; }
+    [Column("id_lista")]
+    public int? IdLista { get; set; }
+    [Column("nom_base")]
+    public string? NomBase { get; set; }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using ALFINapp.API.DTOs;
 using ALFINapp.Application.Interfaces.Asignacion;
 using ALFINapp.Domain.Interfaces;
+using CsvHelper;
 
 namespace ALFINapp.Application.UseCases.Asignacion
 {
@@ -19,7 +20,11 @@ namespace ALFINapp.Application.UseCases.Asignacion
             _repositorySupervisor = repositorySupervisor;
             _repositoryAsignacion = repositoryAsignacion;
         }
-        public async Task<(bool success, string message)> exec(List<DtoVAsignarClientes> asignacionAsesor, string selectBase, int idSupervisor)
+        public async Task<(bool success, string message)> exec(
+            List<DtoVAsignarClientes> asignacionAsesor,
+            string filter,
+            string type_filter,
+            int idSupervisor)
         {
             try
             {
@@ -30,9 +35,21 @@ namespace ALFINapp.Application.UseCases.Asignacion
                     return (false, "No se han enviado datos para asignar asesores.");
                 }
 
-                if (string.IsNullOrEmpty(selectBase))
+                var valid_filters = new List<string>
                 {
-                    return (false, "Debe seleccionar un Destino de la Base.");
+                    "lista",
+                    "destino",
+                    "fecha",
+                    "base"
+                };
+                if (!valid_filters.Contains(type_filter))
+                {
+                    return (false, $"El tipo de filtro no es válido. Debe ser uno de los siguientes: {string.Join(", ", valid_filters)}");
+                }
+
+                if (string.IsNullOrEmpty(filter))
+                {
+                    return (false, "Debe seleccionar un Destino o Lista de la Base.");
                 }
 
                 if (asignacionAsesor.All(a => a.NumClientes == 0 || a.IdVendedor == 0))
@@ -40,7 +57,7 @@ namespace ALFINapp.Application.UseCases.Asignacion
                     return (false, "No se ha llenado ninguna entrada. Los campos no pueden estar vacíos.");
                 }
                 int contadorClientesAsignados = 0;
-                var totalClientes = await _repositorySupervisor.GetAllAsignacionesFromDestino(idSupervisor, selectBase);
+                var totalClientes = await _repositorySupervisor.GetAllAsignacionesFromDestino(idSupervisor, filter);
                 if (totalClientes.Count == 0)
                 {
                     return (false, "No se han encontrado clientes disponibles para la asignación.");
@@ -57,7 +74,7 @@ namespace ALFINapp.Application.UseCases.Asignacion
                     contadorClientesAsignados = contadorClientesAsignados + nClientes;
                     if (totalClientes.Count < nClientes)
                     {
-                        mensajesError = mensajesError + $"En la base '{selectBase}', solo hay {totalClientes.Count} clientes disponibles para la asignación. La entrada ha sido obviada para el usuario '{asignacion.IdVendedor}'.";
+                        mensajesError = mensajesError + $"En la base '{filter}', solo hay {totalClientes.Count} clientes disponibles para la asignación. La entrada ha sido obviada para el usuario '{asignacion.IdVendedor}'.";
                         continue;
                     }
                     if (contadorClientesAsignados > totalClientes.Count)
@@ -80,11 +97,11 @@ namespace ALFINapp.Application.UseCases.Asignacion
                     int nClientes = asignacion.NumClientes;
                     contadorClientesAsignados = contadorClientesAsignados + nClientes;
                     var clientesDisponibles = totalClientes
-                        .Where(c => c.IdUsuarioV == null && c.Destino == selectBase)
+                        .Where(c => c.IdUsuarioV == null && c.Destino == filter)
                         .Take(nClientes)
                         .ToList();
                     totalClientes = totalClientes
-                        .Where(c => c.IdUsuarioV == null && c.Destino == selectBase)
+                        .Where(c => c.IdUsuarioV == null && c.Destino == filter)
                         .Skip(nClientes)
                         .ToList();
 

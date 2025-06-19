@@ -331,58 +331,7 @@ namespace ALFINapp.API.Controllers
             }
         }
 
-        /// <summary>
-        /// Activates an advisor based on the provided DNI and user ID.
-        /// </summary>
-        /// <param name="DNI">The DNI of the advisor to be activated.</param>
-        /// <param name="idUsuario">The ID of the user performing the activation.</param>
-        /// <returns>A JSON result indicating the success or failure of the activation process.</returns>
-        /// <remarks>
-        /// This method checks if the user is authenticated and verifies the provided DNI and user ID.
-        /// If the advisor is already active, it returns a message indicating so.
-        /// Otherwise, it attempts to activate the advisor and returns the result.
-        /// </remarks>
-        /// <exception cref="System.Exception">
-        /// Se capturan todas las excepciones y se devuelven como un mensaje de error en el JSON de respuesta.
-        /// </exception>
-        /// <example>
-        /// Ejemplo de uso:
-        /// <code>
-        /// var asignaciones = new List<AsignarAsesorDTO> {
-        ///     new AsignarAsesorDTO { IdVendedor = 1, NumClientes = 5 },
-        ///     new AsignarAsesorDTO { IdVendedor = 2, NumClientes = 3 }
-        /// };
-        /// var resultado = await AsignarClientesAAsesores(asignaciones, "BaseClientes2024");
-        /// </code>
-        /// </example>
-        [HttpPost]
-        public async Task<IActionResult> AsignarClientesAAsesores(List<DtoVAsignarClientes> asignacionasesor, string selectAsesorBase)
-        {
-            try
-            {
-                int? idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
-                if (idSupervisorActual == null)
-                {
-                    return Json(new { success = false, message = "No se pudo obtener el ID del supervisor actual recuerde Iniciar Sesion." });
-                }
-
-                var execute = await _useCaseAsignarClientes.exec(asignacionasesor, selectAsesorBase, idSupervisorActual.Value);
-
-                if (!execute.success)
-                {
-                    return Json(new { success = false, message = $"{execute.message}" });
-                }
-                else
-                {
-                    return Json(new { success = true, message = $"{execute.message}" });
-                }
-            }
-            catch (System.Exception ex)
-            {
-                return Json(new { success = false, message = $"Ha ocurrido un error inesperado al modificar las asignaciones. {ex.Message}" });
-            }
-        }
-
+        
         /// <summary>
         /// Obtiene el número de clientes asignados a un asesor específico que coinciden con una tipificación detallada.
         /// </summary>
@@ -407,6 +356,7 @@ namespace ALFINapp.API.Controllers
 
                 var NumClientesAsignados = _context.clientes_asignados
                     .Where(ca => ca.IdUsuarioV == idAsesorBuscar
+                        && ca.FechaAsignacionSup != null
                         && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
                         && ca.FechaAsignacionSup.Value.Month == DateTime.Now.Month
                         && ca.TipificacionMayorPeso == tipificacionDetalle

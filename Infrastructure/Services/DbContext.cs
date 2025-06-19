@@ -32,6 +32,7 @@ public class MDbContext : DbContext
     public DbSet<PermisosRolesVistas> Permisos_Roles_Vistas { get; set; }
     public DbSet<Retiros> retiros { get; set; }
     public DbSet<AsesoresOcultos> Asesores_Ocultos { get; set; }
+    public DbSet<ListasAsignacion> listas_asignacion { get; set; }
     //PROCEDIMIENTOS ALMACENADOS NO BORRAR
     public DbSet<StringDTO> string_dto { get; set; }
     public DbSet<NumerosEnterosDTO> numeros_enteros_dto { get; set; }
@@ -59,9 +60,17 @@ public class MDbContext : DbContext
     public DbSet<ReportsEtiquetaMetaImporte> reports_etiqueta_meta_importe { get; set; }
     public DbSet<ReportsSupervisorGestionFecha> reports_supervisor_gestion_fecha { get; set; }
     public DbSet<SupervisorGetNumberOfLeads> supervisor_get_number_of_leads { get; set; }
+    public DbSet<GestionConseguirTodasLasAsignacionesPorListas> gestion_conseguir_todas_las_asignaciones_por_listas { get; set; }
+    public DbSet<GestionConseguirODescargarAsignacionDeLeadsDeSup> gestion_conseguir_o_descargar_asignacion_de_leads_de_sup { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<GestionConseguirODescargarAsignacionDeLeadsDeSup>()
+            .HasNoKey()
+            .ToView(null);
+        modelBuilder.Entity<GestionConseguirTodasLasAsignacionesPorListas>()
+            .HasNoKey()
+            .ToView(null);
 
         modelBuilder.Entity<AsignacionFiltrarBasesDTO>()
             .HasNoKey()

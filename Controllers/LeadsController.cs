@@ -81,7 +81,14 @@ namespace ALFINapp.Controllers
             }
             else if (rol == 2)
             {
-                var executeInicio = await _useCaseGetAsignacionLeads.Execute(usuarioId.Value, rol.Value, paginaInicio, paginaFinal);
+                var executeInicio = await _useCaseGetAsignacionLeads
+                    .Execute(
+                        usuarioId.Value,
+                        2,
+                        paginaInicio,
+                        paginaFinal,
+                        filter: filter,
+                        search: searchfield);
                 if (!executeInicio.IsSuccess || executeInicio.Data == null)
                 {
                     TempData["MessageError"] = executeInicio.Message;

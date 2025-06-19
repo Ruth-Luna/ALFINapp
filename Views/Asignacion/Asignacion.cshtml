@@ -2,6 +2,8 @@
 
 @{
     var destinoBases = Model.Destinos;
+    var listasBases = Model.ListasAsignacion;
+    var basesAsignacion = Model.BasesAsignacion;
     var totalClientes = Model.TotalClientes;
     var totalClientesAsignados = Model.TotalClientesAsignados;
     var totalClientesPendientes = Model.TotalClientesPendientes;
@@ -16,7 +18,6 @@
         <h3>Seccion Asignaciones del Asesor de Creditos</h3>
         <div class="form-group mb-3">
             <div class="row">
-
                 <div class="col-md-4">
                     <label for="NumTotalLeads">Numero Total de Leads</label>
                     <input type="text" class="form-control" id="NumTotalLeads" name="NumTotalLeads"
@@ -33,19 +34,38 @@
                         value="@totalClientesAsignados" readonly>
                 </div>
             </div>
-            <label for="BaseDestino">Destino</label>
+            <label for="BaseDestino">Filtro por</label>
             <select class="form-control" name="BaseDestino" id="BaseDestino"
                 onchange="cargarBaseDisponible(this.value)">
-                <option value="">Seleccione una Base de Destino</option>
+                <option value="">Seleccione una opción</option>
                 @if (destinoBases != null)
                 {
-                    @foreach (var destinoBase in destinoBases)
-                    {
-                        @if (@destinoBase != "A365_AGREGADO_MANUALMENTE" || @destinoBase != "ALFIN_AGREGADO_MANUALMENTE")
+                    <optgroup label="Destinos" data-type="destino">
+                        @foreach (var destinoBase in destinoBases)
                         {
                             <option value="@destinoBase">@destinoBase</option>
                         }
-                    }
+                    </optgroup>
+                }
+
+                @if (listasBases != null)
+                {
+                    <optgroup label="Listas de Asignación" data-type="lista">
+                        @foreach (var listaBase in listasBases)
+                        {
+                            <option value="@listaBase">@listaBase</option>
+                        }
+                    </optgroup>
+                }
+
+                @if (basesAsignacion != null)
+                {
+                    <optgroup label="Bases de Asignación" data-type="base">
+                        @foreach (var baseAsignacion in basesAsignacion)
+                        {
+                            <option value="@baseAsignacion">@baseAsignacion</option>
+                        }
+                    </optgroup>
                 }
             </select>
         </div>

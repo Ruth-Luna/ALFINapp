@@ -75,11 +75,6 @@
                         <!--<button class="btn btn-link p-0"
                             onclick="sortTable('clientesTable', 5, 'date')">Ordenar</button>-->
                     </th>
-
-                    <!--<th>Asigne o Modifique la Asignacion</th>
-                        <td><a href="javascript:void(0);" class="btn btn-primary"
-                                onclick="loadModificarVendedorAsignado(SupervisorDTO.IdAsignacion)">Modificar</a>
-                    </td>-->
                 </tr>
             </thead>
             <tbody id="data-table">
@@ -130,6 +125,7 @@
 </div>
 
 @section Scripts {
+    <script src="~/js/Leads/GestionS.js?v=@DateTime.Now.Ticks"></script>
     @if (TempData["Message"] != null)
     {
         <script>

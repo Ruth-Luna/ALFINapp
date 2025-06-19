@@ -11,12 +11,15 @@ namespace ALFINapp.Application.UseCases.Leads
     {
         private readonly IRepositoryVendedor _repositoryVendedor;
         private readonly IRepositorySupervisor _repositorySupervisor;
+        private readonly IRepositoryUsuarios _repositoryUsuarios;
         public UseCaseGetAsignacionLeads(
             IRepositoryVendedor repositoryVendedor,
-            IRepositorySupervisor repositorySupervisor)
+            IRepositorySupervisor repositorySupervisor,
+            IRepositoryUsuarios repositoryUsuarios)
         {
             _repositoryVendedor = repositoryVendedor;
             _repositorySupervisor = repositorySupervisor;
+            _repositoryUsuarios = repositoryUsuarios;
         }
         public async Task<(bool IsSuccess, string Message, ViewGestionLeads Data)> Execute(
             int usuarioId,
@@ -32,7 +35,7 @@ namespace ALFINapp.Application.UseCases.Leads
             {
                 int currentYear = DateTime.Now.Year;
                 int currentMonth = DateTime.Now.Month;
-                var usuario = await _repositoryVendedor.GetVendedor(usuarioId);
+                var usuario = await _repositoryUsuarios.GetUser(usuarioId);
                 if (usuario == null)
                 {
                     return (false, "No se encontró el usuario", new ViewGestionLeads());
@@ -77,30 +80,33 @@ namespace ALFINapp.Application.UseCases.Leads
                 }
                 else if (rol == 2)
                 {
-                    clientes = await _repositorySupervisor.GetClientesGeneralPaginadoFromSupervisor(usuarioId);
+                    clientes = await _repositorySupervisor.GetClientesGeneralPaginadoYFiltradoFromSupervisor(usuarioId);
                     if (clientes == null)
                     {
                         return (true, "No se encontraron clientes", new ViewGestionLeads());
                     }
-                    var destinos = clientes.Select(c => c.Destino).Distinct().ToList();
+                    var destinos = await _repositorySupervisor.GetDestinos(usuarioId);
+                    var listas = await _repositorySupervisor.GetListas(usuarioId);
+                    var cantidades = await _repositorySupervisor.GetCantidadClientesGeneralTotalFromSupervisor(
+                        usuarioId,
+                        filter,
+                        search);
                     var convertView = new ViewGestionLeads
                     {
                         ClientesA365 = clientes.Select(c => c.DtoToCliente()).ToList(),
                         Supervisor = usuarioDTO.ToEntitySupervisor(),
                         ClientesAlfin = new List<Cliente>(),
-                        clientesPendientes = clientes.Count(dc =>
-                            (!dc.FechaTipificacionDeMayorPeso.HasValue ||
-                            (dc.FechaTipificacionDeMayorPeso.Value.Year != currentYear &&
-                            dc.FechaTipificacionDeMayorPeso.Value.Month != currentMonth))),
-                        clientesTipificados = clientes.Count(dc =>
-                            dc.FechaTipificacionDeMayorPeso.HasValue &&
-                            dc.FechaTipificacionDeMayorPeso.Value.Year == currentYear &&
-                            dc.FechaTipificacionDeMayorPeso.Value.Month == currentMonth),
-                        clientesTotal = clientes.Count(),
-                        destinoBases = destinos
-                            .Where(destino => destino != null)
+                        clientesPendientes = cantidades.totalPendientes,
+                        clientesTipificados = cantidades.totalAsignados,
+                        clientesTotal = cantidades.total,
+                        destinoBases = destinos.Destinos
+                            .Where(d => d != null)
                             .Cast<string>()
-                            .ToList()
+                            .ToList(),
+                        listasAsignacion = listas.Listas
+                            .Where(l => l != null)
+                            .Cast<string>()
+                            .ToList(),
                     };
                     return (true, "Se encontraron los siguientes clientes", convertView);
                 }

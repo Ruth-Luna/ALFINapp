@@ -69,10 +69,15 @@ namespace ALFINapp.API.Models
         public string? dni { get; set; }
         public string? nombres_asesor { get; set; }
         public string? nombres_supervisor { get; set; }
-        public int? contador_gestionado { get; set; }
-        public int? contador_derivado { get; set; }
-        public int? contador_desembolsado { get; set; }
+        public int? contador_asignados { get; set; } = 0;
+        public int? contador_gestionado { get; set; } = 0;
+        public int? contador_derivado { get; set; } = 0;
+        public int? contador_desembolsado { get; set; } = 0;
         public decimal? importe_desembolsado { get; set; }
+        public decimal? porcentaje_desembolsos_derivados { get; set; } = 0;
+        public decimal? porcentaje_derivados_asignados { get; set; } = 0;
+        public decimal? porcentaje_derivados_gestionados { get; set; } = 0;
+        public decimal? porcentaje_gestionados_asignados { get; set; } = 0;
     }
     public class ViewReporteTablaMeses
     {

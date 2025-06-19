@@ -53,7 +53,9 @@ namespace ALFINapp.Application.UseCases.Asignacion
                     TotalClientes = totalClientes,
                     TotalClientesAsignados = clientesAsignadosSupervisor,
                     TotalClientesPendientes = clientesPendientesSupervisor,
-                    Destinos = supervisorData.Destinos
+                    Destinos = supervisorData.Destinos,
+                    ListasAsignacion = supervisorData.ListasAsignacion,
+                    BasesAsignacion = supervisorData.BasesAsignacion
                 };
                 return (true, "Consulta correcta", asignacionSupervisor);
             }

@@ -1,5 +1,373 @@
+async function Cargar_Cruce_Clientes(pagina = 0) {
+    $.ajax({
+        url: '/Asignaciones/ObtenerCruceFinal',
+        type: 'GET',
+        dataType: 'json',
+        success: function (result) {
+            if (result.isSuccess && Array.isArray(result.data)) {
+                load_visualization_Assign(result.data);
+                $('#client-list-total-input').val("Se trunco a" + result.data.length);
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al cargar el cruce final',
+                    text: result.message || 'No se pudieron cargar los datos del cruce final.',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+        },
+        error: function (xhr, status, error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al cargar el cruce final',
+                text: 'Ocurrió un error al intentar cargar los datos del cruce final. Por favor, inténtalo de nuevo más tarde.',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    });
+}
+
+/* FUNCIONES PARA LEER Y MOSTRAR DATOS */
+parsedDataGral = [];
+parsedDataCruzada = [];
+function import_assignments_file(event) {
+    const fileInput = event.target;
+    const file = fileInput.files[0];
+    if (!file) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Por favor, selecciona un archivo para importar.',
+        });
+        return;
+    }
+    const allowedExtensions = ['csv', 'txt'];
+    const fileName = file.name;
+    const fileExtension = fileName.split('.').pop().toLowerCase();
+    if (!allowedExtensions.includes(fileExtension)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Formato de archivo no permitido. Por favor, sube un archivo CSV o TXT.',
+        });
+        return;
+    }
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+        const content = e.target.result;
+        var parsedData = [];
+        parsedData = parseCSV(content);
+        const loading = Swal.fire({
+            title: 'Cargando datos...',
+            text: 'Por favor, espera mientras se procesan los datos.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        load_visualization_data(parsedData);
+        parsedDataGral = parsedData; // Guardar los datos globalmente
+        loading.close();
+        Swal.fire({
+            icon: 'success',
+            title: 'Archivo importado correctamente',
+            text: 'Se han importado ' + parsedData.length + ' registros. Puedes proceder a asignar supervisores.',
+            showConfirmButton: true,
+            timer: 2000
+        })
+    }
+    reader.onerror = function () {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al leer el archivo',
+            text: 'Por favor, verifica el archivo y vuelve a intentarlo.',
+        });
+    }
+    reader.readAsText(file);
+    fileInput.value = ''; // Limpiar el input para permitir la carga del mismo archivo nuevamente
+    document.getElementById("imported-file-name").textContent = fileName;
+    document.getElementById("imported-file-name").style.display = "block";
+}
+
+function parseCSV(text) {
+    const lines = text.trim().split('\n');
+    if (lines.length <= 1) return [];
+    return lines.slice(1).map(line => line.split(',').map(cell => cell.trim()));
+}
+
+function load_visualization_data(data) {
+    const tableContainer = document.getElementById("load-visualization-table");
+    tableContainer.innerHTML = ""; // Limpiar antes de volver a renderizar
+
+    new gridjs.Grid({
+        columns: [
+            "DNI CLIENTE",
+            "DNI SUPERVISOR",
+            "CELULAR 1",
+            "CELULAR 2",
+            "CELULAR 3",
+            "CELULAR 4",
+            "CELULAR 5",
+            "D. BASE"
+        ],
+        data: data,
+        sort: true,
+        pagination: {
+            limit: 10
+        },
+        search: true
+    }).render(tableContainer);
+
+    document.getElementById("load-visualization-total-input").value = "";
+    document.getElementById("load-visualization-total-input").value = data.length;
+}
+
+async function cross_assignments() {
+    if (!parsedDataGral || parsedDataGral.length === 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al cruzar asignaciones',
+            text: 'No hay datos para cruzar. Por favor, importa un archivo primero.',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+
+    const dataToSend = parsedDataGral.map(row => ({
+        dni_cliente: row[0] ?? "",
+        dni_supervisor: row[1] ?? "",
+        telefono_1: row[2] === "NULL" ? "" : row[2],
+        telefono_2: row[3] === "NULL" ? "" : row[3],
+        telefono_3: row[4] === "NULL" ? "" : row[4],
+        telefono_4: row[5] === "NULL" ? "" : row[5],
+        telefono_5: row[6] === "NULL" ? "" : row[6],
+        d_base: row[7] ?? "",
+        lista_asignada: ""
+    }));
+
+    Swal.fire({
+        title: 'Confirmar cruzamiento',
+        text: '¿Estás seguro de que deseas cruzar las asignaciones? Este proceso puede tardar varios segundos, no salga de esta pestaña mientras el proceso continue.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, cruzar',
+        cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+        if (!result.isConfirmed) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Cruzamiento cancelado',
+                text: 'El proceso de cruzamiento ha sido cancelado.',
+                confirmButtonText: 'Aceptar'
+            });
+            return;
+        }
+
+        const dataJson = JSON.stringify(dataToSend);
+
+        const baseUrl = window.location.origin;
+        const url = baseUrl + "/Asignaciones/CrossAssignments";
+
+        const loading = Swal.fire({
+            title: 'Cruzando asignaciones...',
+            text: 'Por favor, espere mientras se procesan los datos, este proceso puede demorar varios segundos.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: dataJson
+            });
+            const result = await response.json();
+
+            if (result.isSuccess === true) {
+                parsedDataCruzada = result.data;
+                await Cargar_Cruce_Clientes();
+                loading.close();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Asignaciones cruzadas con éxito',
+                    text: result.message,
+                    confirmButtonText: 'Aceptar'
+                });
+            } else {
+                loading.close();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: result.message,
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+
+        } catch (error) {
+            loading.close();
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al cruzar asignaciones',
+                text: 'Ocurrió un error al intentar cruzar las asignaciones. Por favor, inténtalo de nuevo más tarde.',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    });
+}
+
+async function assign_supervisors() {
+    if (!parsedDataCruzada || parsedDataCruzada.length === 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al asignar supervisores',
+            text: 'No hay datos cruzados para asignar. Por favor, cruce las asignaciones primero.',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+
+    if (!parsedDataGral || parsedDataGral.length === 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al asignar supervisores',
+            text: 'No hay datos generales para asignar. Por favor, importa un archivo primero.',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+
+    const supervisoresConClientes = parsedDataCruzada.supervisoresConClientes;
+
+    if (!supervisoresConClientes || supervisoresConClientes.length === 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al asignar supervisores',
+            text: 'No hay datos cruzados para asignar. Por favor, cruce las asignaciones primero.',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+
+    Swal.fire({
+        title: 'Confirmar asignación de supervisores',
+        text: '¿Estás seguro de que deseas asignar los supervisores a los clientes? Este proceso puede tardar varios segundos, no salga de esta pestaña mientras el proceso continue.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, asignar',
+        cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+        const loading = Swal.fire({
+            title: 'Asignando supervisores...',
+            text: 'Por favor, espere mientras se procesan los datos, este proceso puede demorar varios segundos.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        // loading.showLoading();
+        const dataToSend = supervisoresConClientes.flatMap(supervisor => {
+            return supervisor.clientes.map(cliente => ({
+                dni_cliente: cliente.dni ?? "",
+                dni_supervisor: supervisor.dniSupervisor ?? "",
+                telefono_1: "",
+                telefono_2: "",
+                telefono_3: "",
+                telefono_4: "",
+                telefono_5: "",
+                lista_asignada: supervisor.nombreLista ?? ""
+            }));
+        });
+
+        const dataJson = JSON.stringify(dataToSend);
+        const baseUrl = window.location.origin;
+        const url = baseUrl + "/Asignaciones/AssignBaseSupervisors";
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: dataJson
+            });
+
+            const result = await response.json();
+
+            loading.close();
+
+            if (result.isSuccess === true) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Leads asignados con éxito a supervisores',
+                    text: result.message,
+                    confirmButtonText: 'Aceptar'
+                });
+                // Aquí podrías actualizar la tabla o realizar otras acciones necesarias
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al asignar leads a supervisores',
+                    text: result.message,
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+
+        } catch (error) {
+            console.error("Error en fetch:", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al asignar supervisores',
+                text: 'Ocurrió un error al intentar asignar los supervisores. Por favor, inténtalo de nuevo más tarde.',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    });
+}
+
+function load_visualization_Assign(data) {
+    const tableContainer = document.getElementById("client-list-table");
+    tableContainer.innerHTML = "";
+
+    const rows = data.map(item => [
+        item.dniCliente,
+        item.clienteNombre,
+        item.campaña,
+        item.ofertaMax,
+        item.agencia,
+        item.tipoBase,
+        item.supervisorNombre,
+        item.nombreLista,
+        item.fuenteBase
+    ]);
+
+    new gridjs.Grid({
+        columns: [
+            "DNI. CLIENTE",
+            "NOM. CLIENTE",
+            "CAMPAÑA",
+            "OFERTA MAX",
+            "AGENCIA",
+            "TIPO BASE",
+            "NOMBRE SUPERVISOR",
+            "NOMBRE LISTA",
+            "D.BASE"
+        ],
+        data: rows,
+        sort: true,
+        pagination: {
+            limit: 10
+        },
+        search: true
+    }).render(tableContainer);
+}
+
+
 // Función que simula la obtención de datos para la primera tabla
-function fetchLoadVisualizationData() {
+/*function fetchLoadVisualizationData() {
     return new Promise((resolve) => {
         setTimeout(() => {
             resolve([
@@ -44,13 +412,13 @@ function fetchClientListData() {
         }, 400);
     });
 }
-
+*/
 // Wrapper para la segunda tabla
-const clientListTableData = () => fetchClientListData();
+// const clientListTableData = () => fetchClientListData();
 
 
 // Función que simula la obtención de datos para la tercera tabla
-function fetchAssignmentsListData() {
+/*function fetchAssignmentsListData() {
     return new Promise((resolve) => {
         setTimeout(() => {
             resolve([
@@ -71,76 +439,91 @@ function fetchAssignmentsListData() {
     });
 }
 
-// Wrapper para la tercera tabla
-const assignmentsListTableData = () => fetchAssignmentsListData();
+*/
 
-// Inicialización de las tablas Grid.js
-document.addEventListener("DOMContentLoaded", function () {
-    // Primera tabla: “loadVisualizationTableData”
+function load_visualization_assignments(data) {
+    const tableContainer = document.getElementById("assignments-list-table");
+    tableContainer.innerHTML = ""; // Limpiar antes de volver a renderizar
+
     new gridjs.Grid({
         columns: [
-            "DNI CLIENTE",
-            "DNI SUPERVISOR",
-            "CELULAR 1",
-            "CELULAR 2",
-            "CELULAR 3",
-            "CELULAR 4",
-            "CELULAR 5",
-            "D. BASE"
+            "Dni Supervisor",
+            "Non. Supervisor",
+            "Nombre Lista",
+            "Cantidad",
+            "Fecha de Creación de Lista",
+            "Total",
+            "Total Gestionadas",
+            "Total Asignadas a Asesores",
+            {
+                name: "Descargar",
+                formatter: (_, row) => {
+                    const nombreLista = row.cells[2].data;
+                    const baseUrl = window.location.origin;
+                    return gridjs.html(`
+                <a 
+                    class="btn btn-info btn-sm" 
+                    href="${baseUrl}/Excel/DownloadAsignaciones?nombre_lista=${encodeURIComponent(nombreLista)}"
+                    data-nombre-lista="${nombreLista}"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    title="Descargar asignaciones de la lista ${nombreLista}"
+                    style="color: white; text-decoration: none;">
+                    Descargar
+                </a>
+            `);
+                }
+            },
         ],
-        data: loadVisualizationTableData,
-        sort: true,
-        pagination: {
-            limit: 10
-        }
-    }).render(document.getElementById("load-visualization-table"));
-
-    // Segunda tabla: “clientListTableData”
-    new gridjs.Grid({
-        columns: [
-            "DNI CLIENTE",
-            "NOM. CLIENTE",
-            "CAMPAÑA",
-            "OFERTA MAX.",
-            "AGENCIA",
-            "TIPO BASE",
-            "NOMBRE SUP",
-            "NOMBRE LISTA",
-            "D. BASE"
-        ],
-        data: clientListTableData,
-        sort: true,
-        pagination: {
-            limit: 10
-        }
-    }).render(document.getElementById("client-list-table"));
-
-    // tabla del modal
-    new gridjs.Grid({
-        columns: [
-            "DNI SUP",
-            "NOM. SUP",
-            "NOMBRE LISTA",
-            "CANTIDAD",
-            "FECHA ASIGNACIÓN"
-        ],
-        data: assignmentsListTableData,
+        data: data,
         sort: true,
         pagination: {
             limit: 7
+        },
+        search: true
+    }).render(tableContainer);
+}
+
+async function load_assignments_list_modal() {
+    const url = window.location.origin + '/Asignaciones/GetAsignaciones';
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!response.ok) {
+            console.error('Error en la respuesta del servidor:', response.statusText);
+            throw new Error('Error en la respuesta del servidor');
         }
-    }).render(document.getElementById("assignments-list-table"));
-
-});
-
-
-
-/* EVENTOS */
-document.getElementById("assign-button").addEventListener("click", function () {
-    Swal.fire({
-        icon: 'success',
-        title: 'Asignado correctamente',
-        showConfirmButton: false,
-        timer: 1500
-    });
-});
+        const result = await response.json();
+        console.log('Resultado de la solicitud:', result.data);
+        if (result.isSuccess === true) {
+            const data = result.data.asignaciones.map(item => [
+                item.dni,
+                item.nombres_supervisor,
+                item.nombre_lista,
+                item.total_asignaciones,
+                item.fecha_creacion_lista,
+                item.total_asignaciones_gestionadas,
+                item.total_asignaciones_asignadas_a_asesores,
+            ]);
+            load_visualization_assignments(data);
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al cargar las asignaciones',
+                text: result.message || 'No se pudieron cargar los datos de asignaciones.',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al cargar las asignaciones',
+            text: error.message || 'Ocurrió un error al intentar cargar los datos de asignaciones.',
+            confirmButtonText: 'Aceptar'
+        });
+    }
+}

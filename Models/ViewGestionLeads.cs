@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.Domain.Entities;
 
 namespace ALFINapp.API.Models
@@ -21,5 +17,6 @@ namespace ALFINapp.API.Models
         public string order { get; set; } = "";
         public bool orderAsc { get; set; } = true;
         public List<string> destinoBases { get; set; } = new List<string>();
+        public List<string> listasAsignacion { get; set; } = new List<string>();
     }
 }

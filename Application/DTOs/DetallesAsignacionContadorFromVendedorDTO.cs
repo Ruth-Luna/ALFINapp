@@ -10,6 +10,8 @@ namespace ALFINapp.Application.DTOs
         public List<DetalleAsignacionContadorFromVendedorDTO> DetallesAsignacionContadorFromVendedor { get; set; } = new List<DetalleAsignacionContadorFromVendedorDTO>();
         public List<DetalleBaseClienteDTO> DetallesClientesAsignados { get; set; } = new List<DetalleBaseClienteDTO>();
         public List<string> Destinos { get; set; } = new List<string>();
+        public List<string> ListasAsignacion { get; set; } = new List<string>();
+        public List<string> BasesAsignacion { get; set; } = new List<string>();
     }
     public class DetalleAsignacionContadorFromVendedorDTO
     {
