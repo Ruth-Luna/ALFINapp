@@ -1,5 +1,5 @@
-@model List<ALFINapp.Infrastructure.Persistence.Models.Usuario>
-
+@* @model List<ALFINapp.Infrastructure.Persistence.Models.Usuario>
+ *@
 @{
 }
 
@@ -73,7 +73,7 @@
                     </td>
                 </tr>
 
-                @foreach (var usuario in Model)
+               @*  @foreach (var usuario in Model)
                 {
                     <tr class="align-middle">
                         <td>
@@ -145,7 +145,7 @@
                             @usuario.FechaCese
                         </td>
                     </tr>
-                }
+                } *@
             </tbody>
         </table>
     </div>
@@ -169,7 +169,8 @@
 </div>
 
 @section Scripts {
-    <script src="~/js/Usuarios/Administracion.js?v=@DateTime.Now.Ticks"></script>
+  @*   <script src="~/js/Usuarios/Administracion.js?v=@DateTime.Now.Ticks"></script> *@
     <script src="~/js/Usuarios/ModificarUsuario.js?v=@DateTime.Now.Ticks"></script>
-    <script src="~/js/tablefunctions.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/js/Usuarios/Usuario.js?v=@DateTime.Now.Ticks"></script>
+@*     <script src="~/js/tablefunctions.js?v=@DateTime.Now.Ticks"></script> *@
 }

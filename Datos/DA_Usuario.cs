@@ -1,4 +1,5 @@
-﻿using ALFINapp.Infrastructure.Persistence.Models;
+﻿using ALFINapp.API.Models;
+using ALFINapp.Infrastructure.Persistence.Models;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Diagnostics;
@@ -49,5 +50,41 @@ namespace ALFINapp.Datos
                 return (false, "Error al crear el usuario: " + ex.Message);
             }
         }
-    }
+
+		public List<ViewUsuario> ListarUsuarios()
+		    {
+			var lista = new List<ViewUsuario>();
+			var cn = new Conexion();
+
+			using (SqlConnection connection = new SqlConnection(cn.getCadenaSQL()))
+			{
+				using (SqlCommand cmd = new SqlCommand("SP_USUARIO_LISTAR_USUARIOS", connection))
+				{
+					cmd.CommandType = CommandType.StoredProcedure;
+					connection.Open();
+					using (SqlDataReader dr = cmd.ExecuteReader())
+					{
+						while (dr.Read())
+						{
+							lista.Add(new ViewUsuario
+							{
+								IdUsuario = Convert.ToInt32(dr["id_usuario"]),
+								Dni = dr["dni"].ToString(),
+								NombresCompletos = dr["Nombre_Completo"].ToString(),
+								NOMBRECAMPAÑA = dr["NOMBRE_CAMPAÑA"].ToString(),
+                                RESPONSABLESUP = dr["RESPONSABLE_SUP"].ToString(),
+								Rol = dr["rol"].ToString(),
+								FechaActualizacion = dr["fecha_actualizacion"] == DBNull.Value ? null : Convert.ToDateTime(dr["fecha_actualizacion"]),
+								FechaInicio = dr["fecha_inicio"] == DBNull.Value ? null : Convert.ToDateTime(dr["fecha_inicio"]),
+								FechaCese = dr["fecha_cese"] == DBNull.Value ? null : Convert.ToDateTime(dr["fecha_cese"]),
+							});
+						}
+					}
+				}
+			}
+
+			return lista;
+		}
+
+	}
 }

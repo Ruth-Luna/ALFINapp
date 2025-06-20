@@ -26,14 +26,22 @@ namespace ALFINapp.API.Controllers
             _DBServicesGeneral = DBServicesGeneral;
             _DBServicesRoles = DBServicesRoles;
         }
+
         [HttpGet]
         [PermissionAuthorization("Usuarios", "Administracion")]
-        public async Task<IActionResult> Administracion()
+        public IActionResult Administracion()
         {
-            var getUsuarios = await _DBServicesConsultasAdministrador.ConseguirTodosLosUsuarios();
-            return View("Administracion", getUsuarios.Data);
+            return View(); 
         }
-        [HttpPost]
+
+        [HttpGet]
+        public JsonResult ListarUsuarioAdministrador()
+        {
+            var listarUsuario = _daUsuario.ListarUsuarios();
+            return Json(listarUsuario);
+        }
+
+        [HttpPost]  
         public async Task<IActionResult> ModificarUsuario([FromBody] Usuario usuario)
         {
             try
