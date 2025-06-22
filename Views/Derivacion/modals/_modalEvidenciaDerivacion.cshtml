@@ -1,0 +1,36 @@
+<div class="modal fade" id="evidencia-derivacion-modal" tabindex="-1" aria-labelledby="assignments-list-title" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="evidencia-derivacion-title">Evidencias de Derivación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body" id="evidencia-derivacion-modal-body">
+        <div class="mb-3">
+          <label for="evidencia-derivacion-id-input" class="form-label w-100">
+            <div id="drop-area"
+                 class="border border-3 border-light bg-light text-center rounded-3 p-5"
+                 style="cursor: pointer;">
+              <p class="mb-2 fs-5">Haz clic o arrastra archivos aquí</p>
+              <p class="text-muted">También puedes pegar (Ctrl + V) un archivo</p>
+            </div>
+          </label>
+          <input type="file" id="evidencia-derivacion-id-input" class="form-control d-none" />
+        </div>
+
+        <!-- Vista previa de archivos -->
+        <div id="file-preview" class="mb-3 d-none">
+            <h6>Archivos seleccionados:</h6>
+            <ul class="list-group" id="file-list"></ul>
+        </div>
+
+
+        <div class="text-center">
+          <button type="button" class="btn btn-primary" id="evidencia-derivacion-submit-button" onclick="submit_evidencia_derivacion();">Enviar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
