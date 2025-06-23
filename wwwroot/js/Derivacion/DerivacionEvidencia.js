@@ -5,6 +5,17 @@ const modalGeneral = document.getElementById('evidencia-derivacion-modal');
 const fileList = document.getElementById('file-list');
 
 let files = [];
+var activeId = null;
+
+
+async function modal_id_derivacion_to_be_uploaded(id) {
+    activeId = id;
+    const modalTitle = document.getElementById('evidencia-derivacion-title');
+    modalTitle.textContent = `Evidencia para la derivación: ${activeId}`;
+    fileInput.value = ''; // Limpiar el input file
+    files = []; // Limpiar la lista de archivos
+    updateFileList(); // Actualizar la lista visualmente
+}
 
 // Click = abrir input oculto
 dropArea.addEventListener('click', () => fileInput.click());
@@ -108,4 +119,95 @@ function updateFileInput() {
     const dt = new DataTransfer();
     files.forEach(f => dt.items.add(f));
     fileInput.files = dt.files;
+}
+
+async function submit_evidencia_derivacion() {
+    const formData = [];
+    const dataJson = [];
+    for (const file of files) {
+        const hex = await archivoAHex(file);
+        formData.push(hex);
+        dataJson.push({
+            fileName: file.name,
+            fileType: '.' + file.name.split('.').pop(), // Obtener la extensión del archivo
+            fileContent: hex,
+            idDerivacion: activeId,
+            type: 0 // Asumiendo que el tipo es 0 para evidencia
+        });
+    }
+
+    if (formData.length === 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'No hay archivos',
+            text: 'Por favor, arrastra o selecciona archivos para subir.',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+
+    const convertedFiles = JSON.stringify(dataJson);
+    console.log('Archivos a subir:', convertedFiles);
+
+    const loading = Swal.fire({
+        title: 'Subiendo archivos...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+        
+    try {
+        const response = await fetch('/Derivacion/UploadEvidencia', {
+            method: 'POST',
+            body: convertedFiles,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        Swal.close();
+
+        if (!response.ok) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al subir archivos',
+                text: 'Por favor, intenta de nuevo más tarde.',
+                confirmButtonText: 'Aceptar'
+            });
+            return;
+        }
+
+        const result = await response.json();
+        if (result.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Archivos subidos',
+                text: 'Los archivos se han subido correctamente.',
+                confirmButtonText: 'Aceptar'
+            });
+            files = []; // Limpiar la lista de archivos
+            updateFileList(); // Actualizar la lista visualmente
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: result.message || 'Ocurrió un error al subir los archivos.',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: 'No se pudo conectar al servidor. Por favor, verifica tu conexión a Internet.',
+            confirmButtonText: 'Aceptar'
+        });
+    }
+}
+
+async function archivoAHex(file) {
+    const buffer = await file.arrayBuffer();
+    return '0x' + [...new Uint8Array(buffer)]
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
 }

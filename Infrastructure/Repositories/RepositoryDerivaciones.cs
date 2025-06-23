@@ -128,6 +128,57 @@ namespace ALFINapp.Infrastructure.Repositories
                 return null;
             }
         }
+
+        public async Task<(bool success, string message)> marcarEvidenciaDisponible(int idDerivacion)
+        {
+            try
+            {
+                var parametros = new[]
+                {
+                    new SqlParameter("@id_derivacion", idDerivacion) { SqlDbType = SqlDbType.Int }
+                };
+                var derivacion = _context.derivaciones_asesores
+                    .FirstOrDefault(x => x.IdDerivacion == idDerivacion);
+                if (derivacion == null)
+                {
+                    return (false, "No se encontró la derivación");
+                }
+                derivacion.HayEvidencias = false;
+                await _context.SaveChangesAsync();
+
+                var waitingTime = 0;
+                var maxWaitingTime = 40000; // 40 seconds
+                var interval = 1000; // 1 second
+
+                while (waitingTime < maxWaitingTime)
+                {
+                    derivacion = await _context.derivaciones_asesores
+                        .FirstOrDefaultAsync(x => x.IdDerivacion == idDerivacion);
+                    if (derivacion == null)
+                    {
+                        return (false, "No se encontró la derivación");
+                    }
+                    if (derivacion.HayEvidencias == false)
+                    {
+                        // Si la evidencia ya está marcada como no disponible, es que ya fue procesada y eliminada, guardar muchos datos es caro :D
+                        derivacion.FueProcesadaEvidencia = true;
+                        await _context.SaveChangesAsync();
+                        // No trate de borrar la evidencia desde aqui, el bot encargado de procesar las evidencias se encargará de eliminarla
+                        // Si la evidencia fue procesada y eliminada, retornar éxito
+                        return (true, "Evidencia procesada y eliminada correctamente");
+                    }
+                    await Task.Delay(interval);
+                    waitingTime += interval;
+                }
+
+                return (false, "Tiempo de espera agotado. La evidencia no fue procesada, mas si fue guardada no envie mas evidencias para esta derivación");
+            }
+            catch (System.Exception ex)
+            {
+                return (false, "Error al marcar la evidencia como disponible: " + ex.Message);
+            }
+        }
+
         public async Task<(bool success, string message)> uploadNuevaDerivacion(
             DerivacionesAsesores derivacion, 
             int idBase, 

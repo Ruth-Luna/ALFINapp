@@ -20,7 +20,7 @@ namespace ALFINapp.Infrastructure.Persistence.Models
         public string? DniCliente { get; set; }
         [Column("id_cliente")]
         public int? IdCliente { get; set; }
-        [Column("nombre_cliente")] 
+        [Column("nombre_cliente")]
         public string? NombreCliente { get; set; }
         [Column("telefono_cliente")]
         public string? TelefonoCliente { get; set; }
@@ -52,5 +52,9 @@ namespace ALFINapp.Infrastructure.Persistence.Models
         public decimal? MontoDesembolso { get; set; }
         [Column("real_error")]
         public string? RealError { get; set; }
+        [Column("hay_evidencias")]
+        public bool? HayEvidencias { get; set; }
+        [Column("fue_procesada_evidencia")]
+        public bool? FueProcesadaEvidencia { get; set; }
     }
 }
