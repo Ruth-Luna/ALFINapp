@@ -8,6 +8,63 @@ namespace ALFINapp.Datos
 {
     public class DA_Usuario
     {
+        public Usuario ValidarUsuario(string usuario, string password)
+        {
+            try
+            {
+                var cn = new Conexion();
+
+                using (SqlConnection connection = new SqlConnection(cn.getCadenaSQL()))
+                {
+                    connection.Open();
+                    using (SqlCommand cmd = new SqlCommand("SP_USUARIO_VALIDAR_LOGIN", connection))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@usuario", usuario);
+                        cmd.Parameters.AddWithValue("@password", password); 
+
+                        using (SqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            if (dr.Read())
+                            {
+                                int resultado = Convert.ToInt32(dr["Resultado"]);
+
+                                if (resultado == -1) 
+                                {
+                                    Console.WriteLine("El usuario está inactivo.");
+                                    return new Usuario { Resultado = -1 };
+                                }
+
+                                if (resultado == 1) 
+                                {
+                                    return new Usuario
+                                    {
+                                        IdUsuario = Convert.ToInt32(dr["id_usuario"]),
+                                        usuario = dr["usuario"].ToString(),
+                                        Correo = dr["correo"].ToString(),
+                                        Nombres = dr["nombres"].ToString(),
+                                        Apellido_Paterno = dr["apellido_paterno"].ToString(),
+                                        Apellido_Materno = dr["apellido_materno"].ToString(),
+                                        Resultado = 1,
+                                        Estado = dr["estado"].ToString(),
+                                        IdRol = Convert.ToInt32(dr["id_rol"]),
+                                    };
+                                }
+                                return new Usuario { Resultado = 0 };
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error al validar usuario: " + ex.Message);
+            }
+
+            return new Usuario { Resultado = 0 };
+        }
+
+
         public async Task<(bool IsSuccess, string Message)> CrearUsuario(Usuario usuario, int idUsuarioAccion)
         {
             try
@@ -33,8 +90,9 @@ namespace ALFINapp.Datos
                         command.Parameters.AddWithValue("@IDUSUARIOSUP", (object?)usuario.IDUSUARIOSUP ?? DBNull.Value);
                         command.Parameters.AddWithValue("@RESPONSABLESUP", (object?)usuario.RESPONSABLESUP ?? DBNull.Value);
                         command.Parameters.AddWithValue("@REGION", (object?)usuario.REGION ?? DBNull.Value);
-                        command.Parameters.AddWithValue("@NOMBRECAMPAÑA", (object?)usuario.NOMBRECAMPAÑA ?? DBNull.Value);
+                        command.Parameters.AddWithValue("@NOMBRECAMPANIA", (object?)usuario.NOMBRECAMPANIA ?? DBNull.Value);
                         command.Parameters.AddWithValue("@IdRol", usuario.IdRol);
+                        command.Parameters.AddWithValue("@Usuario", usuario.usuario);
                         command.Parameters.AddWithValue("@id_usuario_accion", idUsuarioAccion);
                         command.Parameters.AddWithValue("@Correo", (object?)usuario.Correo ?? DBNull.Value);
 
@@ -71,9 +129,10 @@ namespace ALFINapp.Datos
 								IdUsuario = Convert.ToInt32(dr["id_usuario"]),
 								Dni = dr["dni"].ToString(),
 								NombresCompletos = dr["Nombre_Completo"].ToString(),
-								NOMBRECAMPAÑA = dr["NOMBRE_CAMPAÑA"].ToString(),
+								NOMBRECAMPANIA = dr["NOMBRE_CAMPAÑA"].ToString(),
                                 RESPONSABLESUP = dr["RESPONSABLE_SUP"].ToString(),
 								Rol = dr["rol"].ToString(),
+                                Estado = dr["estado"].ToString(),
 								FechaActualizacion = dr["fecha_actualizacion"] == DBNull.Value ? null : Convert.ToDateTime(dr["fecha_actualizacion"]),
 								FechaInicio = dr["fecha_inicio"] == DBNull.Value ? null : Convert.ToDateTime(dr["fecha_inicio"]),
 								FechaCese = dr["fecha_cese"] == DBNull.Value ? null : Convert.ToDateTime(dr["fecha_cese"]),
@@ -86,5 +145,14 @@ namespace ALFINapp.Datos
 			return lista;
 		}
 
-	}
+        private string LeerClaveMaestraDesdeAppSettings()
+        {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            var configuration = builder.Build();
+            return configuration["ClaveMaestra"] ?? string.Empty;
+        }
+
+    }
 }

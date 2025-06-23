@@ -23,7 +23,7 @@ namespace ALFINapp.Application.DTOs
         public int? IDUSUARIOSUP { get; set; }
         public string? RESPONSABLESUP { get; set; }
         public string? REGION { get; set; }
-        public string? NOMBRECAMPAÑA { get; set; }
+        public string? NOMBRECAMPANIA { get; set; }
         public int? IdRol { get; set; }
         public DateTime? FechaActualizacion { get; set; }
         public string? TipoDocumento { get; set; }
@@ -46,7 +46,7 @@ namespace ALFINapp.Application.DTOs
             IDUSUARIOSUP = model.IDUSUARIOSUP;
             RESPONSABLESUP = model.RESPONSABLESUP;
             REGION = model.REGION;
-            NOMBRECAMPAÑA = model.NOMBRECAMPAÑA;
+            NOMBRECAMPANIA = model.NOMBRECAMPANIA;
             IdRol = model.IdRol;
             FechaActualizacion = model.FechaActualizacion;
             TipoDocumento = model.TipoDocumento;
@@ -72,7 +72,7 @@ namespace ALFINapp.Application.DTOs
                 IDUSUARIOSUP = IDUSUARIOSUP,
                 RESPONSABLESUP = RESPONSABLESUP,
                 REGION = REGION,
-                NOMBRECAMPAÑA = NOMBRECAMPAÑA,
+                NOMBRECAMPANIA = NOMBRECAMPANIA,
                 IdRol = IdRol,
                 FechaActualizacion = FechaActualizacion,
                 TipoDocumento = TipoDocumento,
@@ -99,7 +99,7 @@ namespace ALFINapp.Application.DTOs
                 IDUSUARIOSUP = IDUSUARIOSUP,
                 RESPONSABLESUP = RESPONSABLESUP,
                 REGION = REGION,
-                NOMBRECAMPAÑA = NOMBRECAMPAÑA,
+                NOMBRECAMPANIA = NOMBRECAMPANIA,
                 IdRol = IdRol,
                 FechaActualizacion = FechaActualizacion,
                 TipoDocumento = TipoDocumento,
@@ -126,7 +126,7 @@ namespace ALFINapp.Application.DTOs
                 IDUSUARIOSUP = IDUSUARIOSUP,
                 RESPONSABLESUP = RESPONSABLESUP,
                 REGION = REGION,
-                NOMBRECAMPAÑA = NOMBRECAMPAÑA,
+                NOMBRECAMPANIA = NOMBRECAMPANIA,
                 IdRol = IdRol,
                 FechaActualizacion = FechaActualizacion,
                 TipoDocumento = TipoDocumento,

@@ -6,7 +6,7 @@ function cambiarDatos(idUsuario) {
         Estado: document.getElementById('selectEstado_EU').value.trim() === 'CAMBIO' ? null : document.getElementById('selectEstado_EU').value.trim() || null,
         IDUSUARIOSUP: parseInt(document.getElementById('txtSupervisor_EU').value),
         REGION: document.getElementById('txtRegion_EU').value.trim() || null,
-        NOMBRECAMPAÑA: document.getElementById('txtNombreCampania_EU').value.trim() || null,
+        NOMBRECAMPANIA: document.getElementById('txtNombreCampania_EU').value.trim() || null,
         IdRol: parseInt(document.getElementById('txtRol_EU').value) || null,
         FechaInicio: document.getElementById('dateFechaInicio_EU').value ? new Date(document.getElementById('dateFechaInicio_EU').value).toISOString() : null,
         FechaCese: document.getElementById('dateFechaCese_EU').value ? new Date(document.getElementById('dateFechaCese_EU').value).toISOString() : null,

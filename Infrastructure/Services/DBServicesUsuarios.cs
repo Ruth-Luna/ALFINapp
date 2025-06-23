@@ -45,7 +45,7 @@ namespace ALFINapp.Infrastructure.Services
                     new SqlParameter("@IDUSUARIOSUP", usuario.IDUSUARIOSUP != null ? usuario.IDUSUARIOSUP : (object)DBNull.Value),
                     new SqlParameter("@RESPONSABLESUP", usuario.RESPONSABLESUP != null ? usuario.RESPONSABLESUP : (object)DBNull.Value),
                     new SqlParameter("@REGION", usuario.REGION != null ? usuario.REGION : (object)DBNull.Value),
-                    new SqlParameter("@NOMBRECAMPAÑA", usuario.NOMBRECAMPAÑA != null ? usuario.NOMBRECAMPAÑA : (object)DBNull.Value),
+                    new SqlParameter("@NOMBRECAMPANIA", usuario.NOMBRECAMPANIA != null ? usuario.NOMBRECAMPANIA : (object)DBNull.Value),
                     new SqlParameter("@IdRol", usuario.IdRol != null ? usuario.IdRol : (object)DBNull.Value),
                     new SqlParameter("@id_usuario_accion", IdUsuarioAccion),
                     new SqlParameter("@FechaInicio", usuario.FechaInicio != null ? usuario.FechaInicio : (object)DBNull.Value),
@@ -53,7 +53,7 @@ namespace ALFINapp.Infrastructure.Services
                     new SqlParameter("@Correo", usuario.Correo != null ? usuario.Correo : (object)DBNull.Value)
                 };
 
-                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_modificacion_existente @IdUsuario, @Dni, @NombresCompletos, @Rol, @Departamento, @Provincia, @Distrito, @Telefono, @Estado, @IDUSUARIOSUP, @RESPONSABLESUP, @REGION, @NOMBRECAMPAÑA, @IdRol, @id_usuario_accion, @FechaInicio, @FechaCese, @Correo", 
+                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_modificacion_existente @IdUsuario, @Dni, @NombresCompletos, @Rol, @Departamento, @Provincia, @Distrito, @Telefono, @Estado, @IDUSUARIOSUP, @RESPONSABLESUP, @REGION, @NOMBRECAMPANIA, @IdRol, @id_usuario_accion, @FechaInicio, @FechaCese, @Correo", 
                     parameters);
 
                 return (true, "Datos actualizados correctamente");
@@ -172,13 +172,13 @@ namespace ALFINapp.Infrastructure.Services
                     new SqlParameter("@IDUSUARIOSUP", usuario.IDUSUARIOSUP != null ? usuario.IDUSUARIOSUP : (object)DBNull.Value),
                     new SqlParameter("@RESPONSABLESUP", getUsuario?.NombresCompletos ?? (object)DBNull.Value),
                     new SqlParameter("@REGION", usuario.REGION != null ? usuario.REGION : (object)DBNull.Value),
-                    new SqlParameter("@NOMBRECAMPAÑA", usuario.NOMBRECAMPAÑA != null ? usuario.NOMBRECAMPAÑA : (object)DBNull.Value),
+                    new SqlParameter("@NOMBRECAMPANIA", usuario.NOMBRECAMPANIA != null ? usuario.NOMBRECAMPANIA : (object)DBNull.Value),
                     new SqlParameter("@IdRol", usuario.IdRol),
                     new SqlParameter("@id_usuario_accion", IdUsuarioAccion),
                     new SqlParameter("@tipo_documento", usuario.TipoDocumento != null ? usuario.TipoDocumento : (object)DBNull.Value),
                     new SqlParameter("@Correo", usuario.Correo != null ? usuario.Correo : (object)DBNull.Value)
                 };
-                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_crear_nuevo @Dni, @NombresCompletos, @Rol, @Departamento, @Provincia, @Distrito, @Telefono, @Estado, @IDUSUARIOSUP, @RESPONSABLESUP, @REGION, @NOMBRECAMPAÑA, @IdRol, @id_usuario_accion, @Correo",
+                await _context.Database.ExecuteSqlRawAsync("EXEC sp_usuario_crear_nuevo @Dni, @NombresCompletos, @Rol, @Departamento, @Provincia, @Distrito, @Telefono, @Estado, @IDUSUARIOSUP, @RESPONSABLESUP, @REGION, @NOMBRECAMPANIA, @IdRol, @id_usuario_accion, @Correo",
                     parameters);
                 return (true, "Usuario creado correctamente");
             }

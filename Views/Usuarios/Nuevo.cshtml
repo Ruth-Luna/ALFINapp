@@ -150,13 +150,13 @@
                 <label for="Nuevo_Supervisor" class="form-label">Supervisor asignado</label>
                 <select class="form-control" name="Nuevo_Supervisor" id="Nuevo_Supervisor">
                     <option value="">Seleccione un supervisor</option>
-                    @foreach (var supervisor in Model)
+                    @* @foreach (var supervisor in Model)
                     {
                         if (supervisor.Estado == "ACTIVO")
                         {
                             <option value="@supervisor.IdUsuario">@supervisor.Dni - @supervisor.NombresCompletos</option>
                         }
-                    }
+                    } *@
                 </select>
             </div>
         </div>

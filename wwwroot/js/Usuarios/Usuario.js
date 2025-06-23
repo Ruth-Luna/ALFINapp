@@ -64,6 +64,7 @@ function guardarNuevoUsuario() {
     }
 
     var email = document.getElementById('Nuevo_correo').value.trim();
+
     if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
         Swal.fire({
             icon: 'error',
@@ -79,6 +80,12 @@ function guardarNuevoUsuario() {
     else if (idRolValue === '3') rol = 'ASESOR';
     else rol = 'DESCONOCIDO';
 
+    var nombres = $('#Nuevo_nombres').val().trim().toUpperCase();
+    var apellido_paterno = $('#Nuevo_apellido_paterno').val().trim().toUpperCase();
+
+    var primerNombre = nombres.split(' ')[0];
+    var primerApellido = apellido_paterno.split(' ')[0];
+
     // Prepare the data to be sent in the AJAX request
     var dataToSend = {
         Dni: $('#Nuevo_dni').val().trim().toUpperCase(),
@@ -86,24 +93,25 @@ function guardarNuevoUsuario() {
         Provincia: $('#Nuevo_provincia').val().trim().toUpperCase(),
         Distrito: $('#Nuevo_distrito').val().trim().toUpperCase(),
         REGION: $('#Nuevo_region').val().trim().toUpperCase(),
-        Apellido_Paterno: $('#Nuevo_apellido_paterno').val().trim().toUpperCase(),
+        Apellido_Paterno: apellido_paterno,
         Apellido_Materno: $('#Nuevo_apellido_materno').val().trim().toUpperCase(),
-        Nombres: $('#Nuevo_nombres').val().trim().toUpperCase(),
+        Nombres: nombres,
         Telefono: telefono,
         Rol: rol,
         IdRol: $('#Nuevo_rol').val().trim().toUpperCase(),
+        usuario: primerNombre + '.' + primerApellido,
         IDUSUARIOSUP: parseInt($('#Nuevo_Supervisor').val()),
         TipoDocumento: $('#tipo_documento').val().trim().toUpperCase(),
         Correo: email
     };
-    // Send an AJAX request to the server
+
     $.ajax({
         url: "/Usuarios/CrearUsuario",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(dataToSend),
         success: function (response) {
-            // Check the response status and display a success or error message accordingly
+
             if (response.success === true) {
                 Swal.fire({
                     icon: 'success',
@@ -146,34 +154,3 @@ function agregarCampoSupervisores(nuevoRol) {
     }
 }
 
-function ListarUsuarioAdministrador() {
-    $.ajax({
-        url: '/Usuarios/ListarUsuarioAdministrador',
-        type: 'GET',
-        success: function (data) {
-            const tbody = $('#clientesTable tbody');
-            tbody.empty();
-            $.each(data, function (i, usuario) {
-                const row = `
-                    <tr>
-                        <td>
-                            <button class="btn btn-primary btn-sm">Editar</button>
-                        </td>
-                        <td>${usuario.estado ?? ''}</td>
-                        <td>${usuario.dni ?? ''}</td>
-                        <td>${usuario.nombresCompletos ?? ''}</td>
-                        <td>${usuario.responsablesup ?? ''}</td>
-                        <td>${usuario.nombrecampaña ?? ''}</td>
-                        <td>${usuario.rol ?? ''}</td>
-                        <td>${usuario.fechaActualizacion ? FechaFormat(usuario.fechaActualizacion) : ''}</td>
-                        <td>${usuario.fechaInicio ? FechaFormat(usuario.fechaInicio) : ''}</td>
-                        <td>${usuario.fechaCese ? FechaFormat(usuario.fechaCese) : ''}</td>
-                    </tr>`;
-                tbody.append(row);
-            });
-        },
-        error: function () {
-            alert('Error al cargar la lista de usuarios');
-        }
-    });
-}

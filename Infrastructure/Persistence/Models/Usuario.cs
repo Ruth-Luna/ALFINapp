@@ -41,10 +41,11 @@ public partial class Usuario
     public string? RESPONSABLESUP { get; set; }
     [Column("REGION")]
     public string? REGION { get; set; }
+    public string usuario { get; set; }
     [Column("contraseña")]
     public string? contraseña { get; set; }
     [Column("NOMBRE_CAMPAÑA")]
-    public string? NOMBRECAMPAÑA { get; set; }
+    public string? NOMBRECAMPANIA { get; set; }
     [Column("id_rol")]
     public int? IdRol { get; set; }
     [Column("fecha_actualizacion")]
@@ -59,4 +60,5 @@ public partial class Usuario
     public DateTime? FechaCese { get; set; }
     [Column("correo")]
     public string? Correo { get; set; }
+    public int Resultado { get; set; }
 }

@@ -21,7 +21,7 @@ namespace ALFINapp.Domain.Entities
         public string? RESPONSABLESUP { get; set; }
         public string? REGION { get; set; }
         public string? contraseña { get; set; }
-        public string? NOMBRECAMPAÑA { get; set; }
+        public string? NOMBRECAMPANIA { get; set; }
         public int? IdRol { get; set; }
         public DateTime? FechaActualizacion { get; set; }
         public string? TipoDocumento { get; set; }
