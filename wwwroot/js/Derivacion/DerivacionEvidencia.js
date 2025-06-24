@@ -129,7 +129,7 @@ async function submit_evidencia_derivacion() {
         formData.push(hex);
         dataJson.push({
             fileName: file.name,
-            fileType: '.' + file.name.split('.').pop(), // Obtener la extensión del archivo
+            fileType: file.name.split('.').pop(), // Obtener la extensión del archivo
             fileContent: hex,
             idDerivacion: activeId,
             type: 0 // Asumiendo que el tipo es 0 para evidencia
