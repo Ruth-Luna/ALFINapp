@@ -1,8 +1,8 @@
 const dropArea = document.getElementById('drop-area');
 const fileInput = document.getElementById('evidencia-derivacion-id-input');
-const modalBody = document.getElementById('evidencia-derivacion-modal-body');
 const modalGeneral = document.getElementById('evidencia-derivacion-modal');
-const fileList = document.getElementById('file-list');
+const modalReagendamiento = document.getElementById('GeneralTemplateModal');
+// const fileList = document.getElementById('file-list');
 
 let files = [];
 var activeId = null;
@@ -29,6 +29,20 @@ modalGeneral.addEventListener('paste', (e) => {
             files.push(file);
             updateFileInput();
             updateFileList();
+            break;
+        }
+    }
+});
+
+// Pegar (Ctrl+V) en el modal de reagendamiento
+modalReagendamiento.addEventListener('paste', (e) => {
+    const items = e.clipboardData.items;
+    for (let item of items) {
+        if (item.kind === 'file') {
+            const file = item.getAsFile();
+            files.push(file);
+            updateFileInput();
+            updateFileList('reagendamiento');
             break;
         }
     }
@@ -64,8 +78,14 @@ fileInput.addEventListener('change', () => {
 });
 
 // Actualizar visualmente la lista de archivos
-function updateFileList() {
-    fileList.innerHTML = '';
+function updateFileList(type = 'evidencia') {
+    let fileListActive;
+    if (type === 'reagendamiento') {
+        fileListActive = document.getElementById('file-list-reagendamiento');
+    } else {
+        fileListActive = document.getElementById('file-list');
+    }
+    fileListActive.innerHTML = '';
     const filePreview = document.getElementById('file-preview');
     filePreview.classList.toggle('d-none', files.length === 0);
 
@@ -110,7 +130,7 @@ function updateFileList() {
 
         listItem.appendChild(fileInfo);
         listItem.appendChild(deleteBtn);
-        fileList.appendChild(listItem);
+        fileListActive.appendChild(listItem);
     });
 }
 
@@ -156,7 +176,7 @@ async function submit_evidencia_derivacion() {
             Swal.showLoading();
         }
     });
-        
+
     try {
         const response = await fetch('/Derivacion/UploadEvidencia', {
             method: 'POST',

@@ -239,6 +239,7 @@
                         <th>Oferta</th>
                         <th>Agencia</th>
                         <th>Fecha Visita</th>
+                        <th>Fecha Evidencia</th>
                         <th style="background-color: white;
                         border-left: 1px solid #2980b9; 
                         border-top: 1px solid white;
@@ -260,6 +261,7 @@
                                 &#x25BC;
                             </button>
                         </td>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -297,7 +299,9 @@
                                 <td>@derivacionAsesor.FechaDerivacion</td>
                                 <td>@derivacionAsesor.OfertaMax</td>
                                 <td>@derivacionAsesor.NombreAgencia</td>
+                                
                                 <td>@derivacionAsesor.FechaVisita.ToString("yyyy-MM-dd")</td>
+                                <td>@(derivacionAsesor.FechaEvidencia!=null?derivacionAsesor.FechaEvidencia.Value.ToString("yyyy-MM-dd"):"Sin Evidencia")</td>
                                 <td
                                     style="background-color: white; border-left: 1px solid #2980b9; border-top: 1px solid white; border-bottom: 1px solid white;">
                                 </td>

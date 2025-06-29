@@ -52,9 +52,17 @@ namespace ALFINapp.Infrastructure.Persistence.Models
         public decimal? MontoDesembolso { get; set; }
         [Column("real_error")]
         public string? RealError { get; set; }
+        [Column("fue_reagendado")]
+        public bool? FueReagendado { get; set; }
+        [Column("fue_reprocesado")]
+        public bool? FueReprocesado { get; set; }
+        [Column("fecha_reagendamiento")]
+        public DateTime? FechaReagendamiento { get; set; } = null;
         [Column("hay_evidencias")]
         public bool? HayEvidencias { get; set; }
         [Column("fue_procesada_evidencia")]
         public bool? FueProcesadaEvidencia { get; set; }
+        [Column("fecha_evidencia")]
+        public DateTime? FechaEvidencia { get; set; } = null;
     }
 }

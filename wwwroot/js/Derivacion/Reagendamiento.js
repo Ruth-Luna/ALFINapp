@@ -1,4 +1,5 @@
 async function reagendarCliente(nuevaFechaVisita, idDerivacion) {
+    // console.log('Reagendar cliente:', files);
     Swal.fire({
         title: 'Reagendar cita',
         text: 'Reagendar la cita del cliente, volvera a enviar el formulario y los correos al banco.',
@@ -11,9 +12,49 @@ async function reagendarCliente(nuevaFechaVisita, idDerivacion) {
             const fechaVisitaInput = document.getElementById(nuevaFechaVisita).value;
             const fechaVisita = new Date(fechaVisitaInput).toISOString(); // Convert to ISO 8601 format for C#
 
+            if (!fechaVisita || isNaN(new Date(fechaVisita))) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Fecha inválida',
+                    text: 'Por favor, ingresa una fecha válida.',
+                    confirmButtonText: 'Aceptar'
+                });
+                return;
+            }
+
+            const formData = [];
+            const evidencias = [];
+            for (const file of files) {
+                const hex = await archivoAHex(file);
+                formData.push(hex);
+                evidencias.push({
+                    fileName: file.name,
+                    fileType: file.name.split('.').pop(), // Obtener la extensión del archivo
+                    fileContent: hex,
+                    idDerivacion: idDerivacion,
+                    type: 0 // Asumiendo que el tipo es 0 para evidencia
+                });
+            }
+
+            if (formData.length === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No hay evidencias',
+                    text: 'Se subira el reagendamiento sin evidencias. Sin embargo, si desea subir evidencias posteriormente puede usar el otro boton encargado netamente de las evidencias.',
+                    confirmButtonText: 'Aceptar',
+                    showCancelButton: true,
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (!result.isConfirmed) {
+                        return; // Si el usuario cancela, no continuamos con el reagendamiento
+                    }
+                });
+            }
+
             const dto = {
                 FechaReagendamiento: fechaVisita,
-                IdDerivacion: idDerivacion
+                IdDerivacion: idDerivacion,
+                evidencias: evidencias // Enviamos las evidencias como parte del DTO
             };
             const baseUrl = window.location.origin;
             const url = `${baseUrl}/Reagendamiento/Reagendar`;
@@ -55,6 +96,11 @@ async function reagendarCliente(nuevaFechaVisita, idDerivacion) {
 }
 
 async function reagendarView(IdDerivacion, puedeSerReagendado) {
+    activeId = IdDerivacion;
+    fileInput.value = ''; // Limpiar el input file
+    files = []; // Limpiar la lista de archivos
+
+    updateFileList(); // Actualizar la lista visualmente
     if (puedeSerReagendado === 'False') {
         Swal.fire({
             icon: 'warning',
@@ -66,6 +112,7 @@ async function reagendarView(IdDerivacion, puedeSerReagendado) {
     }
     const modal = document.getElementById('GeneralTemplateModal');
     const modalTitle = document.getElementById('GeneralTemplateTitleModalLabel');
+    modalTitle.textContent = `Evidencia para la derivación: ${activeId}`;
     const modalBody = document.getElementById('modalContentGeneralTemplate');
     const baseUrl = window.location.origin;
     const url = `${baseUrl}/Reagendamiento/Reagendamiento?id=${encodeURIComponent(IdDerivacion)}`;
@@ -113,8 +160,4 @@ async function reagendarView(IdDerivacion, puedeSerReagendado) {
             confirmButtonText: 'Aceptar'
         });
     }
-}
-
-async function reagendarPorFiltro(params) {
-
 }

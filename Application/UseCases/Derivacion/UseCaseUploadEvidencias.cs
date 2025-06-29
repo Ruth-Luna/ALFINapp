@@ -34,11 +34,11 @@ namespace ALFINapp.Application.UseCases.Derivacion
                     {
                         return (false, result.message);
                     }
-                    var check = await _repositoryDerivaciones.marcarEvidenciaDisponible(file.idDerivacion);
-                    if (!check.success)
-                    {
-                        return (false, check.message);
-                    }
+                }
+                var check = await _repositoryDerivaciones.marcarEvidenciaDisponible(files[0].idDerivacion);
+                if (!check.success)
+                {
+                    return (false, check.message);
                 }
                 return (true, "Archivos subidos y procesados correctamente");
             }

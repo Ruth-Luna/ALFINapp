@@ -56,71 +56,71 @@ namespace ALFINapp.API.Controllers
                 }
 
                 var query = (from ca in _context.clientes_asignados
-                            join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
-                            join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
-                            join db in _context.detalle_base on bc.IdBase equals db.IdBase
-                            where ca.IdUsuarioS == idSupervisorActual
-                                  && ca.ClienteDesembolso != true
-                                  && ca.ClienteRetirado != true
-                                  && ca.FechaAsignacionSup.HasValue
-                                  && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
-                                  && db.TipoBase == ca.FuenteBase
-                            select new
-                            {
-                                db.IdBase,
-                                db.FechaCarga,
-                                db.Campaña,
-                                db.OfertaMax,
-                                db.TasaMinima,
-                                db.SucursalComercial,
-                                db.AgenciaComercial,
-                                db.Plazo,
-                                db.Cuota,
-                                db.Oferta12m,
-                                db.Tasa12m,
-                                db.Cuota12m,
-                                db.Oferta18m,
-                                db.Tasa18m,
-                                db.Cuota18m,
-                                db.Oferta24m,
-                                db.Tasa24m,
-                                db.Cuota24m,
-                                db.Oferta36m,
-                                db.Tasa36m,
-                                db.Cuota36m,
-                                db.GrupoTasa,
-                                db.GrupoMonto,
-                                db.Propension,
-                                db.TipoCliente,
-                                db.ClienteNuevo,
-                                db.Color,
-                                db.ColorFinal,
-                                db.Usuario,
-                                db.UserV3,
-                                db.FlagDeudaVOferta,
-                                db.PerfilRo,
-                                db.Propensionv2,
-                                db.PrioridadSistema,
-                                bc.Dni,
-                                bc.XAppaterno,
-                                bc.XApmaterno,
-                                bc.XNombre,
-                                bc.Edad,
-                                bc.Departamento,
-                                bc.Provincia,
-                                bc.Distrito,
-                                ce.Telefono1,
-                                ce.Telefono2,
-                                ce.Telefono3,
-                                ce.Telefono4,
-                                ce.Telefono5,
+                             join ce in _context.clientes_enriquecidos on ca.IdCliente equals ce.IdCliente
+                             join bc in _context.base_clientes on ce.IdBase equals bc.IdBase
+                             join db in _context.detalle_base on bc.IdBase equals db.IdBase
+                             where ca.IdUsuarioS == idSupervisorActual
+                                   && ca.ClienteDesembolso != true
+                                   && ca.ClienteRetirado != true
+                                   && ca.FechaAsignacionSup.HasValue
+                                   && ca.FechaAsignacionSup.Value.Year == DateTime.Now.Year
+                                   && db.TipoBase == ca.FuenteBase
+                             select new
+                             {
+                                 db.IdBase,
+                                 db.FechaCarga,
+                                 db.Campaña,
+                                 db.OfertaMax,
+                                 db.TasaMinima,
+                                 db.SucursalComercial,
+                                 db.AgenciaComercial,
+                                 db.Plazo,
+                                 db.Cuota,
+                                 db.Oferta12m,
+                                 db.Tasa12m,
+                                 db.Cuota12m,
+                                 db.Oferta18m,
+                                 db.Tasa18m,
+                                 db.Cuota18m,
+                                 db.Oferta24m,
+                                 db.Tasa24m,
+                                 db.Cuota24m,
+                                 db.Oferta36m,
+                                 db.Tasa36m,
+                                 db.Cuota36m,
+                                 db.GrupoTasa,
+                                 db.GrupoMonto,
+                                 db.Propension,
+                                 db.TipoCliente,
+                                 db.ClienteNuevo,
+                                 db.Color,
+                                 db.ColorFinal,
+                                 db.Usuario,
+                                 db.UserV3,
+                                 db.FlagDeudaVOferta,
+                                 db.PerfilRo,
+                                 db.Propensionv2,
+                                 db.PrioridadSistema,
+                                 bc.Dni,
+                                 bc.XAppaterno,
+                                 bc.XApmaterno,
+                                 bc.XNombre,
+                                 bc.Edad,
+                                 bc.Departamento,
+                                 bc.Provincia,
+                                 bc.Distrito,
+                                 ce.Telefono1,
+                                 ce.Telefono2,
+                                 ce.Telefono3,
+                                 ce.Telefono4,
+                                 ce.Telefono5,
 
-                                ca.FechaAsignacionSup,
-                                ca.IdUsuarioS,
-                                ca.Destino,
-                                ca.IdAsignacion,
-                                ca.IdLista
-                            }).AsNoTracking();
+                                 ca.FechaAsignacionSup,
+                                 ca.IdUsuarioS,
+                                 ca.Destino,
+                                 ca.IdAsignacion,
+                                 ca.IdLista
+                             }).AsNoTracking();
 
                 // Aplicar filtros antes de ejecutar la consulta
                 if (fechaInicio.HasValue)
@@ -368,72 +368,33 @@ namespace ALFINapp.API.Controllers
                     });
                 }
                 var data = result.data;
-                
+
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 using var package = new ExcelPackage();
                 var worksheet = package.Workbook.Worksheets.Add("Asignaciones");
 
-                // Encabezados
-                var headers = new[]
-                {
-                    "Id Asignación", "Fecha Asignación", "Id UsuarioV",
-                    "Teléfono 1", "Teléfono 2", "Teléfono 3", "Teléfono 4", "Teléfono 5",
-                    "Email 1", "Email 2", "Nombre Cliente", "Oferta Max", "Tipo Base"
-                };
-
-                for (int i = 0; i < headers.Length; i++)
-                {
-                    worksheet.Cells[1, i + 1].Value = headers[i];
-                    worksheet.Cells[1, i + 1].Style.Font.Bold = true;
-                    worksheet.Cells[1, i + 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    worksheet.Cells[1, i + 1].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
-                    worksheet.Cells[1, i + 1].Style.Border.BorderAround(ExcelBorderStyle.Thin);
-                }
-
-                var row = 2;
-                foreach (var asignacion in data.asignaciones_detalladas)
-                {
-                    worksheet.Cells[row, 1].Value = asignacion.IdAsignacion;
-                    worksheet.Cells[row, 2].Value = asignacion.FechaAsignacionSup.ToString("yyyy-MM-dd");
-                    worksheet.Cells[row, 3].Value = asignacion.IdUsuarioV;
-                    worksheet.Cells[row, 4].Value = asignacion.Telefono1;
-                    worksheet.Cells[row, 5].Value = asignacion.Telefono2;
-                    worksheet.Cells[row, 6].Value = asignacion.Telefono3;
-                    worksheet.Cells[row, 7].Value = asignacion.Telefono4;
-                    worksheet.Cells[row, 8].Value = asignacion.Telefono5;
-                    worksheet.Cells[row, 9].Value = asignacion.Email1;
-                    worksheet.Cells[row, 10].Value = asignacion.Email2;
-                    worksheet.Cells[row, 11].Value = asignacion.ClienteNombre;
-                    worksheet.Cells[row, 12].Value = asignacion.OfertaMax;
-                    worksheet.Cells[row, 13].Value = asignacion.TipoBase;
-
-                    for (int col = 1; col <= 13; col++)
-                        worksheet.Cells[row, col].Style.Border.BorderAround(ExcelBorderStyle.Hair);
-
-                    row++;
-                }
-
+                // 1. Metadatos en fila 1 y 2, columnas desde la columna 1
                 var metadata = new Dictionary<(int row, int col), object>
                 {
-                    [(4, 16)] = "Nombre de la Lista",
-                    [(4, 17)] = "DNI del Supervisor",
-                    [(4, 18)] = "Nombres del Supervisor",
-                    [(4, 19)] = "Fecha de Creación de la Lista",
-                    [(4, 20)] = "Total Asignaciones",
-                    [(4, 21)] = "Total Asignaciones Gestionadas",
-                    [(4, 22)] = "Total Asignaciones Asignadas a Asesores",
-                    [(4, 23)] = "Total Asignaciones Sin Gestionar",
-                    [(4, 24)] = "Total Asignaciones Sin Asignar",
+                    [(1, 1)] = "Nombre de la Lista",
+                    [(1, 2)] = "DNI del Supervisor",
+                    [(1, 3)] = "Nombres del Supervisor",
+                    [(1, 4)] = "Fecha de Creación de la Lista",
+                    [(1, 5)] = "Total Asignaciones",
+                    [(1, 6)] = "Total Asignaciones Gestionadas",
+                    [(1, 7)] = "Total Asignaciones Asignadas a Asesores",
+                    [(1, 8)] = "Total Asignaciones Sin Gestionar",
+                    [(1, 9)] = "Total Asignaciones Sin Asignar",
 
-                    [(5, 16)] = data.nombre_lista,
-                    [(5, 17)] = data.dni_supervisor,
-                    [(5, 18)] = data.nombres_supervisor,
-                    [(5, 19)] = data.fecha_creacion_lista.ToString("yyyy-MM-dd"),
-                    [(5, 20)] = data.total_asignaciones,
-                    [(5, 21)] = data.total_asignaciones_gestionadas,
-                    [(5, 22)] = data.total_asignaciones_asignadas_a_asesores,
-                    [(5, 23)] = data.total_asignaciones_sin_gestionar,
-                    [(5, 24)] = data.total_asignaciones_sin_asignar
+                    [(2, 1)] = data.nombre_lista,
+                    [(2, 2)] = data.dni_supervisor,
+                    [(2, 3)] = data.nombres_supervisor,
+                    [(2, 4)] = data.fecha_creacion_lista.ToString("yyyy-MM-dd"),
+                    [(2, 5)] = data.total_asignaciones,
+                    [(2, 6)] = data.total_asignaciones_gestionadas,
+                    [(2, 7)] = data.total_asignaciones_asignadas_a_asesores,
+                    [(2, 8)] = data.total_asignaciones_sin_gestionar,
+                    [(2, 9)] = data.total_asignaciones_sin_asignar
                 };
 
                 foreach (var entry in metadata)
@@ -446,14 +407,70 @@ namespace ALFINapp.API.Controllers
                     worksheet.Cells[r, c].Style.Border.BorderAround(ExcelBorderStyle.Thin);
                 }
 
+                // 2. Cabecera (fila 4)
+                var headers = new[]
+                {
+                    "Id Asignación", "Fecha Asignación", "Id UsuarioV",
+                    "Teléfono 1", "Teléfono 2", "Teléfono 3", "Teléfono 4", "Teléfono 5",
+                    "Email 1", "Email 2", "Nombre Cliente", "Oferta Max", "Tipo Base",
+                    "DNI", "Apellido Paterno", "Apellido Materno", "Nombres", "Edad",
+                    "Departamento", "Provincia", "Distrito", "Campaña", "Tasa Mínima",
+                    "Sucursal Comercial", "Agencia Comercial", "Plazo", "Cuota",
+                    "Oferta 12m", "Tasa 12m", "Cuota 12m",
+                    "Oferta 18m", "Tasa 18m", "Cuota 18m",
+                    "Oferta 24m", "Tasa 24m", "Cuota 24m",
+                    "Oferta 36m", "Tasa 36m", "Cuota 36m",
+                    "Grupo Tasa", "Grupo Monto", "Propensión",
+                    "Tipo Cliente", "Cliente Nuevo", "Color", "Color Final",
+                    "Usuario", "UserV3", "Flag Deuda v Oferta", "Perfil RO", "Prioridad"
+                };
+
+                for (int i = 0; i < headers.Length; i++)
+                {
+                    worksheet.Cells[4, i + 1].Value = headers[i];
+                    worksheet.Cells[4, i + 1].Style.Font.Bold = true;
+                    worksheet.Cells[4, i + 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[4, i + 1].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                    worksheet.Cells[4, i + 1].Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                }
+
+                // 3. Datos (desde fila 5)
+                var row = 5;
+                foreach (var a in data.asignaciones_detalladas)
+                {
+                    var values = new object?[]
+                    {
+                        a.IdAsignacion,
+                        a.FechaAsignacionSup?.ToString("yyyy-MM-dd"),
+                        a.IdUsuarioV,
+                        a.Telefono1, a.Telefono2, a.Telefono3, a.Telefono4, a.Telefono5,
+                        a.Email1, a.Email2, a.ClienteNombreCompleto, a.OfertaMax, a.TipoBase,
+                        a.Dni, a.XAppaterno, a.XApmaterno, a.XNombre, a.Edad,
+                        a.Departamento, a.Provincia, a.Distrito, a.Campaña, a.TasaMinima,
+                        a.SucursalComercial, a.AgenciaComercial, a.Plazo, a.Cuota,
+                        a.Oferta12m, a.Tasa12m, a.Cuota12m,
+                        a.Oferta18m, a.Tasa18m, a.Cuota18m,
+                        a.Oferta24m, a.Tasa24m, a.Cuota24m,
+                        a.Oferta36m, a.Tasa36m, a.Cuota36m,
+                        a.GrupoTasa, a.GrupoMonto, a.Propension,
+                        a.TipoCliente, a.ClienteNuevo, a.Color, a.ColorFinal,
+                        a.Usuario, a.UserV3, a.FlagDeudaVOferta, a.PerfilRo, a.Prioridad
+                    };
+
+                    for (int col = 0; col < values.Length; col++)
+                    {
+                        worksheet.Cells[row, col + 1].Value = values[col];
+                        worksheet.Cells[row, col + 1].Style.Border.BorderAround(ExcelBorderStyle.Hair);
+                    }
+
+                    row++;
+                }
+
                 worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
 
                 var fileBytes = package.GetAsByteArray();
                 var fileName = $"Asignaciones_{data.dni_supervisor}_{DateTime.Now:yyyyMMddHHmmss}.xlsx";
-
-                return File(fileBytes,
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    fileName);
+                return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
             }
             catch (Exception ex)
             {

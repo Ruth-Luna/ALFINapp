@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ALFINapp.Controllers
 {
+    [RequireSession]
     public class LeadsController : Controller
     {
         private readonly ILogger<LeadsController> _logger;
@@ -24,9 +25,9 @@ namespace ALFINapp.Controllers
         }
         [HttpGet]
         public async Task<IActionResult> Gestion(
-            int paginaInicio = 0, 
-            int paginaFinal = 1, 
-            string filter = "", 
+            int paginaInicio = 0,
+            int paginaFinal = 1,
+            string filter = "",
             string searchfield = "",
             string order = "tipificacion",
             bool orderAsc = true)
@@ -61,8 +62,8 @@ namespace ALFINapp.Controllers
             {
                 var executeInicio = await _useCaseGetAsignacionLeads
                     .Execute(
-                        usuarioId.Value, 
-                        rol.Value, 
+                        usuarioId.Value,
+                        rol.Value,
                         intervaloInicio: paginaInicio,
                         intervaloFin: paginaFinal,
                         filter: filter,

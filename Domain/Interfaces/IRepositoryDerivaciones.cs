@@ -1,5 +1,6 @@
 using ALFINapp.Application.DTOs;
 using ALFINapp.Domain.Entities;
+using ALFINapp.DTOs;
 using ALFINapp.Infrastructure.Persistence.Models;
 
 namespace ALFINapp.Domain.Interfaces
@@ -18,6 +19,7 @@ namespace ALFINapp.Domain.Interfaces
         public Task<DetallesDerivacionesAsesoresDTO?> getDerivacion(int idDer);
         public Task<(bool success, string message)> uploadReagendacion(int idDer, DateTime fechaReagendamiento);
         public Task<(bool success, string message)> uploadReagendacion(string dniCliente, DateTime fechaReagendamiento);
+        public Task<(bool success, string message)> uploadReagendacionConEvidencias(List<DtoVUploadFiles> dtovuploadfiles, int idDerivacion, DateTime fechaReagendamiento);
         public Task<(bool success, string message)> marcarEvidenciaDisponible(int idDerivacion);
     }
 }

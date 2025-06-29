@@ -1,5 +1,6 @@
 using ALFINapp.Application.Interfaces.Reagendamiento;
 using ALFINapp.Domain.Interfaces;
+using ALFINapp.DTOs;
 
 namespace ALFINapp.Application.UseCases.Reagendamiento
 {
@@ -15,7 +16,10 @@ namespace ALFINapp.Application.UseCases.Reagendamiento
             _repositoryDerivaciones = repositoryDerivaciones;
         }
 
-        public async Task<(bool IsSuccess, string Message)> exec(int IdDerivacion, DateTime FechaReagendamiento)
+        public async Task<(bool IsSuccess, string Message)> exec(
+            int IdDerivacion,
+            DateTime FechaReagendamiento,
+            List<DtoVUploadFiles>? evidencias = null)
         {
             try
             {
@@ -24,7 +28,21 @@ namespace ALFINapp.Application.UseCases.Reagendamiento
                 {
                     return (false, checkDis.message);
                 }
+
+                if (evidencias != null && evidencias.Count > 0)
+                {
+                    var uploadFiles = await _repositoryDerivaciones.uploadReagendacionConEvidencias(evidencias, IdDerivacion, FechaReagendamiento);
+                    if (!uploadFiles.success)
+                    {
+                        return (false, uploadFiles.message);
+                    }
+                    else
+                    {
+                        return (true, "Reagendamiento con evidencias realizado con éxito.");
+                    }
+                }
                 
+                // If no files to upload, proceed with the regular reagendamiento
                 var reagendar = await _repositoryDerivaciones.uploadReagendacion(IdDerivacion, FechaReagendamiento);
                 if (reagendar.success)
                 {
