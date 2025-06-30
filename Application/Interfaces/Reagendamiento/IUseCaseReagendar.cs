@@ -1,4 +1,5 @@
 using ALFINapp.API.DTOs;
+using ALFINapp.DTOs;
 
 namespace ALFINapp.Application.Interfaces.Reagendamiento
 {
@@ -6,6 +7,7 @@ namespace ALFINapp.Application.Interfaces.Reagendamiento
     {
         public Task<(bool IsSuccess, string Message)> exec(
             int IdDerivacion,
-            DateTime FechaReagendamiento);
+            DateTime FechaReagendamiento,
+            List<DtoVUploadFiles>? dtovuploadfiles = null);
     }
 }

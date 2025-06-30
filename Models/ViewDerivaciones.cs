@@ -34,5 +34,6 @@ namespace ALFINapp.API.Models
         public decimal MontoDesembolso { get; set; } = 0;
         public string RealError { get; set; } = string.Empty;
         public bool PuedeSerReagendado { get; set; } = true;
+        public DateTime? FechaEvidencia { get; set; } = null;
     }
 }

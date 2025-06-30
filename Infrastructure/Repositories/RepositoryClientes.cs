@@ -234,7 +234,7 @@ namespace ALFINapp.Infrastructure.Repositories
             catch (System.Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return (false, "Error al consultar el cliente", null);
+                return (false, ex.Message, null);
             }
         }
 

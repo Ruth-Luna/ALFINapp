@@ -32,6 +32,8 @@ namespace ALFINapp.Application.DTOs
         public decimal? MontoDesembolso { get; set; }
         public string? RealError { get; set; }
         public bool? PuedeSerReagendado { get; set; } = true;
+        public DateTime? FechaEvidencia { get; set; } = null;
+        public bool? HayEvidencia { get; set; } = false;
         public DetallesDerivacionesAsesoresDTO(DerivacionesAsesores model)
         {
             IdDerivacion = model.IdDerivacion;
@@ -81,6 +83,8 @@ namespace ALFINapp.Application.DTOs
             MontoDesembolso = model.MontoDesembolso;
             RealError = model.RealError;
             PuedeSerReagendado = model.PuedeSerReagendado;
+            FechaEvidencia = model.FechaEvidencia;
+            HayEvidencia = model.HayEvidencia;
         }
         public ViewDerivaciones ToViewDerivaciones ()
         {
@@ -108,6 +112,7 @@ namespace ALFINapp.Application.DTOs
                 MontoDesembolso = MontoDesembolso ?? 0,
                 RealError = RealError ?? string.Empty,
                 PuedeSerReagendado = PuedeSerReagendado ?? true,
+                FechaEvidencia = FechaEvidencia ?? null,
             };
         }
         public ViewClienteReagendado ToViewClienteReagendado()

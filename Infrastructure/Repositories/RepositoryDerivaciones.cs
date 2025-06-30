@@ -5,6 +5,8 @@ using Microsoft.Data.SqlClient;
 using System.Data;
 using ALFINapp.Domain.Entities;
 using ALFINapp.Application.DTOs;
+using ALFINapp.DTOs;
+using ALFINapp.Domain.Services;
 
 namespace ALFINapp.Infrastructure.Repositories
 {
@@ -47,7 +49,7 @@ namespace ALFINapp.Infrastructure.Repositories
                 var derivacion = await _context
                     .derivaciones_asesores
                     .AsNoTracking()
-                    .Where(x => x.IdCliente == idCliente 
+                    .Where(x => x.IdCliente == idCliente
                         && x.DniAsesor == docAsesor
                         && x.FechaDerivacion.Year == DateTime.Now.Year
                         && x.FechaDerivacion.Month == DateTime.Now.Month)
@@ -84,14 +86,14 @@ namespace ALFINapp.Infrastructure.Repositories
                     Value = dnis
                 };
                 var result = await _context.derivaciones_asesores_for_view_derivacion
-                    .FromSqlRaw("EXEC sp_Derivacion_consulta_derivaciones_x_asesor_por_dni_con_reagendacion @Dni = {0}", 
+                    .FromSqlRaw("EXEC sp_Derivacion_consulta_derivaciones_x_asesor_por_dni_con_reagendacion @Dni = {0}",
                         parameter)
                     .ToListAsync();
                 if (result == null || result.Count == 0)
                 {
                     return new List<DetallesDerivacionesAsesoresDTO>();
                 }
-                
+                var check0 = result.FirstOrDefault(x => x.DniCliente == "08757293");
                 return result.Select(x => new DetallesDerivacionesAsesoresDTO(x)).ToList();
             }
             catch (System.Exception ex)
@@ -107,7 +109,7 @@ namespace ALFINapp.Infrastructure.Repositories
                 var gestion = await _context
                     .GESTION_DETALLE
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(x => x.DocCliente == docCliente 
+                    .FirstOrDefaultAsync(x => x.DocCliente == docCliente
                         && x.DocAsesor == docAsesor
                         && x.FechaGestion.Year == DateTime.Now.Year
                         && x.FechaGestion.Month == DateTime.Now.Month
@@ -128,9 +130,65 @@ namespace ALFINapp.Infrastructure.Repositories
                 return null;
             }
         }
+
+        public async Task<(bool success, string message)> marcarEvidenciaDisponible(int idDerivacion)
+        {
+            try
+            {
+                var parametros = new[]
+                {
+                    new SqlParameter("@id_derivacion", idDerivacion) { SqlDbType = SqlDbType.Int }
+                };
+                var derivacion = await _context.derivaciones_asesores
+                    .FirstOrDefaultAsync(x => x.IdDerivacion == idDerivacion);
+                if (derivacion == null)
+                {
+                    return (false, "No se encontró la derivación");
+                }
+                derivacion.HayEvidencias = true;
+                derivacion.FueProcesadaEvidencia = false;
+                derivacion.FechaEvidencia = DateTime.Now;
+                await _context.SaveChangesAsync();
+
+                var checkProcesamiento = await checkProcesamientoEvidencias(idDerivacion);
+                if (!checkProcesamiento.success)
+                {
+                    return (false, checkProcesamiento.message);
+                }
+                return (true, "Evidencia marcada como disponible y procesada correctamente");
+            }
+            catch (System.Exception ex)
+            {
+                return (false, "Error al marcar la evidencia como disponible: " + ex.Message);
+            }
+        }
+
+        private async Task<(bool success, string message)> checkProcesamientoEvidencias(int idDerivacion, int maxWaitingTime = 40000, int interval = 1000)
+        {
+            var waitingTime = 0;
+
+            while (waitingTime < maxWaitingTime)
+            {
+                var checkDer = await _context.derivaciones_asesores
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.IdDerivacion == idDerivacion);
+                if (checkDer == null)
+                {
+                    return (false, "No se encontró la derivación");
+                }
+                if (checkDer.HayEvidencias == false)
+                {
+                    return (true, "Evidencia procesada y eliminada correctamente");
+                }
+                await Task.Delay(interval);
+                waitingTime += interval;
+            }
+            return (false, "Tiempo de espera agotado. La evidencia no fue procesada, mas si fue guardada no envie mas evidencias para esta derivación");
+        }
+
         public async Task<(bool success, string message)> uploadNuevaDerivacion(
-            DerivacionesAsesores derivacion, 
-            int idBase, 
+            DerivacionesAsesores derivacion,
+            int idBase,
             int idUsuario)
         {
             try
@@ -214,7 +272,65 @@ namespace ALFINapp.Infrastructure.Repositories
             }
         }
 
-        public async Task<(bool success,string message)> verDerivacion(string Dni)
+        public async Task<(bool success, string message)> uploadReagendacionConEvidencias(List<DtoVUploadFiles> evidencias, int idDerivacion, DateTime fechaReagendamiento)
+        {
+            try
+            {
+                List<(string file_name, string file_type, byte[] data)> filecontentBytes = new List<(string file_name, string file_type, byte[] data)>();
+                foreach (var item in evidencias)
+                {
+                    byte[] fileContent = ServicesHex.HexStringToBytes(item.fileContent ?? string.Empty);
+                    filecontentBytes.Add((item.fileName ?? string.Empty, item.fileType ?? string.Empty, fileContent));
+                }
+
+                foreach (var file in filecontentBytes)
+                {
+                    var sql = "INSERT INTO [dbo].[files_evidencias_only_upload] ([file_name], [file_type], [file_content], [id_derivacion]) " +
+                              "VALUES (@fileName, @fileType, @fileContent, @idDerivacion)";
+                    var parameters = new[]
+                    {
+                        new SqlParameter("@fileName", file.file_name),
+                        new SqlParameter("@fileType", file.file_type),
+                        new SqlParameter("@fileContent", SqlDbType.VarBinary) { Value = file.data },
+                        new SqlParameter("@idDerivacion", idDerivacion)
+                    };
+                    await _context.Database.ExecuteSqlRawAsync(sql, parameters);
+                }
+
+                var derivacion = await _context.derivaciones_asesores
+                    .FirstOrDefaultAsync(x => x.IdDerivacion == idDerivacion);
+                if (derivacion == null)
+                {
+                    return (false, "No se encontró la derivación");
+                }
+                var hoy = DateTime.Now;
+
+                derivacion.FechaReagendamiento = hoy;
+                derivacion.FechaVisita = fechaReagendamiento;
+                derivacion.FueProcesado = false;
+                derivacion.FueEnviadoEmail = false;
+                derivacion.EstadoDerivacion = "DERIVACION REAGENDADA PENDIENTE";
+                derivacion.FueReagendado = true;
+                derivacion.FueReprocesado = false;
+                derivacion.HayEvidencias = true;
+                derivacion.FueProcesadaEvidencia = false;
+
+                await _context.SaveChangesAsync();
+
+                var checkProcesamiento = await checkProcesamientoEvidencias(idDerivacion);
+                if (!checkProcesamiento.success)
+                {
+                    return (false, "Error al procesar las evidencias en el reagendamiento: " + checkProcesamiento.message);
+                }
+                return (true, "Reagendacion con evidencias subido y procesado correctamente");
+            }
+            catch (System.Exception ex)
+            {
+                return (false, "Error al subir la reagendacion con evidencias: " + ex.Message);
+            }
+        }
+
+        public async Task<(bool success, string message)> verDerivacion(string Dni)
         {
             try
             {

@@ -79,7 +79,6 @@ namespace ALFINapp.Application.UseCases.Derivacion
                 {
                     viewDerivaciones.Derivaciones.Add(item.ToViewDerivaciones());
                 }
-
                 return (true, "Se realizo la busqueda de Derivaciones con exito", viewDerivaciones);
             }
             catch (System.Exception ex)

@@ -1,5 +1,6 @@
 using ALFINapp.API.DTOs;
 using ALFINapp.Application.Interfaces.Reagendamiento;
+using ALFINapp.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ALFINapp.API.Controllers
@@ -31,7 +32,8 @@ namespace ALFINapp.API.Controllers
             }
             var exec = await _useCaseReagendar.exec(
                 dtovreagendar.IdDerivacion.Value,
-                dtovreagendar.FechaReagendamiento.Value);
+                dtovreagendar.FechaReagendamiento.Value,
+                dtovreagendar.evidencias);
             if (!exec.IsSuccess)
             {
                 return Json(new { success = false, message = exec.Message });

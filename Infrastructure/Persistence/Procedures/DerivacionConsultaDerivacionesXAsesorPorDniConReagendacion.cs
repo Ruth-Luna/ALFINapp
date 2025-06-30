@@ -18,7 +18,7 @@ namespace ALFINapp.Infrastructure.Persistence.Procedures
         public string? DniCliente { get; set; }
         [Column("id_cliente")]
         public int? IdCliente { get; set; }
-        [Column("nombre_cliente")] 
+        [Column("nombre_cliente")]
         public string? NombreCliente { get; set; }
         [Column("telefono_cliente")]
         public string? TelefonoCliente { get; set; }
@@ -51,5 +51,9 @@ namespace ALFINapp.Infrastructure.Persistence.Procedures
         [Column("real_error")]
         public string? RealError { get; set; }
         public bool? PuedeSerReagendado { get; set; }
+        [Column("fecha_evidencia")]
+        public DateTime? FechaEvidencia { get; set; } = null;
+        [Column("hay_evidencias")]
+        public bool? HayEvidencia { get; set; } = false;
     }
 }

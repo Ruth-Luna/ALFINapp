@@ -41,23 +41,36 @@ function import_assignments_file(event) {
         });
         return;
     }
-    const allowedExtensions = ['csv', 'txt'];
+    const allowedExtensions = ['csv', 'txt', 'xlsx', 'xlsb'];
     const fileName = file.name;
     const fileExtension = fileName.split('.').pop().toLowerCase();
     if (!allowedExtensions.includes(fileExtension)) {
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'Formato de archivo no permitido. Por favor, sube un archivo CSV o TXT.',
+            text: 'Formato de archivo no permitido. Por favor, sube un archivo CSV, TXT, XLSX o XLSB.',
         });
         return;
     }
     const reader = new FileReader();
 
     reader.onload = function (e) {
-        const content = e.target.result;
+        
         var parsedData = [];
-        parsedData = parseCSV(content);
+        if (fileExtension === 'xlsx' || fileExtension === 'xlsb') {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+
+            // Extraer datos como array de arrays
+            parsedData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+            parsedData = parsedData.slice(1); // omitir cabecera
+        } else {
+            const content = e.target.result;
+            parsedData = parseCSV(content);
+        }
         const loading = Swal.fire({
             title: 'Cargando datos...',
             text: 'Por favor, espera mientras se procesan los datos.',
@@ -84,10 +97,20 @@ function import_assignments_file(event) {
             text: 'Por favor, verifica el archivo y vuelve a intentarlo.',
         });
     }
-    reader.readAsText(file);
+
+    if (fileExtension === 'xlsx' || fileExtension === 'xlsb') {
+        reader.readAsArrayBuffer(file);
+    } else {
+        reader.readAsText(file);
+    }
+
     fileInput.value = ''; // Limpiar el input para permitir la carga del mismo archivo nuevamente
     document.getElementById("imported-file-name").textContent = fileName;
     document.getElementById("imported-file-name").style.display = "block";
+}
+
+function convert_xlsx_o_xlsb() {
+
 }
 
 function parseCSV(text) {
@@ -452,9 +475,6 @@ function load_visualization_assignments(data) {
             "Nombre Lista",
             "Cantidad",
             "Fecha de Creación de Lista",
-            "Total",
-            "Total Gestionadas",
-            "Total Asignadas a Asesores",
             {
                 name: "Descargar",
                 formatter: (_, row) => {
@@ -505,9 +525,7 @@ async function load_assignments_list_modal() {
                 item.nombres_supervisor,
                 item.nombre_lista,
                 item.total_asignaciones,
-                item.fecha_creacion_lista,
-                item.total_asignaciones_gestionadas,
-                item.total_asignaciones_asignadas_a_asesores,
+                item.fecha_creacion_lista
             ]);
             load_visualization_assignments(data);
         } else {

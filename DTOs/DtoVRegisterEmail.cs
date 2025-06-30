@@ -1,3 +1,5 @@
+using ALFINapp.DTOs;
+
 namespace ALFINapp.API.DTOs
 {
     public class DtoVRegisterEmail
@@ -8,5 +10,6 @@ namespace ALFINapp.API.DTOs
     {
         public DateTime? FechaReagendamiento { get; set; }
         public int? IdDerivacion { get; set; }
+        public List<DtoVUploadFiles>? evidencias { get; set; } = new List<DtoVUploadFiles>();
     }
 }
