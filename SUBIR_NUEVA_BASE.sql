@@ -2,7 +2,8 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[BASE_A365_20250623](
+CREATE TABLE [dbo].[BASE_A365_20250623]
+(
 	[PROPENSION_IC] [varchar](50) NULL,
 	[USER_V3] [varchar](50) NULL,
 	[DNI] [varchar](50) NULL,
@@ -52,48 +53,55 @@ CREATE TABLE [dbo].[BASE_A365_20250623](
 ) ON [PRIMARY]
 GO
 
-SELECT TOP 150 * FROM [dbo].[BASE_A365_20250623]
+SELECT TOP 150
+	*
+FROM [dbo].[BASE_A365_20250623]
 
 
-INSERT INTO base_clientes (
-    DNI, X_NOMBRE, X_APPATERNO, X_APMATERNO, 
-    departamento, provincia, distrito, edad
-)
-SELECT 
-    DNI, 
-    X_NOMBRE, 
-    X_APPATERNO, 
-    X_APMATERNO, 
-    DEPARTAMENTO, 
-    PROVINCIA, 
-    DISTRITO, 
-    CASE 
+INSERT INTO base_clientes
+	(
+	DNI, X_NOMBRE, X_APPATERNO, X_APMATERNO,
+	departamento, provincia, distrito, edad
+	)
+SELECT
+	DNI,
+	X_NOMBRE,
+	X_APPATERNO,
+	X_APMATERNO,
+	DEPARTAMENTO,
+	PROVINCIA,
+	DISTRITO,
+	CASE 
         WHEN ISNUMERIC(Edad) = 1 THEN CAST(Edad AS INT)
         ELSE NULL
     END
 FROM [dbo].[BASE_A365_20250623] AS B
 WHERE NOT EXISTS (
-    SELECT 1 
-    FROM base_clientes AS C
-    WHERE C.DNI = B.DNI
+    SELECT 1
+FROM base_clientes AS C
+WHERE C.DNI = B.DNI
 )
 
-INSERT INTO detalle_base 
+INSERT INTO detalle_base
 
 
-select top 150 * from base_clientes ORDER BY id_base
+select top 150
+	*
+from base_clientes
+ORDER BY id_base
 
 
-INSERT INTO detalle_base (
-	id_base, sucursal_comercial, agencia_comercial, region_comercial, 
+INSERT INTO detalle_base
+	(
+	id_base, sucursal_comercial, agencia_comercial, region_comercial,
 	oferta_max, tasa_minima, tasa_1, tasa_2, tasa_3, tasa_4, tasa_5, tasa_6, tasa_7,
 	plazo, cuota, rango_edad, rango_oferta, rango_sueldo,
-	capacidad_max, tipo_gest, tipo_cliente, color_final, 
+	capacidad_max, tipo_gest, tipo_cliente, color_final,
 	propension_ic, user_v3, tipo_base, flag_deuda_v_oferta, perfil_ro, mgneg,
 	VARIACION_OFERTA_CAMPAÑA_ANTERIOR, VARIACION_TASA_CAMPAÑA_ANTERIOR,
 	VAR_TASA_CREDITO_ANTERIOR, flg_cet_6m, bloque, frescura
-)
-SELECT 
+	)
+SELECT
 	C.id_base,
 	B.SUCURSAL_COMERCIAL,
 	B.Agencia_comercial,
@@ -129,10 +137,124 @@ SELECT
 	B.BLOQUE,
 	TRY_CAST(B.FRESCURA AS int)
 FROM [dbo].[BASE_A365_20250623] AS B
-JOIN base_clientes AS C ON C.DNI = B.DNI
+	JOIN base_clientes AS C ON C.DNI = B.DNI
 
 
 
 SELECT COUNT(*) AS TotalRegistros
 FROM BASE_A365_20250623
 WHERE DNI IS NOT NULL;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+INSERT INTO base_clientes_banco
+	(
+	[dni]
+	,[tasa_1]
+	,[tasa_2]
+	,[tasa_3]
+	,[tasa_4]
+	,[tasa_5]
+	,[tasa_6]
+	,[tasa_7]
+	,[oferta_max]
+	,[id_plazo_banco]
+	,[CAPACIDAD_PAGO_MEN]
+	,[id_campana_grupo_banco]
+	,[id_color_banco]
+	,[id_usuario_banco]
+	,[id_rango_deuda]
+	,[num_entidades]
+	,[frescura]
+	,[reenganche]
+	,[tasas_especiales]
+	,[fecha_subida]
+	,[id_user_v3]
+	,[deuda_entidades]
+	,[perfil_ro]
+	,[PRIORIDAD_SISTEMA]
+	,[AUTORIZACION_DATOS]
+	,[mgneg]
+	,[MARCA_PD]
+	)
+SELECT
+
+	[dni] AS [dni]
+      , [tasa_1] AS [tasa_1]
+      , [tasa_2] AS [tasa_2]
+      , [tasa_3] AS [tasa_3]
+      , [tasa_4] AS [tasa_4]
+      , [tasa_5] AS [tasa_5]
+      , [tasa_6] AS [tasa_6]
+      , [tasa_7] AS [tasa_7]
+      , [oferta_max] AS [oferta_max]
+      , [plazo] AS [id_plazo_banco]
+      , [CAPACIDAD_PAGO_MEN] AS [CAPACIDAD_PAGO_MEN] 
+      , [campaña_grupo] AS [id_campana_grupo_banco]
+      , [color_id] AS [id_color_banco]
+      , [usuario] AS [id_usuario_banco]
+      , [RANGO_DEUDA] AS [id_rango_deuda]
+      , [NumEntidades] AS [num_entidades]
+      , [fresco] AS [frescura]
+	  , NULL AS [reenganche] -- Assuming reenganche is not available in the source
+	  , NULL AS [tasas_especiales] -- Assuming tasas_especiales is not available in the source
+	  , GETDATE() AS [fecha_subida] -- Current date as the upload date
+      , [user_v3]  AS [id_user_v3]
+      , CASE 
+        WHEN deuda_entidades = 'DE' THEN 1
+        WHEN deuda_entidades = 'NO DE' THEN 0
+        ELSE NULL
+    END AS [deuda_entidades]
+	, [perfil_ro] AS [perfil_ro]
+	  , NULL AS [PRIORIDAD_SISTEMA] -- Assuming PRIORIDAD_SISTEMA is not available in the source
+	  , [AUTORIZACION_DATOS] AS [AUTORIZACION_DATOS]
+      , [Mgneg] AS [mgneg]
+      , [MARCA_PD] AS [MARCA_PD]
+FROM CAMPANASJULIOFINAL
+WHERE dni IS NOT NULL
+	AND dni <> ''
+	AND oferta_max IS NOT NULL
+	AND tasa_1 IS NOT NULL
+
+
+DELETE FROM base_clientes_banco WHERE CAST(fecha_subida AS DATE) = CAST(GETDATE() AS DATE)
+	AND id_base_banco NOT IN (
+SELECT id_base_banco
+	FROM base_clientes
+	WHERE id_base_banco 
+IN (
+	SELECT id_base_banco
+	FROM base_clientes_banco
+	WHERE CAST(fecha_subida AS DATE) = CAST(GETDATE() AS DATE)
+)
+);
+
+SELECT *
+FROM base_clientes
+WHERE id_base_banco 
+IN (
+	SELECT id_base_banco
+FROM base_clientes_banco
+WHERE CAST(fecha_subida AS DATE) = CAST(GETDATE() AS DATE)
+);
+
+
+SELECT * FROM base_clientes_banco where oferta_max is null and CAST(fecha_subida AS DATE) = CAST(GETDATE() AS DATE)
