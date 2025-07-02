@@ -1,3 +1,10 @@
+$(document).ready(function () {
+    // Las tablas vacias
+    load_visualization_data([]);
+    load_visualization_Assign([]);
+});
+
+
 async function Cargar_Cruce_Clientes(pagina = 0) {
     $.ajax({
         url: '/Asignaciones/ObtenerCruceFinal',
