@@ -1,3 +1,10 @@
+$(document).ready(function () {
+    // Las tablas vacias
+    load_visualization_data([]);
+    load_visualization_Assign([]);
+});
+
+
 async function Cargar_Cruce_Clientes(pagina = 0) {
     $.ajax({
         url: '/Asignaciones/ObtenerCruceFinal',
@@ -119,11 +126,17 @@ function parseCSV(text) {
     return lines.slice(1).map(line => line.split(',').map(cell => cell.trim()));
 }
 
+let grid_excel_tabla = null;
+
 function load_visualization_data(data) {
     const tableContainer = document.getElementById("load-visualization-table");
-    tableContainer.innerHTML = ""; // Limpiar antes de volver a renderizar
-
-    new gridjs.Grid({
+    // Eliminar tabla anterior si existe
+    if (grid_excel_tabla) {
+        grid_excel_tabla.destroy();
+        grid_excel_tabla = null;
+    }
+    // Crear nuevo grid y asignar a la variable global
+    grid_excel_tabla = new gridjs.Grid({
         columns: [
             "DNI CLIENTE",
             "DNI SUPERVISOR",
@@ -140,11 +153,11 @@ function load_visualization_data(data) {
             limit: 10
         },
         search: true
-    }).render(tableContainer);
-
-    document.getElementById("load-visualization-total-input").value = "";
+    });
+    grid_excel_tabla.render(tableContainer);
     document.getElementById("load-visualization-total-input").value = data.length;
 }
+
 
 async function cross_assignments() {
     if (!parsedDataGral || parsedDataGral.length === 0) {
@@ -351,9 +364,17 @@ async function assign_supervisors() {
     });
 }
 
+let gridAssignInstance = null;
+
 function load_visualization_Assign(data) {
     const tableContainer = document.getElementById("client-list-table");
-    tableContainer.innerHTML = "";
+
+    // Eliminar tabla anterior si existe
+    if (gridAssignInstance !== null) {
+        // Si ya existe una instancia de gridjs, la eliminamos
+        gridAssignInstance.destroy();
+        gridAssignInstance = null;
+    }
 
     const rows = data.map(item => [
         item.dniCliente,
@@ -367,7 +388,8 @@ function load_visualization_Assign(data) {
         item.fuenteBase
     ]);
 
-    new gridjs.Grid({
+    // Crear nuevo grid y guardar la instancia
+    gridAssignInstance = new gridjs.Grid({
         columns: [
             "DNI. CLIENTE",
             "NOM. CLIENTE",
@@ -385,9 +407,10 @@ function load_visualization_Assign(data) {
             limit: 10
         },
         search: true
-    }).render(tableContainer);
-}
+    });
 
+    gridAssignInstance.render(tableContainer);
+}
 
 // Función que simula la obtención de datos para la primera tabla
 /*function fetchLoadVisualizationData() {
