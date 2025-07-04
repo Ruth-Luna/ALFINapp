@@ -13,12 +13,15 @@ namespace ALFINapp.API.Controllers
     {
         private readonly MDbContext _context;
         private readonly IUseCaseDownloadAsignaciones useCaseDownloadAsignaciones;
+        private readonly ILogger<ExcelController> _logger;
         public ExcelController(
             MDbContext context,
-            IUseCaseDownloadAsignaciones useCaseDownloadAsignaciones)
+            IUseCaseDownloadAsignaciones useCaseDownloadAsignaciones,
+            ILogger<ExcelController> logger)
         {
             _context = context;
             this.useCaseDownloadAsignaciones = useCaseDownloadAsignaciones;
+            _logger = logger;
         }
 
         private bool IsValidDni(float dni)
@@ -474,6 +477,7 @@ namespace ALFINapp.API.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error al descargar las asignaciones");
                 return Json(new
                 {
                     isSuccess = false,

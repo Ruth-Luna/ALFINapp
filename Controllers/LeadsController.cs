@@ -1,6 +1,5 @@
 using ALFINapp.API.Filters;
 using ALFINapp.Application.Interfaces.Leads;
-using ALFINapp.Application.Interfaces.Vendedor;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ALFINapp.Controllers
