@@ -97,6 +97,8 @@ namespace ALFINapp.Infrastructure.Repositories
         {
             try
             {
+                _context.Database.SetCommandTimeout(800);
+
                 if (asignaciones == null || asignaciones.SupervisoresConClientes.Count == 0)
                 {
                     return (false, "No se proporcionaron asignaciones para procesar.");
@@ -159,7 +161,7 @@ namespace ALFINapp.Infrastructure.Repositories
 
                 if (wasClosed) connection.Close();
 
-                _context.Database.SetCommandTimeout(600);
+                
                 var result = await _context.Database.ExecuteSqlRawAsync(
                     "EXEC dbo.SP_GESTION_ASIGNACION_CRUZAR_DATA_EXTERNA_REFACTORIZADO");
                 if (result < 0)

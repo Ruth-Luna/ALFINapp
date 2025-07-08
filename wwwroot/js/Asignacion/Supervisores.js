@@ -73,7 +73,10 @@ function import_assignments_file(event) {
 
             // Extraer datos como array de arrays
             parsedData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-            parsedData = parsedData.slice(1); // omitir cabecera
+            parsedData = parsedData
+                .slice(1)
+                .filter(row => Array.isArray(row) && row.some(cell => cell !== null && cell !== undefined && cell !== ''));
+            
         } else {
             const content = e.target.result;
             parsedData = parseCSV(content);
