@@ -8,13 +8,14 @@
     <link rel="stylesheet" href="~/css/main_page.css">
 }
 
-
 <div class="container mt-4">
     <div id="container dni-section mb-3">
         <h3>Busqueda de Clientes</h3>
         <div class="alert alert-info" role="alert">
             <h5>Informacion: </h5>
-            <p class="mb-0">Un cliente para ser tipificado debe de haber sido enviado por el banco durante el <strong>presente mes. Si el cliente no se encuentra durante este mes no podra ser tipificado. </strong> </p>
+            <p class="mb-0">Un cliente para ser tipificado debe de haber sido enviado por el banco durante el
+                <strong>presente mes. Si el cliente no se encuentra durante este mes no podra ser tipificado. </strong>
+            </p>
         </div>
         <div class="form-group">
             <label for="DNI"> Ingrese un DNI o Numero de Telefono</label>
@@ -27,29 +28,277 @@
         </div>
     </div>
 
-    <div id="datos-cliente-existente" style="display: none;">
-    </div>
+    <div id="datos-cliente-existente" class="d-none">
+        <div class="container mt-4">
+            <div class="row mb-3">
+                <h3 class="label-fortip">Consulta de Campañas</h3>
+            </div>
 
-    <div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="GeneralTemplateTitleModalLabel"></h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div id="detalle-campana">
+                <div id="mensaje-traido-de-base">
+
                 </div>
-                <div class="modal-body">
-                    <div id="modalContentGeneralTemplate">
-                        @*Model Template General*@
+                <div class="container mb-3">
+                    <div class="form-group row align-items-center mb-2">
+                        <label for=""></label>
+                        <input type="text" 
+                            id="nombres-completos-cliente" 
+                            class="form-control"
+                            value=""
+                            readonly>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col">
+                        <legend>
+                            <h3>Condiciones de Campaña</h3>
+                        </legend>
+                        <div class="form-group row align-items-center mb-2">
+                            <div class="col-md-6">
+                                <label for="color_y_tonalidad">Color y Tonalidad:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center">
+                                    <input class="form-control ml-2"
+                                        style="background-color: #ffff; width: 35px; height: 35px;"
+                                        id="color-inicial-consulta"
+                                        value=""
+                                        readonly>
+                                    <input class="form-control ml-2" 
+                                        id="color-inicial-consulta-nombre" 
+                                        type="text"
+                                        value=""
+                                        readonly>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <input class="form-control ml-2"
+                                        style="background-color: #ffff; width: 35px; height: 35px;"
+                                        id="color-final-consulta"
+                                        readonly>
+                                    <input class="form-control ml-2" 
+                                        id="color-final-consulta-nombre" 
+                                        type="text"
+                                        value=""
+                                        readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row align-items-center mb-2">
+                            <div class="col-md-6">
+                                <label for="campaña">Campaña:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="campaña" class="form-control" value=""
+                                    readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row align-items-center mb-2">
+                            <div class="col-md-6">
+                                <label for="oferta_maxima">Oferta Máxima:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="oferta_maxima" class="form-control" value=""
+                                    required readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row align-items-center mb-2">
+                            <div class="col-md-6">
+                                <label for="plazo-maximo">Plazo Máximo:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="plazo-maximo" class="form-control" value=""
+                                    readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row align-items-center mb-2">
+                            <div class="col-md-6">
+                                <label for="capacidad_de_pago">Capacidad de Pago:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="capacidad-de-pago" class="form-control"
+                                    value="" required readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row align-items-center mb-2">
+                            <div class="col-md-6">
+                                <label for="deuda-con-alfin">Deuda con ALFIN:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="deuda-con-alfin" class="form-control"
+                                    value="" required readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row align-items-center mb-2">
+                            <div class="col-md-6">
+                                <label for="nuevo-en-base">Nuevo en BASE:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" 
+                                    id="nuevo-en-base" 
+                                    class="form-control" 
+                                    value=""
+                                    required readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row align-items-center mb-2">
+                            <div class="col-md-6">
+                                <label for="deuda">Deudas:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="deuda" class="form-control" value="" required
+                                    readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row align-items-center mb-2">
+                            <div class="col-md-6">
+                                <label for="nro-entidades">Nro Entidades:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="nro-entidades" class="form-control" value=""
+                                    required readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row align-items-center mb-2">
+                            <div class="col-md-6">
+                                <label for="usuario-v3">Usuario V3:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="usuario-v3" class="form-control" value="" required
+                                    readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row align-items-center mb-2">
+                            <div class="col-md-6">
+                                <label for="perfil_ro">Perfil RO:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="perfil_ro" class="form-control" value="" required
+                                    readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <h3>Tasas Aprobadas</h3>
+                        <div class="form-group row align-items-center mb-2">
+                            <div class="col-md-6">
+                                <label for="hasta_s_3k">Hasta S/ 3k:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="hasta_s_3k" class="form-control"
+                                    value=""
+                                    required readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row align-items-center mb-2">
+                            <div class="col-md-6">
+                                <label for="hasta_s_6_1k">Hasta S/ 6.1k:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="hasta_s_6_1k" class="form-control"
+                                    value=""
+                                    required readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row align-items-center mb-2">
+                            <div class="col-md-6">
+                                <label for="hasta_s_8_6k">Hasta S/ 8.6k:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="hasta_s_8_6k" class="form-control"
+                                    value=""
+                                    required readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row align-items-center mb-2">
+                            <div class="col-md-6">
+                                <label for="hasta_s_12_4k">Hasta S/ 12.4k:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="hasta_s_12_4k" class="form-control"
+                                    value=""
+                                    required readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row align-items-center mb-2">
+                            <div class="col-md-6">
+                                <label for="hasta_s_15_1k">Hasta S/ 15.1k:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="hasta_s_15_1k" class="form-control"
+                                    value=""
+                                    required readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row align-items-center mb-2">
+                            <div class="col-md-6">
+                                <label for="hasta_s_24_6k">Hasta S/ 24.6k:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="hasta_s_24_6k" class="form-control"
+                                    value=""
+                                    required readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row align-items-center mb-2">
+                            <div class="col-md-6">
+                                <label for="mas_de_s_24_6k">Mas de S/ 24.6k:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="mas_de_s_24_6k" class="form-control"
+                                    value=""
+                                    required readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row align-items-center mb-2">
+                            <div class="col-md-6">
+                                <label for="nueva_tasa">Nueva Tasa:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="nueva_tasa" class="form-control" value=""
+                                    required readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row align-items-center mb-2">
+                            <div class="col-md-6">
+                                <label for="usuario_tipo">Usuario Tipo:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="usuario_tipo" class="form-control" value=""
+                                    required readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row align-items-center mb-2">
+                            <div class="col-md-6">
+                                <label for="usuario_segmento">Usuario Segmento:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="usuario_segmento" class="form-control"
+                                    value="" required readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row align-items-center mb-2">
+                            <div class="col-md-6">
+                                <label for="flag_deuda_v_oferta">Flag Deuda Vs Oferta:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="flag_deuda_v_oferta" class="form-control"
+                                    value="" required readonly>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+            <div class="form-group row align-items-center">
+                <div class="col-md-12 text-align-center" id="botones-consulta">
+                    @* <a class="btn btn-primary" href="javascript:void(0);"
+                        onclick="TakeThisClient('@Model.Dni', '@Model.TraidoDe')">Tipifique Este Cliente</a> *@
+                </div>
+            </div>
         </div>
-    </div>
-
-    <div id="error-message" class="alert alert-danger" style="display: none;">
     </div>
 </div>
 
 @section Scripts {
     <script src="~/js/Consulta/Consulta.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/js/Consulta/MostrarConsulta.js" asp-append-version="true"></script>
 }

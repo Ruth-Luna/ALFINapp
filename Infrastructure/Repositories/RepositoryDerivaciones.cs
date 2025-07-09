@@ -93,7 +93,6 @@ namespace ALFINapp.Infrastructure.Repositories
                 {
                     return new List<DetallesDerivacionesAsesoresDTO>();
                 }
-                var check0 = result.FirstOrDefault(x => x.DniCliente == "08757293");
                 return result.Select(x => new DetallesDerivacionesAsesoresDTO(x)).ToList();
             }
             catch (System.Exception ex)

@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.API.Filters;
 using ALFINapp.Application.Interfaces.Asignacion;
 using ALFINapp.Application.Interfaces.Consulta;
-using ALFINapp.Infrastructure.Persistence.Models;
+using ALFINapp.Datos.DAO;
 using ALFINapp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -23,14 +18,21 @@ namespace ALFINapp.API.Controllers
         private readonly IUseCaseConsultaClienteDni _useCaseConsultaClienteDni;
         private readonly IUseCaseConsultaClienteTelefono _useCaseConsultaClienteTelefono;
         private readonly IUseCaseAsignarClienteManual _useCaseAsignarClienteManual;
+        // DAO for client consultations
+        // This DAO is used to interact with the database for client consultation operations
+
+        private readonly DAO_ClientesAsignaciones _dao_ClientesAsignaciones;
+        private readonly DAO_ClientesConsultas _dao_ClientesConsultas;
         public ConsultaController(
-            DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores, 
-            DBServicesGeneral dbServicesGeneral, 
+            DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores,
+            DBServicesGeneral dbServicesGeneral,
             DBServicesConsultasClientes dbServicesConsultasClientes,
             ILogger<ConsultaController> logger,
             IUseCaseConsultaClienteDni useCaseConsultaClienteDni,
             IUseCaseConsultaClienteTelefono useCaseConsultaClienteTelefono,
-            IUseCaseAsignarClienteManual useCaseAsignarClienteManual)
+            IUseCaseAsignarClienteManual useCaseAsignarClienteManual,
+            DAO_ClientesConsultas dao_ClientesConsultas,
+            DAO_ClientesAsignaciones dAO_ClientesAsignaciones)
         {
             _dbServicesAsignacionesAsesores = dbServicesAsignacionesAsesores;
             _dbServicesGeneral = dbServicesGeneral;
@@ -39,6 +41,8 @@ namespace ALFINapp.API.Controllers
             _useCaseConsultaClienteDni = useCaseConsultaClienteDni;
             _useCaseConsultaClienteTelefono = useCaseConsultaClienteTelefono;
             _useCaseAsignarClienteManual = useCaseAsignarClienteManual;
+            _dao_ClientesConsultas = dao_ClientesConsultas;
+            _dao_ClientesAsignaciones = dAO_ClientesAsignaciones;
         }
 
         [HttpGet]
@@ -50,7 +54,6 @@ namespace ALFINapp.API.Controllers
                 return RedirectToAction("Index", "Home");
             }
             ViewData["RolUser"] = HttpContext.Session.GetInt32("RolUser");
-            Console.WriteLine("Rol del usuario: " + HttpContext.Session.GetInt32("RolUser"));
             return View("Consultas");
         }
 
@@ -64,8 +67,7 @@ namespace ALFINapp.API.Controllers
                 {
                     return Json(new { success = false, message = "Debe de iniciar la sesion." });
                 }
-                // var baseClienteReasignar = await _dbServicesAsignacionesAsesores.GuardarReAsignacionCliente(DniAReasignar, BaseTipo, usuarioId.Value);
-                var asignar = await _useCaseAsignarClienteManual.exec(DniAReasignar, usuarioId.Value, BaseTipo);
+                var asignar = await _dao_ClientesAsignaciones.AsignarClienteManual(DniAReasignar, BaseTipo, usuarioId.Value);
                 if (asignar.success == false)
                 {
                     return Json(new { success = false, message = $"{asignar.message}" });
@@ -93,13 +95,13 @@ namespace ALFINapp.API.Controllers
                 {
                     return Json(new { existe = false, error = true, message = "No se ha encontrado una sesion activa, vuelva a iniciar sesion. " });
                 }
-                var exec = await _useCaseConsultaClienteDni.Execute(dni);
+                var exec = await _dao_ClientesConsultas.GetClienteByDniAsync(dni);
                 if (exec.IsSuccess == false || exec.Data == null)
                 {
                     return Json(new { existe = false, error = true, message = exec.Message });
                 }
-                ViewData["RolUser"] = GetUserRol;
-                return PartialView("_DatosConsulta", exec.Data);
+                exec.Data.idrol = GetUserRol.Value;
+                return Json(new { existe = true, error = false, data = exec.Data });
             }
             catch (Exception ex)
             {

@@ -58,13 +58,17 @@ foreach (var assembly in assemblies)
 foreach (var assembly in assemblies)
 {
     foreach (var serviceType in assembly.GetTypes()
-        .Where(t => t.IsClass && !t.IsAbstract && 
-                    (t.Name.StartsWith("UseCase") || t.Name.StartsWith("Repository")))) // Filtrar por prefijo
+        .Where(t => t.IsClass && !t.IsAbstract &&
+                    (t.Name.StartsWith("UseCase") || t.Name.StartsWith("Repository") || t.Name.StartsWith("DAO"))))
     {
         var interfaceType = serviceType.GetInterfaces().FirstOrDefault();
         if (interfaceType != null)
         {
             builder.Services.AddScoped(interfaceType, serviceType);
+        }
+        else
+        {
+            builder.Services.AddScoped(serviceType);
         }
     }
 }

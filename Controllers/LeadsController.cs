@@ -1,6 +1,5 @@
 using ALFINapp.API.Filters;
 using ALFINapp.Application.Interfaces.Leads;
-using ALFINapp.Application.Interfaces.Vendedor;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ALFINapp.Controllers
@@ -109,6 +108,44 @@ namespace ALFINapp.Controllers
         public IActionResult Error()
         {
             return View("Error!");
+        }
+
+        public async Task<IActionResult> GetGestionSupervisores(
+            int pagina = 0,
+            string filter = "",
+            string filterField = "",
+            string orderBy = "",
+            bool orderAsc = true)
+        {
+            try
+            {
+                int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+                if (usuarioId == null)
+                {
+                    TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
+                    return RedirectToAction("Index", "Home");
+                }
+                var executeInicio = await _useCaseGetAsignacionLeads.Execute(
+                    usuarioId: usuarioId.Value,
+                    rol: 2,
+                    intervaloInicio: pagina,
+                    intervaloFin: 0,
+                    filter: "",
+                    search: "",
+                    order: "tipificacion",
+                    orderAsc = true);
+                if (!executeInicio.IsSuccess || executeInicio.Data == null)
+                {
+                    TempData["MessageError"] = executeInicio.Message;
+                    return RedirectToAction("Redireccionar", "Error");
+                }
+                return View("GestionSupervisores", executeInicio.Data);
+            }
+            catch (System.Exception)
+            {
+
+                throw;
+            }
         }
     }
 }
