@@ -80,7 +80,7 @@ async function reagendarCliente(nuevaFechaVisita, idDerivacion) {
                                 });
                                 return;
                             }
-                            
+
                             if (result.success === false) {
                                 Swal.fire({
                                     icon: 'error',
@@ -94,6 +94,8 @@ async function reagendarCliente(nuevaFechaVisita, idDerivacion) {
                                     title: 'Cita reagendada',
                                     text: result.message || 'La cita ha sido reagendada con éxito.',
                                     confirmButtonText: 'Aceptar'
+                                }).then(() => {
+                                    window.location.href = `${baseUrl}/Administrador/Inicio`;
                                 });
                             }
                         } catch (error) {

@@ -62,11 +62,12 @@ public class MDbContext : DbContext
     public DbSet<SupervisorGetNumberOfLeads> supervisor_get_number_of_leads { get; set; }
     public DbSet<GestionConseguirTodasLasAsignacionesPorListas> gestion_conseguir_todas_las_asignaciones_por_listas { get; set; }
     public DbSet<GestionConseguirODescargarAsignacionDeLeadsDeSup> gestion_conseguir_o_descargar_asignacion_de_leads_de_sup { get; set; }
+    public DbSet<DerivacionConseguirODescargarAsignacionConDerivacionesDeSup> derivacion_conseguir_o_descargar_asignacion_con_derivaciones_de_sup { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<DerivacionesAsesores>()
-            .ToTable(tb=>tb.HasTrigger("AnyTriggerName"));
+            .ToTable(tb => tb.HasTrigger("AnyTriggerName"));
 
         modelBuilder.Entity<GestionConseguirODescargarAsignacionDeLeadsDeSup>()
             .HasNoKey()
@@ -160,6 +161,9 @@ public class MDbContext : DbContext
             .HasNoKey()
             .ToView(null);
         modelBuilder.Entity<SupervisorGetNumberOfLeads>()
+            .HasNoKey()
+            .ToView(null);
+        modelBuilder.Entity<DerivacionConseguirODescargarAsignacionConDerivacionesDeSup>()
             .HasNoKey()
             .ToView(null);
     }

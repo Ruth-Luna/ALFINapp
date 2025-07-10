@@ -1,5 +1,6 @@
 using ALFINapp.API.Filters;
 using ALFINapp.Application.Interfaces.Asignaciones;
+using ALFINapp.Datos.DAO.Derivaciones;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
@@ -13,15 +14,18 @@ namespace ALFINapp.API.Controllers
     {
         private readonly MDbContext _context;
         private readonly IUseCaseDownloadAsignaciones useCaseDownloadAsignaciones;
+        private readonly DAO_DescargarDerivaciones dAO_DescargarDerivaciones;
         private readonly ILogger<ExcelController> _logger;
         public ExcelController(
             MDbContext context,
             IUseCaseDownloadAsignaciones useCaseDownloadAsignaciones,
-            ILogger<ExcelController> logger)
+            ILogger<ExcelController> logger,
+            DAO_DescargarDerivaciones dAO_DescargarDerivaciones)
         {
             _context = context;
             this.useCaseDownloadAsignaciones = useCaseDownloadAsignaciones;
             _logger = logger;
+            this.dAO_DescargarDerivaciones = dAO_DescargarDerivaciones;
         }
 
         private bool IsValidDni(float dni)
@@ -485,130 +489,27 @@ namespace ALFINapp.API.Controllers
                 });
             }
         }
-        /*[HttpGet]
-        public IActionResult SubircsvFile(IFormFile csvFile)
+        [HttpGet]
+        public IActionResult DownloadDerivaciones(string filtro, string campo, DateTime fecha_inicio, DateTime fecha_final)
         {
-            if (csvFile == null || csvFile.Length == 0)
-            {
-                TempData["Message"] = "Por favor, seleccione un csvFile valido. ";
-                return RedirectToAction("Index", "Home");
-            }
-            int? idSupervisorActual = HttpContext.Session.GetInt32("UsuarioId");
-            if (idSupervisorActual == null)
-            {
-                TempData["Message"] = "Error en la autenticación. Intente iniciar sesión nuevamente.";
-                return RedirectToAction("Index", "Home");
-            }
             try
             {
-                // Leer el csvFile CSV
-                using (var reader = new StreamReader(csvFile.OpenReadStream()))
-                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)))
-                {
-                    // Registrar mapeo personalizado
-                    csv.Context.RegisterClassMap<SubidaDeArchivosDTOMapping>();
-
-                    // Obtener los encabezados del csvFile
-                    csv.Read();
-                    csv.ReadHeader();
-                    var encabezadoscsvFile = csv.HeaderRecord;
-
-                    // Encabezados esperados según el DTO
-                    var encabezadosEsperados = new[]
-                    {
-                        "COD_CANAL", "CANAL", "DNI", "FECHA_ENVIO", "FECHA_GESTION",
-                        "HORA_GESTION", "TELEFONO", "ORIGEN_TELEFONO", "COD_CAMPAÑA", "COD_TIP",
-                        "OFERTA", "DNI_ASESOR"
-                    };
-
-                    // Verificar que los encabezados coincidan
-                    var faltantes = encabezadosEsperados.Except(encabezadoscsvFile).ToList();
-                    if (faltantes.Any())
-                    {
-                        TempData["Message"] = $"Faltan los siguientes encabezados: {string.Join(", ", faltantes)}";
-                        return RedirectToAction("Index", "Home");
-                    }
-
-                    // Leer y procesar los datos del csvFile
-                    var registros = new List<SubidaDeArchivosDTO>();
-                    while (csv.Read())
-                    {
-                        var registro = csv.GetRecord<SubidaDeArchivosDTO>();
-
-                        // Validación del DNI
-                        if (registro.DNI == null)
-                        {
-                            TempData["Message"] = $"El DNI {registro.DNI} no es valido. Debe ser un numero.";
-                            return RedirectToAction("Index", "Home");
-                        }
-
-                        // Validación de otros campos del DTO
-                        if (registro.FECHA_ENVIO == null || registro.FECHA_GESTION == null || string.IsNullOrEmpty(registro.COD_CANAL))
-                        {
-                            TempData["Message"] = $"Algunos campos obligatorios están vacíos en el registro con DNI {registro.DNI}.";
-                            return RedirectToAction("Index", "Home");
-                        }
-
-                        // Verificar si el registro ya existe
-                        var registroExistente = _context.SUBIR_FEED
-                            .AsNoTracking()
-                            .Any(sf => sf.Dni == registro.DNI);
-                        if (registroExistente)
-                        {
-                            TempData["Message"] = $"El registro con DNI {registro.DNI} ya existe. La subida de archivos se canceló.";
-                            return RedirectToAction("Inicio", "Supervisor");
-                        }
-
-                        // Si todas las validaciones pasan, agregar el registro a la lista
-                        registros.Add(registro);
-                    }
-
-                    // Procesar y guardar los registros válidos
-                    foreach (var registro in registros)
-                    {
-                        var modelf = new SubirFeed
-                        {
-                            CodCanal = registro.COD_CANAL,
-                            Canal = registro.CANAL,
-                            Dni = registro.DNI,
-                            FechaEnvio = registro.FECHA_ENVIO,
-                            FechaGestion = registro.FECHA_GESTION,
-                            HoraGestion = registro.HORA_GESTION,
-                            Telefono = registro.TELEFONO,
-                            OrigenTelefono = registro.ORIGEN_TELEFONO,
-                            CodCampana = registro.COD_CAMPAÑA,
-                            CodTip = registro.COD_TIP,
-                            Oferta = registro.OFERTA,
-                            DniAsesor = registro.DNI_ASESOR
-                        };
-
-                        // Guardar el modelo en la base de datos
-                        _context.SUBIR_FEED.Add(modelf);
-
-                        var modelforFechas = new CargaManualCsv
-                        {
-                            IdUsuario = idSupervisorActual,
-                            FechaDeCarga = DateTime.Now,
-                            DniUsuarioAgregado = registro.DNI
-                        };
-
-                        _context.carga_manual_csv.Add(modelforFechas);
-                    }
-
-                    // Guardar los cambios en la base de datos
-                    _context.SaveChanges();
-
-                    TempData["Message"] = "csvFile procesado correctamente.";
-                }
-
-                return RedirectToAction("Inicio", "Supervisor");
+                var asignaciones = dAO_DescargarDerivaciones.GetDerivacionesForDownload(filtro, campo, fecha_inicio, fecha_final);
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                using var package = new ExcelPackage();
+                var fileBytes = package.GetAsByteArray();
+                var fileName = $"Derivaciones_{filtro}_{campo}_{fecha_inicio:yyyyMMdd}_{fecha_final:yyyyMMdd}.xlsx";
+                return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
             }
             catch (System.Exception ex)
             {
-                Console.WriteLine($"Error al procesar el csvFile: {ex.Message}");
-                TempData["Message"] = "Ocurrió un error al procesar el csvFile. Verifique su formato y vuelva a intentarlo.";
-                return RedirectToAction("Inicio", "Supervisor");
+                _logger.LogError(ex, "Error al descargar las derivaciones");
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = "Error al descargar las derivaciones"
+                });
             }
-        }*/
+        }
     }
 }

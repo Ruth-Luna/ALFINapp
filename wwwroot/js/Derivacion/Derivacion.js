@@ -88,16 +88,6 @@ function cargarDerivacionesXAsesorSistema(DniAsesor) {
     }
 }
 
-function cargarDerivacionesSistema() {
-
-    tablaDerivacionesGestion = document.getElementById("tablaDerivacionesGestion")
-    tablaGeneralSistema = document.getElementById("tablaGeneralSistema")
-    tablaGeneralGestion = document.getElementById("tablaGeneralGestion")
-    tablaGeneralSistema.style = "display: block;"
-    tablaGeneralGestion.style = "display: none;"
-    tablaDerivacionesGestion.style = "display: none;"
-}
-
 function cargarDerivacionesSistemaSupervisor(idAsesor) {
 
     tablaDerivacionesGestion = document.getElementById("tablaDerivacionesGestion")
@@ -205,12 +195,19 @@ function cargarTipoFiltro(filtro) {
     }
 }
 
-function filtrarTabla(idTabla, value, colIndex, type) {
+let activeDnis = [];
+
+let filtrosActivos = {
+    dni: "",
+    fechaExacta: "",
+    intervaloInicio: "",
+    intervaloFinal: "",
+};
+
+function filtrarTablaGeneral(idTabla, colIndex) {
     const table = document.getElementById(idTabla);
     if (!table) return;
-
     const rows = Array.from(table.getElementsByTagName("tr")).slice(2);
-
     rows.forEach(row => {
         const cell = row.cells[colIndex];
         if (!cell) return;
@@ -218,27 +215,66 @@ function filtrarTabla(idTabla, value, colIndex, type) {
         let cellValue = cell.textContent.trim();
         let showRow = false;
 
-        if (type === "text") {
-            if (value === "") {
-                showRow = true; // Show all rows when text filter is empty
-                activatePagination(0);
+        if (filtrosActivos.dni) {
+            showRow = cellValue.toLowerCase().includes(filtrosActivos.dni.toLowerCase());
+        }
+        if (filtrosActivos.fechaExacta) {
+            const match = cellValue.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+            if (match) {
+                const formattedDate = `${match[3]}-${match[2].padStart(2, '0')}-${match[1].padStart(2, '0')}`;
+                showRow = formattedDate === filtrosActivos.fechaExacta;
             }
-            showRow = cellValue.toLowerCase().includes(value.toLowerCase());
-        } else if (type === "date") {
-            if (value === "") {
-                showRow = true; // Show all rows when date filter is empty
-                activatePagination(0);
-            } else {
-                const match = cellValue.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
-                if (match) {
-                    const formattedDate = `${match[3]}-${match[2].padStart(2, '0')}-${match[1].padStart(2, '0')}`;
-                    showRow = formattedDate === value;
-                }
-            }
+        }
+        const fechaActual = new Date(parsearFechaISO(cellValue));
+        if (filtrosActivos.intervaloInicio) {
+            const inicio = new Date(filtrosActivos.intervaloInicio);
+            if (fechaActual > inicio) showRow = true;
+        }
+        if (filtrosActivos.intervaloFinal) {
+            const fin = new Date(filtrosActivos.intervaloFinal);
+            if (fechaActual < fin) showRow = true;
+        }
+        if (!filtrosActivos.dni && !filtrosActivos.fechaExacta && !filtrosActivos.intervaloInicio && !filtrosActivos.intervaloFinal) {
+            showRow = true;
+            activatePagination(0);
         }
         row.style.display = showRow ? "" : "none";
     });
 }
+
+function parsearFecha(fechaStr) {
+    const match = fechaStr.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    if (!match) return "";
+    return `${match[3]}-${match[2].padStart(2, '0')}-${match[1].padStart(2, '0')}`;
+}
+
+function parsearFechaISO(fechaStr) {
+    const match = fechaStr.match(/(\d{1,2})\/(\d{1,2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})/);
+    if (!match) return new Date(0); // fecha inválida
+    const [_, d, m, y, h, mi, s] = match;
+    return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}T${h}:${mi}:${s}`;
+}
+
+
+function filtrarTabla(idTabla, value, colIndex, type) {
+    switch (type) {
+        case "dni":
+            filtrosActivos.dni = value;
+            break;
+        case "date":
+            filtrosActivos.fechaExacta = value;
+            break;
+        case "intervalo-inicio":
+            filtrosActivos.intervaloInicio = value;
+            break;
+        case "intervalo-final":
+            filtrosActivos.intervaloFinal = value;
+            break;
+    }
+
+    filtrarTablaGeneral(idTabla, colIndex);
+}
+
 
 function activatePagination(direction) {
     if (direction === -1 && currentPage > 1) {
