@@ -15,20 +15,22 @@ namespace ALFINapp.Datos.DAO.Derivaciones
             string? filtro = null,
             string? campo = null,
             DateTime? fecha_inicio = null,
-            DateTime? fecha_final = null)
+            DateTime? fecha_final = null,
+            int? id_usuario = null)
         {
             try
             {
-                var parameters = new []
+                var parameters = new[]
                 {
                     new SqlParameter("@filtro", filtro ?? (object)DBNull.Value),
                     new SqlParameter("@campo", campo ?? (object)DBNull.Value),
                     new SqlParameter("@fecha_inicio", fecha_inicio.HasValue ? fecha_inicio.Value : (object)DBNull.Value),
-                    new SqlParameter("@fecha_final", fecha_final.HasValue ? fecha_final.Value : (object)DBNull.Value)
+                    new SqlParameter("@fecha_final", fecha_final.HasValue ? fecha_final.Value : (object)DBNull.Value),
+                    new SqlParameter("@id_usuario", id_usuario.HasValue ? id_usuario.Value : (object)DBNull.Value)
                 };
                 
                 var derivaciones = await _context.derivacion_conseguir_o_descargar_asignacion_con_derivaciones_de_sup
-                    .FromSqlRaw("EXEC SP_derivacion_conseguir_o_descargar_asignacion_con_derivaciones_de_sup @Id",
+                    .FromSqlRaw("EXEC SP_derivacion_conseguir_o_descargar_asignacion_con_derivaciones_de_sup @filtro, @campo, @fecha_inicio, @fecha_final, @id_usuario",
                         parameters)
                     .ToListAsync();
 
