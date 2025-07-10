@@ -129,7 +129,12 @@ function mostrarConsultas(data) {
     }
 
     const camposTexto = {
-        "nombres-completos-cliente": (d) => `${d.apellidoPaterno.toUpperCase()} ${d.apellidoMaterno.toUpperCase()}, ${d.nombres.toUpperCase()}`,
+        "nombres-completos-cliente": (d) => {
+            const apePat = d.apellidoPaterno?.toUpperCase() || "";
+            const apeMat = d.apellidoMaterno?.toUpperCase() || "";
+            const nombres = d.nombres?.toUpperCase() || "";
+            return `${apePat} ${apeMat}, ${nombres}`.trim();
+        },
         "color-inicial-consulta-nombre": (d) => d.color.toUpperCase(),
         "color-final-consulta-nombre": (d) => d.colorFinal.toUpperCase(),
         "campaña": (d) => d.campaña.toUpperCase(),
