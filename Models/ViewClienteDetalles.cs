@@ -38,36 +38,36 @@ namespace ALFINapp.API.Models
         { }
         public ViewClienteDetalles(ConsultaObtenerCliente model)
         {
-            Dni = model.Dni;
-            ApellidoPaterno = model.ApellidoPaterno;
-            ApellidoMaterno = model.ApellidoMaterno;
-            Nombres = model.Nombres;
+            Dni = model.Dni ?? string.Empty;
+            ApellidoPaterno = model.ApellidoPaterno ?? string.Empty;
+            ApellidoMaterno = model.ApellidoMaterno ?? string.Empty;
+            Nombres = model.Nombres ?? string.Empty;
 
-            ColorFinal = model.ColorFinal;
-            Color = model.Color;
-            Campaña = model.Campaña;
-            OfertaMax = model.OfertaMax;
-            Plazo = model.Plazo;
-            CapacidadMax = model.CapacidadMax;
-            SaldoDiferencialReeng = model.SaldoDiferencialReeng;
-            ClienteNuevo = model.ClienteNuevo;
+            ColorFinal = model.ColorFinal ?? string.Empty;
+            Color = model.Color ?? string.Empty;
+            Campaña = model.Campaña ?? string.Empty;
+            OfertaMax = model.OfertaMax ?? 0;
+            Plazo = model.Plazo ?? 0;
+            CapacidadMax = model.CapacidadMax ?? 0;
+            SaldoDiferencialReeng = model.SaldoDiferencialReeng ?? 0;
+            ClienteNuevo = model.ClienteNuevo ?? string.Empty;
             Deuda1 = $"{model.Deuda1}";
             Entidad1 = $"{model.Entidad1}";
-            Tasa1 = model.Tasa1;
-            Tasa2 = model.Tasa2;
-            Tasa3 = model.Tasa3;
-            Tasa4 = model.Tasa4;
-            Tasa5 = model.Tasa5;
-            Tasa6 = model.Tasa6;
-            Tasa7 = model.Tasa7;
-            GrupoTasa = model.GrupoTasa;
-            Usuario = model.Usuario;
-            SegmentoUser = model.SegmentoUser;
-            TraidoDe = model.TraidoDe;
-            IdBase = model.IdBase;
-            UserV3 = model.UserV3;
-            FlagDeudaVOferta = model.FlagDeudaVOferta;
-            PerfilRo = model.PerfilRo;
+            Tasa1 = model.Tasa1 ?? 0; // Tasa1
+            Tasa2 = model.Tasa2 ?? 0; // Tasa2
+            Tasa3 = model.Tasa3 ?? 0;
+            Tasa4 = model.Tasa4 ?? 0;
+            Tasa5 = model.Tasa5 ?? 0;
+            Tasa6 = model.Tasa6 ?? 0;
+            Tasa7 = model.Tasa7 ?? 0; // Tasa7
+            GrupoTasa = model.GrupoTasa ?? string.Empty;
+            Usuario = model.Usuario ?? string.Empty;
+            SegmentoUser = model.SegmentoUser ?? string.Empty;
+            TraidoDe = model.TraidoDe ?? string.Empty;
+            IdBase = model.IdBase ?? 0;
+            UserV3 = model.UserV3 ?? string.Empty;
+            FlagDeudaVOferta = model.FlagDeudaVOferta ?? 0;
+            PerfilRo = model.PerfilRo ?? string.Empty;
         }
     }
 }
