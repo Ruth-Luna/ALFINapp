@@ -19,12 +19,10 @@ async function modal_id_derivacion_to_be_uploaded(id) {
 
 // Click = abrir input oculto
 dropArea.addEventListener('click', () => {
-    console.log('Drop area clicked');
     fileInput.click()
 });
 
 fileInput.addEventListener('click', (event) => {
-    console.log('File input clicked');
     event.stopPropagation();
 });
 
