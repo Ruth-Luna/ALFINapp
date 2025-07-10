@@ -18,7 +18,15 @@ async function modal_id_derivacion_to_be_uploaded(id) {
 }
 
 // Click = abrir input oculto
-dropArea.addEventListener('click', () => fileInput.click());
+dropArea.addEventListener('click', () => {
+    console.log('Drop area clicked');
+    fileInput.click()
+});
+
+fileInput.addEventListener('click', (event) => {
+    console.log('File input clicked');
+    event.stopPropagation();
+});
 
 // Pegar (Ctrl+V)
 modalGeneral.addEventListener('paste', (e) => {
@@ -167,7 +175,6 @@ async function submit_evidencia_derivacion() {
     }
 
     const convertedFiles = JSON.stringify(dataJson);
-    console.log('Archivos a subir:', convertedFiles);
 
     const loading = Swal.fire({
         title: 'Subiendo archivos...',

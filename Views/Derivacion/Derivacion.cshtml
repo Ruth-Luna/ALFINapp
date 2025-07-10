@@ -157,9 +157,16 @@
                     <div class="col" style="display: none;" id="filtrosTabla">
                         <label for=""></label>
                         <input type="text" class="form-control" id="filtroDNI" style="display: none;"
-                            oninput="filtrarTabla('tablaGeneralSistema', this.value, 1, 'text')">
+                            oninput="filtrarTabla('tablaGeneralSistema', this.value, 1, 'dni')">
                         <input type="date" class="form-control" id="filtroFecha" style="display: none;"
                             oninput="filtrarTabla('tablaGeneralSistema', this.value, 5, 'date')">
+                    </div>
+                    <div class="col">
+                        <label for="intervalo-de-fechas">Filtrar Por Intervalos:</label>
+                        <input type="date" class="form-control" id="intervalo-inicio-de-fechas"
+                            oninput="filtrarTabla('tablaGeneralSistema', this.value, 5, 'intervalo-inicio')">
+                        <input type="date" class="form-control" id="intervalo-final-de-fechas"
+                            oninput="filtrarTabla('tablaGeneralSistema', this.value, 5, 'intervalo-final')">
                     </div>
                 </div>
             </div>
@@ -170,13 +177,6 @@
         @if (RolActual == 3)
         {
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <div class="btn-group" role="group" aria-label="Selector de vista">
-                    <a href="javascript:void(0);" type="button" class="btn btn-primary" id="btnTablaSistema"
-                        onclick="cargarDerivacionesSistema()">
-                        <i class="fas fa-table"></i> Derivaciones Sistema
-                    </a>
-                </div>
-
                 <div class="btn-group">
                     <a href="javascript:void(0)" class="me-2" onclick="activatePagination(-1)"><i
                             class="bi bi-arrow-left-circle"></i></a>
@@ -184,25 +184,23 @@
                     <a href="javascript:void(0)" class="me-2" onclick="activatePagination(1)"><i
                             class="bi bi-arrow-right-circle"></i></a>
                 </div>
-
                 <div class="badge bg-primary text-wrap" style="width: 6rem;">
                     <span id="informationTabla">Total del Mes: @Model.Derivaciones.Count</span>
                 </div>
                 <div class="badge bg-info text-wrap" style="width: 6rem;">
                     <span id="total-actual">Total: @Model.Derivaciones.Count</span>
                 </div>
+                <div class="btn-group" role="group" aria-label="Selector de vista">
+                    <a href="javascript:void(0);" type="button" class="btn btn-primary" id="btn-descarga-de-derivaciones"
+                        onclick="downloadDerivaciones()">
+                        <i class="fa fa-download"></i> Derivaciones Sistema
+                    </a>
+                </div>
             </div>
         }
         @if (RolActual == 2 || RolActual == 1 || RolActual == 4)
         {
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <div class="btn-group" role="group" aria-label="Selector de vista">
-                    <a href="javascript:void(0);" type="button" class="btn btn-primary" id="btnTablaSistema"
-                        onclick="cargarDerivacionesSistemaSupervisor('IdAsesoresDerivacion', '@Dni')">
-                        <i class="fas fa-table"></i> Derivaciones Sistema
-                    </a>
-                </div>
-
                 <div class="btn-group">
                     <a href="javascript:void(0)" class="me-2" onclick="activatePagination(-1)"><i
                             class="bi bi-arrow-left-circle"></i></a>
@@ -216,6 +214,12 @@
                 </div>
                 <div class="badge bg-info text-wrap" style="width: 6rem;">
                     <span id="total-actual">Total: @Model.Derivaciones.Count</span>
+                </div>
+                <div class="btn-group" role="group" aria-label="Selector de vista">
+                    <a href="javascript:void(0);" type="button" class="btn btn-primary" id="btn-descarga-de-derivaciones"
+                        onclick="downloadDerivaciones()">
+                        <i class="fa fa-download"></i> Derivaciones Sistema
+                    </a>
                 </div>
             </div>
         }
@@ -386,4 +390,5 @@
     <script src="~/js/Derivacion/Derivacion.js?v=@DateTime.Now.Ticks"></script>
     <script src="~/js/Derivacion/DerivacionEvidencia.js?v=@DateTime.Now.Ticks"></script>
     <script src="~/js/Derivacion/Reagendamiento.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/js/Derivacion/DownloadDerivaciones.js?v=@DateTime.Now.Ticks"></script>
 }
