@@ -33,10 +33,14 @@ namespace ALFINapp.Datos.DAO
                     var entrada = hayentradaA365.FirstOrDefault();
                     if (entrada == null)
                     {
-                        return (false, "El cliente no tiene Detalles en la Base de Datos de A365. Se buscara en la base de datos interna del banco.", null);
+                        entradaA365.entradaDB = false;
+                        entradaA365.mensaje = "El cliente no tiene Detalles en la Base de Datos de A365. Se buscara en la base de datos interna del banco. ";
                     }
-                    var clienteExistenteA365 = new ViewClienteDetalles(entrada);
-                    return (true, "El DNI se encuentra registrado en la Base de Datos de A365 durante este mes. Al cliente se le permite ser tipificado", clienteExistenteA365);
+                    else
+                    {
+                        var clienteExistenteA365 = new ViewClienteDetalles(entrada);
+                        return (true, "El DNI se encuentra registrado en la Base de Datos de A365 durante este mes. Al cliente se le permite ser tipificado", clienteExistenteA365);
+                    }
                 }
                 else
                 {
