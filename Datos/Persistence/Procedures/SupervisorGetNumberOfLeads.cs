@@ -328,5 +328,15 @@ namespace ALFINapp.Infrastructure.Persistence.Procedures
 
         [Column("ultima_tipificacion_general")]
         public string? UltimaTipificacionGeneral { get; set; }
+        [Column("telefono_derivado")]
+        public string? TelefonoDerivado { get; set; }
+        [Column("fecha_derivacion")]
+        public DateTime? FechaDerivacion { get; set; }
+        [Column("nombre_agencia_derivada")]
+        public string? NombreAgenciaDerivada { get; set; }
+        [Column("fecha_visita")]
+        public DateTime? FechaVisita { get; set; }
+        [Column("oferta_max_derivada")]
+        public Decimal? OfertaMaxDerivada { get; set; }
     }
 }
