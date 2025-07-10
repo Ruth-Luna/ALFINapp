@@ -133,7 +133,9 @@ function mostrarConsultas(data) {
             const apePat = d.apellidoPaterno?.toUpperCase() || "";
             const apeMat = d.apellidoMaterno?.toUpperCase() || "";
             const nombres = d.nombres?.toUpperCase() || "";
-            return `${apePat} ${apeMat}, ${nombres}`.trim();
+            return `${apePat} ${apeMat} ${nombres}`.trim() != "" ?
+                `${apePat} ${apeMat} ${nombres}`.trim() :
+                "No se encontraron nombres completos";
         },
         "color-inicial-consulta-nombre": (d) => d.color.toUpperCase(),
         "color-final-consulta-nombre": (d) => d.colorFinal.toUpperCase(),
