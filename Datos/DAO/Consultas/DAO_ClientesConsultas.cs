@@ -34,7 +34,7 @@ namespace ALFINapp.Datos.DAO
                     if (entrada == null)
                     {
                         entradaA365.entradaDB = false;
-                        entradaA365.mensaje = "El cliente no tiene Detalles en la Base de Datos de A365. Se buscara en la base de datos interna del banco.";
+                        entradaA365.mensaje = "El cliente no tiene Detalles en la Base de Datos de A365. Se buscara en la base de datos interna del banco. ";
                     }
                     else
                     {
