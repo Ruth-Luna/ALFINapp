@@ -202,9 +202,9 @@ async function submit_evidencia_derivacion() {
                 title: 'Archivos subidos',
                 text: 'Los archivos se han subido correctamente.',
                 confirmButtonText: 'Aceptar'
+            }).then(() => {
+                window.location.reload(); // Recargar la página para reflejar los cambios
             });
-            files = []; // Limpiar la lista de archivos
-            updateFileList(); // Actualizar la lista visualmente
         } else {
             Swal.fire({
                 icon: 'error',
