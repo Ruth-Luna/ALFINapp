@@ -36,28 +36,39 @@ async function descargarDatos() {
             Swal.showLoading();
         }
     });
+    const baseUrl = window.location.origin;
 
+    const params = new URLSearchParams();
+
+
+    if (fechaInicio) params.append("fechaInicio", fechaInicio);
+    if (fechaFin) params.append("fechaFin", fechaFin);
+    if (filtroData) params.append("filtroDescarga", filtroData);
+    if (type_filter) params.append("typeFilter", type_filter);
+    
     try {
-        const response = await fetch(`/Excel/DescargarClientesAsignados?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}&filtroDescarga=${filtroData}&typeFilter=${type_filter}`);
+        const response = await fetch(`${baseUrl}/Excel/DescargarClientesAsignados?${params.toString()}`);
 
-        if (!response.ok) throw new Error("Error al descargar el archivo.");
-
-        const disposition = response.headers.get('Content-Disposition');
-        let fileName = "descarga.xlsx";
-        if (disposition && disposition.indexOf('filename=') !== -1) {
-            const matches = /filename[^;=\n]*=(['"]?)([^'"\n]*)\1?/.exec(disposition);
-            if (matches && matches[2]) fileName = matches[2];
+        if (!response.ok) {
+            throw new Error("Error al descargar el archivo.");
         }
 
         const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(url);
+        const contentDisposition = response.headers.get("Content-Disposition");
+        let filename = "derivaciones.xlsx"; // fallback
+
+        // Extraer el nombre del archivo si viene en el header
+        if (contentDisposition && contentDisposition.includes("filename=")) {
+            filename = contentDisposition.split("filename=")[1].replace(/['"]/g, "");
+        }
+
+        // Crear enlace para descarga
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
         Swal.close(); // cerrar loading
         Swal.fire({
@@ -67,7 +78,6 @@ async function descargarDatos() {
             confirmButtonText: 'Aceptar'
         });
     } catch (error) {
-        console.error(error);
         Swal.close();
         Swal.fire({
             title: 'Error',

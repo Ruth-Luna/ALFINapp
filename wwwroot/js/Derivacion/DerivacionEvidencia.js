@@ -1,8 +1,6 @@
 const dropArea = document.getElementById('drop-area');
 const fileInput = document.getElementById('evidencia-derivacion-id-input');
 const modalGeneral = document.getElementById('evidencia-derivacion-modal');
-const modalReagendamiento = document.getElementById('GeneralTemplateModal');
-// const fileList = document.getElementById('file-list');
 
 let files = [];
 var activeId = null;
@@ -12,6 +10,15 @@ async function modal_id_derivacion_to_be_uploaded(id) {
     activeId = id;
     const modalTitle = document.getElementById('evidencia-derivacion-title');
     modalTitle.textContent = `Evidencia para la derivación: ${activeId}`;
+    const reagendacioncontent = document.getElementById('reagendacion-de-derivacion-content');
+    reagendacioncontent.innerHTML = ''; // Limpiar el contenido previo
+    const submitButtonContainer = document.getElementById('evidencia-derivacion-submit-button-container');
+    submitButtonContainer.innerHTML = ''; // Limpiar el contenedor de botones
+    submitButtonContainer.innerHTML = `
+        <button type="button" class="btn btn-success mr-3" id="evidencia-derivacion-submit-button"
+            onclick="submit_evidencia_derivacion();">Enviar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+    `; // Limpiar el contenedor de botones
     fileInput.value = ''; // Limpiar el input file
     files = []; // Limpiar la lista de archivos
     updateFileList(); // Actualizar la lista visualmente
@@ -35,20 +42,6 @@ modalGeneral.addEventListener('paste', (e) => {
             files.push(file);
             updateFileInput();
             updateFileList();
-            break;
-        }
-    }
-});
-
-// Pegar (Ctrl+V) en el modal de reagendamiento
-modalReagendamiento.addEventListener('paste', (e) => {
-    const items = e.clipboardData.items;
-    for (let item of items) {
-        if (item.kind === 'file') {
-            const file = item.getAsFile();
-            files.push(file);
-            updateFileInput();
-            updateFileList('reagendamiento');
             break;
         }
     }

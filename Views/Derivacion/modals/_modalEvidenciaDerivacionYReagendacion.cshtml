@@ -1,0 +1,77 @@
+<div class="modal fade" id="evidencia-derivacion-modal" tabindex="-1" aria-labelledby="assignments-list-title"
+  aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="evidencia-derivacion-title">Evidencias de Derivación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="evidencia-derivacion-modal-body">
+        <div class="row" id="reagendacion-de-derivacion-content">
+          @* <h5>Reagendamiento</h5>
+          <div class="col-md-6">
+            <div class="form-group mb-2">
+              <label for="dni-reagendamiento">Dni Cliente: </label>
+              <input type="text" class="form-control" id="dni-reagendamiento" name="dni-reagendamiento"
+                value="@Model.Dni" readonly />
+            </div>
+            <div class="form-group mb-2">
+              <label for="nombre-reagendamiento">Nombre Cliente: </label>
+              <input type="text" class="form-control" id="nombre-reagendamiento" name="nombre-reagendamiento"
+                value="@Model.NombresCompletos" readonly />
+            </div>
+            <div class="form-group mb-2">
+              <label for="telefono-reagendamiento">Teléfono Cliente: </label>
+              <input type="text" class="form-control" id="telefono-reagendamiento" name="telefono-reagendamiento"
+                value="@Model.Telefono" readonly />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group mb-2">
+              <label for="oferta-reagendamiento">Oferta a enviar: </label>
+              <input type="text" class="form-control" id="oferta-reagendamiento" name="oferta-reagendamiento"
+                value="@Model.OfertaMax" readonly />
+            </div>
+            <div class="form-group mb-2">
+              <label for="agencia-reagendamiento">Agencia Asignada: </label>
+              <input type="text" class="form-control" id="agencia-reagendamiento" name="agencia-reagendamiento"
+                value="@Model.AgenciaAsignada" readonly />
+            </div>
+            <div class="form-group">
+              <label for="fecha-reagendamiento-previo">Fecha Previa de Agendamiento</label>
+              <input type="text" class="form-control" id="fecha-reagendamiento-previo"
+                name="fecha-reagendamiento-previo" value="@Model.FechaVisitaPrevia" readonly />
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="form-group mb-3">
+              <label for="fecha-reagendamiento-nueva">Nueva Fecha de Visita</label>
+              <input type="date" class="form-control" id="fecha-reagendamiento-nueva"
+                name="fecha-reagendamiento-nueva" />
+            </div>
+          </div> *@
+        </div>
+        <div class="mb-3">
+          <label class="form-label w-100">
+            <div id="drop-area" class="border border-3 border-light bg-light text-center rounded-3 p-5"
+              style="cursor: pointer;">
+              <p class="mb-2 fs-5">Haz clic o arrastra archivos aquí</p>
+              <p class="text-muted">También puedes pegar (Ctrl + V) un archivo</p>
+            </div>
+          </label>
+          <input type="file" id="evidencia-derivacion-id-input" class="form-control d-none" />
+        </div>
+        <!-- Vista previa de archivos -->
+        <div id="file-preview" class="mb-3 d-none">
+          <h6>Archivos seleccionados:</h6>
+          <ul class="list-group" id="file-list"></ul>
+        </div>
+        <div class="text-center" id="evidencia-derivacion-submit-button-container">
+          <button type="button" class="btn btn-success mr-3" id="evidencia-derivacion-submit-button"
+            onclick="submit_evidencia_derivacion();">Enviar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

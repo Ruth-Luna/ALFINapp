@@ -74,17 +74,33 @@ namespace ALFINapp.Models
                         TipoBase = item.TipoBase ?? string.Empty,
                         IdAsignacion = item.IdAsignacion,
                         NombreLista = item.NombreLista ?? string.Empty,
+
                         FechaCreacion = item.FechaCreacion ?? DateTime.MinValue,
                         FechaAsignacionSup = item.FechaAsignacionSup ?? DateTime.MinValue,
                         IdUsuarioV = item.IdUsuarioV,
                         UltimaTipificacionGeneral = item.UltimaTipificacionGeneral ?? string.Empty,
                         ClienteNombreCompleto = $"{item.XAppaterno} {item.XApmaterno} {item.XNombre}".Trim(),
+
+                        // COLUMAS DE DERIVACIONES
+                        TelefonoDerivado = item.TelefonoDerivado ?? String.Empty,
+                        FechaDerivacion = item.FechaDerivacion ?? DateTime.MinValue,
+                        NombreAgenciaDerivada = item.NombreAgenciaDerivada ?? String.Empty,
+                        FechaVisita = item.FechaVisita ?? DateTime.MinValue,
+                        OfertaMaxDerivada = item.OfertaMaxDerivada ?? 0,
+                        DocAsesor = item.DocAsesor ?? string.Empty,
+                        NombreAsesor = item.NombreAsesor ?? string.Empty
                     });
                 }
-                this.nombre_lista = model[0].NombreLista ?? string.Empty;
-                this.dni_supervisor = model[0].Dni ?? string.Empty;
-                this.nombres_supervisor = $"{model[0].XAppaterno} {model[0].XApmaterno} {model[0].XNombre}".Trim();
-                this.fecha_creacion_lista = model[0].FechaCreacion ?? DateTime.MinValue;
+                this.nombre_lista = string.Join("\n", model
+                    .Select(x => x.NombreLista)
+                    .Distinct());
+                this.dni_supervisor = string.Join("\n", model
+                    .Select(x => x.DocAsesor)
+                    .Distinct());
+                this.nombres_supervisor = string.Join("\n", model
+                    .Select(x => x.NombreAsesor)
+                    .Distinct());
+                this.fecha_creacion_lista = DateTime.Now; // Asignar la fecha actual como fecha de creación de la lista
                 this.total_asignaciones = model.Count;
                 this.total_asignaciones_gestionadas = model.Count(x => x.FechaAsignacionSup.HasValue);
                 this.total_asignaciones_asignadas_a_asesores = model.Count(x => x.IdUsuarioV.HasValue && x.IdUsuarioV > 0);
@@ -96,88 +112,69 @@ namespace ALFINapp.Models
     }
     public class DetallesDescarga
     {
-        public string? Dni { get; set; }
-        public string? XAppaterno { get; set; }
-        public string? XApmaterno { get; set; }
-        public string? XNombre { get; set; }
-        public int? Edad { get; set; }
-        public string? Departamento { get; set; }
-        public string? Provincia { get; set; }
-        public string? Distrito { get; set; }
+        public string? Dni { get; set; } = string.Empty;
+        public string? XAppaterno { get; set; } = string.Empty;
+        public string? XApmaterno { get; set; } = string.Empty;
+        public string? XNombre { get; set; } = string.Empty;
+        public int? Edad { get; set; } = 0;
+        public string? Departamento { get; set; } = string.Empty;
+        public string? Provincia { get; set; } = string.Empty;
+        public string? Distrito { get; set; } = string.Empty;
+        public string? Campaña { get; set; } = string.Empty;
+        public decimal? OfertaMax { get; set; } = 0;
+        public decimal? TasaMinima { get; set; } = 0;
+        public string? SucursalComercial { get; set; } = string.Empty;
+        public string? AgenciaComercial { get; set; } = string.Empty;
+        public int? Plazo { get; set; } = 0;
+        public decimal? Cuota { get; set; } = 0;
+        public decimal? Oferta12m { get; set; } = 0;
+        public decimal? Tasa12m { get; set; } = 0;
+        public decimal? Cuota12m { get; set; } = 0;
+        public decimal? Oferta18m { get; set; } = 0;
+        public decimal? Tasa18m { get; set; } = 0;
+        public decimal? Cuota18m { get; set; } = 0;
+        public decimal? Oferta24m { get; set; } = 0;
+        public decimal? Tasa24m { get; set; } = 0;
+        public decimal? Cuota24m { get; set; } = 0;
+        public decimal? Oferta36m { get; set; } = 0;
+        public decimal? Tasa36m { get; set; } = 0;
+        public decimal? Cuota36m { get; set; } = 0;
+        public string? GrupoTasa { get; set; } = string.Empty;
+        public string? GrupoMonto { get; set; } = string.Empty;
+        public int? Propension { get; set; } = 0;
+        public string? TipoCliente { get; set; } = string.Empty;
+        public string? ClienteNuevo { get; set; } = string.Empty;
+        public string? Color { get; set; } = string.Empty;
+        public string? ColorFinal { get; set; } = string.Empty;
+        public string? Usuario { get; set; } = string.Empty;
+        public string? UserV3 { get; set; } = string.Empty;
+        public int? FlagDeudaVOferta { get; set; } = 0;
+        public string? PerfilRo { get; set; } = string.Empty;
+        public string? Prioridad { get; set; } = string.Empty;
+        public string? Telefono1 { get; set; } = string.Empty;
+        public string? Telefono2 { get; set; } = string.Empty;
+        public string? Telefono3 { get; set; } = string.Empty;
+        public string? Telefono4 { get; set; } = string.Empty;
+        public string? Telefono5 { get; set; } = string.Empty;
+        public string? Email1 { get; set; } = string.Empty;
+        public string? Email2 { get; set; } = string.Empty;
+        public string? NombreCompleto { get; set; } = string.Empty;
+        public string? TipoBase { get; set; } = string.Empty;
+        public int IdAsignacion { get; set; } = 0;
+        public string? NombreLista { get; set; } = string.Empty;
+        public DateTime? FechaCreacion { get; set; } = DateTime.MinValue;
+        public DateTime? FechaAsignacionSup { get; set; } = DateTime.MinValue;
+        public int? IdUsuarioV { get; set; } = 0;
+        public string? UltimaTipificacionGeneral { get; set; } = string.Empty;
+        public string? ClienteNombreCompleto { get; set; } = string.Empty;
 
-        public string? Campaña { get; set; }
-
-        public decimal? OfertaMax { get; set; }
-
-        public decimal? TasaMinima { get; set; }
-        public string? SucursalComercial { get; set; }
-
-        public string? AgenciaComercial { get; set; }
-
-        public int? Plazo { get; set; }
-
-        public decimal? Cuota { get; set; }
-
-        public decimal? Oferta12m { get; set; }
-
-        public decimal? Tasa12m { get; set; }
-
-        public decimal? Cuota12m { get; set; }
-
-        public decimal? Oferta18m { get; set; }
-
-        public decimal? Tasa18m { get; set; }
-
-        public decimal? Cuota18m { get; set; }
-
-        public decimal? Oferta24m { get; set; }
-
-        public decimal? Tasa24m { get; set; }
-
-        public decimal? Cuota24m { get; set; }
-
-        public decimal? Oferta36m { get; set; }
-
-        public decimal? Tasa36m { get; set; }
-
-        public decimal? Cuota36m { get; set; }
-
-        public string? GrupoTasa { get; set; }
-
-        public string? GrupoMonto { get; set; }
-
-        public int? Propension { get; set; }
-
-        public string? TipoCliente { get; set; }
-
-        public string? ClienteNuevo { get; set; }
-
-        public string? Color { get; set; }
-
-        public string? ColorFinal { get; set; }
-
-        public string? Usuario { get; set; }
-
-        public string? UserV3 { get; set; }
-
-        public int? FlagDeudaVOferta { get; set; }
-        public string? PerfilRo { get; set; }
-        public string? Prioridad { get; set; }
-        public string? Telefono1 { get; set; }
-        public string? Telefono2 { get; set; }
-        public string? Telefono3 { get; set; }
-        public string? Telefono4 { get; set; }
-        public string? Telefono5 { get; set; }
-        public string? Email1 { get; set; }
-        public string? Email2 { get; set; }
-        public string? NombreCompleto { get; set; }
-        public string? TipoBase { get; set; }
-        public int IdAsignacion { get; set; }
-        public string? NombreLista { get; set; }
-        public DateTime? FechaCreacion { get; set; }
-        public DateTime? FechaAsignacionSup { get; set; }
-        public int? IdUsuarioV { get; set; }
-        public string? UltimaTipificacionGeneral { get; set; }
-        public string? ClienteNombreCompleto { get; set; }
+        //Tabla de Derivaciones
+        public string? TelefonoDerivado { get; set; } = string.Empty;
+        public DateTime? FechaDerivacion { get; set; } = DateTime.MinValue;
+        public string? NombreAgenciaDerivada { get; set; } = string.Empty;
+        public DateTime? FechaVisita { get; set; } = DateTime.MinValue;
+        public decimal? OfertaMaxDerivada { get; set; } = 0;
+        public string? DocAsesor { get; set; } = string.Empty; // Nuevo campo para el documento del asesor
+        public string? NombreAsesor { get; set; } = string.Empty; // Nuevo campo para el nombre del asesor
     }
 }

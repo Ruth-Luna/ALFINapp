@@ -14,7 +14,6 @@ const colores = {
     "rojo oscuro": "#721c24"
 };
 
-
 async function validarDNI() {
     const dniInput = document.getElementById("dnicliente");
     const datosClienteExistente = document.getElementById("datos-cliente-existente");
@@ -167,11 +166,83 @@ function mostrarConsultas(data) {
     });
     // Color de fondo
     document.getElementById("color-inicial-consulta").style.backgroundColor = colores[data.color?.toLowerCase()] || "#ffffff";
-    document.getElementById("color-final-consulta").value = colores[data.colorFinal?.toLowerCase()] || "#ffffff";
+    document.getElementById("color-final-consulta").style.backgroundColor = colores[data.colorFinal?.toLowerCase()] || "#ffffff";
     // Botón
-    document.getElementById("botones-consulta").innerHTML = `
-        <a class="btn btn-primary" href="javascript:void(0);" onclick="TakeThisClient('${data.dni}', '${data.traidoDe}')">
-            <i class="fas fa-check"></i> Tipifique Este Cliente
-        </a>
-    `;
+    if (data.idrol === 3) {
+        document.getElementById("botones-consulta").innerHTML = `
+            <a class="btn btn-primary" href="javascript:void(0);" onclick="TakeThisClient('${data.dni}', '${data.traidoDe}')">
+                <i class="fas fa-check"></i> Tipifique Este Cliente
+            </a>
+        `;
+    } else {
+        // Agregar mensaje que no puede asignar el cliente
+        document.getElementById("botones-consulta").innerHTML = `
+            <div class="alert alert-warning mt-2" role="alert">
+                <strong>Atención:</strong> No tiene permisos para autoasignarse este cliente. Solo puede visualizar los datos.
+            </div>
+        `;
+    }
+    
+}
+
+function validarTelefono() {
+    const campobusqueda = document.getElementById('dnicliente').value;
+
+    if (!campobusqueda) {
+        Swal.fire({
+            title: 'Error',
+            text: 'El campo del cliente es obligatorio.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+
+    $.ajax({
+        type: 'GET',
+        url: '/Consulta/VerificarTelefono',
+        data: {
+            telefono: campobusqueda
+        },
+        success: function (response) {
+            if (response.existe === false) {
+                Swal.fire({
+                    title: 'Cliente no encontrado',
+                    text: response.message,
+                    icon: 'info',
+                    confirmButtonText: 'Aceptar'
+                });
+                return;
+            } else if (response.error === true) {
+                Swal.fire({
+                    title: 'Error en la búsqueda',
+                    text: response.message,
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+                return;
+            }
+            else {
+                Swal.fire({
+                    title: 'Cliente encontrado',
+                    text: 'El cliente ha sido encontrado en la base de datos.',
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar'
+                });
+                const datosClienteExistente = document.getElementById("datos-cliente-existente");
+                datosClienteExistente.style.display = "block";
+                datosClienteExistente.innerHTML = response; // Carga la vista parcial
+            }
+        },
+        error: function (error) {
+            console.error(error);
+            Swal.fire({
+                title: 'Error',
+                text: error,
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+            return;
+        }
+    });
 }

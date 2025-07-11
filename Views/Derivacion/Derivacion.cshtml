@@ -97,7 +97,9 @@
             @if (RolActual != 3)
             {
                 <div class="col">
-                    <label for="select-option-asesor-derivacion">Asesor</label>
+                    <label for="select-option-asesor-derivacion">
+                        <strong> Asesor: </strong>
+                    </label>
                     <input type="text" name="select-option-asesor-derivacion" id="select-option-asesor-derivacion"
                         style="display: none;" oninput="cargarDerivacionesXAsesorSistema(this.value)">
                     <div class="custom-select">
@@ -128,12 +130,12 @@
                                     {
                                         <div class="custom-option" id="option-@(asesor.Dni)-select-derivacion" data-value="@asesor.Dni"
                                             onclick="select_option_refac(
-                                                                                                                                                'select-option-asesor-derivacion'
-                                                                                                                                                , 'selected-option-asesor-derivacion'
-                                                                                                                                                , 'selected-options-select-asesores-derivacion'
-                                                                                                                                                , '@asesor.Dni'
-                                                                                                                                                , '@asesor.Dni - @asesor.NombresCompletos'
-                                                                                                                                                , () => cargarDerivacionesXAsesorSistema('@asesor.Dni'))">
+                                                'select-option-asesor-derivacion'
+                                                , 'selected-option-asesor-derivacion'
+                                                , 'selected-options-select-asesores-derivacion'
+                                                , '@asesor.Dni'
+                                                , '@asesor.Dni - @asesor.NombresCompletos'
+                                                , () => cargarDerivacionesXAsesorSistema('@asesor.Dni'))">
                                             @asesor.Dni - @asesor.NombresCompletos
                                         </div>
                                     }
@@ -146,7 +148,9 @@
             <div class="col">
                 <div class="row">
                     <div class="col">
-                        <label for="IdAsesoresDerivacion">Buscar Por:</label>
+                        <label for="IdAsesoresDerivacion"> 
+                            <strong> Buscar Por: </strong>
+                        </label>
                         <select name="cargaTipoFiltro" class="form-control" id="cargaTipoFiltro"
                             onchange="cargarTipoFiltro(this.value)">
                             <option value=""> Seleccione una opcion </option>
@@ -162,11 +166,34 @@
                             oninput="filtrarTabla('tablaGeneralSistema', this.value, 5, 'date')">
                     </div>
                     <div class="col">
-                        <label for="intervalo-de-fechas">Filtrar Por Intervalos:</label>
-                        <input type="date" class="form-control" id="intervalo-inicio-de-fechas"
-                            oninput="filtrarTabla('tablaGeneralSistema', this.value, 5, 'intervalo-inicio')">
-                        <input type="date" class="form-control" id="intervalo-final-de-fechas"
-                            oninput="filtrarTabla('tablaGeneralSistema', this.value, 5, 'intervalo-final')">
+                        <div class="mb-2">
+                            <span> 
+                                <strong> Filtrar Por Intervalos: </strong>
+                            </span>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-6 col-md-6">
+                                <label for="intervalo-inicio-de-fechas"> Intervalos Inicial: </label>
+                            </div>
+                            <div class="col-6 col-md-6">
+                                <input type="date" 
+                                    class="form-control" 
+                                    id="intervalo-inicio-de-fechas"
+                                    oninput="filtrarTabla('tablaGeneralSistema', this.value, 5, 'intervalo-inicio')">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 col-md-6">
+                                <label for="intervalo-final-de-fechas"> Intervalos Final: </label>
+                            </div>
+                            <div class="col-6 col-md-6">
+                                <input type="date" 
+                                    class="form-control" 
+                                    id="intervalo-final-de-fechas"
+                                    oninput="filtrarTabla('tablaGeneralSistema', this.value, 5, 'intervalo-final')">
+                            </div>
+                        </div>  
                     </div>
                 </div>
             </div>
@@ -177,18 +204,19 @@
         @if (RolActual == 3)
         {
             <div class="d-flex justify-content-between align-items-center mb-3">
+                
+                <div class="badge bg-primary text-wrap" style="width: 6rem;">
+                    <span id="informationTabla">Total del Mes: @Model.Derivaciones.Count</span>
+                </div>
+                <div class="badge bg-info text-wrap" style="width: 6rem;">
+                    <span id="total-actual">Total: @Model.Derivaciones.Count</span>
+                </div>
                 <div class="btn-group">
                     <a href="javascript:void(0)" class="me-2" onclick="activatePagination(-1)"><i
                             class="bi bi-arrow-left-circle"></i></a>
                     <a href="javascript:void(0)" id="page-indicator" class="me-2"> Página 1 </a>
                     <a href="javascript:void(0)" class="me-2" onclick="activatePagination(1)"><i
                             class="bi bi-arrow-right-circle"></i></a>
-                </div>
-                <div class="badge bg-primary text-wrap" style="width: 6rem;">
-                    <span id="informationTabla">Total del Mes: @Model.Derivaciones.Count</span>
-                </div>
-                <div class="badge bg-info text-wrap" style="width: 6rem;">
-                    <span id="total-actual">Total: @Model.Derivaciones.Count</span>
                 </div>
                 <div class="btn-group" role="group" aria-label="Selector de vista">
                     <a href="javascript:void(0);" type="button" class="btn btn-primary" id="btn-descarga-de-derivaciones"
@@ -201,19 +229,18 @@
         @if (RolActual == 2 || RolActual == 1 || RolActual == 4)
         {
             <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="badge bg-primary text-wrap" style="width: 6rem;">
+                    <span id="informationTabla">Total del Mes: @Model.Derivaciones.Count</span>
+                </div>
+                <div class="badge bg-info text-wrap" style="width: 6rem;">
+                    <span id="total-actual">Total: @Model.Derivaciones.Count</span>
+                </div>
                 <div class="btn-group">
                     <a href="javascript:void(0)" class="me-2" onclick="activatePagination(-1)"><i
                             class="bi bi-arrow-left-circle"></i></a>
                     <a href="javascript:void(0)" id="page-indicator" class="me-2"> Página 1 </a>
                     <a href="javascript:void(0)" onclick="activatePagination(1)" class="me-2"><i
                             class="bi bi-arrow-right-circle"></i></a>
-                </div>
-
-                <div class="badge bg-primary text-wrap" style="width: 6rem;">
-                    <span id="informationTabla">Total del Mes: @Model.Derivaciones.Count</span>
-                </div>
-                <div class="badge bg-info text-wrap" style="width: 6rem;">
-                    <span id="total-actual">Total: @Model.Derivaciones.Count</span>
                 </div>
                 <div class="btn-group" role="group" aria-label="Selector de vista">
                     <a href="javascript:void(0);" type="button" class="btn btn-primary" id="btn-descarga-de-derivaciones"
@@ -328,7 +355,14 @@
                                                     <div class="d-flex flex-column align-items-center col-12 col-md-6 mb-2">
                                                         <a href="javascript:void(0)"
                                                             onclick="reagendarView(@derivacionAsesor.IdDerivacion, '@derivacionAsesor.PuedeSerReagendado')"
-                                                            class="btn btn-primary" style="width: auto;" title="Reagendar este cliente">
+                                                            class="btn btn-primary" 
+                                                            style="width: auto;" 
+                                                            title="Reagendar este cliente"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#evidencia-derivacion-modal" 
+                                                            data-bs-focus="false"
+                                                            data-bs-backdrop="static" 
+                                                            data-bs-keyboard="false">
                                                             <i class="bi bi-clipboard2-plus"></i>
                                                         </a>
                                                     </div>
@@ -346,9 +380,12 @@
                                                     <a href="javascript:void(0)"
                                                         onclick="modal_id_derivacion_to_be_uploaded(@derivacionAsesor.IdDerivacion)"
                                                         class="btn btn-info" style="width: auto;"
-                                                        title="Enviar evidencias de la Derivación" data-bs-toggle="modal"
-                                                        data-bs-target="#evidencia-derivacion-modal" data-bs-focus="false"
-                                                        data-bs-backdrop="static" data-bs-keyboard="false">
+                                                        title="Enviar evidencias de la Derivación" 
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#evidencia-derivacion-modal" 
+                                                        data-bs-focus="false"
+                                                        data-bs-backdrop="static" 
+                                                        data-bs-keyboard="false">
                                                         <i class="bi bi-clipboard-plus"></i>
                                                     </a>
                                                 </div>
@@ -382,7 +419,7 @@
     </div>
 </div>
 
-<partial name="modals/_modalEvidenciaDerivacion" />
+<partial name="modals/_modalEvidenciaDerivacionYReagendacion" />
 
 <div id="supervisores-vendedores-data" data-json='@Html.Raw(Json.Serialize(Model.Supervisores))'></div>
 <div id="all-vendedores-data" data-json='@Html.Raw(Json.Serialize(Model.Asesores))'></div>
