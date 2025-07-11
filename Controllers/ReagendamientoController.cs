@@ -46,10 +46,14 @@ namespace ALFINapp.API.Controllers
             var exec = await _useCaseGetReagendamiento.exec(id);
             if (!exec.IsSuccess)
             {
-                TempData["MessageError"] = exec.Message;
-                return RedirectToAction("Redireccionar", "Error");
+                return Json(new { success = false, message = exec.Message });
             }
-            return PartialView("_Reagendamiento", exec.Data);
+            return Json(new
+            {
+                success = true,
+                message = exec.Message,
+                data = exec.Data
+            });
         }
     }
 }
