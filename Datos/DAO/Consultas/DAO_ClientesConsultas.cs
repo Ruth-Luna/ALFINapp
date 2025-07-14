@@ -47,7 +47,7 @@ namespace ALFINapp.Datos.DAO
                     entradaA365.entradaDB = false;
                     entradaA365.mensaje = "El cliente no tiene Detalles en la Base de Datos de A365. Se buscara en la base de datos interna del banco. ";
                 }
-                
+
                 var clienteExistenteAlfin = await _context.consulta_obtener_cliente
                     .FromSqlRaw("EXEC SP_Consulta_Obtener_detalle_cliente_por_DNI_refactorizado_ALFIN @DNI",
                         new SqlParameter("@DNI", dni))
@@ -63,6 +63,67 @@ namespace ALFINapp.Datos.DAO
                 }
                 var clienteExistenteDto = new ViewClienteDetalles(entradaAlfin);
                 return (true, entradaA365.mensaje + "El DNI se encuentra registrado en la Base de Datos de Alfin durante este mes. Al cliente se le permite ser tipificado", clienteExistenteDto);
+            }
+            catch (System.Exception ex)
+            {
+                return (false, $"Error al obtener el cliente: {ex.Message}", null);
+            }
+        }
+        public async Task<(bool IsSuccess, string Message, ViewClienteDetalles? Data)> GetClienteByTelefonoAsync(string telefono)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(telefono) || telefono.Length < 7 || telefono.Length > 15)
+                {
+                    return (false, "El telefono debe tener entre 7 y 15 caracteres", null);
+                }
+                if (!telefono.All(char.IsDigit))
+                {
+                    return (false, "El telefono solo puede contener numeros", null);
+                }
+
+                var hayentradaA365 = await _context.consulta_obtener_cliente
+                    .FromSqlRaw("EXEC SP_Consulta_Obtener_detalle_cliente_por_TELEFONO_refactorizado_A365 @Telefono",
+                        new SqlParameter("@Telefono", telefono))
+                    .ToListAsync();
+
+                var entradaA365 = (entradaDB: false, mensaje: string.Empty);
+
+                if (hayentradaA365 != null)
+                {
+                    var entrada = hayentradaA365.FirstOrDefault();
+                    if (entrada == null)
+                    {
+                        entradaA365.entradaDB = false;
+                        entradaA365.mensaje = "El cliente no tiene Detalles en la Base de Datos de A365. Se buscara en la base de datos interna del banco. ";
+                    }
+                    else
+                    {
+                        var clienteExistenteA365 = new ViewClienteDetalles(entrada);
+                        return (true, "El Telefono se encuentra registrado en la Base de Datos de A365 durante este mes. Al cliente se le permite ser tipificado", clienteExistenteA365);
+                    }
+                }
+                else
+                {
+                    entradaA365.entradaDB = false;
+                    entradaA365.mensaje = "El cliente no tiene Detalles en la Base de Datos de A365. Se buscara en la base de datos interna del banco. ";
+                }
+
+                var clienteExistenteAlfin = await _context.consulta_obtener_cliente
+                    .FromSqlRaw("EXEC SP_Consulta_Obtener_detalle_cliente_por_TELEFONO_refactorizado_ALFIN @Telefono",
+                        new SqlParameter("@Telefono", telefono))
+                    .ToListAsync();
+                if (clienteExistenteAlfin == null)
+                {
+                    return (false, entradaA365.mensaje + $"El cliente no tiene Detalles en la Base de Datos del Banco Alfin. Este Telefono no se encuentra en ninguna de nuestras bases de datos conocidas", null);
+                }
+                var entradaAlfin = clienteExistenteAlfin.FirstOrDefault();
+                if (entradaAlfin == null)
+                {
+                    return (false, entradaA365.mensaje + $"El cliente no tiene Detalles en la Base de Datos del Banco Alfin. Este Telefono no se encuentra en ninguna de nuestras bases de datos conocidas", null);
+                }
+                var clienteExistenteDto = new ViewClienteDetalles(entradaAlfin);
+                return (true, entradaA365.mensaje + "El Telefono se encuentra registrado en la Base de Datos de Alfin durante este mes. Al cliente se le permite ser tipificado", clienteExistenteDto);
             }
             catch (System.Exception ex)
             {
