@@ -203,7 +203,15 @@ async function submit_evidencia_derivacion() {
                 text: 'Los archivos se han subido correctamente.',
                 confirmButtonText: 'Aceptar'
             }).then(() => {
-                window.location.reload(); // Recargar la página para reflejar los cambios
+                // Only close the modal if the user confirms
+                const modal = document.getElementById('evidencia-derivacion-modal');
+                // Simulate a click on the close button
+                if (modal) {
+                    const closeButton = modal.classList.contains('btn-close') ? modal : modal.querySelector('.btn-close');
+                    if (closeButton) {
+                        closeButton.click();
+                    }
+                }
             });
         } else {
             Swal.fire({
