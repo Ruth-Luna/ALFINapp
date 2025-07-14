@@ -8,9 +8,21 @@ async function reagendarCliente(nuevaFechaVisita, idDerivacion) {
         cancelButtonText: 'No, cancelar'
     }).then(async (result) => {
         if (!result.isConfirmed) return;
-
-        const fechaVisitaInput = document.getElementById(nuevaFechaVisita).value;
-        const fechaVisita = new Date(fechaVisitaInput).toISOString();
+        
+        let fechaVisitaInput;
+        let fechaVisita;
+        try {
+            fechaVisitaInput = document.getElementById(nuevaFechaVisita).value;
+            fechaVisita = new Date(fechaVisitaInput).toISOString();
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al obtener la fecha',
+                text: 'Por favor, asegúrate de que la fecha esté en el formato correcto.',
+                confirmButtonText: 'Aceptar'
+            });
+            return;
+        }
 
         if (!fechaVisita || isNaN(new Date(fechaVisita))) {
             Swal.fire({
@@ -89,8 +101,18 @@ async function reagendarCliente(nuevaFechaVisita, idDerivacion) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error al reagendar la cita',
-                    text: result.message || 'Ocurrió un error desconocido',
+                    text: `${result.message} Si desea ver los cambios puede recargar la pagina.` || 'Ocurrió un error desconocido',
                     confirmButtonText: 'Aceptar'
+                }).then(() => {
+                    // Only close the modal if the user confirms
+                    const modal = document.getElementById('evidencia-derivacion-modal');
+                    // Simulate a click on the close button
+                    if (modal) {
+                        const closeButton = modal.classList.contains('btn-close') ? modal : modal.querySelector('.btn-close');
+                        if (closeButton) {
+                            closeButton.click();
+                        }
+                    }
                 });
                 return;
             }
@@ -98,9 +120,20 @@ async function reagendarCliente(nuevaFechaVisita, idDerivacion) {
             Swal.fire({
                 icon: 'success',
                 title: 'Cita reagendada',
-                text: result.message || 'La cita ha sido reagendada con éxito.',
+                text: `${result.message} Si desea ver los cambios puede recargar la pagina.` || 'La cita ha sido reagendada con éxito.',
                 confirmButtonText: 'Aceptar'
-            }).then(() => location.reload());
+            }).then(() => {
+                // Only close the modal if the user confirms
+                const modal = document.getElementById('evidencia-derivacion-modal');
+                // Simulate a click on the close button
+                if (modal) {
+                    const closeButton = modal.classList.contains('btn-close') ? modal : modal.querySelector('.btn-close');
+                    if (closeButton) {
+                        closeButton.click();
+                    }
+                }
+            });
+            return;
         } catch (error) {
             Swal.close();
             console.error('Error:', error);
