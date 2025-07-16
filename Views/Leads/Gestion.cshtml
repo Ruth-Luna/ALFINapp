@@ -204,7 +204,7 @@
                             @if (Cliente.TraidoDe == "A365")
                             {
                                 <a href="javascript:void(0);" class="btn btn-primary"
-                                    onclick="loadTipificarCliente(@Cliente.IdBase,'TipificarClienteView')">
+                                    onclick="loadTipificarCliente(@Cliente.idbase,'TipificarClienteView')">
                                     <i class="fa fa-eye"></i>
                                 </a>
                                 <span class="badge bg-primary">A365</span>
@@ -213,28 +213,28 @@
                             else if (Cliente.TraidoDe == "ALFIN")
                             {
                                 <a href="javascript:void(0);" class="btn btn-primary"
-                                    onclick="loadTipificarCliente(@Cliente.IdBase,'TipificarClienteDBALFINView')">
+                                    onclick="loadTipificarCliente(@Cliente.idbase,'TipificarClienteDBALFINView')">
                                     <i class="fa fa-eye"></i>
                                 </a>
                                 <span class="badge bg-info">ALFIN</span>
                             }
                         </td>
-                        <td>@Cliente.Dni</td>
-                        <td>@(Cliente.XAppaterno?.ToUpper() ?? "") @(Cliente.XApmaterno?.ToUpper() ?? "")
-                            @(Cliente.XNombre?.ToUpper() ?? "")
-                        <td>@Cliente.OfertaMax</td>
-                        <td>@(Cliente.Campaña?.ToUpper() ?? "N/A")</td>
-                        <td>@Cliente.FechaAsignacionVendedor</td>
+                        <td>@Cliente.dni</td>
+                        <td>@(Cliente.xappaterno?.ToUpper() ?? "") @(Cliente.xapmaterno?.ToUpper() ?? "")
+                            @(Cliente.xnombre?.ToUpper() ?? "")
+                        <td>@Cliente.ofertaMax</td>
+                        <td>@(Cliente.campaña?.ToUpper() ?? "N/A")</td>
+                        <td>@Cliente.fechaAsignacionV</td>
                         <td><textarea name=""
-                                id="comentarioGeneral[@Cliente.IdAsignacion]">@Cliente.ComentarioGeneral</textarea>
+                                id="comentarioGeneral[@Cliente.idasignacion]">@Cliente.comentario</textarea>
                             <a href="javascript:void(0);" class="btn btn-primary"
-                                onclick="guardarComentarioGeneral(@Cliente.IdAsignacion)">
+                                onclick="guardarComentarioGeneral(@Cliente.idasignacion)">
                                 <i class="fa fa-pencil"></i>
                             </a>
                         </td>
-                        <td>@Cliente.TipificacionDeMayorPeso</td>
-                        <td>@Cliente.FechaTipificacionDeMayorPeso</td>
-                        <td>@Cliente.PrioridadSistema</td>
+                        <td>@Cliente.tipificacionMasRelevante</td>
+                        <td>@Cliente.fechaTipificacionDeMayorPeso</td>
+                        <td>@Cliente.prioridad</td>
                     </tr>
                 }
             </tbody>
