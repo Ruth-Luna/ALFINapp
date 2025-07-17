@@ -194,7 +194,6 @@ namespace ALFINapp.Infrastructure.Services
             }
             catch (System.Exception)
             {
-
                 throw;
             }
         }

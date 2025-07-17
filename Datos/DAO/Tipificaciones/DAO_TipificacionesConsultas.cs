@@ -17,13 +17,17 @@ namespace ALFINapp.Datos.DAO.Tipificaciones
         {
             try
             {
+                var parameters = new[]
+                {
+                    new SqlParameter("@IdBase", id_cliente),
+                    new SqlParameter("@IdUsuarioV", id_usuario_v)
+                };
                 var detalleClienteConsulta = await _context.detalle_cliente_a365_tipificar_dto
                     .FromSqlRaw("EXEC SP_Consulta_Obtener_detalle_cliente_para_tipificar_A365 @IdBase, @IdUsuarioV",
-                        new SqlParameter("@IdBase", id_cliente),
-                        new SqlParameter("@IdUsuarioV", id_usuario_v))
+                        parameters)
                     .ToListAsync();
 
-                return (true, "Clientes asignados obtenidos correctamente", "en proceso");
+                return (true, "Clientes asignados obtenidos correctamente", detalleClienteConsulta );
             }
             catch (System.Exception)
             {
