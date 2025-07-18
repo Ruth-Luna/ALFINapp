@@ -2,7 +2,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-ALTER PROCEDURE [dbo].[SP_Consulta_Obtener_detalle_cliente_para_tipificar_A365]
+alter PROCEDURE [dbo].[SP_Consulta_Obtener_detalle_cliente_para_tipificar_A365_refactorizado]
     @IdBase INT,
     @IdUsuarioV INT
 AS
@@ -123,19 +123,15 @@ BEGIN
     LEFT JOIN telefono_cliente_manuales ta ON ce.id_cliente = ta.id_cliente
     WHERE 
         bc.id_base = @IdBase 
-        AND db.tipo_base = ca.fuente_base
-        AND db.rn = 1
-        AND ca.id_usuarioV = 2108
+        AND (db.tipo_base = ca.fuente_base
+        OR db.rn = 1)
+        AND ca.id_usuarioV = @IdUsuarioV
         
 END;
 GO
 
-EXEC [dbo].[SP_Consulta_Obtener_detalle_cliente_para_tipificar_A365] @IdBase = 119, @IdUsuarioV = 2108;
+EXEC SP_Consulta_Obtener_detalle_cliente_para_tipificar_A365_refactorizado 518220, 2108
 
 
 
-SELECT TOP 1 bc.* FROM clientes_asignados ca
-JOIN clientes_enriquecidos ce ON ca.id_cliente = ce.id_cliente
-JOIN base_clientes bc ON ce.id_base = bc.id_base
-
-ORDER BY id_asignacion DESC;
+SELECT * FROM base_clientes  where DNI = '09120427'

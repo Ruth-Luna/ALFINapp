@@ -172,19 +172,19 @@ namespace ALFINapp.Models
             }
         }
 
-        // public void llenarTelefonosManual(List<DetalleClienteA365TipificarDTO> telefonos)
-        // {
-        //     foreach (var telefono in telefonos)
-        //     {
-        //         lista_telefonos_del_cliente_manual.Add(new ViewTelefonoDetallado
-        //         {
-        //             telefono = telefono.TelefonoManual,
-        //             comentario = telefono.ComentarioTelefonoManual,
-        //             ultima_tipificacion = telefono.UltimaTipificacionTelefonoManual,
-        //             fecha_ultima_tipificacion = telefono.FechaUltimaTipificacionTelefonoManual
-        //         });
-        //     }
-        // }
+        public void llenarTelefonosManual(List<DetalleClienteA365TipificarDTO> telefonos)
+        {
+            foreach (var telefono in telefonos)
+            {
+                lista_telefonos_del_cliente_manual.Add(new ViewTelefonoDetallado
+                {
+                    telefono = telefono.TelefonoManual,
+                    comentario = telefono.ComentarioTelefonoManual,
+                    ultima_tipificacion = telefono.UltimaTipificacionTelefonoManual,
+                    fecha_ultima_tipificacion = telefono.FechaUltimaTipificacionTelefonoManual
+                });
+            }
+        }
     }
     public class ViewTelefonoDetallado
     {

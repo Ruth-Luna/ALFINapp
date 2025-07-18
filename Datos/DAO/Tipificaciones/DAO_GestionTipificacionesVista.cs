@@ -23,7 +23,7 @@ namespace ALFINapp.Datos.DAO.Tipificaciones
                 if (traido_de == "A365")
                 {
                     var cliente = await _dao_tipificacionesConsultas.GetClienteA365(id_cliente, id_usuario_v);
-
+                    
                     return (true, "Cliente encontrado en A365", cliente);
                 }
                 return (true, "Clientes asignados obtenidos correctamente", "en proceso");

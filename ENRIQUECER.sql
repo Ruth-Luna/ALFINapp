@@ -1,7 +1,7 @@
 SELECT 
     dni
 FROM [CORE_ALFIN].[dbo].[base_clientes_banco]
-WHERE fecha_subida = '2025-05-14'
+WHERE CAST(fecha_subida AS DATE) = '2025-07-18'
 AND (PATERNO IS NULL OR NOMBRES IS NULL OR MATERNO IS NULL)
 
 UPDATE bcb_destino
@@ -18,7 +18,7 @@ FROM base_clientes_banco bcb_destino
 INNER JOIN base_clientes_banco bcb_origen
     ON bcb_destino.dni = bcb_origen.dni
 WHERE 
-    CAST(bcb_destino.fecha_subida AS DATE) = '2025-07-01'
+    CAST(bcb_destino.fecha_subida AS DATE) = '2025-07-18'
     AND (
         (bcb_destino.NOMBRES IS NULL AND bcb_origen.NOMBRES IS NOT NULL) OR
         (bcb_destino.MATERNO IS NULL AND bcb_origen.MATERNO IS NOT NULL) OR
@@ -54,7 +54,7 @@ SET
 FROM base_clientes_banco bcb_destino
 INNER JOIN bcb_origen ON bcb_destino.dni = bcb_origen.dni
 WHERE 
-    CAST(bcb_destino.fecha_subida AS DATE) = '2025-07-01'
+    CAST(bcb_destino.fecha_subida AS DATE) = '2025-07-18'
     AND (
         (bcb_destino.NOMBRES IS NULL AND bcb_origen.NOMBRES IS NOT NULL) OR
         (bcb_destino.MATERNO IS NULL AND bcb_origen.MATERNO IS NOT NULL) OR
@@ -63,5 +63,111 @@ WHERE
 
 select top 150 * from clientes_enriquecidos
 
-select dni from base_clientes_banco WHERE CAST(fecha_subida as date) = '2025-07-01'
+select COUNT(*) from base_clientes_banco WHERE CAST(fecha_subida as date) = '2025-07-18'
 AND (PATERNO IS NULL OR NOMBRES IS NULL OR MATERNO IS NULL)
+
+select dni from base_clientes_banco WHERE CAST(fecha_subida as date) = '2025-07-18'
+AND (PATERNO IS NULL OR NOMBRES IS NULL OR MATERNO IS NULL)
+
+
+UPDATE base_clientes_banco
+SET
+    dni = RIGHT('00000000' + dni, 8)
+WHERE LEN(dni) < 8
+AND CAST(fecha_subida AS DATE) = '2025-07-18';
+
+INSERT INTO base_clientes_banco (
+    dni,
+    tasa_1,
+    tasa_2,
+    tasa_3,
+    tasa_4,
+    tasa_5,
+    tasa_6,
+    tasa_7,
+    oferta_max,
+    id_plazo_banco,
+    CAPACIDAD_PAGO_MEN,
+    id_campana_grupo_banco,
+    id_color_banco,
+    id_usuario_banco,
+    id_rango_deuda,
+    num_entidades,
+    frescura,
+    tasas_especiales,
+    fecha_subida,
+    id_user_v3,
+    deuda_entidades,
+    perfil_ro,
+    AUTORIZACION_DATOS,
+    mgneg,
+    MARCA_PD
+)
+SELECT
+    dni,
+    tasa_1,
+    tasa_2,
+    tasa_3,
+    tasa_4,
+    tasa_5,
+    tasa_6,
+    tasa_7,
+    oferta_max,
+    plazo,                    -- ← Mapeado a id_plazo_banco
+    CAPACIDAD_PAGO_MEN,
+    campaña_grupo,            -- ← Mapeado a id_campana_grupo_banco
+    color_id,                 -- ← Mapeado a id_color_banco
+    usuario,                  -- ← Mapeado a id_usuario_banco
+    RANGO_DEUDA,              -- ← Mapeado a id_rango_deuda
+    NumEntidades,
+    fresco,                   -- ← Mapeado a frescura
+    NULL,                     -- ← tasas_especiales: no existe en origen
+    GETDATE(),                -- ← fecha_subida: valor actual
+    user_v3,                  -- ← Mapeado a id_user_v3
+    deuda_entidades,
+    perfil_ro,
+    AUTORIZACION_DATOS,
+    Mgneg,
+    MARCA_PD
+FROM [dbo].[CAMPANASJULIO18];
+
+
+
+
+
+
+UPDATE base_clientes_banco
+SET 
+    PATERNO = ISNULL(base_clientes_banco.PATERNO, datosdni.PATERNO),
+    MATERNO = ISNULL(base_clientes_banco.MATERNO, datosdni.MATERNO),
+    NOMBRES = ISNULL(base_clientes_banco.NOMBRES, datosdni.NOMBRES),
+    
+    Numero1 = ISNULL(base_clientes_banco.Numero1, datosdni.telefono1),
+    Numero2 = ISNULL(base_clientes_banco.Numero2, datosdni.telefono2),
+    Numero3 = ISNULL(base_clientes_banco.Numero3, datosdni.telefono3),
+    Numero4 = ISNULL(base_clientes_banco.Numero4, datosdni.telefono4),
+    Numero5 = ISNULL(base_clientes_banco.Numero5, datosdni.telefono5)
+
+FROM base_clientes_banco
+JOIN datosdni ON base_clientes_banco.dni = datosdni.dni;
+
+SELECT top 150 * FROM base_clientes order by id_base DESC
+
+UPDATE clientes_enriquecidos
+SET 
+    telefono_1 = ISNULL(clientes_enriquecidos.telefono_1, datosdni.telefono1),
+    telefono_2 = ISNULL(clientes_enriquecidos.telefono_2, datosdni.telefono2),
+    telefono_3 = ISNULL(clientes_enriquecidos.telefono_3, datosdni.telefono3),
+    telefono_4 = ISNULL(clientes_enriquecidos.telefono_4, datosdni.telefono4),
+    telefono_5 = ISNULL(clientes_enriquecidos.telefono_5, datosdni.telefono5)
+FROM clientes_enriquecidos
+join base_clientes ON clientes_enriquecidos.id_base = base_clientes.id_base
+JOIN datosdni ON base_clientes.dni = datosdni.dni;
+
+
+
+select top 150 * from base_clientes_banco WHERE CAST(fecha_subida AS DATE) = CAST(GETDATE() AS DATE)
+
+
+
+SELECT COUNT(*) from datosdni
