@@ -123,8 +123,6 @@ namespace ALFINapp.Datos
 
                     if (idUsuario.HasValue)
                         cmd.Parameters.AddWithValue("@id_usuario", idUsuario.Value);
-                    else
-                        cmd.Parameters.AddWithValue("@id_usuario", DBNull.Value);
 
                     connection.Open();
                     using (SqlDataReader dr = cmd.ExecuteReader())

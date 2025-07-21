@@ -35,9 +35,9 @@ namespace ALFINapp.API.Controllers
         }
 
         [HttpGet]
-        public JsonResult ListarUsuarioAdministrador(int? id)
+        public JsonResult ListarUsuarioAdministrador(int? idUsuario)
         {
-            var listarUsuario = _daUsuario.ListarUsuarios(id);
+            var listarUsuario = _daUsuario.ListarUsuarios(idUsuario);
             return Json(listarUsuario);
         }
 

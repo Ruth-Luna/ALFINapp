@@ -4,9 +4,9 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-function ListarUsuarioAdministrador() {
+function ListarUsuarioAdministrador(id = null) {
     $.ajax({
-        url: '/Usuarios/ListarUsuarioAdministrador',
+        url: '/Usuarios/ListarUsuarioAdministrador?id=' + (id ?? ''),
         type: 'GET',
         success: function (data) {
             console.log(data)
@@ -113,12 +113,13 @@ function CambiarEstadoUsuario(accion, idUsuario) {
 
 function CargarModalModificarUsuario(idUsuario) {
     $.ajax({
-        url: "/Usuarios/ModificarUsuarioVista",
+        url: "/Usuarios/ListarUsuarioAdministrador",
         type: "GET",
         data: {
-            IdUsuario: idUsuario
+            idUsuario: idUsuario
         },
         success: function (response) {
+            console.log(response)
             if (response.success === false) {
                 Swal.fire({
                     title: 'Error al obtener los datos del Usuario',
