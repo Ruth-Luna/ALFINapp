@@ -3,11 +3,17 @@ using Microsoft.AspNetCore.Mvc;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Services;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
+using ALFINapp.Datos;
 
 namespace ALFINapp.API.Controllers;
 
 public class HomeController : Controller
 {
+    DA_Usuario _daUsuario = new DA_Usuario();
+
     private readonly ILogger<HomeController> _logger;
     private readonly MDbContext _context;
     private readonly DBServicesUsuarios _dBServicesUsuarios;
@@ -44,7 +50,7 @@ public class HomeController : Controller
     {
         return View();
     }
-    // Acción para verificar si el DNI existe
+
     [HttpPost]
     public async Task<IActionResult> VerificarUsuario(string dni, string password)
     {
@@ -121,6 +127,7 @@ public class HomeController : Controller
             return RedirectToAction("Inicio", "Vendedor");
         }
         HttpContext.Session.SetInt32("UsuarioId", usuario.IdUsuario);
+
         if (usuario.IdRol == 3)
         {
             HttpContext.Session.SetInt32("RolUser", usuario.IdRol.Value);
@@ -144,5 +151,44 @@ public class HomeController : Controller
 
         TempData["MessageError"] = "Algo salio Mal en la Autenticacion";
         return RedirectToAction("Index", "Home");
+    }
+
+
+    [HttpPost]
+    public async Task<IActionResult> Login(string usuario, string password)
+    {
+        var usuarioValido = _daUsuario.ValidarUsuario(usuario, password);
+
+        if (usuarioValido == null || usuarioValido.Resultado == 0)
+        {
+            ViewData["mensaje"] = "Credenciales incorrectas";
+            return RedirectToAction("Index", "Home");
+        }
+
+        if (usuarioValido.Resultado == -1 || usuarioValido.Estado?.ToUpper() == "INACTIVO")
+        {
+            ViewData["mensaje"] = "El usuario se encuentra inactivo. Por favor contacte con el administrador.";
+            return RedirectToAction("Index", "Home");
+        }
+
+        HttpContext.Session.SetInt32("UsuarioId", usuarioValido.IdUsuario);
+        HttpContext.Session.SetInt32("RolUser", usuarioValido.IdRol.Value);
+        HttpContext.Session.SetInt32("ActivarCambio", 1);
+        HttpContext.Session.SetInt32("UsuarioId", usuario != null ? usuarioValido.IdUsuario : throw new Exception("El usuario original no está definido. Comuníquese con su Supervisor."));
+        HttpContext.Session.SetInt32("RolUser", usuario != null ? usuarioValido.IdRol.Value : throw new Exception("El rol del usuario original no está definido. Comuníquese con su Supervisor."));
+        switch (usuarioValido.IdRol)
+        {
+            case 1:
+                return RedirectToAction("Inicio", "Administrador");
+            case 2:
+                return RedirectToAction("Inicio", "Supervisor");
+            case 3:
+                return RedirectToAction("Inicio", "Vendedor");
+            case 4:
+                return RedirectToAction("Inicio", "GerenteZonal");
+            default:
+                ViewData["mensaje"] = "Rol no reconocido. Contacte al administrador.";
+                return RedirectToAction("Index", "Home");
+        }
     }
 }

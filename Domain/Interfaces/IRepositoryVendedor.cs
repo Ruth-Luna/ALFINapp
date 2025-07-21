@@ -10,7 +10,7 @@ namespace ALFINapp.Domain.Interfaces
 {
     public interface IRepositoryVendedor
     {
-        public Task<Usuario?> GetVendedor(int IdUsuario);
+        public Task<Infrastructure.Persistence.Models.Usuario?> GetVendedor(int IdUsuario);
         public List<ALFINapp.Application.DTOs.DetalleBaseClienteDTO>? GetClientesAlfinFromVendedor(int IdUsuarioVendedor);
         public Task<List<DetalleBaseClienteDTO>> GetClientesGeneralPaginadoFromVendedor(
             int IdUsuarioVendedor,

@@ -1,4 +1,5 @@
 using ALFINapp.API.Filters;
+using ALFINapp.Datos;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -8,13 +9,15 @@ namespace ALFINapp.API.Controllers
     [RequireSession]
     public class UsuariosController : Controller
     {
+        DA_Usuario _daUsuario = new DA_Usuario();
+
         private readonly DBServicesConsultasAdministrador _DBServicesConsultasAdministrador;
         private readonly DBServicesUsuarios _DBServicesUsuarios;
         private readonly DBServicesGeneral _DBServicesGeneral;
         private readonly DBServicesRoles _DBServicesRoles;
         public UsuariosController(
-            DBServicesConsultasAdministrador DBServicesConsultasAdministrador, 
-            DBServicesUsuarios DBServicesUsuarios, 
+            DBServicesConsultasAdministrador DBServicesConsultasAdministrador,
+            DBServicesUsuarios DBServicesUsuarios,
             DBServicesGeneral DBServicesGeneral,
             DBServicesRoles DBServicesRoles)
         {
@@ -23,13 +26,21 @@ namespace ALFINapp.API.Controllers
             _DBServicesGeneral = DBServicesGeneral;
             _DBServicesRoles = DBServicesRoles;
         }
+
         [HttpGet]
         [PermissionAuthorization("Usuarios", "Administracion")]
-        public async Task<IActionResult> Administracion()
+        public IActionResult Administracion()
         {
-            var getUsuarios = await _DBServicesConsultasAdministrador.ConseguirTodosLosUsuarios();
-            return View("Administracion", getUsuarios.Data);
+            return View();
         }
+
+        [HttpGet]
+        public JsonResult ListarUsuarioAdministrador(int? id)
+        {
+            var listarUsuario = _daUsuario.ListarUsuarios(id);
+            return Json(listarUsuario);
+        }
+
         [HttpPost]
         public async Task<IActionResult> ModificarUsuario([FromBody] Usuario usuario)
         {
@@ -116,7 +127,7 @@ namespace ALFINapp.API.Controllers
                 {
                     return Json(new { success = false, message = "No se ha podido crear el usuario" });
                 }
-                var result = await _DBServicesUsuarios.CrearUsuario(usuario, UsuarioIdJefe.Value);
+                var result = await _daUsuario.CrearUsuario(usuario, UsuarioIdJefe.Value);
                 if (result.IsSuccess)
                 {
                     return Json(new { success = true, message = "Usuario creado correctamente" });
@@ -128,6 +139,7 @@ namespace ALFINapp.API.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+
         [HttpGet]
         public async Task<IActionResult> ModificarUsuarioVista(int IdUsuario)
         {
@@ -136,27 +148,27 @@ namespace ALFINapp.API.Controllers
                 var getUsuario = await _DBServicesGeneral.GetUserInformation(IdUsuario);
                 if (!getUsuario.IsSuccess || getUsuario.Data == null)
                 {
-                    return Json (new { success = false, message = getUsuario.Message });
+                    return Json(new { success = false, message = getUsuario.Message });
                 }
                 var getSupervisores = await _DBServicesConsultasAdministrador.ConseguirTodosLosSupervisores();
                 if (!getSupervisores.IsSuccess || getSupervisores.Data == null)
                 {
-                    return Json (new { success = false, message = getSupervisores.Message });
+                    return Json(new { success = false, message = getSupervisores.Message });
                 }
                 var getRoles = await _DBServicesRoles.getRoles();
                 if (!getRoles.IsSuccess || getRoles.Data == null)
                 {
-                    return Json (new { success = false, message = getRoles.Message });
+                    return Json(new { success = false, message = getRoles.Message });
                 }
-                ViewData ["Roles"] = getRoles.Data;
-                ViewData ["Supervisores"] = getSupervisores.Data;
+                ViewData["Roles"] = getRoles.Data;
+                ViewData["Supervisores"] = getSupervisores.Data;
                 return PartialView("ModificarUsuario", getUsuario.Data);
             }
             catch (System.Exception)
             {
                 return RedirectToAction("Administracion");
             }
-            
+
         }
     }
 }

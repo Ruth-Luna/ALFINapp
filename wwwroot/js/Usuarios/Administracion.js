@@ -1,3 +1,76 @@
+
+document.addEventListener('DOMContentLoaded', function () {
+    ListarUsuarioAdministrador();
+});
+
+
+function ListarUsuarioAdministrador() {
+    $.ajax({
+        url: '/Usuarios/ListarUsuarioAdministrador',
+        type: 'GET',
+        success: function (data) {
+            console.log(data)
+            const tbody = $('#clientesTable tbody');
+            tbody.empty();
+            const filaFiltro = `
+                        <tr>
+                            <td></td>
+                            <td>
+                                <div class="d-flex justify-content-center">
+                                    <button class="btn btn-warning btn-sm" onclick="sortTable('clientesTable', 1, 'string')" data-sort-ignore>
+                                        <i class="bi bi-filter"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td colspan="8"></td>
+                        </tr>
+                    `;
+            tbody.append(filaFiltro);
+            $.each(data, function (i, usuario) {
+
+                const row = `
+                      
+                        <tr>
+                            <td>
+                                <div class="d-flex flex-column align-items-center">
+                                    <div class="d-flex justify-content-center gap-2 mb-2">
+                                       <div class="form-check form-switch">
+                                            <input class="form-check-input " style="cursor: pointer;" type="checkbox" role="switch"
+                                                ${usuario.estado === 'ACTIVO' ? 'checked' : ''} 
+                                                onchange="CambiarEstadoUsuario(this.checked ? 1 : 0, '${usuario.idUsuario}')">
+                                        </div>
+                                        <button class="btn btn-primary btn-sm" style="cursor: pointer;" onclick="CargarModalModificarUsuario('${usuario.idUsuario}')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                             <td>
+                                <div class="w-100 text-center">
+                                    <span class="badge rounded-pill w-100 ${usuario.estado === 'ACTIVO' ? 'bg-success' : 'bg-danger'}">
+                                        ${usuario.estado ?? ''}
+                                    </span>
+                                </div>
+                            </td>
+                            <td>${usuario.dni ?? ''}</td>
+                            <td>${usuario.nombresCompletos ?? ''}</td>
+                            <td>${usuario.responsablesup ? usuario.responsablesup : 'EL USUARIO NO TIENE SUPERVISOR'}</td>
+                            <td>${usuario.nombrecampania ?? ''}</td>
+                            <td>${usuario.rol ?? ''}</td>
+                            <td>${usuario.fechaActualizacion ? FechaFormat(usuario.fechaActualizacion) : ''}</td>
+                            <td>${usuario.fechaInicio ? FechaFormat(usuario.fechaInicio) : ''}</td>
+                            <td>${usuario.fechaCese ? FechaFormat(usuario.fechaCese) : ''}</td>
+                        </tr>`;
+                tbody.append(row);
+            });
+        },
+        error: function () {
+            alert('Error al cargar la lista de usuarios');
+        }
+    });
+}
+
+
 function CambiarEstadoUsuario(accion, idUsuario) {
     $.ajax({
         url: "/Usuarios/CambiarEstadoUsuario",
@@ -16,13 +89,13 @@ function CambiarEstadoUsuario(accion, idUsuario) {
                 });
             } else {
                 Swal.fire({
-                    title: 'El Estado del asesor fue cambiado correctamente',
+                    title: 'Se ha cambiado el estado de manera exitosa',
                     text: response.message,
                     icon: 'success',
-                    confirmButtonText: 'OK'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        location.reload();
+                    timer: 1500,
+                    showConfirmButton: false,
+                    willClose: () => {
+                        ListarUsuarioAdministrador();
                     }
                 });
             }
@@ -68,4 +141,13 @@ function CargarModalModificarUsuario(idUsuario) {
             });
         }
     });
+}
+
+
+function FechaFormat(fechaString) {
+    const fecha = new Date(fechaString);
+    const dia = fecha.getDate().toString().padStart(2, '0');
+    const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+    const anio = fecha.getFullYear();
+    return `${dia}/${mes}/${anio}`;
 }

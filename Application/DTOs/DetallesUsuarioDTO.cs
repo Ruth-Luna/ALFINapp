@@ -46,7 +46,7 @@ namespace ALFINapp.Application.DTOs
             IDUSUARIOSUP = model.IDUSUARIOSUP;
             RESPONSABLESUP = model.RESPONSABLESUP;
             REGION = model.REGION;
-            NOMBRECAMPAÑA = model.NOMBRECAMPAÑA;
+            NOMBRECAMPAÑA = model.NOMBRECAMPANIA;
             IdRol = model.IdRol;
             FechaActualizacion = model.FechaActualizacion;
             TipoDocumento = model.TipoDocumento;

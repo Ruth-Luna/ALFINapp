@@ -15,6 +15,7 @@ namespace ALFINapp.API.Models
         public string? Provincia { get; set; } = null!;
         public string? Distrito { get; set; } = null!;
         public string? Telefono { get; set; } = null!;
+        public string? NOMBRECAMPANIA { get; set; }
         public DateTime? FechaRegistro { get; set; }
         public string? Estado { get; set; }
         public int? IDUSUARIOSUP { get; set; }

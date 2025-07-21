@@ -48,20 +48,19 @@
                 <div class="card text-white bg-deepblue" style="border-radius: 1rem;">
                     <div class="card-body p-4">
                         <h1 class="text-center">Bienvenido</h1>
-                        <form action="@Url.Action("VerificarUsuario","Home")" method="post">
+                        <form asp-controller="Home" asp-action="Login" method="post" id="loginform">
                             <div class="mb-3">
-                                <label for="dni" class="form-label fs-5">Usuario</label>
-                                <input type="text" name="dni" id="dni" class="form-control form-control-lg"
-                                    placeholder="Ingrese su usuario">
+                                <label for="usuario" class="form-label fs-5">Usuario</label>
+                                <input type="text" name="usuario" id="usuario" class="form-control form-control-lg"
+                                       placeholder="Ingrese su usuario">
                             </div>
                             <div class="mb-4 position-relative">
                                 <label for="password" class="form-label fs-5">Contraseña</label>
                                 <input type="password" name="password" id="password"
-                                    class="form-control form-control-lg pe-5" placeholder="Ingrese su contraseña">
-                                <span
-                                    class="position-absolute end-0 pe-3 eye-icon d-flex justify-content-center align-items-center"
-                                    style="top: 50%; transform: translateY(-27%); height: 100%; cursor: pointer;"
-                                    onclick="togglePasswordVisibility()">
+                                       class="form-control form-control-lg pe-5" placeholder="Ingrese su contraseña">
+                                <span class="position-absolute end-0 pe-3 eye-icon d-flex justify-content-center align-items-center"
+                                      style="top: 50%; transform: translateY(-27%); height: 100%; cursor: pointer;"
+                                      onclick="togglePasswordVisibility()">
                                     <i id="password-icon" class="fas fa-eye" style="font-size: 1.5rem;"></i>
                                 </span>
 
@@ -79,7 +78,9 @@
                                     <div class="col-7">
                                         <div class="text-end">
                                             <button type="button" class="btn btn-link m-0 p-0 text-white fs-5"
-                                                onclick="showInitialPasswordInfo()">¿Olvidó su contraseña?</button>
+                                                    onclick="showInitialPasswordInfo()">
+                                                ¿Olvidó su contraseña?
+                                            </button>
                                         </div>
                                     </div>
                                 </div>

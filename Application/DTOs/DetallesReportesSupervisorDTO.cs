@@ -10,7 +10,7 @@ namespace ALFINapp.Application.DTOs
     public class DetallesReportesSupervisorDTO
     {
         public List<ClientesAsignado> ClientesAsignados { get; set; } = new List<ClientesAsignado>();
-        public List<Usuario> Asesores { get; set; } = new List<Usuario>();
+        public List<Infrastructure.Persistence.Models.Usuario> Asesores { get; set; } = new List<Infrastructure.Persistence.Models.Usuario>();
         public List<DerivacionesAsesores> DerivacionesSupervisor { get; set; } = new List<DerivacionesAsesores>();
         public List<Desembolsos> Desembolsos { get; set; } = new List<Desembolsos>();
         public List<DetallesReportesAsesorDTO> ReportesXAsesor { get; set; } = new List<DetallesReportesAsesorDTO>();
@@ -18,13 +18,13 @@ namespace ALFINapp.Application.DTOs
         public DetallesReportesSupervisorDTO()
         {
             ClientesAsignados = new List<ClientesAsignado>();
-            Asesores = new List<Usuario>();
+            Asesores = new List<Infrastructure.Persistence.Models.Usuario>();
             DerivacionesSupervisor = new List<DerivacionesAsesores>();
             Desembolsos = new List<Desembolsos>();
             ReportesXAsesor = new List<DetallesReportesAsesorDTO>();
             gESTIONDETALLEs = new List<GESTIONDETALLE>();
         }
-        public DetallesReportesSupervisorDTO(List<ClientesAsignado> clientesAsignados, List<Usuario> asesores, List<DerivacionesAsesores> derivacionesSupervisor, List<Desembolsos> desembolsos, List<DetallesReportesAsesorDTO> reportesXAsesor, List<GESTIONDETALLE> gESTIONDETALLEs)
+        public DetallesReportesSupervisorDTO(List<ClientesAsignado> clientesAsignados, List<Infrastructure.Persistence.Models.Usuario> asesores, List<DerivacionesAsesores> derivacionesSupervisor, List<Desembolsos> desembolsos, List<DetallesReportesAsesorDTO> reportesXAsesor, List<GESTIONDETALLE> gESTIONDETALLEs)
         {
             ClientesAsignados = clientesAsignados;
             Asesores = asesores;
@@ -35,7 +35,7 @@ namespace ALFINapp.Application.DTOs
         }
         public DetallesReportesSupervisorDTO(
             List<ClientesAsignado> clientesAsignados,
-            List<Usuario> asesores,
+            List<Infrastructure.Persistence.Models.Usuario> asesores,
             List<DerivacionesAsesores> derivacionesSupervisor,
             List<Desembolsos> desembolsos,
             List<DetallesReportesAsesorDTO> reportesXAsesor,

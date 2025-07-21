@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+
 namespace ALFINapp.Infrastructure.Persistence.Procedures
 {
     public class SupervisorGetNumberOfLeads

@@ -75,7 +75,7 @@
     <div class="row mb-3">
         <label for="txtNombreCampania_EU" class="col-5 col-form-label">Nombre Campaña</label>
         <div class="col-7">
-            <input type="text" class="form-control" id="txtNombreCampania_EU" value="@Model.NOMBRECAMPAÑA" />
+            <input type="text" class="form-control" id="txtNombreCampania_EU" value="@Model.NOMBRECAMPANIA" />
         </div>
     </div>
     <div class="row mb-3">
@@ -152,3 +152,6 @@
     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Cerrar</button>
 </div>
 
+@section Scripts {
+    <script src="~/js/Usuarios/ModificarUsuario.js?v=@DateTime.Now.Ticks"></script>
+}
