@@ -42,7 +42,7 @@ namespace ALFINapp.Infrastructure.Services
             try
             {
                 var detalleClienteConsulta = await _context.detalle_cliente_a365_tipificar_dto
-                    .FromSqlRaw("EXEC SP_Consulta_Obtener_detalle_cliente_para_tipificar_A365 @IdBase, @IdUsuarioV",
+                    .FromSqlRaw("EXEC SP_Consulta_Obtener_detalle_cliente_para_tipificar_A365_refactorizado @IdBase, @IdUsuarioV",
                         new SqlParameter("@IdBase", IdBase),
                         new SqlParameter("@IdUsuarioV", IdUsuarioV))
                     .ToListAsync();
@@ -194,7 +194,6 @@ namespace ALFINapp.Infrastructure.Services
             }
             catch (System.Exception)
             {
-
                 throw;
             }
         }

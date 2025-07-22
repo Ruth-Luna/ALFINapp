@@ -48,24 +48,13 @@ async function reagendarCliente(nuevaFechaVisita, idDerivacion) {
 
         // Si no hay evidencias, mostrar advertencia
         if (evidencias.length === 0) {
-            const warningResult = await Swal.fire({
+            Swal.fire({
                 icon: 'warning',
-                title: 'No hay evidencias',
-                text: 'Se subirá el reagendamiento sin evidencias. ¿Desea continuar?',
-                confirmButtonText: 'Sí',
-                cancelButtonText: 'No',
-                showCancelButton: true
-            });
-
-            if (!warningResult.isConfirmed) {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Reagendamiento cancelado',
-                    text: 'El reagendamiento ha sido cancelado.',
-                    confirmButtonText: 'Aceptar'
-                });
-                return;
-            }
+                title: 'Sin evidencias',
+                text: 'No se han adjuntado archivos. No puede continuar',
+                confirmButtonText: 'Aceptar'
+            })
+            return;
         }
 
         // Enviar reagendamiento (con o sin evidencias)
@@ -99,7 +88,7 @@ async function reagendarCliente(nuevaFechaVisita, idDerivacion) {
 
             if (!response.ok || result.success === false) {
                 Swal.fire({
-                    icon: 'error',
+                    icon: 'warning',
                     title: 'Error al reagendar la cita',
                     text: `${result.message} Si desea ver los cambios puede recargar la pagina.` || 'Ocurrió un error desconocido',
                     confirmButtonText: 'Aceptar'
