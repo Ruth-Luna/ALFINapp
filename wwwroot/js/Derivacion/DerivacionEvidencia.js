@@ -200,7 +200,7 @@ async function submit_evidencia_derivacion() {
             Swal.fire({
                 icon: 'success',
                 title: 'Archivos subidos',
-                text: 'Los archivos se han subido correctamente.',
+                text: 'Los archivos se han subido correctamente. Si desea ver los cambios puede recargar la página.',
                 confirmButtonText: 'Aceptar'
             }).then(() => {
                 // Only close the modal if the user confirms

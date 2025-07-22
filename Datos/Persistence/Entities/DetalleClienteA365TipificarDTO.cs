@@ -77,5 +77,11 @@ namespace ALFINapp.Infrastructure.Persistence.Models
         //Propiedades de la tabla ClientesAsignados
         public int? IdAsignacion { get; set; }
         public string? FuenteBase { get; set; }
+
+        //Propiedades de la tabla TelefonoAgregadosManualmente
+        public string? TelefonoManual { get; set; }
+        public string? ComentarioTelefonoManual { get; set; }
+        public string? UltimaTipificacionTelefonoManual { get; set; }
+        public DateTime? FechaUltimaTipificacionTelefonoManual { get; set; }
     }
 }

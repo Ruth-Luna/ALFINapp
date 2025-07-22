@@ -1,5 +1,6 @@
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Persistence.Procedures;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 namespace ALFINapp.API.Models
 {
     public class ViewClienteDetalles

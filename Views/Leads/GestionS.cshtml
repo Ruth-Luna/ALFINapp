@@ -171,12 +171,12 @@
                 @foreach (var clientes in Model.ClientesA365)
                 {
                     <tr>
-                        <td>@clientes.Dni</td>
-                        <td>@clientes.XNombre?.ToUpper() @clientes.XAppaterno?.ToUpper()
-                            @clientes.XApmaterno?.ToUpper()</td>
-                        <td>@clientes.NombresCompletosV.ToUpper()</td>
-                        <td>@clientes.UltimaTipificacion</td>
-                        <td>@clientes.TipificacionDeMayorPeso</td>
+                        <td>@clientes.dni</td>
+                        <td>@clientes.xnombre?.ToUpper() @clientes.xappaterno?.ToUpper()
+                            @clientes.xapmaterno?.ToUpper()</td>
+                        <td>@clientes.nombresCompletosV?.ToUpper()</td>
+                        <td>@clientes.tipificacion</td>
+                        <td>@clientes.tipificacionMasRelevante</td>
                     </tr>
                 }
             </tbody>

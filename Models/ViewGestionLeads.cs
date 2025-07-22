@@ -4,10 +4,10 @@ namespace ALFINapp.API.Models
 {
     public class ViewGestionLeads
     {
-        public List<Cliente> ClientesA365 { get; set; } = new List<Cliente>();
-        public Vendedor Vendedor { get; set; } = new Vendedor();
-        public Supervisor Supervisor { get; set; } = new Supervisor();
-        public List<Cliente> ClientesAlfin { get; set; } = new List<Cliente>();
+        public List<ViewCliente> ClientesA365 { get; set; } = new List<ViewCliente>();
+        public ViewUsuario Vendedor { get; set; } = new ViewUsuario();
+        public ViewUsuario Supervisor { get; set; } = new ViewUsuario();
+        public List<ViewCliente> ClientesAlfin { get; set; } = new List<ViewCliente>();
         public int clientesPendientes { get; set; }
         public int clientesTipificados { get; set; }
         public int clientesTotal { get; set; }
