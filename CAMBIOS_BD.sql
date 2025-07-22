@@ -2,7 +2,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-alter PROCEDURE [dbo].[SP_Consulta_Obtener_detalle_cliente_para_tipificar_A365_refactorizado]
+CREATE PROCEDURE [dbo].[SP_Consulta_Obtener_detalle_cliente_para_tipificar_A365_refactorizado]
     @IdBase INT,
     @IdUsuarioV INT
 AS

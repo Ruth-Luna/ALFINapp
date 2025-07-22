@@ -5,7 +5,8 @@ using Microsoft.Extensions.FileProviders;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration
-    .SetBasePath(Directory.GetCurrentDirectory()) 
+    .SetBasePath(Directory.GetCurrentDirectory())
+    // .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true) 
     .AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true) 
     .AddEnvironmentVariables();
 
