@@ -10,6 +10,9 @@ namespace ALFINapp.API.Models
         public int IdUsuario { get; set; }
         public string? Dni { get; set; } = null!;
         public string? NombresCompletos { get; set; } = null!;
+        public string? Apellido_Paterno { get; set; }
+        public string? Apellido_Materno { get; set; }
+        public string? Nombres { get; set; }
         public string? Rol { get; set; } = null!;
         public string? Departamento { get; set; } = null!;
         public string? Provincia { get; set; } = null!;
@@ -30,5 +33,12 @@ namespace ALFINapp.API.Models
         public DateTime? FechaInicio { get; set; }
         public DateTime? FechaCese { get; set; }
         public string? Correo { get; set; }
+    }
+
+     public class ViewRol
+    {
+        public int IdRol { get; set; } 
+        public string? Rol { get; set; }
+        public string? Descripcion { get; set; }
     }
 }

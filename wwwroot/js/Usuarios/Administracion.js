@@ -1,6 +1,7 @@
-
+﻿
 document.addEventListener('DOMContentLoaded', function () {
     ListarUsuarioAdministrador();
+    ListarRoles();
 });
 
 
@@ -70,7 +71,6 @@ function ListarUsuarioAdministrador(id = null) {
     });
 }
 
-
 function CambiarEstadoUsuario(accion, idUsuario) {
     $.ajax({
         url: "/Usuarios/CambiarEstadoUsuario",
@@ -119,7 +119,6 @@ function CargarModalModificarUsuario(idUsuario) {
             idUsuario: idUsuario
         },
         success: function (response) {
-            console.log(response)
             if (response.success === false) {
                 Swal.fire({
                     title: 'Error al obtener los datos del Usuario',
@@ -128,9 +127,17 @@ function CargarModalModificarUsuario(idUsuario) {
                     confirmButtonText: 'OK'
                 });
             } else {
-                $('#modalContentGeneralTemplate').html(response); // Inserta el contenido de la vista en el modal
-                $('#GeneralTemplateModal').modal('show'); // Muestra el modal
-                $('#GeneralTemplateTitleModalLabel').text("Modificar Derivacion"); // Inserta el contenido de la vista en el modal
+                $('#modalEditarUsuarioAdmin').modal('show');
+
+                $('#txtDNI_EditarUsuario').val(response[0].dni ?? '');
+                $('#txtApellidosP_EditarUsuario').val(response[0].apellido_Paterno ?? '');
+                $('#txtApellidosM_EditarUsuario').val(response[0].apellido_Materno ?? '');
+                $('#txtNombres_EditarUsuario').val(response[0].nombres ?? '');
+                $('#txtRegion_EditarUsuario').val(response[0].region ?? '');
+                $('#txtCampania_EditarUsuario').val(response[0].nombrecampania ?? '');
+                $('#txtCorreo_EditarUsuario').val(response[0].correo ?? '');
+                $('#txtRol_EditarUsuario').val(response[0].rol ?? '');
+
             }
         },
         error: function (error) {
@@ -144,7 +151,40 @@ function CargarModalModificarUsuario(idUsuario) {
     });
 }
 
+function ListarRoles() {
+    const $select = $("#txtRol_EditarUsuario");
+    $select.empty();
 
+    $select.append(
+        $("<option>")
+            .val("")
+            .text("Seleccione un rol")
+            .attr("hidden", true) 
+            .prop("selected", true) 
+    );
+
+    $.ajax({
+        url: "/Usuarios/ListarRoles",
+        type: "GET",
+        success: function (response) {
+            response.forEach(function (rol) {
+                $select.append(
+                    $("<option>")
+                        .val(rol.idRol)
+                        .text(rol.rol)
+                );
+            });
+        },
+        error: function (error) {
+            Swal.fire({
+                title: 'Error al obtener los roles',
+                text: error.responseText,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    });
+}
 function FechaFormat(fechaString) {
     const fecha = new Date(fechaString);
     const dia = fecha.getDate().toString().padStart(2, '0');

@@ -110,6 +110,16 @@ namespace ALFINapp.Datos
             }
         }
 
+        //private string LeerClaveMaestraDesdeAppSettings()
+        //{
+        //    var builder = new ConfigurationBuilder()
+        //        .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+        //        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+        //    var configuration = builder.Build();
+        //    return configuration["ClaveMaestra"] ?? string.Empty;
+        //}
+
+
         public List<ViewUsuario> ListarUsuarios(int? idUsuario = null)
         {
             var lista = new List<ViewUsuario>();
@@ -133,9 +143,14 @@ namespace ALFINapp.Datos
                             {
                                 IdUsuario = Convert.ToInt32(dr["id_usuario"]),
                                 Dni = dr["dni"].ToString(),
+                                Nombres = dr["Nombres"].ToString(),
+                                Apellido_Paterno = dr["Apellido_Paterno"].ToString(),
+                                Apellido_Materno = dr["Apellido_Materno"].ToString(),
+                                Correo = dr["correo"].ToString(),
                                 NombresCompletos = dr["Nombre_Completo"].ToString(),
                                 NOMBRECAMPANIA = dr["NOMBRE_CAMPAÑA"].ToString(),
                                 RESPONSABLESUP = dr["RESPONSABLE_SUP"].ToString(),
+                                REGION = dr["region"].ToString(),
                                 Rol = dr["rol"].ToString(),
                                 Estado = dr["estado"].ToString(),
                                 FechaActualizacion = dr["fecha_actualizacion"] == DBNull.Value ? null : Convert.ToDateTime(dr["fecha_actualizacion"]),
@@ -149,14 +164,35 @@ namespace ALFINapp.Datos
 
             return lista;
         }
-        private string LeerClaveMaestraDesdeAppSettings()
-        {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-            var configuration = builder.Build();
-            return configuration["ClaveMaestra"] ?? string.Empty;
-        }
 
+        public List<ViewRol> ListarRoles(int? idUsuario = null)
+        {
+            var lista = new List<ViewRol>();
+            var cn = new Conexion();
+
+            using (SqlConnection connection = new SqlConnection(cn.getCadenaSQL()))
+            {
+                using (SqlCommand cmd = new SqlCommand("SP_USUARIO_LISTAR_ROLES", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    connection.Open();
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            lista.Add(new ViewRol
+                            {
+                                IdRol = Convert.ToInt32(dr["IdRol"]),
+                                Rol = dr["Rol"].ToString(),
+                                Descripcion = dr["Descripcion"].ToString(),
+                            });
+                        }
+                    }
+                }
+            }
+
+            return lista;
+        }
     }
 }
