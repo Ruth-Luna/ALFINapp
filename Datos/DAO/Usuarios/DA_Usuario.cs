@@ -143,9 +143,14 @@ namespace ALFINapp.Datos
                             {
                                 IdUsuario = Convert.ToInt32(dr["id_usuario"]),
                                 Dni = dr["dni"].ToString(),
+                                TipoDocumento = dr["tipo_doc"].ToString(),
                                 Nombres = dr["Nombres"].ToString(),
                                 Apellido_Paterno = dr["Apellido_Paterno"].ToString(),
                                 Apellido_Materno = dr["Apellido_Materno"].ToString(),
+                                Usuario = dr["Usuario"].ToString(),
+                                Contrasenia = dr["contraseñaH"] == DBNull.Value
+                                ? null
+                                : System.Text.Encoding.Unicode.GetString((byte[])dr["contraseñaH"]),
                                 Correo = dr["correo"].ToString(),
                                 NombresCompletos = dr["Nombre_Completo"].ToString(),
                                 NOMBRECAMPANIA = dr["NOMBRE_CAMPAÑA"].ToString(),
@@ -165,6 +170,75 @@ namespace ALFINapp.Datos
             return lista;
         }
 
+        public bool ActualizarUsuario(ViewUsuario usuario)
+        {
+            try
+            {
+                var cn = new Conexion();
+                using (SqlConnection connection = new SqlConnection(cn.getCadenaSQL()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("SP_USUARIO_ACTUALIZAR_USUARIO", connection))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.AddWithValue("@id_usuario", usuario.IdUsuario);
+                        cmd.Parameters.AddWithValue("@dni", (object)usuario.Dni ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@tipo_doc", (object)usuario.TipoDocumento ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Apellido_Paterno", (object)usuario.Apellido_Paterno ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Apellido_Materno", (object)usuario.Apellido_Materno ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Usuario", (object)usuario.Usuario ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@contraseniaH", usuario.Contrasenia != null
+                            ? (object)System.Text.Encoding.Unicode.GetBytes(usuario.Contrasenia)
+                            : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Nombres", (object)usuario.Nombres ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@NOMBRE_CAMPANIA", (object)usuario.NOMBRECAMPANIA ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@rol", (object)usuario.Rol ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@region", (object)usuario.REGION ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@correo", (object)usuario.Correo ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@estado", (object)usuario.Estado ?? DBNull.Value);
+
+                        connection.Open();
+                        int filasAfectadas = cmd.ExecuteNonQuery();
+
+                        return filasAfectadas > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("❌ Error en ActualizarUsuario: " + ex.Message);
+                // Puedes lanzar la excepción para que suba al controlador y se capture allí también
+                throw;
+            }
+        }
+
+        public bool ActualizarEstado(int idUsuario, string estado)
+        {
+            try
+            {
+                var cn = new Conexion();
+                using (SqlConnection connection = new SqlConnection(cn.getCadenaSQL()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("SP_USUARIO_ACTUALIZAR_ESTADO", connection))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.AddWithValue("@id_usuario", idUsuario);
+                        cmd.Parameters.AddWithValue("@estado", estado);
+
+                        connection.Open();
+                        int filasAfectadas = cmd.ExecuteNonQuery();
+
+                        return filasAfectadas > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("❌ Error en ActualizarEstado: " + ex.Message);
+                throw;
+            }
+        }
         public List<ViewRol> ListarRoles(int? idUsuario = null)
         {
             var lista = new List<ViewRol>();

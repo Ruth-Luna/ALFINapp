@@ -14,6 +14,8 @@ namespace ALFINapp.API.Models
         public string? Apellido_Materno { get; set; }
         public string? Nombres { get; set; }
         public string? Rol { get; set; } = null!;
+        public string? Usuario { get; set; }
+        public string? Contrasenia { get; set; }
         public string? Departamento { get; set; } = null!;
         public string? Provincia { get; set; } = null!;
         public string? Distrito { get; set; } = null!;

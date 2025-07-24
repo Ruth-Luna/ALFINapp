@@ -155,116 +155,95 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalEditarUsuarioAdmin" tabindex="-1" aria-labelledby="modalEditarUsuarioAdmin" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-sm">
+<div class="modal fade" id="modalEditarUsuarioGerente" tabindex="-1" aria-labelledby="modalEditarUsuarioGerente" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title"></h4>
+                <h4 class="modal-title">MODIFICAR USUARIO</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div id="modalContentGeneralTemplate">
-                    <div class="container">
-                        <div class="row mb-3">
-                            <label for="selectEstado_EU" class="col-5 col-form-label">Estado</label>
-                            <div class="col-7">
-                                <select class="form-select" id="selectEstado_EU">
+                <div class="container">
+                    <div class="row">
+    
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <div class="mb-3">
+                                    <label for="selectTDocumento_EditarUsuario" class="form-label">Tipo Documento</label>
+                                    <select class="form-select" id="selectTDocumento_EditarUsuario">
+                                        <option value="1">DNI</option>
+                                        <option value="2">CARNET EXTRANJERÍA</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="txtUser_EditarUsuario" class="form-label">Usuario</label>
+                                <input type="text" class="form-control" id="txtUser_EditarUsuario" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="txtNombres_EditarUsuario" class="form-label">Nombres</label>
+                                <input type="text" class="form-control" id="txtNombres_EditarUsuario" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="txtApellidosM_EditarUsuario" class="form-label">Apellido Materno</label>
+                                <input type="text" class="form-control" id="txtApellidosM_EditarUsuario" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="txtCampania_EditarUsuario" class="form-label">Campaña</label>
+                                <input type="text" class="form-control" id="txtCampania_EditarUsuario" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="txtRol_EditarUsuario" class="form-label">Rol</label>
+                                <select class="form-select" id="txtRol_EditarUsuario">
+                                    <!-- Opciones cargadas dinámicamente -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="txtDNI_EditarUsuario" class="form-label">Documento</label>
+                                <input type="text" class="form-control" id="txtDNI_EditarUsuario" />
+                            </div>
+                           
+                            <div class="mb-3">
+                                <label for="txtPassword_EditarUsuario" class="form-label">Contraseña</label>
+                                <div class="position-relative">
+                                    <input type="password" class="form-control pe-5" id="txtPassword_EditarUsuario" />
+                                    <i class="fa fa-eye position-absolute top-50 end-0 translate-middle-y me-3"
+                                       id="togglePassword" style="cursor: pointer;"></i>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="txtApellidosP_EditarUsuario" class="form-label">Apellido Paterno</label>
+                                <input type="text" class="form-control" id="txtApellidosP_EditarUsuario" />
+                            </div>
+   
+                            <div class="mb-3">
+                                <label for="txtRegion_EditarUsuario" class="form-label">Región</label>
+                                <input type="text" class="form-control" id="txtRegion_EditarUsuario" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="txtCorreo_EditarUsuario" class="form-label">Correo Electrónico</label>
+                                <input type="email" class="form-control" id="txtCorreo_EditarUsuario" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="selectEstado" class="form-label">Estado</label>
+                                <select class="form-select" id="selectEstado">
                                     <option value="ACTIVO">ACTIVO</option>
                                     <option value="INACTIVO">INACTIVO</option>
                                     <option value="CAMBIO">CAMBIO DE FECHAS</option>
                                 </select>
                             </div>
                         </div>
+                    </div>
 
-           @*              <div id="divFechas_EU" style="display: none;">
-                            <div class="row mb-3">
-                                <label for="viewFechaInicio_EU" class="col-6 col-form-label">Fecha Inicio</label>
-                                <label for="viewFechaCese_EU" class="col-6 col-form-label">Fecha Cese</label>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-6">
-                                    <input type="text" class="form-control" id="viewFechaInicio_EU" readonly/>
-                                </div>
-                                <div class="col-6">
-                                    <input type="text" class="form-control" id="viewFechaCese_EU" readonly/>
-                                </div>
-                            </div>
-                        </div>
- *@
-                       @*  <div class="alert alert-success" role="alert" id="alertaFecha" style="display: none;">
-                            <p>Si desea cambiar el estado de un usuario, puede llenar la fecha correspondiente. Por defecto <strong>no</strong> se enviara ninguna <strong>Fecha</strong>
-                            </p>
-                        </div>
-
-                        <div id="divFechaInicio_EU" style="display: none;">
-                            <div class="row mb-3">
-                                <label for="dateFechaInicio_EU" class="col-5 col-form-label">Fecha Inicio</label>
-                                <div class="col-7">
-                                    <input type="date" class="form-control" id="dateFechaInicio_EU" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="divFechaCese_EU" style="display: none;">
-                            <div class="row mb-3">
-                                <label for="dateFechaCese_EU" class="col-5 col-form-label">Fecha Cese</label>
-                                <div class="col-7">
-                                    <input type="date" class="form-control" id="dateFechaCese_EU" />
-                                </div>
-                            </div>
-                        </div> *@
-
-                        <div class="row mb-3">
-                            <label for="txtDNI_EditarUsuario" class="col-5 col-form-label">DNI</label>
-                            <div class="col-7">
-                                <input type="text" class="form-control" id="txtDNI_EditarUsuario" />
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label for="txtApellidosP_EditarUsuario" class="col-5 col-form-label">Apellidos Paterno</label>
-                            <div class="col-7">
-                                <input type="text" class="form-control" id="txtApellidosP_EditarUsuario" />
-                            </div>
-                        </div>
-                          <div class="row mb-3">
-                            <label for="txtApellidosM_EditarUsuario" class="col-5 col-form-label">Apellidos Materno</label>
-                            <div class="col-7">
-                                <input type="text" class="form-control" id="txtApellidosM_EditarUsuario" />
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label for="txtNombres_EditarUsuario" class="col-5 col-form-label">Nombres</label>
-                            <div class="col-7">
-                                <input type="text" class="form-control" id="txtNombres_EditarUsuario" />
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label for="txtRegion_EditarUsuario" class="col-5 col-form-label">Región</label>
-                            <div class="col-7">
-                                <input type="text" class="form-control" id="txtRegion_EditarUsuario" />
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label for="txtCampania_EditarUsuario" class="col-5 col-form-label">Campaña</label>
-                            <div class="col-7">
-                                <input type="text" class="form-control" id="txtCampania_EditarUsuario" />
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label for="txtCorreo_EditarUsuario" class="col-5 col-form-label">Correo Electrónico</label>
-                            <div class="col-7">
-                                <input type="text" class="form-control" id="txtCorreo_EditarUsuario" />
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label for="txtRol_EditarUsuario" class="col-5 col-form-label">Rol</label>
-                            <div class="col-7">
-                                <select name="txtRol_EditarUsuario" class="form-select" id="txtRol_EditarUsuario">
-                                </select>
-                            </div>
-                        </div>
-                        <button type="button" class="btn btn-primary">Modificar</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Cerrar</button>
+                    <div class="text-end mt-3">
+                        <button type="button" class="btn btn-primary" id="btnGuardarCambios" data-id="">Modificar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     </div>
                 </div>
             </div>
@@ -273,8 +252,34 @@
 </div>
 
 
-
 @section Scripts {
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const passwordInput = document.getElementById("txtPassword_EditarUsuario");
+            const toggleIcon = document.getElementById("togglePassword");
+
+            toggleIcon.addEventListener("click", function () {
+                const type = passwordInput.type === "password" ? "text" : "password";
+                passwordInput.type = type;
+                this.classList.toggle("fa-eye");
+                this.classList.toggle("fa-eye-slash");
+            });
+        });
+
+        $('#modalEditarUsuarioGerente').on('show.bs.modal', function () {
+            const passwordInput = document.getElementById("txtPassword_EditarUsuario");
+            const toggleIcon = document.getElementById("togglePassword");
+
+            passwordInput.type = "password";
+
+            toggleIcon.classList.remove("fa-eye");
+            toggleIcon.classList.add("fa-eye-slash");
+        });
+    </script>
+
+
     <script src="~/js/tablefunctions.js?v=@DateTime.Now.Ticks"></script>
     <script src="~/js/Usuarios/Administracion.js?v=@DateTime.Now.Ticks"></script>
 

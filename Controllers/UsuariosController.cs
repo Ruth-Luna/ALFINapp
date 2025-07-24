@@ -1,4 +1,5 @@
 using ALFINapp.API.Filters;
+using ALFINapp.API.Models;
 using ALFINapp.Datos;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Services;
@@ -42,13 +43,65 @@ namespace ALFINapp.API.Controllers
         }
 
         [HttpGet]
+        [PermissionAuthorization("Usuarios", "Nuevo")]
+        public async Task<IActionResult> Nuevo()
+        {
+            var getSupervisores = await _DBServicesConsultasAdministrador.ConseguirTodosLosSupervisores();
+            return View("Nuevo", getSupervisores.Data);
+        }
+        public IActionResult ActualizarUsuario([FromBody] ViewUsuario usuario)
+        {
+            try
+            {
+                bool actualizado = _daUsuario.ActualizarUsuario(usuario);
+                Console.WriteLine(actualizado);
+                Console.WriteLine($"Tipo: {actualizado.GetType()} Valor: {actualizado}");
+                if (actualizado)
+                    return Ok(new { success = true, mensaje = "Usuario actualizado correctamente." });
+                else
+                    return StatusCode(500, new { success = false, mensaje = "No se pudo actualizar el usuario. No se afectaron filas." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    mensaje = "Ocurrió un error interno al intentar actualizar el usuario.",
+                    detalle = ex.Message
+                });
+            }
+        }
+
+        public IActionResult ActualizarEstadoUsuario([FromBody] ViewUsuario usuario)
+        {
+            try
+            {
+                string estado = usuario.Estado == "1" ? "ACTIVO" : "INACTIVO";
+
+                bool actualizado = _daUsuario.ActualizarEstado(usuario.IdUsuario, estado);
+
+                if (actualizado)
+                    return Ok(new { success = true, mensaje = "Se ha cambiado el estado del Usuario" });
+                else
+                    return StatusCode(500, new { success = false, mensaje = "No se pudo actualizar el estado del usuario." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    mensaje = "Ocurrió un error interno al intentar actualizar el estado.",
+                    detalle = ex.Message
+                });
+            }
+        }
+
+        [HttpGet]
         public JsonResult ListarRoles()
         {
             var listarRol = _daUsuario.ListarRoles();
             return Json(listarRol);
         }
-
-
 
         //[HttpPost]
         //public async Task<IActionResult> ModificarUsuario([FromBody] Usuario usuario)
@@ -118,13 +171,7 @@ namespace ALFINapp.API.Controllers
         //    }
         //}
 
-        //[HttpGet]
-        //[PermissionAuthorization("Usuarios", "Nuevo")]
-        //public async Task<IActionResult> Nuevo()
-        //{
-        //    var getSupervisores = await _DBServicesConsultasAdministrador.ConseguirTodosLosSupervisores();
-        //    return View("Nuevo", getSupervisores.Data);
-        //}
+        
 
         //[HttpPost]
         //public async Task<IActionResult> CrearUsuario([FromBody] Usuario usuario)
