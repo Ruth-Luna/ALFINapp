@@ -29,8 +29,15 @@ namespace ALFINapp.API.Controllers
         }
 
         [HttpGet]
-        [PermissionAuthorization("Usuarios", "Administracion")]
-        public IActionResult Administracion()
+        [PermissionAuthorization("Usuarios", "GerenteZonal")]
+        public IActionResult GerenteZonal()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [PermissionAuthorization("Usuarios", "Supervisor")]
+        public IActionResult Supervisor()
         {
             return View();
         }
