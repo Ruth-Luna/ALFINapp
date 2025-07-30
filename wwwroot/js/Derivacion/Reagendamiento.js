@@ -1,4 +1,4 @@
-async function reagendarCliente(nuevaFechaVisita, idDerivacion) {
+async function reagendarCliente(nuevaFechaVisita, idDerivacion, dniCliente) {
     Swal.fire({
         title: 'Reagendar cita',
         text: 'Reagendar la cita del cliente. Esto volverá a enviar el formulario y los correos al banco.',
@@ -33,20 +33,7 @@ async function reagendarCliente(nuevaFechaVisita, idDerivacion) {
             return;
         }
 
-        const evidencias = [];
-        for (const file of files) {
-            const hex = await archivoAHex(file);
-            evidencias.push({
-                fileName: file.name,
-                fileType: file.name.split('.').pop(),
-                fileContent: hex,
-                idDerivacion: idDerivacion,
-                type: 0
-            });
-        }
-
-        // Si no hay evidencias, mostrar advertencia
-        if (evidencias.length === 0) {
+        if (files.length === 0) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Sin evidencias',
@@ -56,23 +43,79 @@ async function reagendarCliente(nuevaFechaVisita, idDerivacion) {
             return;
         }
 
-        // Enviar reagendamiento (con o sin evidencias)
         const loadingSwal = Swal.fire({
             title: 'Enviando...',
             text: 'Por favor, espere mientras se procesa el reagendamiento.',
             allowOutsideClick: false,
             didOpen: () => Swal.showLoading()
         });
+        const baseUrl = window.location.origin;
+        
+
+        // Crear FormData para enviar archivos
+        // var formdata = new FormData();
+        // formdata.append("files", fileInput.files[0], "GerenteZonalController.cs");
+        // formdata.append("dnicliente", "73393133");
+
+        // var requestOptions = {
+        //     method: 'POST',
+        //     body: formdata,
+        //     redirect: 'follow'
+        // };
+
+        // fetch("http://localhost:5051/Download/UploadImage", requestOptions)
+        //     .then(response => response.text())
+        //     .then(result => console.log(result))
+        //     .catch(error => console.log('error', error));
+        // Ejemplo de respuesta esperada del servidor
+        // {"url":"http://localhost:5051/temp-images/3213f8ee-d7f5-4491-806c-57f6cb0691db.png"}
+        const downloadURL = `${baseUrl}/Download/UploadImage`;
+
+        var urls_string = [];
+        for (const file of files) {
+            try {
+                const formdata = new FormData();
+                formdata.append("files", file, file.name);
+
+                const requestOptions = {
+                    method: 'POST',
+                    body: formdata,
+                    redirect: 'follow'
+                };
+
+                const response1 = await fetch(downloadURL, requestOptions);
+                if (response1.ok) {
+                    const result1 = await response1.json();
+                    urls_string.push(result1.url);
+                } else {
+                    console.error('Error al subir el archivo:', response1.statusText);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error al subir archivos',
+                        text: `No se pudo subir el archivo ${file.name}. Por favor, intenta de nuevo.`,
+                        confirmButtonText: 'Aceptar'
+                    });
+                    return;
+                }
+            } catch (error) {
+                console.error('Error al subir archivo:', file.name, error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al subir archivos',
+                    text: `No se pudo subir el archivo ${file.name}. Por favor, intenta de nuevo.`,
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+        }
 
         const dto = {
             FechaReagendamiento: fechaVisita,
             IdDerivacion: idDerivacion,
-            evidencias: evidencias
+            urlEvidencias: urls_string
         };
 
-        const baseUrl = window.location.origin;
         const url = `${baseUrl}/Reagendamiento/Reagendar`;
-
+        
         try {
             const response = await fetch(url, {
                 method: 'POST',
@@ -92,7 +135,7 @@ async function reagendarCliente(nuevaFechaVisita, idDerivacion) {
                     text: `${result.message} Si desea ver los cambios puede recargar la pagina.` || 'Ocurrió un error desconocido',
                     confirmButtonText: 'Aceptar'
                 }).then(() => {
-                    // Only close the modal if the user confirms
+
                     const modal = document.getElementById('evidencia-derivacion-modal');
                     // Simulate a click on the close button
                     if (modal) {
