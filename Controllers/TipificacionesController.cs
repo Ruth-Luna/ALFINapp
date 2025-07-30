@@ -3,7 +3,8 @@ using ALFINapp.Infrastructure.Services;
 using ALFINapp.API.Filters;
 using ALFINapp.API.DTOs;
 using ALFINapp.Application.Interfaces.Tipificacion;
-using ALFINapp.Application.Interfaces.Derivacion; // Replace with the correct namespace where DBServicesGeneral is defined
+using ALFINapp.Application.Interfaces.Derivacion;
+using ALFINapp.Datos.DAO.Tipificaciones; // Replace with the correct namespace where DBServicesGeneral is defined
 
 namespace ALFINapp.API.Controllers
 {
@@ -18,13 +19,15 @@ namespace ALFINapp.API.Controllers
         private readonly MDbContext _context;
         private readonly IUseCaseUploadTipificaciones _useCaseUploadTipificaciones;
         private readonly IUseCaseUploadDerivacion _useCaseUploadDerivacion;
+        private readonly DAO_GestionTipificacionesVista _dao_gestionTipificacionesVista;
         public TipificacionesController(DBServicesGeneral dbServicesGeneral,
             DBServicesTipificaciones dbServicesTipificaciones,
             DBServicesDerivacion dBServicesDerivacion,
             MDbContext context,
             IUseCaseUploadTipificaciones useCaseUploadTipificaciones,
             IUseCaseUploadDerivacion useCaseUploadDerivacion,
-            DBServicesConsultasClientes dbServicesConsultasClientes)
+            DBServicesConsultasClientes dbServicesConsultasClientes,
+            DAO_GestionTipificacionesVista dao_gestionTipificacionesVista)
         {
             _dbServicesGeneral = dbServicesGeneral;
             _dbServicesTipificaciones = dbServicesTipificaciones;
@@ -33,6 +36,7 @@ namespace ALFINapp.API.Controllers
             _useCaseUploadTipificaciones = useCaseUploadTipificaciones;
             _useCaseUploadDerivacion = useCaseUploadDerivacion;
             _dbServicesConsultasClientes = dbServicesConsultasClientes;
+            _dao_gestionTipificacionesVista = dao_gestionTipificacionesVista;
         }
 
         [HttpPost]
@@ -94,6 +98,12 @@ namespace ALFINapp.API.Controllers
         {
             try
             {
+                var id_asesor = HttpContext.Session.GetInt32("UsuarioId");
+                if (id_asesor == null)
+                {
+                    return Json(new { success = false, message = "No ha iniciado sesion, por favor inicie sesion." });
+                }
+                var tipificaciones = await _dao_gestionTipificacionesVista.GetClienteTipificacion(id_base, id_asesor.Value, traido_de);
                 var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
                 if (usuarioId == null)
                 {

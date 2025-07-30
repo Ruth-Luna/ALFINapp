@@ -28,14 +28,6 @@ namespace ALFINapp.Datos.DAO.Derivaciones
                 {
                     return (false, "Si selecciona un campo, debe llenar un filtro.", new ViewDescargas());
                 }
-                if (string.IsNullOrEmpty(filtro))
-                {
-                    filtro = null; // Si no hay filtro, se asigna null
-                }
-                if (string.IsNullOrEmpty(campo))
-                {
-                    campo = null; // Si no hay campo, se asigna null
-                }
                 if (fecha_inicio.HasValue && fecha_final.HasValue && fecha_inicio > fecha_final)
                 {
                     return (false, "La fecha de inicio no puede ser mayor que la fecha final.", new ViewDescargas());
@@ -43,14 +35,6 @@ namespace ALFINapp.Datos.DAO.Derivaciones
                 if (id_usuario.HasValue && id_usuario <= 0)
                 {
                     return (false, "El ID de usuario debe ser un número positivo.", new ViewDescargas());
-                }
-                if (!fecha_inicio.HasValue)
-                {
-                    fecha_inicio = null; // Si no hay fecha de inicio, se asigna null
-                }
-                if (!fecha_final.HasValue)
-                {
-                    fecha_final = null; // Si no hay fecha final, se asigna null
                 }
                 var parameters = new[]
                 {

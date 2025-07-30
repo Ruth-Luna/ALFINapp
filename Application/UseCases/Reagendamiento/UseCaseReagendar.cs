@@ -1,6 +1,7 @@
 using ALFINapp.Application.Interfaces.Reagendamiento;
 using ALFINapp.Domain.Interfaces;
 using ALFINapp.DTOs;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace ALFINapp.Application.UseCases.Reagendamiento
 {
@@ -18,32 +19,32 @@ namespace ALFINapp.Application.UseCases.Reagendamiento
 
         public async Task<(bool IsSuccess, string Message)> exec(
             int IdDerivacion,
-            DateTime FechaReagendamiento,
-            List<DtoVUploadFiles>? evidencias = null)
+            DateTime FechaReagendamiento, List<string>? urls = null)
         {
             try
             {
+                urls ??= new List<string>();
                 var checkDis = await _repositoryReagendacion.checkDisReagendacion(IdDerivacion, FechaReagendamiento);
                 if (!checkDis.success)
                 {
                     return (false, checkDis.message);
                 }
 
-                if (evidencias != null && evidencias.Count > 0)
-                {
-                    var uploadFiles = await _repositoryDerivaciones.uploadReagendacionConEvidencias(evidencias, IdDerivacion, FechaReagendamiento);
-                    if (!uploadFiles.success)
-                    {
-                        return (false, uploadFiles.message);
-                    }
-                    else
-                    {
-                        return (true, "Reagendamiento con evidencias realizado con éxito.");
-                    }
-                }
+                // if (evidencias != null && evidencias.Count > 0)
+                // {
+                //     var uploadFiles = await _repositoryDerivaciones.uploadReagendacionConEvidencias(evidencias, IdDerivacion, FechaReagendamiento);
+                //     if (!uploadFiles.success)
+                //     {
+                //         return (false, uploadFiles.message);
+                //     }
+                //     else
+                //     {
+                //         return (true, "Reagendamiento con evidencias realizado con éxito.");
+                //     }
+                // }
                 
                 // If no files to upload, proceed with the regular reagendamiento
-                var reagendar = await _repositoryDerivaciones.uploadReagendacion(IdDerivacion, FechaReagendamiento);
+                var reagendar = await _repositoryDerivaciones.uploadReagendacion(IdDerivacion, FechaReagendamiento, string.Join(",", urls));
                 if (reagendar.success)
                 {
                     return (true, "Reagendamiento realizado con éxito.");
