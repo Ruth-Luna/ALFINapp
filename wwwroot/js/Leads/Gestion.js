@@ -36,6 +36,40 @@ function sortTableGestionLeads(filter, searchfield, order, orderAsc) {
     window.location.href = url;
 }
 
+async function cargarDataCliente(idBase, idAsignacion, traidoDe) {
+    const baseUrl = window.location.origin;
+    const url = `${baseUrl}/Tipificaciones/${functionToExecute}`;
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id_base: idBase, id_asignacion: idAsignacion, traido_de: traidoDe })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            Swal.fire({
+                title: 'Error al cargar los datos',
+                text: errorData.message || 'Hubo un error al intentar cargar los datos. Por favor, inténtalo nuevamente.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+            return;
+        } else {
+            const result = await response.json();
+        }
+    } catch (error) {
+        Swal.fire({
+            title: 'Error al cargar los datos',
+            text: 'Hubo un error al intentar cargar los datos. Por favor, inténtalo nuevamente.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+    }
+}
+
 function loadTipificarCliente(idBase, functionToExecute) {
     $.ajax({
         url: `/Vendedor/${functionToExecute}`, // Controlador y acción
