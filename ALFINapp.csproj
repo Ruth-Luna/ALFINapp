@@ -28,8 +28,4 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Datos\DAO\Usuarios\" />
-  </ItemGroup>
 </Project>

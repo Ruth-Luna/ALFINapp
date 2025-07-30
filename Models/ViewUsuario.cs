@@ -35,6 +35,8 @@ namespace ALFINapp.API.Models
         public DateTime? FechaInicio { get; set; }
         public DateTime? FechaCese { get; set; }
         public string? Correo { get; set; }
+        public int Resultado { get; set; }
+        public string Mensaje { get; set; }
     }
 
      public class ViewRol
@@ -43,4 +45,16 @@ namespace ALFINapp.API.Models
         public string? Rol { get; set; }
         public string? Descripcion { get; set; }
     }
+
+    public class ViewCorreoRecuperacion
+    {
+        public int IdUsuario { get; set; }
+        public string Usuario { get; set; }
+        public string Correo { get; set; }
+        public string Codigo { get; set; }
+        public bool? Estado { get; set; }
+        public int IdSolicitud { get; set; }
+        public DateTime FechaExpiracion { get; set; }
+    }
+
 }
