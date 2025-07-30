@@ -38,14 +38,20 @@ function sortTableGestionLeads(filter, searchfield, order, orderAsc) {
 
 async function cargarDataCliente(idBase, idAsignacion, traidoDe) {
     const baseUrl = window.location.origin;
-    const url = `${baseUrl}/Tipificaciones/${functionToExecute}`;
+    // let url
+    // if (traidoDe === 'A365') {
+    //     url = `${baseUrl}/Vendedor/TipificarClienteView`;
+    // }
+    // if (traidoDe === 'ALFIN') {
+    //     url = `${baseUrl}/Vendedor/TipificarClienteDBALFINView`;
+    // }
     try {
         const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ id_base: idBase, id_asignacion: idAsignacion, traido_de: traidoDe })
+            body: JSON.stringify({ id_base: idBase })
         });
 
         if (!response.ok) {
@@ -70,33 +76,49 @@ async function cargarDataCliente(idBase, idAsignacion, traidoDe) {
     }
 }
 
-function loadTipificarCliente(idBase, functionToExecute) {
-    $.ajax({
-        url: `/Vendedor/${functionToExecute}`, // Controlador y acción
-        type: 'GET',
-        data: { id_base: idBase },
-        success: function (result) {
-            if (result.success === false) {
+function loadTipificarCliente(idBase, traidoDe) {
+    let functionToExecute = '';
+    if (traidoDe === 'A365') {
+        functionToExecute = 'TipificarClienteView';
+    }
+    if (traidoDe === 'ALFIN') {
+        functionToExecute = 'TipificarClienteDBALFINView';
+    }
+    try {
+        $.ajax({
+            url: `/Vendedor/${functionToExecute}`, // Controlador y acción
+            type: 'GET',
+            data: { id_base: idBase },
+            success: function (result) {
+                if (result.success === false) {
+                    Swal.fire({
+                        title: 'Error al cargar los datos',
+                        text: result.message,
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                    return;
+
+                }
+                $('#modalContentGeneralTemplate').html(result); // Inserta el contenido de la vista en el modal
+                $('#GeneralTemplateModal').modal('show'); // Muestra el modal
+                $('#GeneralTemplateTitleModalLabel').text("Tipificaciones al Usuario"); // Inserta el contenido de la vista en el modal
+            },
+            error: function () {
                 Swal.fire({
                     title: 'Error al cargar los datos',
-                    text: result.message,
+                    text: 'Hubo un error al intentar cargar los datos. Por favor, inténtalo nuevamente.',
                     icon: 'error',
                     confirmButtonText: 'Aceptar'
                 });
-                return;
-
             }
-            $('#modalContentGeneralTemplate').html(result); // Inserta el contenido de la vista en el modal
-            $('#GeneralTemplateModal').modal('show'); // Muestra el modal
-            $('#GeneralTemplateTitleModalLabel').text("Tipificaciones al Usuario"); // Inserta el contenido de la vista en el modal
-        },
-        error: function () {
-            Swal.fire({
-                title: 'Error al cargar los datos',
-                text: 'Hubo un error al intentar cargar los datos. Por favor, inténtalo nuevamente.',
-                icon: 'error',
-                confirmButtonText: 'Aceptar'
-            });
-        }
-    });
+        });
+    } catch (error) {
+        Swal.fire({
+            title: 'Error al cargar los datos',
+            text: 'Hubo un error al intentar cargar los datos. Por favor, inténtalo nuevamente.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+    }
 }
