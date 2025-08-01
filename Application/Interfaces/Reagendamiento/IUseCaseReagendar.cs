@@ -8,6 +8,6 @@ namespace ALFINapp.Application.Interfaces.Reagendamiento
         public Task<(bool IsSuccess, string Message)> exec(
             int IdDerivacion,
             DateTime FechaReagendamiento,
-            List<DtoVUploadFiles>? dtovuploadfiles = null);
+            List<string>? urls = null);
     }
 }

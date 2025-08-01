@@ -10,6 +10,7 @@ using System.Drawing;
 namespace ALFINapp.API.Controllers
 {
     [RequireSession]
+    [Route("Excel")]
     public class ExcelController : Controller
     {
         private readonly MDbContext _context;
@@ -38,7 +39,7 @@ namespace ALFINapp.API.Controllers
         }
 
 
-        [HttpGet]
+        [HttpGet("DescargarClientesAsignados")]
         public IActionResult DescargarClientesAsignados(
             DateTime? fechaInicio,
             DateTime? fechaFin,
@@ -360,7 +361,7 @@ namespace ALFINapp.API.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet("DownloadAsignaciones")]
         public async Task<IActionResult> DownloadAsignaciones(string nombre_lista, int page = -1)
         {
             try
@@ -489,16 +490,129 @@ namespace ALFINapp.API.Controllers
                 });
             }
         }
-        [HttpGet]
-        public IActionResult DownloadDerivaciones(string filtro, string campo, DateTime fecha_inicio, DateTime fecha_final)
+        [HttpGet("DownloadDerivacionesAsync")]
+        public async Task<IActionResult> DownloadDerivacionesAsync(
+            string? filtro,
+            string? campo,
+            DateTime? fecha_inicio,
+            DateTime? fecha_final)
         {
             try
             {
-                var asignaciones = dAO_DescargarDerivaciones.GetDerivacionesForDownload(filtro, campo, fecha_inicio, fecha_final);
+                var asignaciones = await dAO_DescargarDerivaciones.GetDerivacionesForDownload(filtro, campo, fecha_inicio, fecha_final);
+                var data = asignaciones.Data;
+
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 using var package = new ExcelPackage();
+                var worksheet = package.Workbook.Worksheets.Add("Asignaciones");
+
+                // 1. Metadatos en fila 1 y 2, columnas desde la columna 1
+                var metadata = new Dictionary<(int row, int col), object>
+                {
+                    [(1, 1)] = "Nombre de la Lista",
+                    [(1, 2)] = "DNI del Supervisor",
+                    [(1, 3)] = "Nombres del Supervisor",
+                    [(1, 4)] = "Fecha de Creación de la Lista",
+                    [(1, 5)] = "Total Asignaciones",
+                    [(1, 6)] = "Total Asignaciones Gestionadas",
+                    [(1, 7)] = "Total Asignaciones Asignadas a Asesores",
+                    [(1, 8)] = "Total Asignaciones Sin Gestionar",
+                    [(1, 9)] = "Total Asignaciones Sin Asignar",
+                    [(1, 10)] = "Total Asignaciones Derivadas",
+
+                    [(2, 1)] = data.nombre_lista,
+                    [(2, 2)] = data.dni_supervisor,
+                    [(2, 3)] = data.nombres_supervisor,
+                    [(2, 4)] = data.fecha_creacion_lista.ToString("yyyy-MM-dd"),
+                    [(2, 5)] = data.total_asignaciones,
+                    [(2, 6)] = data.total_asignaciones_gestionadas,
+                    [(2, 7)] = data.total_asignaciones_asignadas_a_asesores,
+                    [(2, 8)] = data.total_asignaciones_sin_gestionar,
+                    [(2, 9)] = data.total_asignaciones_sin_asignar,
+                    [(2, 10)] = data.total_asignaciones_derivadas
+                };
+
+                foreach (var entry in metadata)
+                {
+                    var (r, c) = entry.Key;
+                    worksheet.Cells[r, c].Style.WrapText = true;
+                    worksheet.Cells[r, c].Value = entry.Value;
+                    worksheet.Cells[r, c].Style.Font.Bold = true;
+                    worksheet.Cells[r, c].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[r, c].Style.Fill.BackgroundColor.SetColor(Color.LightBlue);
+                    worksheet.Cells[r, c].Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                }
+
+                // 2. Cabecera (fila 4)
+                var headers = new[]
+                {
+                    "Id Asignación", "Fecha Asignación", "Id UsuarioV",
+                    "Teléfono 1", "Teléfono 2", "Teléfono 3", "Teléfono 4", "Teléfono 5",
+                    "Email 1", "Email 2", "Nombre Cliente", "Oferta Max", "Tipo Base",
+                    "DNI", "Apellido Paterno", "Apellido Materno", "Nombres", "Edad",
+                    "Departamento", "Provincia", "Distrito", "Campaña", "Tasa Mínima",
+                    "Sucursal Comercial", "Agencia Comercial", "Plazo", "Cuota",
+                    "Oferta 12m", "Tasa 12m", "Cuota 12m",
+                    "Oferta 18m", "Tasa 18m", "Cuota 18m",
+                    "Oferta 24m", "Tasa 24m", "Cuota 24m",
+                    "Oferta 36m", "Tasa 36m", "Cuota 36m",
+                    "Grupo Tasa", "Grupo Monto", "Propensión",
+                    "Tipo Cliente", "Cliente Nuevo", "Color", "Color Final",
+                    "Usuario", "UserV3", "Flag Deuda v Oferta", "Perfil RO", "Prioridad",
+                    "Teléfono Derivado", "Fecha Derivación", "Nombre Agencia Derivada", "Fecha Visita", "Oferta Max Derivada",
+                    "Documento del Asesor", "Nombre del Asesor"
+                };
+
+                for (int i = 0; i < headers.Length; i++)
+                {
+                    worksheet.Cells[4, i + 1].Value = headers[i];
+                    worksheet.Cells[4, i + 1].Style.Font.Bold = true;
+                    worksheet.Cells[4, i + 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[4, i + 1].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                    worksheet.Cells[4, i + 1].Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                }
+
+                // 3. Datos (desde fila 5)
+                var row = 5;
+                foreach (var a in data.asignaciones_detalladas)
+                {
+                    var values = new object?[]
+                    {
+                        a.IdAsignacion,
+                        a.FechaAsignacionSup?.ToString("yyyy-MM-dd"),
+                        a.IdUsuarioV,
+                        a.Telefono1, a.Telefono2, a.Telefono3, a.Telefono4, a.Telefono5,
+                        a.Email1, a.Email2, a.ClienteNombreCompleto, a.OfertaMax, a.TipoBase,
+                        a.Dni, a.XAppaterno, a.XApmaterno, a.XNombre, a.Edad,
+                        a.Departamento, a.Provincia, a.Distrito, a.Campaña, a.TasaMinima,
+                        a.SucursalComercial, a.AgenciaComercial, a.Plazo, a.Cuota,
+                        a.Oferta12m, a.Tasa12m, a.Cuota12m,
+                        a.Oferta18m, a.Tasa18m, a.Cuota18m,
+                        a.Oferta24m, a.Tasa24m, a.Cuota24m,
+                        a.Oferta36m, a.Tasa36m, a.Cuota36m,
+                        a.GrupoTasa, a.GrupoMonto, a.Propension,
+                        a.TipoCliente, a.ClienteNuevo, a.Color, a.ColorFinal,
+                        a.Usuario, a.UserV3, a.FlagDeudaVOferta, a.PerfilRo, a.Prioridad,
+                        a.TelefonoDerivado, a.FechaDerivacion?.ToString("yyyy-MM-dd"),
+                        a.NombreAgenciaDerivada, a.FechaVisita?.ToString("yyyy-MM-dd"),
+                        a.OfertaMaxDerivada,
+                        a.DocAsesor,
+                        a.NombreAsesor
+                    };
+
+                    for (int col = 0; col < values.Length; col++)
+                    {
+                        worksheet.Cells[row, col + 1].Value = values[col];
+                        worksheet.Cells[row, col + 1].Style.Border.BorderAround(ExcelBorderStyle.Hair);
+                    }
+
+                    row++;
+                }
+
+                worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+
                 var fileBytes = package.GetAsByteArray();
-                var fileName = $"Derivaciones_{filtro}_{campo}_{fecha_inicio:yyyyMMdd}_{fecha_final:yyyyMMdd}.xlsx";
+                var fileName = $"Derivaciones_{data.dni_supervisor}_{DateTime.Now:yyyyMMddHHmmss}.xlsx";
                 return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
             }
             catch (System.Exception ex)

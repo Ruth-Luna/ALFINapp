@@ -4,6 +4,6 @@ namespace ALFINapp.Application.Interfaces.Derivacion
 {
     public interface IUseCaseUploadEvidencias
     {
-        public Task<(bool success, string message)> Execute(List<DtoVUploadFiles> files);
+        public Task<(bool success, string message)> Execute(DtoVDerivacionEvidencia evidencia);
     }
 }

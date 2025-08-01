@@ -1,0 +1,286 @@
+@{
+    var SupervisoresDisponibles = ViewData["Supervisores"] as List<ALFINapp.Infrastructure.Persistence.Models.Usuario>;
+    var Roles = ViewData["Roles"] as List<ALFINapp.Infrastructure.Persistence.Models.Roles>;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/main_page.css">
+    <link rel="stylesheet" href="~/css/Usuarios/Administracion.css">
+}
+
+<div>
+    <div class="mb-2">
+        <h3> Administracion de Usuarios </h3>
+        <div class="alert alert-info" role="alert">
+            <p>
+                En esta sección podra administrar los usuarios de la plataforma A365. Aca podra <strong>
+                    editar,
+                    desactivar y eliminar
+                </strong> usuarios.
+            </p>
+        </div>
+        <div class="d-flex flex-column flex-md-row align-items-md-center">
+            <label for="searchField" class="form-label mb-2 mb-md-0 me-md-2">
+                Buscar por:
+            </label>
+            <select id="searchField" class="form-control me-md-2">
+                <option value="nombres">Nombres</option>
+                <!--<option value="apellidoMaterno">Apellido Materno</option>
+                <option value="nombre">Nombre</option>-->
+                <option value="dniadm">DNI</option>
+                <option value="rol">Rol</option>
+            </select>
+            <input type="text" class="form-control" id="searchInput" placeholder="Ingrese valor de búsqueda">
+            <select class="form-control" name="rolFiltro" id="rolFiltro" style="display: none;"
+                    onchange="filtrarPorRol(this.value);">
+                <option value="">Seleccione un Rol</option>
+                <option value="ADMINISTRADOR">1 - ADMINISTRADOR</option>
+                <option value="SUPERVISOR">2 - SUPERVISOR</option>
+                <option value="ASESOR">3 - ASESOR DE CREDITOS</option>
+                <option value="GERENTE ZONAL">4 - GERENTE ZONAL</option>
+            </select>
+            <!-- Campos de fecha (inicial y final), ocultos por defecto -->
+            <input type="date" class="form-control mt-2" id="startDate" style="display: none;"
+                   placeholder="Fecha Inicial">
+            <input type="date" class="form-control mt-2" id="endDate" style="display: none;" placeholder="Fecha Final">
+        </div>
+    </div>
+    <div class="table-responsive">
+
+        <table class="table table-bordered text-nowrap" id="clientesTable">
+            <thead>
+                <tr>
+                    <th>Acción</th>
+                    <th>
+                        <span>
+                            Estado
+                        </span>
+                    </th>
+                    <th>Dni</th>
+                    <th>Nombres Completos</th>
+                    <th>Supervisor Asignado</th>
+                    <th>Nombre Campaña</th>
+                    <th>Rol</th>
+                    <th>Última actualización</th>
+                    <th>Fecha Inicio</th>
+                    <th>Fecha Cese</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td>
+                        <button class="btn btn-warning p-0 mt-auto" onclick="sortTable('clientesTable', 1, 'string')"
+                                data-sort-ignore>
+                            <i class="bi bi-filter"></i>
+                        </button>
+                    </td>
+                </tr>
+
+                @*  @foreach (var usuario in Model)
+                {
+                <tr class="align-middle">
+                <td>
+                <div class="d-flex flex-column align-items-center">
+                <div class="d-flex justify-content-center gap-2 mb-2">
+                @if (usuario.Estado == "ACTIVO")
+                {
+                <a href="javascript:void(0)" class="btn btn-warning btn-sm"
+                onclick="CambiarEstadoUsuario(0, '@usuario.IdUsuario');">
+                <i class="bi bi-toggle-off"></i>
+                </a>
+                }
+                else
+                {
+                <a href="javascript:void(0)" class="btn btn-success btn-sm"
+                onclick="CambiarEstadoUsuario(1, '@usuario.IdUsuario');">
+                <i class="bi bi-toggle-on"></i>
+                </a>
+                }
+
+                <button class="btn btn-primary btn-sm"
+                onclick="CargarModalModificarUsuario('@usuario.IdUsuario')">
+                <i class="bi bi-pencil"></i>
+                </button>
+                </div>
+                </div>
+                </td>
+                <td>
+                @if (usuario.Estado == "ACTIVO")
+                {
+                <span class="badge bg-success">@usuario.Estado</span>
+                }
+                else
+                {
+                <span class="badge bg-danger">@usuario.Estado</span>
+                }
+                </td>
+                <td>
+                @usuario.Dni
+                </td>
+                <td>
+                @usuario.NombresCompletos
+                </td>
+                <td>
+                @if (usuario.IdRol == 3)
+                {
+                <span>@usuario.RESPONSABLESUP</span>
+                }
+                else
+                {
+                <span>
+                EL USUARIO NO TIENE SUPERVISOR
+                </span>
+                }
+                </td>
+                <td>
+                @usuario.NOMBRECAMPANIA
+                </td>
+                <td>
+                @usuario.Rol
+                </td>
+                <td>
+                @usuario.FechaActualizacion
+                </td>
+                <td>
+                @usuario.FechaInicio
+                </td>
+                <td>
+                @usuario.FechaCese
+                </td>
+                </tr>
+                } *@
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEditarUsuarioGerente" tabindex="-1" aria-labelledby="modalEditarUsuarioGerente" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">MODIFICAR USUARIO</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+    
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <div class="mb-3">
+                                    <label for="selectTDocumento_EditarUsuario" class="form-label">Tipo Documento</label>
+                                    <select class="form-select" id="selectTDocumento_EditarUsuario">
+                                        <option value="1">DNI</option>
+                                        <option value="2">CARNET EXTRANJERÍA</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="txtUser_EditarUsuario" class="form-label">Usuario</label>
+                                <input type="text" class="form-control" id="txtUser_EditarUsuario" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="txtNombres_EditarUsuario" class="form-label">Nombres</label>
+                                <input type="text" class="form-control" id="txtNombres_EditarUsuario" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="txtApellidosM_EditarUsuario" class="form-label">Apellido Materno</label>
+                                <input type="text" class="form-control" id="txtApellidosM_EditarUsuario" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="txtCampania_EditarUsuario" class="form-label">Campaña</label>
+                                <input type="text" class="form-control" id="txtCampania_EditarUsuario" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="txtRol_EditarUsuario" class="form-label">Rol</label>
+                                <select class="form-select" id="txtRol_EditarUsuario">
+                                    <!-- Opciones cargadas dinámicamente -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="txtDNI_EditarUsuario" class="form-label">Documento</label>
+                                <input type="text" class="form-control" id="txtDNI_EditarUsuario" />
+                            </div>
+                           
+                            <div class="mb-3">
+                                <label for="txtPassword_EditarUsuario" class="form-label">Contraseña</label>
+                                <div class="position-relative">
+                                    <input type="password" class="form-control pe-5" id="txtPassword_EditarUsuario" />
+                                    <i class="fa fa-eye position-absolute top-50 end-0 translate-middle-y me-3"
+                                       id="togglePassword" style="cursor: pointer;"></i>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="txtApellidosP_EditarUsuario" class="form-label">Apellido Paterno</label>
+                                <input type="text" class="form-control" id="txtApellidosP_EditarUsuario" />
+                            </div>
+   
+                            <div class="mb-3">
+                                <label for="txtRegion_EditarUsuario" class="form-label">Región</label>
+                                <input type="text" class="form-control" id="txtRegion_EditarUsuario" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="txtCorreo_EditarUsuario" class="form-label">Correo Electrónico</label>
+                                <input type="email" class="form-control" id="txtCorreo_EditarUsuario" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="selectEstado" class="form-label">Estado</label>
+                                <select class="form-select" id="selectEstado">
+                                    <option value="ACTIVO">ACTIVO</option>
+                                    <option value="INACTIVO">INACTIVO</option>
+                                    <option value="CAMBIO">CAMBIO DE FECHAS</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-end mt-3">
+                        <button type="button" class="btn btn-primary" id="btnGuardarCambios" data-id="">Modificar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const passwordInput = document.getElementById("txtPassword_EditarUsuario");
+            const toggleIcon = document.getElementById("togglePassword");
+
+            toggleIcon.addEventListener("click", function () {
+                const type = passwordInput.type === "password" ? "text" : "password";
+                passwordInput.type = type;
+                this.classList.toggle("fa-eye");
+                this.classList.toggle("fa-eye-slash");
+            });
+        });
+
+        $('#modalEditarUsuarioGerente').on('show.bs.modal', function () {
+            const passwordInput = document.getElementById("txtPassword_EditarUsuario");
+            const toggleIcon = document.getElementById("togglePassword");
+
+            passwordInput.type = "password";
+
+            toggleIcon.classList.remove("fa-eye");
+            toggleIcon.classList.add("fa-eye-slash");
+        });
+    </script>
+
+
+    <script src="~/js/tablefunctions.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/js/Usuarios/GerenteZonal.js"></script>
+
+}

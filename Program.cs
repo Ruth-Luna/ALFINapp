@@ -5,8 +5,9 @@ using Microsoft.Extensions.FileProviders;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration
-    .SetBasePath(Directory.GetCurrentDirectory()) 
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true) 
+    .SetBasePath(Directory.GetCurrentDirectory())
+    // .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true) 
+    .AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true) 
     .AddEnvironmentVariables();
 
 builder.WebHost.ConfigureKestrel(serverOptions =>
@@ -76,11 +77,11 @@ foreach (var assembly in assemblies)
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
-}
+// if (!app.Environment.IsDevelopment())
+// {
+//     app.UseExceptionHandler("/Home/Error");
+//     app.UseHsts();
+// }
 
 app.UseStatusCodePagesWithReExecute("/Home/Error404");
 

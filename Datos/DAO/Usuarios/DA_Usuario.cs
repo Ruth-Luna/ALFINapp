@@ -8,64 +8,7 @@ using System.Diagnostics;
 namespace ALFINapp.Datos
 {
     public class DA_Usuario
-    {
-        public Usuario ValidarUsuario(string usuario, string password)
-        {
-            try
-            {
-                var cn = new Conexion();
-
-                using (SqlConnection connection = new SqlConnection(cn.getCadenaSQL()))
-                {
-                    connection.Open();
-                    using (SqlCommand cmd = new SqlCommand("SP_USUARIO_VALIDAR_LOGIN", connection))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@usuario", usuario);
-                        cmd.Parameters.AddWithValue("@password", password);
-
-                        using (SqlDataReader dr = cmd.ExecuteReader())
-                        {
-                            if (dr.Read())
-                            {
-                                int resultado = Convert.ToInt32(dr["Resultado"]);
-
-                                if (resultado == -1)
-                                {
-                                    Console.WriteLine("El usuario está inactivo.");
-                                    return new Usuario { Resultado = -1 };
-                                }
-
-                                if (resultado == 1)
-                                {
-                                    return new Usuario
-                                    {
-                                        IdUsuario = Convert.ToInt32(dr["id_usuario"]),
-                                        usuario = dr["usuario"].ToString(),
-                                        Correo = dr["correo"].ToString(),
-                                        Nombres = dr["nombres"].ToString(),
-                                        Apellido_Paterno = dr["apellido_paterno"].ToString(),
-                                        Apellido_Materno = dr["apellido_materno"].ToString(),
-                                        Resultado = 1,
-                                        Estado = dr["estado"].ToString(),
-                                        IdRol = Convert.ToInt32(dr["id_rol"]),
-                                    };
-                                }
-                                return new Usuario { Resultado = 0 };
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error al validar usuario: " + ex.Message);
-            }
-
-            return new Usuario { Resultado = 0 };
-        }
-
-
+    {  
         public async Task<(bool IsSuccess, string Message)> CrearUsuario(Usuario usuario, int idUsuarioAccion)
         {
             try

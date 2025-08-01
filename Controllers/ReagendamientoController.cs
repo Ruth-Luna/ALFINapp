@@ -23,9 +23,9 @@ namespace ALFINapp.API.Controllers
             [FromBody]DtoVReagendar dtovreagendar)
         {
             if (dtovreagendar.FechaReagendamiento == null || dtovreagendar.FechaReagendamiento == DateTime.MinValue)
-            {
-                return Json(new { success = false, message = "La fecha de reagendamiento es obligatoria." });
-            }
+                {
+                    return Json(new { success = false, message = "La fecha de reagendamiento es obligatoria." });
+                }
             if (dtovreagendar.IdDerivacion == null || dtovreagendar.IdDerivacion == 0)
             {
                 return Json(new { success = false, message = "El id de derivación es obligatorio." });
@@ -33,7 +33,7 @@ namespace ALFINapp.API.Controllers
             var exec = await _useCaseReagendar.exec(
                 dtovreagendar.IdDerivacion.Value,
                 dtovreagendar.FechaReagendamiento.Value,
-                dtovreagendar.evidencias);
+                dtovreagendar.urlEvidencias);
             if (!exec.IsSuccess)
             {
                 return Json(new { success = false, message = exec.Message });
@@ -46,10 +46,14 @@ namespace ALFINapp.API.Controllers
             var exec = await _useCaseGetReagendamiento.exec(id);
             if (!exec.IsSuccess)
             {
-                TempData["MessageError"] = exec.Message;
-                return RedirectToAction("Redireccionar", "Error");
+                return Json(new { success = false, message = exec.Message });
             }
-            return PartialView("_Reagendamiento", exec.Data);
+            return Json(new
+            {
+                success = true,
+                message = exec.Message,
+                data = exec.Data
+            });
         }
     }
 }
