@@ -41,7 +41,7 @@ namespace ALFINapp.Datos
                                     return new Usuario
                                     {
                                         IdUsuario = Convert.ToInt32(dr["id_usuario"]),
-                                        usuario = dr["usuario"].ToString(),
+                                        usuario = dr["usuario"].ToString() ?? string.Empty,
                                         Correo = dr["correo"].ToString(),
                                         Nombres = dr["nombres"].ToString(),
                                         Apellido_Paterno = dr["apellido_paterno"].ToString(),

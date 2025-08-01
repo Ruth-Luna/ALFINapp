@@ -167,21 +167,21 @@ public class HomeController : Controller
 
         if (usuarioValido == null || usuarioValido.Resultado == 0)
         {
-            ViewData["mensaje"] = "Credenciales incorrectas";
+            ViewData["message"] = "Credenciales incorrectas";
             return RedirectToAction("Index", "Home");
         }
 
         if (usuarioValido.Resultado == -1 || usuarioValido.Estado?.ToUpper() == "INACTIVO")
         {
-            ViewData["mensaje"] = "El usuario se encuentra inactivo. Por favor contacte con el administrador.";
+            ViewData["message"] = "El usuario se encuentra inactivo. Por favor contacte con el administrador.";
             return RedirectToAction("Index", "Home");
         }
 
         HttpContext.Session.SetInt32("UsuarioId", usuarioValido.IdUsuario);
-        HttpContext.Session.SetInt32("RolUser", usuarioValido.IdRol.Value);
+        HttpContext.Session.SetInt32("RolUser", usuarioValido.IdRol ?? 3);
         HttpContext.Session.SetInt32("ActivarCambio", 1);
         HttpContext.Session.SetInt32("UsuarioId", usuario != null ? usuarioValido.IdUsuario : throw new Exception("El usuario original no está definido. Comuníquese con su Supervisor."));
-        HttpContext.Session.SetInt32("RolUser", usuario != null ? usuarioValido.IdRol.Value : throw new Exception("El rol del usuario original no está definido. Comuníquese con su Supervisor."));
+        HttpContext.Session.SetInt32("RolUser", usuario != null ? usuarioValido.IdRol ?? 3 : throw new Exception("El rol del usuario original no está definido. Comuníquese con su Supervisor."));
         switch (usuarioValido.IdRol)
         {
             case 1:
@@ -193,7 +193,7 @@ public class HomeController : Controller
             case 4:
                 return RedirectToAction("Inicio", "GerenteZonal");
             default:
-                ViewData["mensaje"] = "Rol no reconocido. Contacte al administrador.";
+                ViewData["message"] = "Rol no reconocido. Contacte al administrador.";
                 return RedirectToAction("Index", "Home");
         }
     }
