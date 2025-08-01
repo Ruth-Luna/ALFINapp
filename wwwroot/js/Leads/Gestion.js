@@ -38,20 +38,14 @@ function sortTableGestionLeads(filter, searchfield, order, orderAsc) {
 
 async function cargarDataCliente(idBase, idAsignacion, traidoDe) {
     const baseUrl = window.location.origin;
-    // let url
-    // if (traidoDe === 'A365') {
-    //     url = `${baseUrl}/Vendedor/TipificarClienteView`;
-    // }
-    // if (traidoDe === 'ALFIN') {
-    //     url = `${baseUrl}/Vendedor/TipificarClienteDBALFINView`;
-    // }
+    const url = `${baseUrl}/Tipificaciones/ViewGeneralTipificacion?id_base=${idBase}&traido_de=${traidoDe}`;
+
     try {
         const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ id_base: idBase })
+            }
         });
 
         if (!response.ok) {
@@ -65,6 +59,16 @@ async function cargarDataCliente(idBase, idAsignacion, traidoDe) {
             return;
         } else {
             const result = await response.json();
+            if (result.success === false) {
+                Swal.fire({
+                    title: 'Error al cargar los datos',
+                    text: result.message,
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+                return;
+            }
+            mostrarDataCliente(result.data);
         }
     } catch (error) {
         Swal.fire({

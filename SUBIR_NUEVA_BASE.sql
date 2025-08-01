@@ -145,6 +145,11 @@ SELECT COUNT(*) AS TotalRegistros
 FROM CAMPANA202507
 WHERE DNI IS NOT NULL;
 
+DROP TABLE IF EXISTS CAMPANA202507;
+
+
+
+
 
 
 
@@ -248,14 +253,14 @@ SELECT
 			WHEN [grupo_tasa] = '3' THEN 'Mantiene tasa'
 			ELSE NULL	  			
 		END AS [grupo_tasa]
-FROM CAMPANA202507
+FROM campanasconsultaagosto
 WHERE dni IS NOT NULL
 	AND dni <> ''
 	AND oferta_max IS NOT NULL
 	AND tasa_1 IS NOT NULL
 
 
-select top 30 * from CAMPANA202507
+select top 30 * from campanasconsultaagosto
 
 UPDATE base_clientes_banco
 SET DNI = RIGHT('00000000' + CAST(DNI AS VARCHAR(8)), 8)

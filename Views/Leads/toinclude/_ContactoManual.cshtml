@@ -1,109 +1,113 @@
 <div class="row mb-4">
     <h3 class="label-fortip">Contactos Creados por el Usuario:</h3>
-    <form asp-action="GuardarTipificacionesNumPersonales" asp-controller="Vendedor" method="post" class="mb-4">
-        <input type="hidden" name="IdAsignacionCliente" value="["ID_asignacion"]" id="IdAsignacionCliente">
-        <h4>Agregue las Tipificaciones a los clientes asignados</h4>
-
-        <hr>
-        <div class="form-group row align-items-center mb-4">
-            <div class="col-12 col-md-4">
-                <label for="Telefono[]" class="form-label">Teléfono </label>
-                <input class="form-control" name="tipificaciones[].Telefono" id="Telefono_" type="text"
-                    value="TelefonoTipificado" readonly />
-                <div class="spacing"></div>
-                <textarea class="form-control" id="comentarioAsesor_" data-telefono="TelefonoTipificado"
-                    data-id-cliente="">ComentarioTelefono</textarea>
-                <div class="spacing"></div>
-                <a href="javascript:void(0);" class="btn btn-primary"
-                    onclick="enviarComentario('', 'TelefonoTipificado', 'comentarioAsesor_')">
-                    <i class="fa fa-pencil"></i>
-                </a>
-            </div>
-            <div class="col-12 col-md-8 mt-2 mt-md-0">
-                <label for="tipificacionSelect_" class="form-label mt-2">Tipificación Asignada
-                    : </label>
-                <input type="text" name="tipificaciones[].TipificacionId" id="tipificacionSelect_"
-                    style="display: none;">
-                <div class="custom-select">
-                    <div class="custom-selected-option" id="selectedOption_tipificacionSelect_"
-                        onclick="mostrarOpciones('tipificacionSelect_')">
-                        Seleccione una Tipificación
-                    </div>
-                    <div class="custom-options" id="opciones_tipificacionSelect_">
-                        <input type="text" class="custom-search" id="busqueda_tipificacionSelect_"
-                            onkeyup="filtrarOpciones('tipificacionSelect_')" placeholder="Buscar...">
-                        <div class="custom-option" id="opcion_tipificacionSelect_"
-                            onclick="seleccionarOpcion('tipificacionSelect_', '', '', '')">
-
-                        </div>
-                    </div>
+    <div id="telefonos-main-container-manual">
+        <form asp-action="GuardarTipificacionesNumPersonales" asp-controller="Vendedor" method="post">
+            <div id="telefonos-form-container-manual">
+                <div>
+                    <input type="hidden" name="IdAsignacionCliente" value="[ID_asignacion]" id="IdAsignacionCliente">
+                    <h4>Agregue las Tipificaciones a los clientes asignados</h4>
                 </div>
-
-                <div class="form-group mt-3" id="fechaVisitaContainer_" style="display: none;">
-                    <div class="row">
-                        <div class="col">
-                            <label for="fechaVisita_" class="form-label">Fecha de Visita: </label>
-                            <input class="form-control" type="date" name="tipificaciones[].FechaVisita"
-                                id="fechaVisita_" />
+                <hr>
+                <div class="form-group row align-items-center mb-4">
+                    <div class="col-12 col-md-4">
+                        <div class="mb-2">
+                            <label for="telefono_manual" class="form-label">Teléfono </label>
+                            <input class="form-control" name="tipificaciones_telefono_manual" id="telefono_manual"
+                                type="text" value="" readonly />
                         </div>
-                        <div class="col">
-                            <label for="agenciasasignadas_" class="form-label">Seleccione una Agencia:
-                            </label>
-                            <select class="form-select" name="tipificaciones[].AgenciaAsignada"
-                                id="tipificaciones[].AgenciaAsignada">
-                                <option value="">Seleccione la Agencia</option>
 
-                                <option value="sucursal_comercial - agencia_comercial">
-                                    sucursal_comercial - agencia_comercial
-                                </option>
-                            </select>
+                        <div class="mb-2">
+                            <textarea class="form-control" id="comentario_asesor_manual"
+                                data-telefono="TelefonoTipificado" data-id-cliente="">ComentarioTelefono</textarea>
+                        </div>
+
+                        <div class="mb-2">
+                            <a href="javascript:void(0);" class="btn btn-primary"
+                                onclick="enviarComentario('', '', '')">
+                                <i class="fa fa-pencil"></i>
+                            </a>
                         </div>
                     </div>
-                </div>
-
-                <div class="row mt-1">
-                    <div class="col">
-                        <input class="form-control" id="GRUPO_MONTO" type="text" value="DescripcionTipificacion"
-                            readonly>
-                    </div>
-                    <div class="col-auto">
-                        <a class="btn btn-primary" href="javascript:void(0)" id="buttonDerivacionContainer_"
-                            onclick="enviarFormularioDerivacion('tipificaciones[].AgenciaAsignada', 'fechaVisita_', , 'Telefono_', 1, 'IdAsignacionCliente')"
+                    <div class="col-12 col-md-8 mt-2 mt-md-0">
+                        <label for="tipificaciones_select_manual" class="form-label mt-2">
+                            Tipificación Asignada:
+                        </label>
+                        <input type="text" name="tipificaciones_select_manual" id="tipificaciones_select_manual"
                             style="display: none;">
-                            <i class="fa fa-upload" aria-hidden="true"></i> Envie la Derivacion
-                        </a>
+                        <div class="custom-select">
+                            <div class="custom-selected-option" id="selectedOption_tipificaciones_select_manual"
+                                onclick="mostrarOpciones('tipificaciones_select_manual')">
+                                Seleccione una Tipificación
+                            </div>
+                            <div class="custom-options" id="opciones_tipificaciones_select_manual">
+                                <input type="text" class="custom-search" id="busqueda_tipificaciones_select_manual"
+                                    onkeyup="filtrarOpciones('tipificaciones_select_manual')" placeholder="Buscar...">
+                                <div class="custom-option" id="opcion_tipificaciones_select_manual"
+                                    onclick="seleccionarOpcion('tipificaciones_select_manual', '', 'telefono_manual', '')">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-3" id="fecha_visita_manual_container" class="d-none">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="fecha_visita_manual" class="form-label">Fecha de Visita: </label>
+                                    <input class="form-control" type="date" name="fecha_visita_manual"
+                                        id="fecha_visita_manual" />
+                                </div>
+                                <div class="col">
+                                    <label for="agencias_asignadas_manual" class="form-label">Seleccione una Agencia:
+                                    </label>
+                                    <select class="form-select" name="agencias_asignadas_manual"
+                                        id="agencias_asignadas_manual">
+                                        <option value="">Seleccione la Agencia</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-1">
+                            <div class="col">
+                                <input class="form-control" id="GRUPO_MONTO" type="text" value="DescripcionTipificacion"
+                                    readonly>
+                            </div>
+                            <div class="col-auto">
+                                <a class="btn btn-primary" href="javascript:void(0)"
+                                    id="button_derivacion_container_manual"
+                                    onclick="enviarFormularioDerivacion('agencias_asignadas_manual', 'fecha_visita_manual', , '', 1, 'id_asignacion_manual')"
+                                    style="display: none;">
+                                    <i class="fa fa-upload" aria-hidden="true"></i> Envie la Derivacion
+                                </a>
+                            </div>
+                        </div>
                     </div>
+                </div>
+                <div class="form-group">
+                    <div class="alert alert-info" role="alert">
+                        Use este boton para agregar las Tipificaciones de los numeros de TELEFONOS ASIGNADOS POR USTED
+                    </div>
+                    <button class="btn btn-success" type="submit">Guardar Tipificaciones</button>
+                </div>
+            </div>
+        </form>
+        <hr>
+        <div id="agregar-telefonos-container-manual" class="mt-1">
+            <h4>Agregue numeros de Telefono Personales</h4>
+            <div>
+                <div id="agregarTelefonoBtnCliente" class="mb-2">
+                    <a href="javascript:void(0);" class="btn btn-primary" id="agregarTelefonoBtn"
+                        @* onclick="cargarEdicionDeTelefonos(@id_cliente)" *@
+                        >
+                        Agregue un Nuevo Telefono
+                    </a>
+                </div>
+                <div id="cancelaragregarTelefonoBtnCliente" style="display: none;">
+                    <a href="javascript:void(0);" class="btn btn-secondary" id="cancelaragregarTelefonoBtn"
+                        onclick="descargarEdicionDeTelefonos()">Cancelar</a>
                 </div>
             </div>
         </div>
-        <div class="form-group">
-            <div class="alert alert-info" role="alert">
-                Use este boton para agregar las Tipificaciones de los numeros de TELEFONOS ASIGNADOS POR USTED
-            </div>
-            <button class="btn btn-success" type="submit">Guardar Tipificaciones</button>
+        <div id="agregarTelefonoContainer" class="mt-4">
         </div>
-    </form>
-    <div class="row mb-4">
-        <div class="alert alert-info" role="alert">
-            No tiene números de teléfonos asignados por el usuario.
-        </div>
-    </div>
-
-    <hr>
-    <div>
-        <h4>Agregue numeros de Telefono Personales</h4>
-        <div>
-            <div id="agregarTelefonoBtnCliente">
-                <a href="javascript:void(0);" class="btn btn-primary" id="agregarTelefonoBtn"
-                    onclick="cargarEdicionDeTelefonos()">Agregue un Nuevo Telefono</a>
-            </div>
-            <div class="spacing"></div>
-            <div id="cancelaragregarTelefonoBtnCliente" style="display: none;">
-                <a href="javascript:void(0);" class="btn btn-secondary" id="cancelaragregarTelefonoBtn"
-                    onclick="descargarEdicionDeTelefonos()">Cancelar</a>
-            </div>
-        </div>
-    </div>
-    <div id="agregarTelefonoContainer" class="mt-4">
     </div>
 </div>
