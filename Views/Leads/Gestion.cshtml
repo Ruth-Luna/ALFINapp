@@ -208,7 +208,12 @@
                     <tr class="@rowClass">
                         <td class="text-center">
                             <a href="javascript:void(0);" class="btn btn-primary"
-                                onclick="loadTipificarCliente(@Cliente.idbase, '@Cliente.TraidoDe')">
+                                onclick="cargarDataCliente(@Cliente.idbase, @Cliente.idasignacion, '@Cliente.TraidoDe')"
+                                data-bs-toggle="modal"
+                                data-bs-target="#tipificacion-cliente-modal" 
+                                data-bs-focus="false"
+                                data-bs-backdrop="static" 
+                                data-bs-keyboard="false">
                                 <i class="fa fa-eye"></i>
                             </a>
                             @* <a href="javascript:void(0)"
@@ -258,7 +263,7 @@
     </div>
 </div>
 
-@* <partial name="modals/_TipificacionCliente" /> *@
+<partial name="modals/_TipificacionCliente" />
 
 <div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true"
     data-bs-focus="false">
@@ -303,6 +308,7 @@
     <script src="~/js/Leads/SelectV.js?v=@DateTime.Now.Ticks"></script>
     <script src="~/js/Leads/Comentarios.js?v=@DateTime.Now.Ticks"></script>
     <script src="~/js/Leads/Gestion.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/js/Leads/TipificacionView.js?v=@DateTime.Now.Ticks"></script>
     <script src="~/js/Leads/Telefonos.js?v=@DateTime.Now.Ticks"></script>
     @* <script src="~/js/Leads/Telefonos.js?v=@DateTime.Now.Ticks"></script> *@
     @* <script src="~/js/tablefunctions.js?v=@DateTime.Now.Ticks"></script> *@

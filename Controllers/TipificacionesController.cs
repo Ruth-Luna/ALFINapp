@@ -14,7 +14,6 @@ namespace ALFINapp.API.Controllers
 
         private readonly DBServicesGeneral _dbServicesGeneral;
         private readonly DBServicesTipificaciones _dbServicesTipificaciones;
-        private readonly DBServicesDerivacion _dBServicesDerivacion;
         private readonly DBServicesConsultasClientes _dbServicesConsultasClientes;
         private readonly MDbContext _context;
         private readonly IUseCaseUploadTipificaciones _useCaseUploadTipificaciones;
@@ -22,7 +21,6 @@ namespace ALFINapp.API.Controllers
         private readonly DAO_GestionTipificacionesVista _dao_gestionTipificacionesVista;
         public TipificacionesController(DBServicesGeneral dbServicesGeneral,
             DBServicesTipificaciones dbServicesTipificaciones,
-            DBServicesDerivacion dBServicesDerivacion,
             MDbContext context,
             IUseCaseUploadTipificaciones useCaseUploadTipificaciones,
             IUseCaseUploadDerivacion useCaseUploadDerivacion,
@@ -31,7 +29,6 @@ namespace ALFINapp.API.Controllers
         {
             _dbServicesGeneral = dbServicesGeneral;
             _dbServicesTipificaciones = dbServicesTipificaciones;
-            _dBServicesDerivacion = dBServicesDerivacion;
             _context = context;
             _useCaseUploadTipificaciones = useCaseUploadTipificaciones;
             _useCaseUploadDerivacion = useCaseUploadDerivacion;
@@ -109,7 +106,7 @@ namespace ALFINapp.API.Controllers
                 {
                     return Json(new { success = false, message = "No ha iniciado sesion, por favor inicie sesion." });
                 }
-                return Json(new { success = true, data = "En progreso..." });
+                return Json(new { success = true, message = tipificaciones.Message, data = tipificaciones.lista});
             }
             catch (System.Exception ex)
             {

@@ -12,7 +12,7 @@ namespace ALFINapp.Datos.DAO.Tipificaciones
             _context = context;
         }
 
-        public async Task<(bool IsSuccess, string Message, ViewClienteDetallado? lista)> GetClienteA365(
+        public async Task<(bool IsSuccess, string Message, ViewClienteDetallado lista)> GetClienteA365(
             int id_cliente,
             int id_usuario_v)
         {
@@ -29,12 +29,12 @@ namespace ALFINapp.Datos.DAO.Tipificaciones
                     .ToListAsync();
                 if (detalleClienteConsulta == null || !detalleClienteConsulta.Any())
                 {
-                    return (false, "No se encontró el cliente con el ID proporcionado", null);
+                    return (false, "No se encontró el cliente con el ID proporcionado", new ViewClienteDetallado());
                 }
                 var datosCliente = detalleClienteConsulta.FirstOrDefault();
                 if (datosCliente == null)
                 {
-                    return (false, "No se encontraron datos del cliente", null);
+                    return (false, "No se encontraron datos del cliente", new ViewClienteDetallado());
                 }
                 var viewCliente = new ViewClienteDetallado(datosCliente);
                 viewCliente.llenarTelefonosBd(datosCliente);
@@ -43,25 +43,38 @@ namespace ALFINapp.Datos.DAO.Tipificaciones
             }
             catch (System.Exception)
             {
-                return (false, "Error al obtener los clientes asignados", null);
+                return (false, "Error al obtener los clientes asignados", new ViewClienteDetallado());
             }
         }
-        public async Task<(bool IsSuccess, string Message, object? lista)> GetClienteAlfin(
+        public async Task<(bool IsSuccess, string Message, ViewClienteDetallado lista)> GetClienteAlfin(
             int id_cliente,
             int id_usuario_v)
         {
             try
             {
                 var detalleClienteConsulta = await _context.detalle_cliente_a365_tipificar_dto
-                    .FromSqlRaw("EXEC SP_Consulta_Obtener_detalle_cliente_para_tipificar_ALFIN @IdBase, @IdUsuarioV",
+                    .FromSqlRaw("EXEC SP_Consulta_Obtener_detalle_cliente_para_tipificar_ALFIN_refactorizado @IdBase, @IdUsuarioV",
                         new SqlParameter("@IdBase", id_cliente),
                         new SqlParameter("@IdUsuarioV", id_usuario_v))
                     .ToListAsync();
-                return (true, "Clientes asignados obtenidos correctamente", "en proceso");
+
+                if (detalleClienteConsulta == null || !detalleClienteConsulta.Any())
+                {
+                    return (false, "No se encontró el cliente con el ID proporcionado", new ViewClienteDetallado());
+                }
+                var datosCliente = detalleClienteConsulta.FirstOrDefault();
+                if (datosCliente == null)
+                {
+                    return (false, "No se encontraron datos del cliente", new ViewClienteDetallado());
+                }
+                var viewCliente = new ViewClienteDetallado(datosCliente);
+                viewCliente.llenarTelefonosBd(datosCliente);
+                viewCliente.llenarTelefonosManual(detalleClienteConsulta);
+                return (true, "Clientes asignados obtenidos correctamente", viewCliente);
             }
             catch (System.Exception)
             {
-                return (false, "Error al obtener los clientes asignados", null);
+                return (false, "Error al obtener los clientes asignados", new ViewClienteDetallado());
             }
         }
     }
