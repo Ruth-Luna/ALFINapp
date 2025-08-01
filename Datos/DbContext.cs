@@ -8,7 +8,7 @@ public class MDbContext : DbContext
         : base(options)
     {
     }
-    public DbSet<Usuario> usuarios { get; set; }
+    public DbSet<ALFINapp.Infrastructure.Persistence.Models.Usuario> usuarios { get; set; }
     public DbSet<ClientesAsignado> clientes_asignados { get; set; }
     public DbSet<BaseCliente> base_clientes { get; set; }
     public DbSet<ClientesEnriquecido> clientes_enriquecidos { get; set; }
@@ -33,6 +33,8 @@ public class MDbContext : DbContext
     public DbSet<Retiros> retiros { get; set; }
     public DbSet<AsesoresOcultos> Asesores_Ocultos { get; set; }
     public DbSet<ListasAsignacion> listas_asignacion { get; set; }
+
+
     //PROCEDIMIENTOS ALMACENADOS NO BORRAR
     public DbSet<StringDTO> string_dto { get; set; }
     public DbSet<NumerosEnterosDTO> numeros_enteros_dto { get; set; }
@@ -63,6 +65,9 @@ public class MDbContext : DbContext
     public DbSet<GestionConseguirTodasLasAsignacionesPorListas> gestion_conseguir_todas_las_asignaciones_por_listas { get; set; }
     public DbSet<GestionConseguirODescargarAsignacionDeLeadsDeSup> gestion_conseguir_o_descargar_asignacion_de_leads_de_sup { get; set; }
     public DbSet<DerivacionConseguirODescargarAsignacionConDerivacionesDeSup> derivacion_conseguir_o_descargar_asignacion_con_derivaciones_de_sup { get; set; }
+    public DbSet<Usuario> obtener_Usuario { get; set; }
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

@@ -24,7 +24,7 @@
                     <div class="mb-2">
                         <label for="tipo_documento" class="form-label">Tipo de Documento</label>
                         <select class="form-control" id="tipo_documento" name="tipo_documento"
-                            onchange="cambiarTipoDoc(this.value)" required>
+                                onchange="cambiarTipoDoc(this.value)" required>
                             <option value="">Seleccione un tipo de documento</option>
                             <option value="DNI">DNI</option>
                             <option value="CE">CARNET DE EXTRANJERIA</option>
@@ -35,7 +35,7 @@
                     <div class="mb-2">
                         <label for="Nuevo_dni" class="form-label" id="label-documento">DNI</label>
                         <input type="text" class="form-control" id="Nuevo_dni" name="Nuevo_dni" required
-                            oninput="validarDNISupervisor('Nuevo_dni')">
+                               oninput="validarDNISupervisor('Nuevo_dni')">
                         <div class="invalid-feedback" id="Nuevo_dni-error">
                             El Documento debe de tener el formato de DNI (8 Digitos numericos).
                         </div>
@@ -84,7 +84,7 @@
             <div class="mb-2">
                 <label for="Nuevo_region" class="form-label">Region</label>
                 <input type="text" class="form-control" id="Nuevo_region" name="Nuevo_region" required
-                    oninput="validarLetras('Nuevo_region')">
+                       oninput="validarLetras('Nuevo_region')">
                 <div class="invalid-feedback" id="Nuevo_region-error">
                     El campo Region solo puede tener letras.
                 </div>
@@ -93,7 +93,7 @@
             <div class="mb-2">
                 <label for="Nuevo_rol" class="form-label">Rol</label>
                 <select class="form-control" id="Nuevo_rol" name="Nuevo_rol" required
-                    onchange="agregarCampoSupervisores(this.value)">
+                        onchange="agregarCampoSupervisores(this.value)">
                     <option value="">Seleccione un Rol</option>
                     <option value="2">SUPERVISOR</option>
                     <option value="3">ASESOR DE CREDITOS</option>
@@ -105,7 +105,7 @@
             <div class="mb-2">
                 <label for="Nuevo_apellido_paterno" class="form-label">Apellido Paterno</label>
                 <input type="text" class="form-control" id="Nuevo_apellido_paterno" name="Nuevo_apellido_paterno"
-                    required oninput="validarLetras('Nuevo_apellido_paterno')">
+                       required oninput="validarLetras('Nuevo_apellido_paterno')">
                 <div class="invalid-feedback" id="Nuevo_apellido_paterno-error">
                     El campo Apellido Paterno solo puede tener letras.
                 </div>
@@ -113,7 +113,7 @@
             <div class="mb-2">
                 <label for="Nuevo_apellido_materno" class="form-label">Apellido Materno</label>
                 <input type="text" class="form-control" id="Nuevo_apellido_materno" name="Nuevo_apellido_materno"
-                    required oninput="validarLetras('Nuevo_apellido_materno')">
+                       required oninput="validarLetras('Nuevo_apellido_materno')">
                 <div class="invalid-feedback" id="Nuevo_apellido_materno-error">
                     El campo Apellido Materno solo puede tener letras.
                 </div>
@@ -121,7 +121,7 @@
             <div class="mb-2">
                 <label for="Nuevo_nombres" class="form-label">Nombres Completos</label>
                 <input type="text" class="form-control" id="Nuevo_nombres" name="Nuevo_nombres" required
-                    oninput="validarLetras('Nuevo_nombres')">
+                       oninput="validarLetras('Nuevo_nombres')">
                 <div class="invalid-feedback" id="Nuevo_nombres-error">
                     El campo Nombres Completos solo puede tener letras.
                 </div>
@@ -129,7 +129,7 @@
             <div class="mb-2">
                 <label for="Nuevo_telefono" class="form-label">Telefono</label>
                 <input type="text" class="form-control" id="Nuevo_telefono" name="Nuevo_telefono" required
-                    oninput="validarTelefono('Nuevo_telefono')">
+                       oninput="validarTelefono('Nuevo_telefono')">
                 <div class="invalid-feedback" id="Nuevo_telefono-error">
                     El telefono solo puede tener números.
                 </div>
@@ -137,7 +137,7 @@
             <div class="mb-2">
                 <label for="Nuevo_correo" class="form-label">Correo</label>
                 <input type="text" class="form-control" id="Nuevo_correo" name="Nuevo_correo" required
-                    oninput="validarEmail('Nuevo_correo')">
+                       oninput="validarEmail('Nuevo_correo')">
                 <div class="invalid-feedback" id="Nuevo_correo-error">
                     El formato del Correo es incorrecto
                 </div>
@@ -150,26 +150,27 @@
                 <label for="Nuevo_Supervisor" class="form-label">Supervisor asignado</label>
                 <select class="form-control" name="Nuevo_Supervisor" id="Nuevo_Supervisor">
                     <option value="">Seleccione un supervisor</option>
-                    @foreach (var supervisor in Model)
+                    @* @foreach (var supervisor in Model)
                     {
-                        if (supervisor.Estado == "ACTIVO")
-                        {
-                            <option value="@supervisor.IdUsuario">@supervisor.Dni - @supervisor.NombresCompletos</option>
-                        }
+                    if (supervisor.Estado == "ACTIVO")
+                    {
+                    <option value="@supervisor.IdUsuario">@supervisor.Dni - @supervisor.NombresCompletos</option>
                     }
+                    } *@
                 </select>
             </div>
         </div>
     </div>
-
     <div class="row mb-2">
         <div class="col-md-12">
-            <a href="javascript:void(0)" class="btn btn-success" onclick="guardarNuevoUsuario()">Agregar</a>
+            <button type="button" class="btn btn-success" id="btnAgregarUsuario">
+                Agregar
+            </button>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    <script src="~/js/Usuarios/Nuevo.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/js/Usuarios/Usuario.js"></script>
     <script src="~/js/Asesores/Usuarios.js?v=@DateTime.Now.Ticks"></script>
 }

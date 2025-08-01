@@ -7,6 +7,14 @@ namespace ALFINapp.API.Models
         public int IdUsuario { get; set; } = 0;
         public string Dni { get; set; } = string.Empty;
         public string NombresCompletos { get; set; } = string.Empty;
+      
+        public string? Apellido_Paterno { get; set; } = string.Empty;
+        public string? Apellido_Materno { get; set; } = string.Empty;
+        public string? Nombres { get; set; } = string.Empty;
+      
+        public string? Usuario { get; set; }
+        public string? Contrasenia { get; set; }
+              
         public string Rol { get; set; } = string.Empty;
         public string Departamento { get; set; } = string.Empty;
         public string Provincia { get; set; } = string.Empty;
@@ -28,6 +36,9 @@ namespace ALFINapp.API.Models
         public string Correo { get; set; } = string.Empty;
         public string Cci { get; set; } = string.Empty;
 
+        public int Resultado { get; set; }
+        public string Mensaje { get; set; }
+      
         public ViewUsuario() { }
 
         public ViewUsuario(Usuario model)
@@ -57,5 +68,22 @@ namespace ALFINapp.API.Models
 
             // Cci no está en Usuario, se deja con su valor por defecto
         }
+    }
+    public class ViewRol
+    {
+        public int IdRol { get; set; } 
+        public string? Rol { get; set; }
+        public string? Descripcion { get; set; }
+    }
+
+    public class ViewCorreoRecuperacion
+    {
+        public int IdUsuario { get; set; }
+        public string Usuario { get; set; }
+        public string Correo { get; set; }
+        public string Codigo { get; set; }
+        public bool? Estado { get; set; }
+        public int IdSolicitud { get; set; }
+        public DateTime FechaExpiracion { get; set; }
     }
 }

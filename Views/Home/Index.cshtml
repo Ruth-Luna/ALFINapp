@@ -48,20 +48,19 @@
                 <div class="card text-white bg-deepblue" style="border-radius: 1rem;">
                     <div class="card-body p-4">
                         <h1 class="text-center">Bienvenido</h1>
-                        <form action="@Url.Action("VerificarUsuario","Home")" method="post">
+                        <form asp-controller="Home" asp-action="Login" method="post" id="loginform">
                             <div class="mb-3">
-                                <label for="dni" class="form-label fs-5">Usuario</label>
-                                <input type="text" name="dni" id="dni" class="form-control form-control-lg"
-                                    placeholder="Ingrese su usuario">
+                                <label for="usuario" class="form-label fs-5">Usuario</label>
+                                <input type="text" name="usuario" id="usuario" class="form-control form-control-lg"
+                                       placeholder="Ingrese su usuario">
                             </div>
                             <div class="mb-4 position-relative">
                                 <label for="password" class="form-label fs-5">Contraseña</label>
                                 <input type="password" name="password" id="password"
-                                    class="form-control form-control-lg pe-5" placeholder="Ingrese su contraseña">
-                                <span
-                                    class="position-absolute end-0 pe-3 eye-icon d-flex justify-content-center align-items-center"
-                                    style="top: 50%; transform: translateY(-27%); height: 100%; cursor: pointer;"
-                                    onclick="togglePasswordVisibility()">
+                                       class="form-control form-control-lg pe-5" placeholder="Ingrese su contraseña">
+                                <span class="position-absolute end-0 pe-3 eye-icon d-flex justify-content-center align-items-center"
+                                      style="top: 50%; transform: translateY(-27%); height: 100%; cursor: pointer;"
+                                      onclick="togglePasswordVisibility()">
                                     <i id="password-icon" class="fas fa-eye" style="font-size: 1.5rem;"></i>
                                 </span>
 
@@ -79,7 +78,9 @@
                                     <div class="col-7">
                                         <div class="text-end">
                                             <button type="button" class="btn btn-link m-0 p-0 text-white fs-5"
-                                                onclick="showInitialPasswordInfo()">¿Olvidó su contraseña?</button>
+                                                    id="btnAbrirModalRecuperarPassword">
+                                                ¿Olvidó su contraseña?
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -99,10 +100,103 @@
             </div>
 
         </div>
-    </div>
-</div>
+
+        <div class="modal fade" id="recuperarContraseñaModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-content p-4 rounded-4 shadow-sm">
+              <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold">🔐 Recuperar acceso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              </div>
+
+              <div class="modal-body">
+                <!-- Paso 1: Correo y Usuario -->
+                <div id="step1">
+                  <p class="mb-4 text-muted small">
+                    Ingresa tu <strong>correo electrónico</strong> y <strong>nombre de usuario</strong>.
+                    Si coinciden, te enviaremos un código de verificación de 6 dígitos.
+                  </p>
+
+                  <div class="mb-3">
+                    <label for="usuarioRecuperacion" class="form-label fw-semibold">Usuario:</label>
+                    <input type="text" id="usuarioRecuperacion" class="form-control">
+                  </div>
+
+                  <div class="mb-4">
+                    <label for="correoRecuperacion" class="form-label fw-semibold">Correo electrónico:</label>
+                    <input type="email" id="correoRecuperacion" class="form-control">
+                  </div>
+
+                  <button id="btnValidarUser" class="btn btn-primary w-100 fw-bold">
+                    Enviar código
+                  </button>
+                </div>
+
+                <!-- Paso 2: Código OTP -->
+                <div id="step2" class="d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <button class="btn btn-link p-0 border-0" id="btnRegresarStep1" style="font-size: 1.8rem; color: #333;">
+                            <i class="bi bi-arrow-left-circle"></i>
+                        </button>
+                        <a href="#" class="text-decoration-none fw-semibold" style="font-size: 0.9rem;" id="btnSolicitarNuevoCodigo">
+                            Solicitar nuevo código
+                        </a>
+                    </div>
+
+                    <div id="alertaCodigo" class="alert alert-primary d-none small rounded-3" role="alert">
+                        Se envió un código de 6 dígitos a tu correo electrónico. Tiene una vigencia de <strong>15 minutos</strong>.
+                    </div>
+
+                    <p class="text-muted small mb-3">
+                        Ingresa el <strong>código de verificación</strong> que recibiste:
+                    </p>
+
+                    <div id="otpInputs" class="d-flex justify-content-between gap-2 mb-4">
+                        <input class="otp-input form-control text-center shadow-sm rounded border-secondary" type="text" maxlength="1">
+                        <input class="otp-input form-control text-center shadow-sm rounded border-secondary" type="text" maxlength="1">
+                        <input class="otp-input form-control text-center shadow-sm rounded border-secondary" type="text" maxlength="1">
+                        <input class="otp-input form-control text-center shadow-sm rounded border-secondary" type="text" maxlength="1">
+                        <input class="otp-input form-control text-center shadow-sm rounded border-secondary" type="text" maxlength="1">
+                        <input class="otp-input form-control text-center shadow-sm rounded border-secondary" type="text" maxlength="1">
+                    </div>
+
+                    <!-- Mensaje de error (si aplica) -->
+                    <div id="lblMensajeAlerta" class="text-danger small text-center mb-2" style="display:none;"></div>
+
+                    <button class="btn btn-success w-100 fw-bold rounded-3 py-2" id="btnVerificarCodigo">
+                        Verificar código
+                    </button>
+                </div>
+                <div id="step3" class="d-none">
+                    <!-- Alerta de éxito -->
+                    <div id="alertaCambioContrasena" class="alert alert-success" role="alert">
+                      ✅ Código verificado correctamente. Ahora puedes cambiar tu contraseña.<br>
+                      <small class="text-dark">
+                        Te recomendamos que tu nueva contraseña incluya al menos una mayúscula, un número y un símbolo especial para mejorar tu seguridad.
+                      </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="nuevaContrasena" class="form-label fw-semibold">Nueva contraseña:</label>
+                        <input type="password" id="nuevaContrasena" class="form-control" placeholder="Ingresa nueva contraseña">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="confirmarContrasena" class="form-label fw-semibold">Confirmar contraseña:</label>
+                        <input type="password" id="confirmarContrasena" class="form-control" placeholder="Confirma tu contraseña">
+                    </div>
+
+                    <div id="lblMensajeCambio" class="text-danger small text-center mb-2" style="display: none;"></div>
+
+                    <button class="btn btn-success w-100 fw-bold" id="btnConfirmarCambio">
+                        Cambiar Contraseña
+                    </button>
+                </div>
+            </div>
 
 @section Scripts {
+    <script src="~/js/Home/Login.js?v=@DateTime.Now.Ticks"></script>
+
     @if (TempData["Message"] != null)
     {
         <script>
@@ -155,18 +249,6 @@
             dniInput.setAttribute('maxlength', '35');
             passwordInput.setAttribute('maxlength', '35');
         });
-
-        function showInitialPasswordInfo() {
-            var passwordInfoElement = document.getElementById('initialPasswordInfo');
-
-            if (passwordInfoElement.classList.contains('d-none')) {
-                passwordInfoElement.classList.remove('d-none');
-                passwordInfoElement.classList.add('d-block');
-            } else if (passwordInfoElement.classList.contains('d-block')) {
-                passwordInfoElement.classList.remove('d-block');
-                passwordInfoElement.classList.add('d-none');
-            }
-        }
 
     </script>
 }
