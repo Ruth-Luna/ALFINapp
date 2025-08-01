@@ -33,8 +33,6 @@ namespace ALFINapp.Infrastructure.Repositories
             }
             catch (System.Exception ex)
             {
-                // Log the exception (ex) as needed
-                // For now, we return an empty list
                 Console.WriteLine($"Error fetching agencies: {ex.Message}");
                 return (new List<Agencia>());
             }

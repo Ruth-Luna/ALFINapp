@@ -57,7 +57,6 @@ namespace ALFINapp.Infrastructure.Repositories
                     .Where(
                         x => x.IdRol == 3 &&
                         x.IDUSUARIOSUP == idSupervisor &&
-                        x.Dni != "73393133" &&
                         x.Dni !="74049517" &&
                         x.Dni != "98985454" &&
                         x.Dni != "87878744"

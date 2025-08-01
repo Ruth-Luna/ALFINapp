@@ -120,13 +120,13 @@ namespace ALFINapp.API.Controllers
                     return Json(new { existe = false, error = true, message = "No ha iniciado sesion" });
                 }
 
-                var execute = await _useCaseConsultaClienteTelefono.exec(telefono);
+                var execute = await _dao_ClientesConsultas.GetClienteByTelefonoAsync(telefono);
                 if (execute.IsSuccess == false || execute.Data == null)
                 {
                     return Json(new { existe = false, error = true, message = execute.Message });
                 }
-                ViewData["RolUser"] = GetUserRol;
-                return PartialView("_DatosConsulta", execute.Data);
+                execute.Data.idrol = GetUserRol.Value;
+                return Json(new { existe = true, error = false, data = execute.Data });
             }
             catch (System.Exception ex)
             {

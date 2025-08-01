@@ -1,8 +1,6 @@
 const dropArea = document.getElementById('drop-area');
 const fileInput = document.getElementById('evidencia-derivacion-id-input');
 const modalGeneral = document.getElementById('evidencia-derivacion-modal');
-const modalReagendamiento = document.getElementById('GeneralTemplateModal');
-// const fileList = document.getElementById('file-list');
 
 let files = [];
 var activeId = null;
@@ -12,6 +10,15 @@ async function modal_id_derivacion_to_be_uploaded(id) {
     activeId = id;
     const modalTitle = document.getElementById('evidencia-derivacion-title');
     modalTitle.textContent = `Evidencia para la derivación: ${activeId}`;
+    const reagendacioncontent = document.getElementById('reagendacion-de-derivacion-content');
+    reagendacioncontent.innerHTML = ''; // Limpiar el contenido previo
+    const submitButtonContainer = document.getElementById('evidencia-derivacion-submit-button-container');
+    submitButtonContainer.innerHTML = ''; // Limpiar el contenedor de botones
+    submitButtonContainer.innerHTML = `
+        <button type="button" class="btn btn-success mr-3" id="evidencia-derivacion-submit-button"
+            onclick="submit_evidencia_derivacion();">Enviar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+    `; // Limpiar el contenedor de botones
     fileInput.value = ''; // Limpiar el input file
     files = []; // Limpiar la lista de archivos
     updateFileList(); // Actualizar la lista visualmente
@@ -35,20 +42,6 @@ modalGeneral.addEventListener('paste', (e) => {
             files.push(file);
             updateFileInput();
             updateFileList();
-            break;
-        }
-    }
-});
-
-// Pegar (Ctrl+V) en el modal de reagendamiento
-modalReagendamiento.addEventListener('paste', (e) => {
-    const items = e.clipboardData.items;
-    for (let item of items) {
-        if (item.kind === 'file') {
-            const file = item.getAsFile();
-            files.push(file);
-            updateFileInput();
-            updateFileList('reagendamiento');
             break;
         }
     }
@@ -148,21 +141,7 @@ function updateFileInput() {
 }
 
 async function submit_evidencia_derivacion() {
-    const formData = [];
-    const dataJson = [];
-    for (const file of files) {
-        const hex = await archivoAHex(file);
-        formData.push(hex);
-        dataJson.push({
-            fileName: file.name,
-            fileType: file.name.split('.').pop(), // Obtener la extensión del archivo
-            fileContent: hex,
-            idDerivacion: activeId,
-            type: 0 // Asumiendo que el tipo es 0 para evidencia
-        });
-    }
-
-    if (formData.length === 0) {
+    if (files.length === 0) {
         Swal.fire({
             icon: 'warning',
             title: 'No hay archivos',
@@ -172,8 +151,48 @@ async function submit_evidencia_derivacion() {
         return;
     }
 
-    const convertedFiles = JSON.stringify(dataJson);
+    baseUrl = window.location.origin;
+    const downloadURL = `${baseUrl}/Download/UploadImage`;
 
+    url_strings = [];
+
+    for (const file of files) {
+        try {
+            const formData = new FormData();
+            formData.append('files', file, file.name);
+
+            const requestOptions = {
+                method: 'POST',
+                body: formData,
+                redirect: 'follow'
+            };
+
+            const response1 = await fetch(downloadURL, requestOptions);
+            if (response1.ok) {
+                const result1 = await response1.json();
+                url_strings.push(result1.url);
+            } else {
+                console.error('Error al subir el archivo:', response1.statusText);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al subir archivos',
+                    text: `No se pudo subir el archivo ${file.name}. Por favor, intenta de nuevo.`,
+                    confirmButtonText: 'Aceptar'
+                });
+                return;
+            }
+        } catch (error) {
+            console.error('Error al subir el archivo:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al subir archivos',
+                text: `No se pudo subir el archivo ${file.name}. Por favor, intenta de nuevo.`,
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    }
+
+    
     const loading = Swal.fire({
         title: 'Subiendo archivos...',
         allowOutsideClick: false,
@@ -182,10 +201,16 @@ async function submit_evidencia_derivacion() {
         }
     });
 
+    const url = `${baseUrl}/Derivacion/UploadEvidencia`;
+    const dto = {
+        idDerivacion: activeId,
+        urlEvidencias: url_strings
+    };
+
     try {
-        const response = await fetch('/Derivacion/UploadEvidencia', {
+        const response = await fetch(url, {
             method: 'POST',
-            body: convertedFiles,
+            body: JSON.stringify(dto),
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -207,11 +232,19 @@ async function submit_evidencia_derivacion() {
             Swal.fire({
                 icon: 'success',
                 title: 'Archivos subidos',
-                text: 'Los archivos se han subido correctamente.',
+                text: 'Los archivos se han subido correctamente. Si desea ver los cambios puede recargar la página.',
                 confirmButtonText: 'Aceptar'
+            }).then(() => {
+                // Only close the modal if the user confirms
+                const modal = document.getElementById('evidencia-derivacion-modal');
+                // Simulate a click on the close button
+                if (modal) {
+                    const closeButton = modal.classList.contains('btn-close') ? modal : modal.querySelector('.btn-close');
+                    if (closeButton) {
+                        closeButton.click();
+                    }
+                }
             });
-            files = []; // Limpiar la lista de archivos
-            updateFileList(); // Actualizar la lista visualmente
         } else {
             Swal.fire({
                 icon: 'error',

@@ -14,7 +14,6 @@ const colores = {
     "rojo oscuro": "#721c24"
 };
 
-
 async function validarDNI() {
     const dniInput = document.getElementById("dnicliente");
     const datosClienteExistente = document.getElementById("datos-cliente-existente");
@@ -167,11 +166,111 @@ function mostrarConsultas(data) {
     });
     // Color de fondo
     document.getElementById("color-inicial-consulta").style.backgroundColor = colores[data.color?.toLowerCase()] || "#ffffff";
-    document.getElementById("color-final-consulta").value = colores[data.colorFinal?.toLowerCase()] || "#ffffff";
+    document.getElementById("color-final-consulta").style.backgroundColor = colores[data.colorFinal?.toLowerCase()] || "#ffffff";
     // Botón
-    document.getElementById("botones-consulta").innerHTML = `
-        <a class="btn btn-primary" href="javascript:void(0);" onclick="TakeThisClient('${data.dni}', '${data.traidoDe}')">
-            <i class="fas fa-check"></i> Tipifique Este Cliente
-        </a>
-    `;
+    if (data.idrol === 3) {
+        document.getElementById("botones-consulta").innerHTML = `
+            <a class="btn btn-primary" href="javascript:void(0);" onclick="TakeThisClient('${data.dni}', '${data.traidoDe}')">
+                <i class="fas fa-check"></i> Tipifique Este Cliente
+            </a>
+        `;
+    } else {
+        // Agregar mensaje que no puede asignar el cliente
+        document.getElementById("botones-consulta").innerHTML = `
+            <div class="alert alert-warning mt-2" role="alert">
+                <strong>Atención:</strong> No tiene permisos para autoasignarse este cliente. Solo puede visualizar los datos.
+            </div>
+        `;
+    }
+    
+}
+
+async function validarTelefono() {
+    const telefonoInput = document.getElementById("dnicliente");
+    const datosClienteExistente = document.getElementById("datos-cliente-existente");
+
+    const telefonoValue = telefonoInput.value;
+
+    datosClienteExistente.classList.add("d-none");
+    let data = {};
+    if (telefonoValue === "") {
+        Swal.fire({
+            title: 'Error',
+            text: 'El campo del Cliente es obligatorio.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    } else if (!/^\d{7,15}$/.test(telefonoValue)) {
+        Swal.fire({
+            title: 'Error',
+            text: 'El teléfono debe contener entre 7 y 15 dígitos y solo números.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    } else {
+        let loadingSwal = Swal.fire({
+            title: 'Enviando...',
+            text: 'Por favor, espera mientras se busque el Telefono.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        const baseUrl = window.location.origin;
+        const url = `${baseUrl}/Consulta/VerificarTelefono?telefono=${encodeURIComponent(telefonoValue)}`;
+        try {
+            const response = await fetch(url, {
+                method: 'GET'
+            });
+            const contentType = response.headers.get("content-type");
+            Swal.close();
+            if (contentType && contentType.includes("application/json")) {
+                const result = await response.json();
+                if (result.error === true) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: result.message || 'Ocurrió un error desconocido',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                } else if (result.existe === false) {
+                    Swal.fire({
+                        title: 'Cliente No Encontrado',
+                        text: result.message || 'Ocurrió un error desconocido',
+                        icon: 'info',
+                        confirmButtonText: 'Aceptar'
+                    });
+                } else if (result.existe === true && result.error === false) {
+                    Swal.fire({
+                        title: 'Cliente Encontrado',
+                        text: `El cliente ha sido encontrado exitosamente. El cliente fue traido de ${result.data["traidoDe"]}.`,
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar'
+                    });
+                    datosClienteExistente.classList.remove("d-none");
+                    dniactivo = telefonoValue; // Guardar el DNI activo
+                    data = result.data;
+                }
+            } else {
+                Swal.fire({
+                    title: 'Envio Incorrecto',
+                    text: 'Se esta enviando mal los datos.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+        } catch (error) {
+            Swal.close();
+            Swal.fire({
+                title: 'Error',
+                text: 'Hubo un error al verificar el DNI.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+            return;
+        }
+        mostrarConsultas(data);
+    }
 }

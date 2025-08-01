@@ -40,7 +40,7 @@ function enviarFormularioDerivacion(
     agenciaComercial = document.getElementById(idAgenciaComercial).value;
     FechaVisita = document.getElementById(idFechaDeVisita).value;
     Telefono = document.getElementById(idTelefonoEnviado).value;
-    Asignacion = document.getElementById(IdAsignacion).value;
+    Asignacion = IdAsignacion;
     Swal.fire({
         title: 'Derivaciones',
         text: 'Al enviar la derivación, el cliente será contactado por el banco y se dara el seguimiento correspondiente. Procure no cerrar esta pagina. Este proceso puede durar varios segundos.',

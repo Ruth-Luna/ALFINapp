@@ -20,6 +20,22 @@ namespace ALFINapp.Datos.DAO.Derivaciones
         {
             try
             {
+                if (filtro != null && campo == null)
+                {
+                    return (false, "Si selecciona un filtro, debe llenar un campo.", new ViewDescargas());
+                }
+                if (campo != null && filtro == null)
+                {
+                    return (false, "Si selecciona un campo, debe llenar un filtro.", new ViewDescargas());
+                }
+                if (fecha_inicio.HasValue && fecha_final.HasValue && fecha_inicio > fecha_final)
+                {
+                    return (false, "La fecha de inicio no puede ser mayor que la fecha final.", new ViewDescargas());
+                }
+                if (id_usuario.HasValue && id_usuario <= 0)
+                {
+                    return (false, "El ID de usuario debe ser un número positivo.", new ViewDescargas());
+                }
                 var parameters = new[]
                 {
                     new SqlParameter("@filtro", filtro ?? (object)DBNull.Value),

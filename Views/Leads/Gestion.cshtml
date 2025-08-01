@@ -63,25 +63,18 @@
                 </div>
                 <div class="flex-md-row align-items-md-center mt-4">
                     <div class="btn-group justify-content-center">
-                        <a asp-action="Gestion" 
-                            asp-route-paginaInicio="@(Model.PaginaActual - 1)"
-                            asp-route-paginaFinal="@(Model.PaginaActual)" 
-                            asp-route-filter="@(Model.filtro)"
-                            asp-route-searchField="@(Model.searchfield)"
-                            asp-route-order="@(Model.order)"
+                        <a asp-action="Gestion" asp-route-paginaInicio="@(Model.PaginaActual - 1)"
+                            asp-route-paginaFinal="@(Model.PaginaActual)" asp-route-filter="@(Model.filtro)"
+                            asp-route-searchField="@(Model.searchfield)" asp-route-order="@(Model.order)"
                             asp-route-orderAsc="@(Model.orderAsc)"
                             class="me-2 @(Model.PaginaActual <= 0 ? "disabled" : "")">
                             <i class="bi bi-arrow-left-circle"></i>
                         </a>
                         <span id="page-indicator" class="me-2"> Página @(Model.PaginaActual + 1) </span>
-                        <a asp-action="Gestion" 
-                            asp-route-paginaInicio="@(Model.PaginaActual + 1)"
-                            asp-route-paginaFinal="@(Model.PaginaActual + 2)" 
-                            asp-route-filter="@(Model.filtro)"
-                            asp-route-searchField="@(Model.searchfield)"
-                            asp-route-order="@(Model.order)"
-                            asp-route-orderAsc="@(Model.orderAsc)"
-                            class="me-2">
+                        <a asp-action="Gestion" asp-route-paginaInicio="@(Model.PaginaActual + 1)"
+                            asp-route-paginaFinal="@(Model.PaginaActual + 2)" asp-route-filter="@(Model.filtro)"
+                            asp-route-searchField="@(Model.searchfield)" asp-route-order="@(Model.order)"
+                            asp-route-orderAsc="@(Model.orderAsc)" class="me-2">
                             <i class="bi bi-arrow-right-circle"></i>
                         </a>
                     </div>
@@ -133,55 +126,64 @@
                     <td></td>
                     <td>
                         <button class="btn btn-warning p-0 mt-auto"
-                            onclick="sortTableGestionLeads('@Model.filtro','@Model.searchfield', 'dni', '@(Model.orderAsc ? false : true)', '@(@Model.filtro)')" data-sort-ignore>
+                            onclick="sortTableGestionLeads('@Model.filtro','@Model.searchfield', 'dni', '@(Model.orderAsc ? false : true)', '@(@Model.filtro)')"
+                            data-sort-ignore>
                             &#x25BC;
                         </button>
                     </td>
                     <td>
                         <button class="btn btn-warning p-0 mt-auto"
-                            onclick="sortTableGestionLeads('@Model.filtro','@Model.searchfield', 'nombres', '@(Model.orderAsc ? false : true)', '@(@Model.filtro)')" data-sort-ignore>
+                            onclick="sortTableGestionLeads('@Model.filtro','@Model.searchfield', 'nombres', '@(Model.orderAsc ? false : true)', '@(@Model.filtro)')"
+                            data-sort-ignore>
                             &#x25BC;
                         </button>
                     </td>
                     <td>
                         <button class="btn btn-warning p-0 mt-auto"
-                            onclick="sortTableGestionLeads('@Model.filtro','@Model.searchfield', 'oferta', '@(Model.orderAsc ? false : true)', '@(@Model.filtro)')" data-sort-ignore>
+                            onclick="sortTableGestionLeads('@Model.filtro','@Model.searchfield', 'oferta', '@(Model.orderAsc ? false : true)', '@(@Model.filtro)')"
+                            data-sort-ignore>
                             &#x25BC;
                         </button>
                     </td>
                     <td>
                         <button class="btn btn-warning p-0 mt-auto"
-                            onclick="sortTableGestionLeads('@Model.filtro','@Model.searchfield', 'campana', '@(Model.orderAsc ? false : true)', '@(@Model.filtro)')" data-sort-ignore>
+                            onclick="sortTableGestionLeads('@Model.filtro','@Model.searchfield', 'campana', '@(Model.orderAsc ? false : true)', '@(@Model.filtro)')"
+                            data-sort-ignore>
                             &#x25BC;
                         </button>
                     </td>
                     <td>
                         <button class="btn btn-warning p-0 mt-auto"
-                            onclick="sortTableGestionLeads('@Model.filtro','@Model.searchfield', 'fecha_asignacion', '@(Model.orderAsc ? false : true)', '@(@Model.filtro)')" data-sort-ignore>
+                            onclick="sortTableGestionLeads('@Model.filtro','@Model.searchfield', 'fecha_asignacion', '@(Model.orderAsc ? false : true)', '@(@Model.filtro)')"
+                            data-sort-ignore>
                             &#x25BC;
                         </button>
                     </td>
                     <td>
                         <button class="btn btn-warning p-0 mt-auto"
-                            onclick="sortTableGestionLeads('@Model.filtro','@Model.searchfield', 'comentario', '@(Model.orderAsc ? false : true)', '@(@Model.filtro)')" data-sort-ignore>
+                            onclick="sortTableGestionLeads('@Model.filtro','@Model.searchfield', 'comentario', '@(Model.orderAsc ? false : true)', '@(@Model.filtro)')"
+                            data-sort-ignore>
                             &#x25BC;
                         </button>
                     </td>
                     <td>
                         <button class="btn btn-warning p-0 mt-auto"
-                            onclick="sortTableGestionLeads('@Model.filtro','@Model.searchfield', 'tipificacion', '@(Model.orderAsc ? false : true)', '@(@Model.filtro)')" data-sort-ignore>
+                            onclick="sortTableGestionLeads('@Model.filtro','@Model.searchfield', 'tipificacion', '@(Model.orderAsc ? false : true)', '@(@Model.filtro)')"
+                            data-sort-ignore>
                             &#x25BC;
                         </button>
                     </td>
                     <td>
                         <button class="btn btn-warning p-0 mt-auto"
-                            onclick="sortTableGestionLeads('@Model.filtro','@Model.searchfield', 'fecha_tipificacion', '@(Model.orderAsc ? false : true)', '@(@Model.filtro)'')" data-sort-ignore>
+                            onclick="sortTableGestionLeads('@Model.filtro','@Model.searchfield', 'fecha_tipificacion', '@(Model.orderAsc ? false : true)', '@(@Model.filtro)'')"
+                            data-sort-ignore>
                             &#x25BC;
                         </button>
                     </td>
                     <td>
                         <button class="btn btn-warning p-0 mt-auto"
-                            onclick="sortTableGestionLeads('@Model.filtro','@Model.searchfield', 'prioridad', '@(Model.orderAsc ? false : true)', '@(@Model.filtro)')" data-sort-ignore>
+                            onclick="sortTableGestionLeads('@Model.filtro','@Model.searchfield', 'prioridad', '@(Model.orderAsc ? false : true)', '@(@Model.filtro)')"
+                            data-sort-ignore>
                             &#x25BC;
                         </button>
                     </td>
@@ -198,49 +200,70 @@
                         {
                             rowClass += " table-danger"; // Clase adicional para peso mayor a 100
                         }
+                        if (pesotipMayor == 0)
+                        {
+                            rowClass = ""; // Si el peso es 0, no aplica ninguna clase
+                        }
                     }
                     <tr class="@rowClass">
                         <td class="text-center">
+                            <a href="javascript:void(0);" class="btn btn-primary"
+                                onclick="cargarDataCliente(@Cliente.idbase, @Cliente.idasignacion, '@Cliente.TraidoDe')"
+                                data-bs-toggle="modal"
+                                data-bs-target="#tipificacion-cliente-modal" 
+                                data-bs-focus="false"
+                                data-bs-backdrop="static" 
+                                data-bs-keyboard="false">
+                                <i class="fa fa-eye"></i>
+                            </a>
+                            @* <a href="javascript:void(0)"
+                                class="btn btn-danger" style="width: auto;" title="Cargar data del Cliente"
+                                data-bs-toggle="modal" data-bs-target="#tipificacion-cliente-modal" data-bs-focus="false"
+                                data-bs-backdrop="static" data-bs-keyboard="false">
+                                <i class="bi bi-clipboard2-plus"></i>
+                            </a> *@
                             @if (Cliente.TraidoDe == "A365")
                             {
-                                <a href="javascript:void(0);" class="btn btn-primary"
-                                    onclick="loadTipificarCliente(@Cliente.IdBase,'TipificarClienteView')">
+                                @* <a href="javascript:void(0);" class="btn btn-primary"
+                                    onclick="loadTipificarCliente(@Cliente.idbase,'TipificarClienteView')">
                                     <i class="fa fa-eye"></i>
-                                </a>
+                                </a> *@
+
                                 <span class="badge bg-primary">A365</span>
 
                             }
                             else if (Cliente.TraidoDe == "ALFIN")
                             {
-                                <a href="javascript:void(0);" class="btn btn-primary"
-                                    onclick="loadTipificarCliente(@Cliente.IdBase,'TipificarClienteDBALFINView')">
+                                @* <a href="javascript:void(0);" class="btn btn-primary"
+                                    onclick="loadTipificarCliente(@Cliente.idbase,'TipificarClienteDBALFINView')">
                                     <i class="fa fa-eye"></i>
-                                </a>
+                                </a> *@
                                 <span class="badge bg-info">ALFIN</span>
                             }
                         </td>
-                        <td>@Cliente.Dni</td>
-                        <td>@(Cliente.XAppaterno?.ToUpper() ?? "") @(Cliente.XApmaterno?.ToUpper() ?? "")
-                            @(Cliente.XNombre?.ToUpper() ?? "")
-                        <td>@Cliente.OfertaMax</td>
-                        <td>@(Cliente.Campaña?.ToUpper() ?? "N/A")</td>
-                        <td>@Cliente.FechaAsignacionVendedor</td>
-                        <td><textarea name=""
-                                id="comentarioGeneral[@Cliente.IdAsignacion]">@Cliente.ComentarioGeneral</textarea>
+                        <td>@Cliente.dni</td>
+                        <td>@(Cliente.xappaterno?.ToUpper() ?? "") @(Cliente.xapmaterno?.ToUpper() ?? "")
+                            @(Cliente.xnombre?.ToUpper() ?? "")
+                        <td>@Cliente.ofertaMax</td>
+                        <td>@(Cliente.campaña?.ToUpper() ?? "N/A")</td>
+                        <td>@Cliente.fechaAsignacionV</td>
+                        <td><textarea name="" id="comentarioGeneral[@Cliente.idasignacion]">@Cliente.comentario</textarea>
                             <a href="javascript:void(0);" class="btn btn-primary"
-                                onclick="guardarComentarioGeneral(@Cliente.IdAsignacion)">
+                                onclick="guardarComentarioGeneral(@Cliente.idasignacion)">
                                 <i class="fa fa-pencil"></i>
                             </a>
                         </td>
-                        <td>@Cliente.TipificacionDeMayorPeso</td>
-                        <td>@Cliente.FechaTipificacionDeMayorPeso</td>
-                        <td>@Cliente.PrioridadSistema</td>
+                        <td>@Cliente.tipificacionMasRelevante</td>
+                        <td>@Cliente.fechaTipificacionDeMayorPeso</td>
+                        <td>@Cliente.prioridad</td>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
 </div>
+
+<partial name="modals/_TipificacionCliente" />
 
 <div class="modal fade" id="GeneralTemplateModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true"
     data-bs-focus="false">
@@ -285,6 +308,8 @@
     <script src="~/js/Leads/SelectV.js?v=@DateTime.Now.Ticks"></script>
     <script src="~/js/Leads/Comentarios.js?v=@DateTime.Now.Ticks"></script>
     <script src="~/js/Leads/Gestion.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/js/Leads/TipificacionView.js?v=@DateTime.Now.Ticks"></script>
     <script src="~/js/Leads/Telefonos.js?v=@DateTime.Now.Ticks"></script>
-    <script src="~/js/tablefunctions.js?v=@DateTime.Now.Ticks"></script>
+    @* <script src="~/js/Leads/Telefonos.js?v=@DateTime.Now.Ticks"></script> *@
+    @* <script src="~/js/tablefunctions.js?v=@DateTime.Now.Ticks"></script> *@
 }

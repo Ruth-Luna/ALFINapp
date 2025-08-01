@@ -1,5 +1,6 @@
 using ALFINapp.API.Filters;
 using ALFINapp.Application.Interfaces.Leads;
+using ALFINapp.Datos.DAO.Gestion;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ALFINapp.Controllers
@@ -8,19 +9,13 @@ namespace ALFINapp.Controllers
     public class LeadsController : Controller
     {
         private readonly ILogger<LeadsController> _logger;
-        private readonly IUseCaseGetAsignacionLeads _useCaseGetAsignacionLeads;
-        private readonly IUseCaseGetFilterLeadsGeneral _useCaseGetFilterLeadsGeneral;
-        private readonly IUseCaseGetFilterLeadsGeneral _useCaseGetFilterLeadsGeneralVendedor;
+        private readonly DAO_GestionDeLeads _dao_gestionDeLeads;
         public LeadsController(
             ILogger<LeadsController> logger,
-            IUseCaseGetAsignacionLeads useCaseGetAsignacionLeads,
-            IUseCaseGetFilterLeadsGeneral useCaseGetFilterLeadsGeneral,
-            IUseCaseGetFilterLeadsGeneral useCaseGetFilterLeadsGeneralVendedor)
+            DAO_GestionDeLeads dao_gestionDeLeads)
         {
             _logger = logger;
-            _useCaseGetAsignacionLeads = useCaseGetAsignacionLeads;
-            _useCaseGetFilterLeadsGeneral = useCaseGetFilterLeadsGeneral;
-            _useCaseGetFilterLeadsGeneralVendedor = useCaseGetFilterLeadsGeneralVendedor;
+            _dao_gestionDeLeads = dao_gestionDeLeads;
         }
         [HttpGet]
         public async Task<IActionResult> Gestion(
@@ -59,10 +54,9 @@ namespace ALFINapp.Controllers
 
             if (rol.Value == 3)
             {
-                var executeInicio = await _useCaseGetAsignacionLeads
-                    .Execute(
-                        usuarioId.Value,
-                        rol.Value,
+                var executeInicio = await _dao_gestionDeLeads
+                    .GetLeadsAsignados(
+                        usuarioId: usuarioId.Value,
                         intervaloInicio: paginaInicio,
                         intervaloFin: paginaFinal,
                         filter: filter,
@@ -81,10 +75,9 @@ namespace ALFINapp.Controllers
             }
             else if (rol == 2)
             {
-                var executeInicio = await _useCaseGetAsignacionLeads
-                    .Execute(
-                        usuarioId.Value,
-                        2,
+                var executeInicio = await _dao_gestionDeLeads
+                    .GetLeadsAsignados(
+                        usuarioId: usuarioId.Value,
                         paginaInicio,
                         paginaFinal,
                         filter: filter,
@@ -96,6 +89,7 @@ namespace ALFINapp.Controllers
                 }
 
                 var dataInicio = executeInicio.Data;
+                dataInicio.PaginaActual = paginaInicio;
                 return View("GestionS", dataInicio);
             }
             else
@@ -108,44 +102,6 @@ namespace ALFINapp.Controllers
         public IActionResult Error()
         {
             return View("Error!");
-        }
-
-        public async Task<IActionResult> GetGestionSupervisores(
-            int pagina = 0,
-            string filter = "",
-            string filterField = "",
-            string orderBy = "",
-            bool orderAsc = true)
-        {
-            try
-            {
-                int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-                if (usuarioId == null)
-                {
-                    TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
-                    return RedirectToAction("Index", "Home");
-                }
-                var executeInicio = await _useCaseGetAsignacionLeads.Execute(
-                    usuarioId: usuarioId.Value,
-                    rol: 2,
-                    intervaloInicio: pagina,
-                    intervaloFin: 0,
-                    filter: "",
-                    search: "",
-                    order: "tipificacion",
-                    orderAsc = true);
-                if (!executeInicio.IsSuccess || executeInicio.Data == null)
-                {
-                    TempData["MessageError"] = executeInicio.Message;
-                    return RedirectToAction("Redireccionar", "Error");
-                }
-                return View("GestionSupervisores", executeInicio.Data);
-            }
-            catch (System.Exception)
-            {
-
-                throw;
-            }
         }
     }
 }

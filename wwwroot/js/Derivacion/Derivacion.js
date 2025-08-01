@@ -208,36 +208,56 @@ function filtrarTablaGeneral(idTabla, colIndex) {
     const table = document.getElementById(idTabla);
     if (!table) return;
     const rows = Array.from(table.getElementsByTagName("tr")).slice(2);
+
     rows.forEach(row => {
         const cell = row.cells[colIndex];
         if (!cell) return;
 
         let cellValue = cell.textContent.trim();
-        let showRow = false;
+        let showRow = true;
 
+        // Filtro por DNI
         if (filtrosActivos.dni) {
-            showRow = cellValue.toLowerCase().includes(filtrosActivos.dni.toLowerCase());
+            if (!cellValue.toLowerCase().includes(filtrosActivos.dni.toLowerCase())) {
+                showRow = false;
+            }
         }
+
+        // Filtro por fecha exacta
         if (filtrosActivos.fechaExacta) {
             const match = cellValue.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
             if (match) {
                 const formattedDate = `${match[3]}-${match[2].padStart(2, '0')}-${match[1].padStart(2, '0')}`;
-                showRow = formattedDate === filtrosActivos.fechaExacta;
+                if (formattedDate !== filtrosActivos.fechaExacta) {
+                    showRow = false;
+                }
+            } else {
+                showRow = false;
             }
         }
+
+        // Filtro por intervalo de fechas
         const fechaActual = new Date(parsearFechaISO(cellValue));
         if (filtrosActivos.intervaloInicio) {
             const inicio = new Date(filtrosActivos.intervaloInicio);
-            if (fechaActual > inicio) showRow = true;
+            if (fechaActual < inicio) {
+                showRow = false;
+            }
         }
         if (filtrosActivos.intervaloFinal) {
             const fin = new Date(filtrosActivos.intervaloFinal);
-            if (fechaActual < fin) showRow = true;
+            if (fechaActual > fin) {
+                showRow = false;
+            }
         }
-        if (!filtrosActivos.dni && !filtrosActivos.fechaExacta && !filtrosActivos.intervaloInicio && !filtrosActivos.intervaloFinal) {
+
+        // Si no hay ningún filtro, mostrar todo y resetear paginación
+        const hayFiltros = filtrosActivos.dni || filtrosActivos.fechaExacta || filtrosActivos.intervaloInicio || filtrosActivos.intervaloFinal;
+        if (!hayFiltros) {
             showRow = true;
             activatePagination(0);
         }
+
         row.style.display = showRow ? "" : "none";
     });
 }
@@ -249,10 +269,18 @@ function parsearFecha(fechaStr) {
 }
 
 function parsearFechaISO(fechaStr) {
-    const match = fechaStr.match(/(\d{1,2})\/(\d{1,2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})/);
-    if (!match) return new Date(0); // fecha inválida
-    const [_, d, m, y, h, mi, s] = match;
-    return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}T${h}:${mi}:${s}`;
+    const matchCompleta = fechaStr.match(/(\d{1,2})\/(\d{1,2})\/(\d{4}) (\d{1,2}):(\d{2}):(\d{2})/);
+    const matchSoloFecha = fechaStr.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+
+    if (matchCompleta) {
+        const [_, d, m, y, h, mi, s] = matchCompleta;
+        return new Date(`${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}T${h.padStart(2, '0')}:${mi}:${s}`);
+    } else if (matchSoloFecha) {
+        const [_, d, m, y] = matchSoloFecha;
+        return new Date(`${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`);
+    } else {
+        return new Date(0); // fecha inválida
+    }
 }
 
 
