@@ -95,5 +95,42 @@ namespace ALFINapp.Datos.DAO.Miscelaneos
                 return (false, "Ha ocurrido un error al obtener las listas.", new List<string?>());
             }
         }
+
+        public async Task<(bool IsSuccess, string Message, List<AgenciasDisponiblesDTO> Agencias)> GetAgencias()
+        {
+            try
+            {
+                var agenciasDisponibles = await _context.agencias_disponibles_dto
+                .FromSqlRaw("EXEC sp_U_agencias_con_numeros")
+                .ToListAsync();
+
+                if (agenciasDisponibles == null || !agenciasDisponibles.Any())
+                {
+                    return (false, "No se encontraron agencias disponibles", new List<AgenciasDisponiblesDTO>());
+                }
+                return (true, "Agencias encontradas", agenciasDisponibles);
+            }
+            catch (System.Exception)
+            {
+                return (false, "Ha ocurrido un error al obtener las agencias.", new List<AgenciasDisponiblesDTO>());
+            }
+        }
+        public async Task<(bool IsSuccess, string Message, List<(int idtip,string nombretip)> Data)> GetTipificaciones()
+        {
+            try
+            {
+                var tipificaciones = await _context.tipificaciones.ToListAsync();
+                if (tipificaciones == null)
+                {
+                    return (false, "No se pudo encontrar tipificaciones en la base de datos", new List<(int idtip, string nombretip)>());
+                }
+                return (true, "Se han encontrado las tipificaciones en la base de datos", 
+                    tipificaciones.Select(t => (t.IdTipificacion, t.DescripcionTipificacion)).ToList());
+            }
+            catch (System.Exception ex)
+            {
+                return (false, ex.Message, new List<(int idtip, string nombretip)>());
+            }
+        }
     }
 }
