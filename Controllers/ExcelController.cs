@@ -361,7 +361,7 @@ namespace ALFINapp.API.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet("DownloadAsignaciones")]
         public async Task<IActionResult> DownloadAsignaciones(string nombre_lista, int page = -1)
         {
             try
