@@ -28,11 +28,11 @@ namespace ALFINapp.API.Models
         public string contraseña { get; set; } = string.Empty;
         public string NOMBRECAMPAÑA { get; set; } = string.Empty;
         public int IdRol { get; set; } = 0;
-        public DateTime FechaActualizacion { get; set; } = DateTime.MinValue;
+        public DateTime? FechaActualizacion { get; set; } = null;
         public string TipoDocumento { get; set; } = string.Empty;
         public int IdUsuarioAccion { get; set; } = 0;
-        public DateTime FechaInicio { get; set; } = DateTime.MinValue;
-        public DateTime FechaCese { get; set; } = DateTime.MinValue;
+        public DateTime? FechaInicio { get; set; } = null;
+        public DateTime? FechaCese { get; set; } = null;
         public string Correo { get; set; } = string.Empty;
         public string Cci { get; set; } = string.Empty;
 
@@ -57,7 +57,7 @@ namespace ALFINapp.API.Models
             RESPONSABLESUP = model.RESPONSABLESUP ?? string.Empty;
             REGION = model.REGION ?? string.Empty;
             contraseña = model.contraseña ?? string.Empty;
-            NOMBRECAMPAÑA = model.NOMBRECAMPAÑA ?? string.Empty;
+            NOMBRECAMPAÑA = model.NOMBRECAMPANIA ?? string.Empty;
             IdRol = model.IdRol ?? 0;
             FechaActualizacion = model.FechaActualizacion ?? DateTime.MinValue;
             TipoDocumento = model.TipoDocumento ?? string.Empty;

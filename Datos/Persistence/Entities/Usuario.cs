@@ -41,7 +41,7 @@ public partial class Usuario
     public string? RESPONSABLESUP { get; set; }
     [Column("REGION")]
     public string? REGION { get; set; }
-    public string usuario { get; set; }
+    public string usuario { get; set; } = string.Empty;
     [Column("contraseña")]
     public string? contraseña { get; set; }
     [Column("NOMBRE_CAMPAÑA")]

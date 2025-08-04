@@ -7,8 +7,8 @@
 
         public Conexion()
         {
-            var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
-            cadenaSQL = builder.GetSection("ConnectionStrings:DefaultConnection").Value;
+            var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.Development.json").Build();
+            cadenaSQL = builder.GetSection("ConnectionStrings:DefaultConnection").Value ?? string.Empty;
         }
 
         public string getCadenaSQL()

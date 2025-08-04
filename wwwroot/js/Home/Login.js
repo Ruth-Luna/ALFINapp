@@ -35,6 +35,10 @@ document.addEventListener('DOMContentLoaded', function () {
     $('#btnVerificarCodigo').on('click', function () {
         VerificarCodigoIngresado();
     });
+
+    $('#btnCambiarContrasenia').on('click', function () {
+        cambiarContraseniaCorreo();
+    });
     
 });
 
@@ -130,8 +134,7 @@ function EnviarCodigoRecuperacionPassword() {
 function VerificarCodigoIngresado() {
     let idUsuarioLC = localStorage.getItem("idUsuario");
     const codigoIngresado = obtenerCodigoOTP();
-    console.log(codigoIngresado)
-    console.log(idUsuarioLC)
+
     if (codigoIngresado.length !== 6) {
         console.log("sientro")
         $('#lblMensajeAlerta')
@@ -219,6 +222,46 @@ function verificarEstadoCodigo() {
         },
         error: function () {
             Swal.fire('Error', 'No se pudo obtener el estado del código.', 'error');
+        }
+    });
+}
+
+function cambiarContraseniaCorreo() {
+    const idUsuario = localStorage.getItem("idUsuario");
+    const nueva = $('#txtNuevaContrasenia').val().trim();
+    const confirmar = $('#txtConfirmarContrasenia').val().trim();
+
+    if (!nueva || !confirmar) {
+        Swal.fire("Advertencia", "Completa ambos campos de contraseña.", "warning");
+        return;
+    }
+
+    if (nueva !== confirmar) {
+        Swal.fire("Error", "Las contraseñas no coinciden.", "warning");
+        return;
+    }
+
+    $.ajax({
+        url: '/Home/ActualizarContraseniaCorreo',
+        type: 'POST',
+        data: {
+            idUsuario: idUsuario,
+            contrasenia: nueva
+        },
+        success: function (response) {
+            console.log(response)
+            if (response.success) {
+                Swal.fire("Éxito", response.mensaje, "success").then(() => {
+                    $('#recuperarContraseñaModal').modal('hide');
+                    window.location.href = '/';
+                });
+            } else {
+                Swal.fire("Advertencia", response.mensaje, "error");
+            }
+        },
+        error: function (xhr) {
+            console.error(xhr);
+            Swal.fire("Error", "Ocurrió un error al actualizar la contraseña.", "error");
         }
     });
 }

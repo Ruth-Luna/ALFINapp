@@ -74,7 +74,7 @@ function ListarUsuarioGerente(id = null) {
                             <td>${usuario.dni ?? ''}</td>
                             <td>${usuario.nombresCompletos ?? ''}</td>
                             <td>${usuario.responsablesup ? usuario.responsablesup : 'EL USUARIO NO TIENE SUPERVISOR'}</td>
-                            <td>${usuario.nombrecampania ?? ''}</td>
+                            <td>${usuario.nombrecampaña ?? ''}</td>
                             <td>${usuario.rol ?? ''}</td>
                             <td>${usuario.fechaActualizacion ? FechaFormat(usuario.fechaActualizacion) : ''}</td>
                             <td>${usuario.fechaInicio ? FechaFormat(usuario.fechaInicio) : ''}</td>
@@ -194,7 +194,7 @@ $('#btnGuardarCambios').on('click', function () {
         apellido_materno: $('#txtApellidosM_EditarUsuario').val() || null,
         nombres: $('#txtNombres_EditarUsuario').val() || null,
         region: $('#txtRegion_EditarUsuario').val() || null,
-        nombre_campania: $('#txtCampania_EditarUsuario').val() || null,
+        NOMBRECAMPAÑA: $('#txtCampania_EditarUsuario').val() || null,
         correo: $('#txtCorreo_EditarUsuario').val() || null,
         rol: $('#txtRol_EditarUsuario').val() || null,
         estado: $('#selectEstado').val() || null
