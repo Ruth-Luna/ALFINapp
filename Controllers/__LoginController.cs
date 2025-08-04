@@ -12,7 +12,7 @@ namespace ALFINapp.API.Controllers;
 
 public class __LoginController : Controller
 {
-    DA_Usuario _daUsuario = new DA_Usuario();
+    DA_Login _daLogin = new DA_Login();
 
     private readonly ILogger<__LoginController> _logger;
     private readonly MDbContext _context;
@@ -54,7 +54,7 @@ public class __LoginController : Controller
     [HttpPost]
     public async Task<IActionResult> Login(string usuario, string password)
     {
-        var usuarioValido = _daUsuario.ValidarUsuario(usuario, password);
+        var usuarioValido = _daLogin.ValidarUsuario(usuario, password);
 
         if (usuarioValido == null || usuarioValido.Resultado == 0)
         {

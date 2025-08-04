@@ -5,6 +5,19 @@
 }
 
 @section Styles {
+    <style>
+        .login-alert {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .login-alert.show {
+            opacity: 1;
+        }
+        .login-alert.hide {
+            opacity: 0;
+        }
+    </style>
+
     <link rel="stylesheet" href="~/css/index_page.css">
 }
 
@@ -63,7 +76,6 @@
                                       onclick="togglePasswordVisibility()">
                                     <i id="password-icon" class="fas fa-eye" style="font-size: 1.5rem;"></i>
                                 </span>
-
                             </div>
                             <div class="mb-4">
                                 <div class="row">
@@ -85,12 +97,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="mb-4 d-none" id="initialPasswordInfo">
-                                <div class="alert alert-info" role="alert">
-                                    Su contraseña inicial es su número de DNI. Para acceder, por favor agregue la cadena
-                                    '<strong>$clave123</strong>'.
+                            @if (TempData["message"] != null)
+                            {
+                                <div id="login-message" class="login-alert alert alert-warning text-center fade show" role="alert">
+                                    ⚠️ @TempData["message"]
                                 </div>
-                            </div>
+                            }
                             <div class="text-center">
                                 <button type="submit" class="btn btn btn-light btn-lg w-200px">Iniciar Sesión</button>
                             </div>
@@ -197,58 +209,44 @@
 @section Scripts {
     <script src="~/js/Home/Login.js?v=@DateTime.Now.Ticks"></script>
 
-    @if (TempData["Message"] != null)
-    {
-        <script>
-            Swal.fire({
-                title: 'Mensaje', // Título del mensaje
-                text: '@Html.Raw(TempData["Message"] as string)', // Usamos Html.Raw para evitar que se escape el texto
-                icon: 'success', // Tipo de ícono (info, success, error, warning)
-                confirmButtonText: 'Aceptar' // Texto del botón de confirmación
-            });
-        </script>
-    }
-
-    @if (TempData["MessageError"] != null)
-    {
-        <script>
-            Swal.fire({
-                title: 'Error', // Título del mensaje
-                text: '@Html.Raw(TempData["MessageError"] as string)', // Usamos Html.Raw para evitar que se escape el texto
-                icon: 'error', // Tipo de ícono (info, success, error, warning)
-                confirmButtonText: 'Aceptar' // Texto del botón de confirmación
-            });
-        </script>
-    }
     <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const msg = document.getElementById('login-message');
+                if (msg) {
+                    // Aparece suavemente
+                    msg.classList.add('show');
 
-        function showPasswordInfo() {
-            const passwordInfo = document.getElementById('password-info');
-            passwordInfo.style.display = 'block'; // Mostrar el mensaje
-        }
+                    // Desaparece con transición a los 3s
+                    setTimeout(() => {
+                        msg.classList.remove('show');
+                        msg.classList.add('hide');
+                    }, 3000);
 
-        // Función para mostrar y ocultar la contraseña al hacer click en el ícono del ojito
-        function togglePasswordVisibility() {
-            const passwordInput = document.getElementById('password');
-            const passwordIcon = document.getElementById('password-icon');
+                    // Elimina del DOM tras transición
+                    msg.addEventListener('transitionend', () => {
+                        msg.remove();
+                    });
+                }
+            });
 
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                passwordIcon.classList.remove('fa-eye');
-                passwordIcon.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                passwordIcon.classList.remove('fa-eye-slash');
-                passwordIcon.classList.add('fa-eye');
+            function showPasswordInfo() {
+                const passwordInfo = document.getElementById('password-info');
+                passwordInfo.style.display = 'block'; 
             }
-        }
-        document.addEventListener('DOMContentLoaded', function () {
-            var dniInput = document.getElementById('dni');
-            var passwordInput = document.getElementById('password');
 
-            dniInput.setAttribute('maxlength', '35');
-            passwordInput.setAttribute('maxlength', '35');
-        });
+            function togglePasswordVisibility() {
+                const passwordInput = document.getElementById('password');
+                const passwordIcon = document.getElementById('password-icon');
 
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    passwordIcon.classList.remove('fa-eye');
+                    passwordIcon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    passwordIcon.classList.remove('fa-eye-slash');
+                    passwordIcon.classList.add('fa-eye');
+                }
+            }
     </script>
 }
