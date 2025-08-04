@@ -9,7 +9,7 @@ namespace ALFINapp.Datos
 {
     public class DA_Usuario
     {  
-        public async Task<(bool IsSuccess, string Message)> CrearUsuario(Usuario usuario, int idUsuarioAccion)
+        public async Task<(bool IsSuccess, string Message)> CrearUsuario(ViewUsuario usuario, int idUsuarioAccion)
         {
             try
             {
@@ -34,9 +34,9 @@ namespace ALFINapp.Datos
                         command.Parameters.AddWithValue("@IDUSUARIOSUP", (object?)usuario.IDUSUARIOSUP ?? DBNull.Value);
                         command.Parameters.AddWithValue("@RESPONSABLESUP", (object?)usuario.RESPONSABLESUP ?? DBNull.Value);
                         command.Parameters.AddWithValue("@REGION", (object?)usuario.REGION ?? DBNull.Value);
-                        command.Parameters.AddWithValue("@NOMBRECAMPANIA", (object?)usuario.NOMBRECAMPANIA ?? DBNull.Value);
+                        command.Parameters.AddWithValue("@NOMBRECAMPAÑA", (object?)usuario.NOMBRECAMPAÑA ?? DBNull.Value);
                         command.Parameters.AddWithValue("@IdRol", usuario.IdRol);
-                        command.Parameters.AddWithValue("@Usuario", usuario.usuario);
+                        command.Parameters.AddWithValue("@Usuario", usuario.Usuario);
                         command.Parameters.AddWithValue("@id_usuario_accion", idUsuarioAccion);
                         command.Parameters.AddWithValue("@Correo", (object?)usuario.Correo ?? DBNull.Value);
 
@@ -96,7 +96,7 @@ namespace ALFINapp.Datos
                                 : System.Text.Encoding.Unicode.GetString((byte[])dr["contraseñaH"]),
                                 Correo = dr["correo"].ToString() ?? string.Empty,
                                 NombresCompletos = dr["Nombre_Completo"].ToString() ?? string.Empty,
-                                NOMBRECAMPAÑA = dr["NOMBRECAMPAÑA"].ToString() ?? string.Empty,
+                                NOMBRECAMPAÑA = dr["NOMBRE_CAMPAÑA"].ToString() ?? string.Empty,
                                 RESPONSABLESUP = dr["RESPONSABLE_SUP"].ToString() ?? string.Empty,
                                 REGION = dr["region"].ToString() ?? string.Empty,
                                 Rol = dr["rol"].ToString() ?? string.Empty,
@@ -155,7 +155,6 @@ namespace ALFINapp.Datos
                 throw;
             }
         }
-
         public bool ActualizarEstado(int idUsuario, string estado)
         {
             try

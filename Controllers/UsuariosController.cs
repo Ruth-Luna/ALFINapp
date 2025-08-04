@@ -1,4 +1,4 @@
-using ALFINapp.API.Filters;
+ï»¿using ALFINapp.API.Filters;
 using ALFINapp.API.Models;
 using ALFINapp.Datos;
 using ALFINapp.Infrastructure.Persistence.Models;
@@ -49,13 +49,35 @@ namespace ALFINapp.API.Controllers
             var getSupervisores = await _DBServicesConsultasAdministrador.ConseguirTodosLosSupervisores();
             return View("Nuevo", getSupervisores.Data);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CrearUsuario([FromBody] ViewUsuario usuario)
+        {
+            try
+            {
+                var UsuarioIdJefe = HttpContext.Session.GetInt32("UsuarioId");
+                if (UsuarioIdJefe == null)
+                {
+                    return Json(new { success = false, message = "No se ha podido crear el usuario" });
+                }
+                var result = await _daUsuario.CrearUsuario(usuario, UsuarioIdJefe.Value);
+                if (result.IsSuccess)
+                {
+                    return Json(new { success = true, message = "Usuario creado correctamente" });
+                }
+                return Json(new { success = false, message = result.Message });
+            }
+            catch (System.Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
         public IActionResult ActualizarUsuario([FromBody] ViewUsuario usuario)
         {
             try
             {
                 bool actualizado = _daUsuario.ActualizarUsuario(usuario);
-                Console.WriteLine(actualizado);
-                Console.WriteLine($"Tipo: {actualizado.GetType()} Valor: {actualizado}");
                 if (actualizado)
                     return Ok(new { success = true, mensaje = "Usuario actualizado correctamente." });
                 else
@@ -66,7 +88,7 @@ namespace ALFINapp.API.Controllers
                 return StatusCode(500, new
                 {
                     success = false,
-                    mensaje = "Ocurrió un error interno al intentar actualizar el usuario.",
+                    mensaje = "OcurriÃ³ un error interno al intentar actualizar el usuario.",
                     detalle = ex.Message
                 });
             }
@@ -90,11 +112,12 @@ namespace ALFINapp.API.Controllers
                 return StatusCode(500, new
                 {
                     success = false,
-                    mensaje = "Ocurrió un error interno al intentar actualizar el estado.",
+                    mensaje = "OcurriÃ³ un error interno al intentar actualizar el estado.",
                     detalle = ex.Message
                 });
             }
         }
+        
 
         [HttpGet]
         public JsonResult ListarRoles()
@@ -171,30 +194,9 @@ namespace ALFINapp.API.Controllers
         //    }
         //}
 
-        
 
-        //[HttpPost]
-        //public async Task<IActionResult> CrearUsuario([FromBody] Usuario usuario)
-        //{
-        //    try
-        //    {
-        //        var UsuarioIdJefe = HttpContext.Session.GetInt32("UsuarioId");
-        //        if (UsuarioIdJefe == null)
-        //        {
-        //            return Json(new { success = false, message = "No se ha podido crear el usuario" });
-        //        }
-        //        var result = await _daUsuario.CrearUsuario(usuario, UsuarioIdJefe.Value);
-        //        if (result.IsSuccess)
-        //        {
-        //            return Json(new { success = true, message = "Usuario creado correctamente" });
-        //        }
-        //        return Json(new { success = false, message = result.Message });
-        //    }
-        //    catch (System.Exception ex)
-        //    {
-        //        return Json(new { success = false, message = ex.Message });
-        //    }
-        //}
+
+
 
         //[HttpGet]
         //public async Task<IActionResult> ModificarUsuarioVista(int IdUsuario)

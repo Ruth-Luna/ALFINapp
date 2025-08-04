@@ -224,5 +224,41 @@ namespace ALFINapp.Datos
 
             return resultado;
         }
+
+        public bool ActualizarContraseniaCorreo(int idUsuario, string nuevaContrasenia)
+        {
+            var cn = new Conexion();
+
+            using (SqlConnection connection = new SqlConnection(cn.getCadenaSQL()))
+            {
+                using (SqlCommand cmd = new SqlCommand("SP_USUARIO_ACTUALIZAR_CONTRASENIA_CORREO", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@id_usuario", idUsuario);
+                    cmd.Parameters.AddWithValue("@nueva_contrasenia", nuevaContrasenia);
+
+                    try
+                    {
+                        connection.Open();
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                int filas = reader.GetInt32(reader.GetOrdinal("filas_actualizadas"));
+                                return filas > 0;
+                            }
+                        }
+                        return false;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("❌ Error al actualizar contraseña: " + ex.Message);
+                        return false;
+                    }
+                }
+            }
+        }
     }
+
 }

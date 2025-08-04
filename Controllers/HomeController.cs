@@ -337,4 +337,39 @@ public class HomeController : Controller
             return false;
         }
     }
+
+    [HttpPost]
+    public IActionResult ActualizarContraseniaCorreo(int idUsuario, string contrasenia)
+    {
+        try
+        {
+            bool actualizado = _daLogin.ActualizarContraseniaCorreo(idUsuario, contrasenia);
+
+            if (actualizado)
+            {
+                return Ok(new
+                {
+                    success = true,
+                    mensaje = "✅ Contraseña actualizada correctamente."
+                });
+            }
+            else
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    mensaje = "❌ No se pudo actualizar la contraseña. Verifica el ID del usuario."
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new
+            {
+                success = false,
+                mensaje = "Ocurrió un error interno al intentar actualizar la contraseña.",
+                detalle = ex.Message
+            });
+        }
+    }
 }
