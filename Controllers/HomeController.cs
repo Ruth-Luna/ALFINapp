@@ -178,7 +178,7 @@ public class HomeController : Controller
         }
 
         HttpContext.Session.SetInt32("UsuarioId", usuarioValido.IdUsuario);
-        HttpContext.Session.SetInt32("RolUser", usuarioValido.IdRol ?? 3);
+        HttpContext.Session.SetInt32("RolUser", usuarioValido.IdRol != null ? usuarioValido.IdRol.Value : throw new Exception("El rol del usuario no está definido. Comuníquese con su Supervisor."));
         HttpContext.Session.SetInt32("ActivarCambio", 1);
         HttpContext.Session.SetInt32("UsuarioId", usuario != null ? usuarioValido.IdUsuario : throw new Exception("El usuario original no está definido. Comuníquese con su Supervisor."));
         HttpContext.Session.SetInt32("RolUser", usuario != null ? usuarioValido.IdRol ?? 3 : throw new Exception("El rol del usuario original no está definido. Comuníquese con su Supervisor."));
