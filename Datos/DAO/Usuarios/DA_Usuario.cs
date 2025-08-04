@@ -9,7 +9,7 @@ namespace ALFINapp.Datos
 {
     public class DA_Usuario
     {  
-        public async Task<(bool IsSuccess, string Message)> CrearUsuario(Usuario usuario, int idUsuarioAccion)
+        public async Task<(bool IsSuccess, string Message)> CrearUsuario(ViewUsuario usuario, int idUsuarioAccion)
         {
             try
             {
@@ -34,9 +34,9 @@ namespace ALFINapp.Datos
                         command.Parameters.AddWithValue("@IDUSUARIOSUP", (object?)usuario.IDUSUARIOSUP ?? DBNull.Value);
                         command.Parameters.AddWithValue("@RESPONSABLESUP", (object?)usuario.RESPONSABLESUP ?? DBNull.Value);
                         command.Parameters.AddWithValue("@REGION", (object?)usuario.REGION ?? DBNull.Value);
-                        command.Parameters.AddWithValue("@NOMBRECAMPANIA", (object?)usuario.NOMBRECAMPANIA ?? DBNull.Value);
+                        command.Parameters.AddWithValue("@NOMBRECAMPAÑA", (object?)usuario.NOMBRECAMPAÑA ?? DBNull.Value);
                         command.Parameters.AddWithValue("@IdRol", usuario.IdRol);
-                        command.Parameters.AddWithValue("@Usuario", usuario.usuario);
+                        command.Parameters.AddWithValue("@Usuario", usuario.Usuario);
                         command.Parameters.AddWithValue("@id_usuario_accion", idUsuarioAccion);
                         command.Parameters.AddWithValue("@Correo", (object?)usuario.Correo ?? DBNull.Value);
 
@@ -85,8 +85,8 @@ namespace ALFINapp.Datos
                             lista.Add(new ViewUsuario
                             {
                                 IdUsuario = Convert.ToInt32(dr["id_usuario"]),
-                                Dni = dr["dni"].ToString(),
-                                TipoDocumento = dr["tipo_doc"].ToString(),
+                                Dni = dr["dni"].ToString() ?? string.Empty,
+                                TipoDocumento = dr["tipo_doc"].ToString() ?? string.Empty,
                                 Nombres = dr["Nombres"].ToString(),
                                 Apellido_Paterno = dr["Apellido_Paterno"].ToString(),
                                 Apellido_Materno = dr["Apellido_Materno"].ToString(),
@@ -94,13 +94,14 @@ namespace ALFINapp.Datos
                                 Contrasenia = dr["contraseñaH"] == DBNull.Value
                                 ? null
                                 : System.Text.Encoding.Unicode.GetString((byte[])dr["contraseñaH"]),
-                                Correo = dr["correo"].ToString(),
-                                NombresCompletos = dr["Nombre_Completo"].ToString(),
-                                NOMBRECAMPANIA = dr["NOMBRE_CAMPAÑA"].ToString(),
-                                RESPONSABLESUP = dr["RESPONSABLE_SUP"].ToString(),
-                                REGION = dr["region"].ToString(),
-                                Rol = dr["rol"].ToString(),
-                                Estado = dr["estado"].ToString(),
+                                Correo = dr["correo"].ToString() ?? string.Empty,
+                                NombresCompletos = dr["Nombre_Completo"].ToString() ?? string.Empty,
+                                NOMBRECAMPAÑA = dr["NOMBRE_CAMPAÑA"].ToString() ?? string.Empty,
+                                RESPONSABLESUP = dr["RESPONSABLE_SUP"].ToString() ?? string.Empty,
+                                REGION = dr["region"].ToString() ?? string.Empty,
+                                Rol = dr["rol"].ToString() ?? string.Empty,
+                                Estado = dr["estado"].ToString() ?? string.Empty,
+                                
                                 FechaActualizacion = dr["fecha_actualizacion"] == DBNull.Value ? null : Convert.ToDateTime(dr["fecha_actualizacion"]),
                                 FechaInicio = dr["fecha_inicio"] == DBNull.Value ? null : Convert.ToDateTime(dr["fecha_inicio"]),
                                 FechaCese = dr["fecha_cese"] == DBNull.Value ? null : Convert.ToDateTime(dr["fecha_cese"]),
@@ -125,20 +126,20 @@ namespace ALFINapp.Datos
                         cmd.CommandType = CommandType.StoredProcedure;
 
                         cmd.Parameters.AddWithValue("@id_usuario", usuario.IdUsuario);
-                        cmd.Parameters.AddWithValue("@dni", (object)usuario.Dni ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@tipo_doc", (object)usuario.TipoDocumento ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Apellido_Paterno", (object)usuario.Apellido_Paterno ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Apellido_Materno", (object)usuario.Apellido_Materno ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Usuario", (object)usuario.Usuario ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@dni", usuario.Dni != null ? usuario.Dni : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@tipo_doc", usuario.TipoDocumento != null ? usuario.TipoDocumento : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Apellido_Paterno", usuario.Apellido_Paterno != null ? usuario.Apellido_Paterno : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Apellido_Materno", usuario.Apellido_Materno != null ? usuario.Apellido_Materno : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Usuario", usuario.Usuario != null ? usuario.Usuario : DBNull.Value);
                         cmd.Parameters.AddWithValue("@contraseniaH", usuario.Contrasenia != null
                             ? (object)System.Text.Encoding.Unicode.GetBytes(usuario.Contrasenia)
                             : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Nombres", (object)usuario.Nombres ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@NOMBRE_CAMPANIA", (object)usuario.NOMBRECAMPANIA ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@rol", (object)usuario.Rol ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@region", (object)usuario.REGION ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@correo", (object)usuario.Correo ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@estado", (object)usuario.Estado ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Nombres", usuario.Nombres != null ? usuario.Nombres : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@NOMBRE_CAMPANIA", usuario.NOMBRECAMPAÑA != null ? usuario.NOMBRECAMPAÑA : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@rol", usuario.Rol != null ? usuario.Rol : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@region", usuario.REGION != null ? usuario.REGION : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@correo", usuario.Correo != null ? usuario.Correo : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@estado", usuario.Estado != null ? usuario.Estado : DBNull.Value);
 
                         connection.Open();
                         int filasAfectadas = cmd.ExecuteNonQuery();
@@ -149,12 +150,11 @@ namespace ALFINapp.Datos
             }
             catch (Exception ex)
             {
-                Console.WriteLine("❌ Error en ActualizarUsuario: " + ex.Message);
+                Console.WriteLine("Error en ActualizarUsuario: " + ex.Message);
                 // Puedes lanzar la excepción para que suba al controlador y se capture allí también
                 throw;
             }
         }
-
         public bool ActualizarEstado(int idUsuario, string estado)
         {
             try
@@ -178,7 +178,7 @@ namespace ALFINapp.Datos
             }
             catch (Exception ex)
             {
-                Console.WriteLine("❌ Error en ActualizarEstado: " + ex.Message);
+                Console.WriteLine("Error en ActualizarEstado: " + ex.Message);
                 throw;
             }
         }

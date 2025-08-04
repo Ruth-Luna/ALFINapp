@@ -41,7 +41,7 @@ namespace ALFINapp.Datos
                                     return new Usuario
                                     {
                                         IdUsuario = Convert.ToInt32(dr["id_usuario"]),
-                                        usuario = dr["usuario"].ToString(),
+                                        usuario = dr["usuario"].ToString() ?? string.Empty,
                                         Correo = dr["correo"].ToString(),
                                         Nombres = dr["nombres"].ToString(),
                                         Apellido_Paterno = dr["apellido_paterno"].ToString(),
@@ -224,5 +224,41 @@ namespace ALFINapp.Datos
 
             return resultado;
         }
+
+        public bool ActualizarContraseniaCorreo(int idUsuario, string nuevaContrasenia)
+        {
+            var cn = new Conexion();
+
+            using (SqlConnection connection = new SqlConnection(cn.getCadenaSQL()))
+            {
+                using (SqlCommand cmd = new SqlCommand("SP_USUARIO_ACTUALIZAR_CONTRASENIA_CORREO", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@id_usuario", idUsuario);
+                    cmd.Parameters.AddWithValue("@nueva_contrasenia", nuevaContrasenia);
+
+                    try
+                    {
+                        connection.Open();
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                int filas = reader.GetInt32(reader.GetOrdinal("filas_actualizadas"));
+                                return filas > 0;
+                            }
+                        }
+                        return false;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("❌ Error al actualizar contraseña: " + ex.Message);
+                        return false;
+                    }
+                }
+            }
+        }
     }
+
 }
