@@ -38,7 +38,7 @@ namespace ALFINapp.Datos.DAO.Derivaciones
                 {
                     return (false, verificacion.message);
                 }
-                
+
                 var getCliente = await _daoConsultasMiscelaneas.getBase(dto.id_base);
                 if (getCliente == null)
                 {
@@ -128,6 +128,12 @@ namespace ALFINapp.Datos.DAO.Derivaciones
         {
             try
             {
+                var outputParam = new SqlParameter
+                {
+                    ParameterName = "@id_derivacion",
+                    SqlDbType = SqlDbType.Int,
+                    Direction = ParameterDirection.Output
+                };
                 var parametros = new[]
                 {
                     new SqlParameter("@agencia_derivacion", derivacion.NombreAgencia),
@@ -135,16 +141,20 @@ namespace ALFINapp.Datos.DAO.Derivaciones
                     new SqlParameter("@telefono", derivacion.TelefonoCliente),
                     new SqlParameter("@id_base", idBase),
                     new SqlParameter("@id_usuario", idUsuario),
-                    new SqlParameter("@nombre_completos", derivacion.NombreCliente ?? string.Empty)
+                    new SqlParameter("@nombre_completos", derivacion.NombreCliente ?? string.Empty),
+                    outputParam
                 };
-                var generarDerivacion = await _context.Database.ExecuteSqlRawAsync(
-                    "EXEC SP_derivacion_insertar_derivacion_test_N @agencia_derivacion, @fecha_visita, @telefono, @id_base, @id_usuario, @nombre_completos",
+                await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC SP_derivacion_insertar_derivacion_nuevo_metodo @agencia_derivacion, @fecha_visita, @telefono, @id_base, @id_usuario, @nombre_completos, @id_derivacion OUTPUT",
                     parametros);
-                if (generarDerivacion <= 0)
+
+                var id = (int)(outputParam.Value ?? 0);
+                if (id <= 0)
                 {
                     return (false, "Error al subir la derivación", 0);
                 }
-                return (true, "Derivacion subida correctamente", generarDerivacion);
+
+                return (true, "Derivación subida correctamente", id);
             }
             catch (System.Exception ex)
             {

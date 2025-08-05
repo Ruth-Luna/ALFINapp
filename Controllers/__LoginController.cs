@@ -2,10 +2,6 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Services;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
-using System.Security.Claims;
 using ALFINapp.Datos;
 
 namespace ALFINapp.API.Controllers;
