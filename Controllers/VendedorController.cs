@@ -89,7 +89,6 @@ namespace ALFINapp.API.Controllers
             return View("Main", dataInicio);
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AgregarCliente(BaseCliente model)
@@ -408,7 +407,10 @@ namespace ALFINapp.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GuardarTipificacionesNumPersonales(List<DtoVTipificarCliente> tipificaciones, int IdAsignacionCliente)
+        public async Task<IActionResult> GuardarTipificacionesNumPersonales(
+            List<DtoVTipificarCliente> tipificaciones,
+            int IdAsignacionCliente,
+            string telefonos_traidos_de = "")
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)

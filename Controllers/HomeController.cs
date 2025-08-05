@@ -163,15 +163,17 @@ public class HomeController : Controller
     [HttpPost]
     public async Task<IActionResult> Login(string usuario, string password)
     {
-        var usuarioValido = _daLogin.ValidarUsuario(usuario, password);
+        var verusuario = _daLogin.ValidarUsuario(usuario, password);
 
-        if (usuarioValido == null || usuarioValido.Resultado == 0)
+        if (verusuario.Resultado == false || verusuario.usuario == null)
         {
             ViewData["message"] = "Credenciales incorrectas";
             return RedirectToAction("Index", "Home");
         }
 
-        if (usuarioValido.Resultado == -1 || usuarioValido.Estado?.ToUpper() == "INACTIVO")
+        var usuarioValido = verusuario.usuario;
+
+        if (usuarioValido.Estado?.ToUpper() == "INACTIVO")
         {
             ViewData["message"] = "El usuario se encuentra inactivo. Por favor contacte con el administrador.";
             return RedirectToAction("Index", "Home");
