@@ -162,6 +162,7 @@ public class HomeController : Controller
     [HttpPost]
     public async Task<IActionResult> Login(string usuario, string password)
     {
+        usuario = usuario?.ToUpper().Trim();
         var usuarioValido = _daLogin.ValidarUsuario(usuario, password);
 
         if (usuarioValido == null || usuarioValido.Resultado == 0)
