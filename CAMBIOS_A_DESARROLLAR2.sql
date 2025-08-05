@@ -96,3 +96,8 @@ SELECT TOP 1
     *
 FROM base_clientes
 WHERE dni = '987654321';
+
+
+UPDATE correos
+SET correo = 'santiagovl0308@outlook.es'
+WHERE id = 12
