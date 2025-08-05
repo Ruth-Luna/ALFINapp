@@ -159,15 +159,15 @@ public class HomeController : Controller
         return RedirectToAction("Index", "Home");
     }
 
-
     [HttpPost]
     public async Task<IActionResult> Login(string usuario, string password)
     {
+        usuario = usuario?.ToUpper().Trim();
         var verusuario = _daLogin.ValidarUsuario(usuario, password);
 
         if (verusuario.Resultado == false || verusuario.usuario == null)
         {
-            ViewData["message"] = "Credenciales incorrectas";
+            TempData["message"] = "Credenciales incorrectas";
             return RedirectToAction("Index", "Home");
         }
 
@@ -175,7 +175,7 @@ public class HomeController : Controller
 
         if (usuarioValido.Estado?.ToUpper() == "INACTIVO")
         {
-            ViewData["message"] = "El usuario se encuentra inactivo. Por favor contacte con el administrador.";
+            TempData["message"] = "El usuario se encuentra inactivo. Por favor contacte con el administrador.";
             return RedirectToAction("Index", "Home");
         }
 
@@ -320,13 +320,13 @@ public class HomeController : Controller
                 Subject = asunto,
                 Body = cuerpo,
                 IsBodyHtml = true,
-                From = new MailAddress("renzo.tinajeros960@gmail.com", "Nombre de tu sistema")
+                From = new MailAddress("weba365.no.reply@gmail.com", "Nombre de tu sistema")
             };
             mensaje.To.Add(correoDestino);
 
             using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
             {
-                smtp.Credentials = new NetworkCredential("renzo.tinajeros960@gmail.com", "iehs umzt rqgl upqx");
+                smtp.Credentials = new NetworkCredential("weba365.no.reply@gmail.com", "rowv mgri xbgc eibj");
                 smtp.EnableSsl = true;
                 smtp.Send(mensaje);
             }
