@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace ALFINapp.Infrastructure.Persistence.Models;
 
@@ -41,7 +38,8 @@ public partial class Usuario
     public string? RESPONSABLESUP { get; set; }
     [Column("REGION")]
     public string? REGION { get; set; }
-    public string usuario { get; set; } = string.Empty;
+    [Column("usuario")]
+    public string? usuario { get; set; } = string.Empty;
     [Column("contraseña")]
     public string? contraseña { get; set; }
     [Column("NOMBRE_CAMPAÑA")]
@@ -60,5 +58,4 @@ public partial class Usuario
     public DateTime? FechaCese { get; set; }
     [Column("correo")]
     public string? Correo { get; set; }
-    public int Resultado { get; set; }
 }

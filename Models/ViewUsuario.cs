@@ -20,13 +20,14 @@ namespace ALFINapp.API.Models
         public string Provincia { get; set; } = string.Empty;
         public string Distrito { get; set; } = string.Empty;
         public string Telefono { get; set; } = string.Empty;
-        public DateTime FechaRegistro { get; set; } = DateTime.MinValue;
+        public DateTime? FechaRegistro { get; set; } = DateTime.MinValue;
         public string Estado { get; set; } = string.Empty;
         public int IDUSUARIOSUP { get; set; } = 0;
         public string RESPONSABLESUP { get; set; } = string.Empty;
         public string REGION { get; set; } = string.Empty;
         public string contraseña { get; set; } = string.Empty;
         public string NOMBRECAMPAÑA { get; set; } = string.Empty;
+        public string? NOMBRECAMPANIA { get; set; } = string.Empty;
         public int IdRol { get; set; } = 0;
         public DateTime? FechaActualizacion { get; set; } = null;
         public string TipoDocumento { get; set; } = string.Empty;
@@ -36,8 +37,8 @@ namespace ALFINapp.API.Models
         public string Correo { get; set; } = string.Empty;
         public string Cci { get; set; } = string.Empty;
 
-        public int Resultado { get; set; }
-        public string Mensaje { get; set; }
+        public int? Resultado { get; set; } = null;
+        public string Mensaje { get; set; } = string.Empty;
       
         public ViewUsuario() { }
 
@@ -57,7 +58,7 @@ namespace ALFINapp.API.Models
             RESPONSABLESUP = model.RESPONSABLESUP ?? string.Empty;
             REGION = model.REGION ?? string.Empty;
             contraseña = model.contraseña ?? string.Empty;
-            NOMBRECAMPAÑA = model.NOMBRECAMPANIA ?? string.Empty;
+            NOMBRECAMPANIA = model.NOMBRECAMPANIA ?? string.Empty;
             IdRol = model.IdRol ?? 0;
             FechaActualizacion = model.FechaActualizacion ?? DateTime.MinValue;
             TipoDocumento = model.TipoDocumento ?? string.Empty;
@@ -79,9 +80,9 @@ namespace ALFINapp.API.Models
     public class ViewCorreoRecuperacion
     {
         public int IdUsuario { get; set; }
-        public string Usuario { get; set; }
-        public string Correo { get; set; }
-        public string Codigo { get; set; }
+        public string Usuario { get; set; } = string.Empty;
+        public string Correo { get; set; } = string.Empty;
+        public string Codigo { get; set; } = string.Empty;
         public bool? Estado { get; set; }
         public int IdSolicitud { get; set; }
         public DateTime FechaExpiracion { get; set; }

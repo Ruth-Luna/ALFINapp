@@ -87,21 +87,20 @@ namespace ALFINapp.Datos
                                 IdUsuario = Convert.ToInt32(dr["id_usuario"]),
                                 Dni = dr["dni"].ToString() ?? string.Empty,
                                 TipoDocumento = dr["tipo_doc"].ToString() ?? string.Empty,
-                                Nombres = dr["Nombres"].ToString(),
-                                Apellido_Paterno = dr["Apellido_Paterno"].ToString(),
-                                Apellido_Materno = dr["Apellido_Materno"].ToString(),
-                                Usuario = dr["Usuario"].ToString(),
+                                Nombres = dr["Nombres"].ToString() ?? string.Empty,
+                                Apellido_Paterno = dr["Apellido_Paterno"].ToString() ?? string.Empty,
+                                Apellido_Materno = dr["Apellido_Materno"].ToString() ?? string.Empty,
+                                Usuario = dr["Usuario"].ToString() ?? string.Empty,
                                 Contrasenia = dr["contraseñaH"] == DBNull.Value
                                 ? null
                                 : System.Text.Encoding.Unicode.GetString((byte[])dr["contraseñaH"]),
                                 Correo = dr["correo"].ToString() ?? string.Empty,
                                 NombresCompletos = dr["Nombre_Completo"].ToString() ?? string.Empty,
-                                NOMBRECAMPAÑA = dr["NOMBRE_CAMPAÑA"].ToString() ?? string.Empty,
+                                NOMBRECAMPANIA = dr["NOMBRE_CAMPAÑA"].ToString() ?? string.Empty,
                                 RESPONSABLESUP = dr["RESPONSABLE_SUP"].ToString() ?? string.Empty,
                                 REGION = dr["region"].ToString() ?? string.Empty,
                                 Rol = dr["rol"].ToString() ?? string.Empty,
                                 Estado = dr["estado"].ToString() ?? string.Empty,
-                                
                                 FechaActualizacion = dr["fecha_actualizacion"] == DBNull.Value ? null : Convert.ToDateTime(dr["fecha_actualizacion"]),
                                 FechaInicio = dr["fecha_inicio"] == DBNull.Value ? null : Convert.ToDateTime(dr["fecha_inicio"]),
                                 FechaCese = dr["fecha_cese"] == DBNull.Value ? null : Convert.ToDateTime(dr["fecha_cese"]),
@@ -135,7 +134,7 @@ namespace ALFINapp.Datos
                             ? (object)System.Text.Encoding.Unicode.GetBytes(usuario.Contrasenia)
                             : DBNull.Value);
                         cmd.Parameters.AddWithValue("@Nombres", usuario.Nombres != null ? usuario.Nombres : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@NOMBRE_CAMPANIA", usuario.NOMBRECAMPAÑA != null ? usuario.NOMBRECAMPAÑA : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@NOMBRE_CAMPANIA", usuario.NOMBRECAMPANIA != null ? usuario.NOMBRECAMPANIA : DBNull.Value);
                         cmd.Parameters.AddWithValue("@rol", usuario.Rol != null ? usuario.Rol : DBNull.Value);
                         cmd.Parameters.AddWithValue("@region", usuario.REGION != null ? usuario.REGION : DBNull.Value);
                         cmd.Parameters.AddWithValue("@correo", usuario.Correo != null ? usuario.Correo : DBNull.Value);

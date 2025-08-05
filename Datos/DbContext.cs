@@ -1,3 +1,4 @@
+using ALFINapp.Datos.Persistence.Procedures;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Persistence.Procedures;
 using Microsoft.EntityFrameworkCore;
@@ -65,7 +66,7 @@ public class MDbContext : DbContext
     public DbSet<GestionConseguirTodasLasAsignacionesPorListas> gestion_conseguir_todas_las_asignaciones_por_listas { get; set; }
     public DbSet<GestionConseguirODescargarAsignacionDeLeadsDeSup> gestion_conseguir_o_descargar_asignacion_de_leads_de_sup { get; set; }
     public DbSet<DerivacionConseguirODescargarAsignacionConDerivacionesDeSup> derivacion_conseguir_o_descargar_asignacion_con_derivaciones_de_sup { get; set; }
-    public DbSet<Usuario> obtener_Usuario { get; set; }
+    public DbSet<ObtenerUsuario> obtener_Usuario { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -171,5 +172,13 @@ public class MDbContext : DbContext
         modelBuilder.Entity<DerivacionConseguirODescargarAsignacionConDerivacionesDeSup>()
             .HasNoKey()
             .ToView(null);
+        modelBuilder.Entity<ObtenerUsuario>()
+            .HasNoKey()
+            .ToView(null);
+    }
+
+    internal object FromSqlRaw(string v, string telefono, int tipificacionId, DateTime? fechaVisita, string? agenciaAsignada)
+    {
+        throw new NotImplementedException();
     }
 }

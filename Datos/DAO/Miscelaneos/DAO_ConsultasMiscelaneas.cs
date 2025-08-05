@@ -115,7 +115,7 @@ namespace ALFINapp.Datos.DAO.Miscelaneos
                 return (false, "Ha ocurrido un error al obtener las agencias.", new List<AgenciasDisponiblesDTO>());
             }
         }
-        public async Task<(bool IsSuccess, string Message, List<(int idtip,string nombretip)> Data)> GetTipificaciones()
+        public async Task<(bool IsSuccess, string Message, List<(int idtip, string nombretip)> Data)> GetTipificaciones()
         {
             try
             {
@@ -124,12 +124,27 @@ namespace ALFINapp.Datos.DAO.Miscelaneos
                 {
                     return (false, "No se pudo encontrar tipificaciones en la base de datos", new List<(int idtip, string nombretip)>());
                 }
-                return (true, "Se han encontrado las tipificaciones en la base de datos", 
+                return (true, "Se han encontrado las tipificaciones en la base de datos",
                     tipificaciones.Select(t => (t.IdTipificacion, t.DescripcionTipificacion)).ToList());
             }
             catch (System.Exception ex)
             {
                 return (false, ex.Message, new List<(int idtip, string nombretip)>());
+            }
+        }
+        public async Task<BaseCliente?> getBase(int idBase)
+        {
+            try
+            {
+                var basecliente = await _context.base_clientes
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.IdBase == idBase);
+                return basecliente;
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
             }
         }
     }

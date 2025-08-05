@@ -115,18 +115,20 @@ function enviarDerivacion(agenciaComercial, FechaVisita, Telefono, idBase, typeT
             Swal.showLoading(); // Activa la animación de carga
         }
     });
+
+    const dto = {
+        agencia_comercial: agenciaComercial,
+        fecha_visita: FechaVisita,
+        telefono: Telefono,
+        id_base: idBase,
+        type: typeTip,
+        id_asignacion: Asignacion,
+        nombres_completos: NombresCompletos || ''
+    };
     $.ajax({
         url: '/Tipificaciones/GenerarDerivacion',
         type: 'POST',
-        data: {
-            agenciaComercial: agenciaComercial,
-            FechaVisita: FechaVisita,
-            Telefono: Telefono,
-            idBase: idBase,
-            type: typeTip,
-            idAsignacion: Asignacion,
-            NombresCompletos: NombresCompletos
-        },
+        data: dto,
         success: function (result) {
             Swal.close();
             if (result.success === true) {
@@ -138,8 +140,7 @@ function enviarDerivacion(agenciaComercial, FechaVisita, Telefono, idBase, typeT
                 }).then(() => {
                     location.reload();
                 });
-            }
-            else {
+            } else {
                 Swal.fire({
                     title: 'Error en la operación. Lea con cuidado',
                     text: result.message,

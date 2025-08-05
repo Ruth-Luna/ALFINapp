@@ -68,8 +68,8 @@ namespace ALFINapp.Application.UseCases.Derivacion
                 {
                     Telefono = Telefono,
                     TipificacionId = 2,
-                    FechaVisita = FechaVisita,
-                    AgenciaAsignada = agenciaComercial
+                    // FechaVisita = FechaVisita,
+                    // AgenciaAsignada = agenciaComercial
                 };
                 createTipificacion.Add(tipificacion);
                 var uploadTipificacion = await _useCaseUploadTipificaciones.execute(

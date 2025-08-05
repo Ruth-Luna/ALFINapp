@@ -163,22 +163,24 @@ public class HomeController : Controller
     public async Task<IActionResult> Login(string usuario, string password)
     {
         usuario = usuario?.ToUpper().Trim();
-        var usuarioValido = _daLogin.ValidarUsuario(usuario, password);
+        var verusuario = _daLogin.ValidarUsuario(usuario, password);
 
-        if (usuarioValido == null || usuarioValido.Resultado == 0)
+        if (verusuario.Resultado == false || verusuario.usuario == null)
         {
             TempData["message"] = "Credenciales incorrectas";
             return RedirectToAction("Index", "Home");
         }
 
-        if (usuarioValido.Resultado == -1 || usuarioValido.Estado?.ToUpper() == "INACTIVO")
+        var usuarioValido = verusuario.usuario;
+
+        if (usuarioValido.Estado?.ToUpper() == "INACTIVO")
         {
             TempData["message"] = "El usuario se encuentra inactivo. Por favor contacte con el administrador.";
             return RedirectToAction("Index", "Home");
         }
 
         HttpContext.Session.SetInt32("UsuarioId", usuarioValido.IdUsuario);
-        HttpContext.Session.SetInt32("RolUser", usuarioValido.IdRol ?? 3);
+        HttpContext.Session.SetInt32("RolUser", usuarioValido.IdRol != null ? usuarioValido.IdRol.Value : throw new Exception("El rol del usuario no está definido. Comuníquese con su Supervisor."));
         HttpContext.Session.SetInt32("ActivarCambio", 1);
         HttpContext.Session.SetInt32("UsuarioId", usuario != null ? usuarioValido.IdUsuario : throw new Exception("El usuario original no está definido. Comuníquese con su Supervisor."));
         HttpContext.Session.SetInt32("RolUser", usuario != null ? usuarioValido.IdRol ?? 3 : throw new Exception("El rol del usuario original no está definido. Comuníquese con su Supervisor."));

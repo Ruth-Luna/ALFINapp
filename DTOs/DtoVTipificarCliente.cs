@@ -2,9 +2,8 @@ namespace ALFINapp.API.DTOs
 {
     public class DtoVTipificarCliente
     {
-        public string? Telefono { get; set; }
+        public string Telefono { get; set; } = string.Empty;
         public int TipificacionId { get; set; }
-        public DateTime? FechaVisita { get; set; }
-        public string? AgenciaAsignada { get; set; }
+        public int? idderivacion { get; set; }
     }
 }

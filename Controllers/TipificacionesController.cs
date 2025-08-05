@@ -4,7 +4,9 @@ using ALFINapp.API.Filters;
 using ALFINapp.API.DTOs;
 using ALFINapp.Application.Interfaces.Tipificacion;
 using ALFINapp.Application.Interfaces.Derivacion;
-using ALFINapp.Datos.DAO.Tipificaciones; // Replace with the correct namespace where DBServicesGeneral is defined
+using ALFINapp.Datos.DAO.Tipificaciones;
+using ALFINapp.Datos.DAO.Derivaciones;
+using ALFINapp.DTOs; // Replace with the correct namespace where DBServicesGeneral is defined
 
 namespace ALFINapp.API.Controllers
 {
@@ -19,13 +21,15 @@ namespace ALFINapp.API.Controllers
         private readonly IUseCaseUploadTipificaciones _useCaseUploadTipificaciones;
         private readonly IUseCaseUploadDerivacion _useCaseUploadDerivacion;
         private readonly DAO_GestionTipificacionesVista _dao_gestionTipificacionesVista;
+        private readonly DAO_UploadDerivacion _dao_uploadDerivacion;
         public TipificacionesController(DBServicesGeneral dbServicesGeneral,
             DBServicesTipificaciones dbServicesTipificaciones,
             MDbContext context,
             IUseCaseUploadTipificaciones useCaseUploadTipificaciones,
             IUseCaseUploadDerivacion useCaseUploadDerivacion,
             DBServicesConsultasClientes dbServicesConsultasClientes,
-            DAO_GestionTipificacionesVista dao_gestionTipificacionesVista)
+            DAO_GestionTipificacionesVista dao_gestionTipificacionesVista,
+            DAO_UploadDerivacion dao_uploadDerivacion)
         {
             _dbServicesGeneral = dbServicesGeneral;
             _dbServicesTipificaciones = dbServicesTipificaciones;
@@ -34,42 +38,32 @@ namespace ALFINapp.API.Controllers
             _useCaseUploadDerivacion = useCaseUploadDerivacion;
             _dbServicesConsultasClientes = dbServicesConsultasClientes;
             _dao_gestionTipificacionesVista = dao_gestionTipificacionesVista;
+            _dao_uploadDerivacion = dao_uploadDerivacion;
         }
 
         [HttpPost]
         public async Task<IActionResult> GenerarDerivacion(
-            string agenciaComercial,
-            DateTime FechaVisita,
-            string Telefono,
-            int idBase,
-            int type,
-            int idAsignacion,
-            string? NombresCompletos)
+            DtoVUploadDerivacion dto)
         {
             var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)
             {
                 return Json(new { success = false, message = "No se consiguio el id de la sesion, inicie sesion nuevamente." });
             }
-            if (agenciaComercial == null || FechaVisita == DateTime.MinValue || Telefono == null)
+            if (dto.agencia_comercial == null || dto.fecha_visita == DateTime.MinValue || dto.telefono == null)
             {
                 return Json(new { success = false, message = "Debe llenar todos los campos" });
             }
 
-            var executeUseCase = await _useCaseUploadDerivacion.Execute(
-                agenciaComercial,
-                FechaVisita,
-                Telefono,
-                idBase,
-                usuarioId.Value,
-                idAsignacion,
-                type,
-                NombresCompletos);
-            if (!executeUseCase.success)
+            dto.id_usuario = usuarioId.Value;
+
+            var estadoderivacion = await _dao_uploadDerivacion.UploadDerivacion(dto);
+            if (!estadoderivacion.success)
             {
-                return Json(new { success = false, message = executeUseCase.message });
+                return Json(new { success = false, message = estadoderivacion.message });
             }
-            return Json(new { success = true, message = executeUseCase.message });
+            
+            return Json(new { success = true, message = estadoderivacion.message });
         }
 
         [HttpPost]

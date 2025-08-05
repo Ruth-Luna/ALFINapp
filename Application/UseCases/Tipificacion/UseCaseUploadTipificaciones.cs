@@ -75,20 +75,12 @@ namespace ALFINapp.Application.UseCases.Tipificacion
                         return (false, "No modifique la entrada de los telefonos manualmente.");
                     }
 
-                    if (tipificacion.FechaVisita == null && tipificacion.TipificacionId == 2)
+                    if (tipificacion.idderivacion == null && tipificacion.TipificacionId == 2)
                     {
                         return (false, "Debe ingresar una fecha de derivación para la tipificación CLIENTE ACEPTO OFERTA DERIVACION (Se obviaron las inserciones).");
                     }
                     if (tipificacion.TipificacionId == 2)
                     {
-                        if (tipificacion.FechaVisita == null)
-                        {
-                            return (false, "La fecha de derivación no puede estar vacia.");
-                        }
-                        if (tipificacion.AgenciaAsignada == null)
-                        {
-                            return (false, "La agencia asignada no puede estar vacia.");
-                        }
                         var verificarDerivacion = await _repositoryDerivaciones
                             .getDerivaciones(ClienteAsignado.IdCliente, usuarioInfo.Dni ?? "");
                         if (verificarDerivacion == null || verificarDerivacion.Count() == 0)
@@ -144,7 +136,7 @@ namespace ALFINapp.Application.UseCases.Tipificacion
                         FechaTipificacion = DateTime.Now,
                         Origen = "nuevo",
                         TelefonoTipificado = tipificacion.Telefono,
-                        DerivacionFecha = tipificacion.FechaVisita
+                        DerivacionFecha = DateTime.Now
                     };
 
                     var resultGuardarClienteTipificado = await _repositoryTipificaciones.UploadTipificacion(nuevaTipificacion);

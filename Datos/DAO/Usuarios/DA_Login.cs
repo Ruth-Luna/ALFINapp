@@ -9,7 +9,7 @@ namespace ALFINapp.Datos
 {
     public class DA_Login
     {
-        public Usuario ValidarUsuario(string usuario, string password)
+        public (bool Resultado, Usuario usuario) ValidarUsuario(string usuario, string password)
         {
             try
             {
@@ -33,12 +33,12 @@ namespace ALFINapp.Datos
                                 if (resultado == -1)
                                 {
                                     Console.WriteLine("El usuario está inactivo.");
-                                    return new Usuario { Resultado = -1 };
+                                    return (false, new Usuario());
                                 }
 
                                 if (resultado == 1)
                                 {
-                                    return new Usuario
+                                    return (true, new Usuario
                                     {
                                         IdUsuario = Convert.ToInt32(dr["id_usuario"]),
                                         usuario = dr["usuario"].ToString() ?? string.Empty,
@@ -46,12 +46,12 @@ namespace ALFINapp.Datos
                                         Nombres = dr["nombres"].ToString(),
                                         Apellido_Paterno = dr["apellido_paterno"].ToString(),
                                         Apellido_Materno = dr["apellido_materno"].ToString(),
-                                        Resultado = 1,
+
                                         Estado = dr["estado"].ToString(),
                                         IdRol = Convert.ToInt32(dr["id_rol"]),
-                                    };
+                                    });
                                 }
-                                return new Usuario { Resultado = 0 };
+                                return (false, new Usuario());
                             }
                         }
                     }
@@ -62,7 +62,7 @@ namespace ALFINapp.Datos
                 Console.WriteLine("Error al validar usuario: " + ex.Message);
             }
 
-            return new Usuario { Resultado = 0 };
+            return (false, new Usuario());
         }
 
         public ViewUsuario ValidarCorreo_Usuario(string usuario, string correo)
