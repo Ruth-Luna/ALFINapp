@@ -57,12 +57,13 @@ namespace ALFINapp.API.Controllers
 
             dto.id_usuario = usuarioId.Value;
 
-            var executeUseCase = await _dao_uploadDerivacion.UploadDerivacion(dto);
-            if (!executeUseCase.success)
+            var estadoderivacion = await _dao_uploadDerivacion.UploadDerivacion(dto);
+            if (!estadoderivacion.success)
             {
-                return Json(new { success = false, message = executeUseCase.message });
+                return Json(new { success = false, message = estadoderivacion.message });
             }
-            return Json(new { success = true, message = executeUseCase.message });
+            
+            return Json(new { success = true, message = estadoderivacion.message });
         }
 
         [HttpPost]

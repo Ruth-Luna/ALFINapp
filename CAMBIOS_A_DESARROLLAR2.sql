@@ -94,4 +94,5 @@ GO
 
 SELECT TOP 1
     *
-FROM clientes_enriquecidos
+FROM base_clientes
+WHERE dni = '987654321';

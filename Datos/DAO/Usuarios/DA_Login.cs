@@ -46,7 +46,7 @@ namespace ALFINapp.Datos
                                         Nombres = dr["nombres"].ToString(),
                                         Apellido_Paterno = dr["apellido_paterno"].ToString(),
                                         Apellido_Materno = dr["apellido_materno"].ToString(),
-                                        
+
                                         Estado = dr["estado"].ToString(),
                                         IdRol = Convert.ToInt32(dr["id_rol"]),
                                     });

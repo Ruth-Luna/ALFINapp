@@ -28,16 +28,23 @@ namespace ALFINapp.Datos.DAO.Derivaciones
         {
             try
             {
-                var verificacion = await verDisponibilidadDerivacion(dto.id_base);
                 if (dto.id_usuario == null)
                 {
                     return (false, "El id de usuario no puede estar vacio.");
                 }
+                var verificacion = await verDisponibilidadDerivacion(dto.id_base);
 
                 if (!verificacion.success)
                 {
                     return (false, verificacion.message);
                 }
+                
+                var getCliente = await _daoConsultasMiscelaneas.getBase(dto.id_base);
+                if (getCliente == null)
+                {
+                    return (false, "No se encontró el cliente");
+                }
+
                 var derivacion = new DerivacionesAsesores
                 {
                     FechaDerivacion = DateTime.Now,
@@ -45,11 +52,7 @@ namespace ALFINapp.Datos.DAO.Derivaciones
                     TelefonoCliente = dto.telefono,
                     NombreAgencia = dto.agencia_comercial
                 };
-                var getCliente = await _daoConsultasMiscelaneas.getBase(dto.id_base);
-                if (getCliente == null)
-                {
-                    return (false, "No se encontró el cliente");
-                }
+
                 if (!string.IsNullOrEmpty(dto.nombres_completos))
                 {
                     derivacion.NombreCliente = dto.nombres_completos;
