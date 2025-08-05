@@ -1,4 +1,6 @@
 ﻿
+let gridOptions;
+
 document.addEventListener('DOMContentLoaded', function () {
     ListarUsuarioGerente();
     ListarRoles();
@@ -28,66 +30,91 @@ function ListarUsuarioGerente(id = null) {
         url: '/Usuarios/ListarUsuarioAdministrador?id=' + (id ?? ''),
         type: 'GET',
         success: function (data) {
-            console.log(data)
-            const tbody = $('#clientesTable tbody');
-            tbody.empty();
-            const filaFiltro = `
-                        <tr>
-                            <td></td>
-                            <td>
-                                <div class="d-flex justify-content-center">
-                                    <button class="btn btn-warning btn-sm" onclick="sortTable('clientesTable', 1, 'string')" data-sort-ignore>
-                                        <i class="bi bi-filter"></i>
-                                    </button>
-                                </div>
-                            </td>
-                            <td colspan="8"></td>
-                        </tr>
-                    `;
-            tbody.append(filaFiltro);
-            $.each(data, function (i, usuario) {
+            const rowData = data.map(usuario => ({
+                dni: usuario.dni ?? '',
+                usuarioNombre: `${usuario.nombres ?? ''} ${usuario.apellido_Paterno ?? ''} ${usuario.apellido_Materno ?? ''}`,
+                rol: usuario.rol ?? '',
+                supervisor: usuario.responsablesup ?? 'EL USUARIO NO TIENE SUPERVISOR',
+                campaña: usuario.nombrecampaña ?? '',
+                correo: usuario.correo ?? '',
+                telefono: usuario.telefono ?? '',
+                fechaInicio: usuario.fechaInicio ? FechaFormat(usuario.fechaInicio) : '',
+                fechaCese: usuario.fechaCese ? FechaFormat(usuario.fechaCese) : '',
+                estado: usuario.estado ?? '',
+                fechaActualizacion: usuario.fechaActualizacion ? FechaFormat(usuario.fechaActualizacion) : '',
+                idUsuario: usuario.idUsuario // para acciones
+            }));
 
-                const row = `
-                      
-                        <tr>
-                            <td>
-                                <div class="d-flex flex-column align-items-center">
-                                    <div class="d-flex justify-content-center gap-2 mb-2">
-                                       <div class="form-check form-switch">
-                                            <input class="form-check-input " style="cursor: pointer;" type="checkbox" role="switch"
-                                                ${usuario.estado === 'ACTIVO' ? 'checked' : ''} 
-                                                onchange="CambiarEstadoUsuario(this.checked ? 1 : 0, '${usuario.idUsuario}')">
-                                        </div>
-                                        <button class="btn btn-primary btn-sm" style="cursor: pointer;" onclick="ListarUsuarioxID('${usuario.idUsuario}')">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                             <td>
-                                <div class="w-100 text-center">
-                                    <span class="badge rounded-pill w-100 ${usuario.estado === 'ACTIVO' ? 'bg-success' : 'bg-danger'}">
-                                        ${usuario.estado ?? ''}
-                                    </span>
-                                </div>
-                            </td>
-                            <td>${usuario.dni ?? ''}</td>
-                            <td>${usuario.nombresCompletos ?? ''}</td>
-                            <td>${usuario.responsablesup ? usuario.responsablesup : 'EL USUARIO NO TIENE SUPERVISOR'}</td>
-                            <td>${usuario.nombrecampaña ?? ''}</td>
-                            <td>${usuario.rol ?? ''}</td>
-                            <td>${usuario.fechaActualizacion ? FechaFormat(usuario.fechaActualizacion) : ''}</td>
-                            <td>${usuario.fechaInicio ? FechaFormat(usuario.fechaInicio) : ''}</td>
-                            <td>${usuario.fechaCese ? FechaFormat(usuario.fechaCese) : ''}</td>
-                        </tr>`;
-                tbody.append(row);
-            });
+            if (gridOptions.api) {
+                gridOptions.api.setRowData(rowData);
+            }
         },
         error: function () {
             alert('Error al cargar la lista de usuarios');
         }
     });
 }
+
+// Inicializa AG Grid al cargar
+document.addEventListener('DOMContentLoaded', function () {
+    const columnDefs = [
+        { headerName: "DNI", field: "dni" },
+        { headerName: "Usuario", field: "usuarioNombre" },
+        { headerName: "Rol", field: "rol" },
+        { headerName: "Supervisor Asignado", field: "supervisor" },
+        { headerName: "Campaña", field: "campaña" },
+        { headerName: "Correo", field: "correo" },
+        { headerName: "Teléfono", field: "telefono" },
+        { headerName: "Fecha Inicio", field: "fechaInicio" },
+        { headerName: "Fecha Cese", field: "fechaCese" },
+        {
+            headerName: "Estado",
+            field: "estado",
+            cellRenderer: (params) => {
+                const clase = params.value === 'ACTIVO' ? 'bg-success' : 'bg-danger';
+                return `<span class="badge rounded-pill w-100 ${clase}">${params.value}</span>`;
+            }
+        },
+        {
+            headerName: "Acción",
+            field: "idUsuario",
+            cellRenderer: (params) => {
+                const checked = params.data.estado === 'ACTIVO' ? 'checked' : '';
+                return `
+            <div class="d-flex flex-column align-items-center">
+              <div class="d-flex justify-content-center gap-2 mb-2">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" ${checked} 
+                         onchange="CambiarEstadoUsuario(this.checked ? 1 : 0, '${params.value}')">
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="ListarUsuarioxID('${params.value}')">
+                  <i class="bi bi-pencil"></i>
+                </button>
+              </div>
+            </div>
+          `;
+            }
+        }
+    ];
+
+    gridOptions = {
+        columnDefs: columnDefs,
+        rowData: [],
+        pagination: true,
+        paginationPageSize: 10,
+        defaultColDef: {
+            sortable: true,
+            filter: true,
+            resizable: true
+        },
+        domLayout: 'autoHeight'
+    };
+
+    new agGrid.Grid(document.getElementById('clientesGrid'), gridOptions);
+
+    // Llamar por primera vez
+    ListarUsuarioGerente();
+});
 
 function CambiarEstadoUsuario(estado, idUsuario) {
 
