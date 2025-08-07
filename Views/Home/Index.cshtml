@@ -116,17 +116,29 @@
             <div class="modal-dialog modal-dialog-centered modal-md">
             <div class="modal-content p-4 rounded-4 shadow-sm">
               <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold">🔐 Recuperar acceso</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
               </div>
 
               <div class="modal-body">
                 <!-- Paso 1: Correo y Usuario -->
                 <div id="step1">
-                  <p class="mb-4 text-muted small">
-                    Ingresa tu <strong>correo electrónico</strong> y <strong>nombre de usuario</strong>.
-                    Si coinciden, te enviaremos un código de verificación de 6 dígitos.
-                  </p>
+
+                <div class="icon-circle-wrapper mb-4">
+                    <div class="icon-circle-outer">
+                        <div class="icon-circle-inner">
+                            🔑
+                        </div>
+                    </div>
+                </div>
+
+                  <h2 class="modal-title fw-bold text-center">Recuperar acceso</h2>
+
+                    <div class="alert alert-primary small rounded-3" role="alert">
+                        <p class="mb-0 text-muted">
+                            Ingresa tu <strong>correo electrónico</strong> y <strong>nombre de usuario</strong> para recibir un código de verificación.
+                        </p>
+                    </div>
+
 
                   <div class="mb-3">
                     <label for="usuarioRecuperacion" class="form-label fw-semibold">Usuario:</label>
@@ -144,31 +156,51 @@
                 </div>
 
                 <!-- Paso 2: Código OTP -->
-                <div id="step2" class="d-none">
+                <div id="step2" >
+
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <button class="btn btn-link p-0 border-0" id="btnRegresarStep1" style="font-size: 1.8rem; color: #333;">
                             <i class="bi bi-arrow-left-circle"></i>
                         </button>
-                        <a href="#" class="text-decoration-none fw-semibold" style="font-size: 0.9rem;" id="btnSolicitarNuevoCodigo">
-                            Solicitar nuevo código
-                        </a>
+
                     </div>
+                    <div class="icon-circle-wrapper mb-4">
+                        <div class="icon-circle-outer">
+                            <div class="icon-circle-inner">
+                                📧
+                            </div>
+                        </div>
+                    </div>
+                    <h2 class="modal-title fw-bold text-center">Verifica tu correo</h2>
+
 
                     <div id="alertaCodigo" class="alert alert-primary d-none small rounded-3" role="alert">
-                        Se envió un código de 6 dígitos a tu correo electrónico. Tiene una vigencia de <strong>15 minutos</strong>.
-                    </div>
+                                Se envió un código de <strong>6 dígitos</strong> a tu <strong>correo electrónico</strong>.
+                                Si no lo ves, revisa la <strong>carpeta de spam</strong> o <strong>no deseados</strong> y márcalo como <strong>correo seguro</strong>.
+                            </div>
 
                     <p class="text-muted small mb-3">
                         Ingresa el <strong>código de verificación</strong> que recibiste:
                     </p>
 
-                    <div id="otpInputs" class="d-flex justify-content-between gap-2 mb-4">
+                    <div id="otpInputs" class="d-flex justify-content-between gap-1 mb-4">
                         <input class="otp-input form-control text-center shadow-sm rounded border-secondary" type="text" maxlength="1">
                         <input class="otp-input form-control text-center shadow-sm rounded border-secondary" type="text" maxlength="1">
                         <input class="otp-input form-control text-center shadow-sm rounded border-secondary" type="text" maxlength="1">
                         <input class="otp-input form-control text-center shadow-sm rounded border-secondary" type="text" maxlength="1">
                         <input class="otp-input form-control text-center shadow-sm rounded border-secondary" type="text" maxlength="1">
                         <input class="otp-input form-control text-center shadow-sm rounded border-secondary" type="text" maxlength="1">
+                    </div>
+                    <div class="text-center mb-3">
+                      <a class="fw-semibold text-decoration-none" style="font-size: 1rem;" id="tiempoExpiracion">
+                        --
+                      </a>
+                    </div>
+          
+                    <div class="text-center mb-3">
+                      <a href="#" class="fw-semibold text-decoration-underline" style="font-size: 1rem;" id="btnSolicitarNuevoCodigo">
+                        Solicitar nuevo código
+                      </a>
                     </div>
 
                     <!-- Mensaje de error (si aplica) -->
@@ -179,23 +211,42 @@
                     </button>
                 </div>
                 <div id="step3" class="d-none">
+                    <div class="icon-circle-wrapper mb-4">
+                        <div class="icon-circle-outer">
+                            <div class="icon-circle-inner">
+                                🔐
+                            </div>
+                        </div>
+                    </div>
+                    <h2 class="modal-title fw-bold text-center">Crear nueva contraseña</h2>
                     <!-- Alerta de éxito -->
                     <div id="alertaCambioContrasena" class="alert alert-success" role="alert">
-                      ✅ Código verificado correctamente. Ahora puedes cambiar tu contraseña.<br>
+                      @* ✅ Código verificado correctamente. Ahora puedes cambiar tu contraseña.<br> *@
                       <small class="text-dark">
-                        Te recomendamos que tu nueva contraseña incluya al menos una mayúscula, un número y un símbolo especial para mejorar tu seguridad.
+                                    Tu contraseña debe incluir almenos <strong>una mayúscula, un número y un símbolo especial</strong> para mejorar tu seguridad.
                       </small>
                     </div>
 
-                    <div class="mb-3">
-                                <label for="txtNuevaContrasenia" class="form-label fw-semibold">Nueva contraseña:</label>
-                                <input type="password" id="txtNuevaContrasenia" class="form-control" placeholder="Ingresa nueva contraseña">
+                    <div class="mb-3 position-relative">
+                        <label for="txtNuevaContrasenia" class="form-label fw-semibold">Nueva contraseña:</label>
+                        <input type="password" id="txtNuevaContrasenia" class="form-control form-control-lg pe-5" placeholder="Ingresa nueva contraseña">
+                        <span class="position-absolute end-0 pe-3 eye-icon d-flex justify-content-center align-items-center"
+                                style="top: 50%; transform: translateY(-27%); height: 100%; cursor: pointer;"
+                                onclick="toggleNewPasswordVisibility()">
+                            <i id="new-password-icon" class="fas fa-eye" style="font-size: 1.5rem;"></i>
+                        </span>
                     </div>
 
-                    <div class="mb-4">
-                                <label for="txtConfirmarContrasenia" class="form-label fw-semibold">Confirmar contraseña:</label>
-                                <input type="password" id="txtConfirmarContrasenia" class="form-control" placeholder="Confirma tu contraseña">
+                    <div class="mb-4 position-relative">
+                        <label for="txtConfirmarContrasenia" class="form-label fw-semibold">Confirmar contraseña:</label>
+                        <input type="password" id="txtConfirmarContrasenia" class="form-control form-control-lg pe-5" placeholder="Confirma tu contraseña">
+                        <span class="position-absolute end-0 pe-3 eye-icon d-flex justify-content-center align-items-center"
+                                style="top: 50%; transform: translateY(-27%); height: 100%; cursor: pointer;"
+                                onclick="toggleConfirmPasswordVisibility()">
+                            <i id="confirm-password-icon" class="fas fa-eye" style="font-size: 1.5rem;"></i>
+                        </span>
                     </div>
+
 
                     <div id="lblMensajeCambio" class="text-danger small text-center mb-2" style="display: none;"></div>
 
@@ -247,5 +298,56 @@
                     passwordIcon.classList.add('fa-eye');
                 }
             }
+            const otpInputs = document.querySelectorAll('#otpInputs .otp-input');
+            otpInputs[0].addEventListener('paste', (event) => {
+                event.preventDefault();
+                const pastedData = (event.clipboardData || window.clipboardData).getData('text').trim();
+                if (/^[0-9]{6}$/.test(pastedData)) {
+                    pastedData.split('').forEach((char, index) => {
+                        if (otpInputs[index]) {
+                            otpInputs[index].value = char;
+                        }
+                    });
+                    otpInputs[otpInputs.length - 1].focus();
+                } else {
+                    const errorLabel = document.getElementById('lblMensajeAlerta');
+                    errorLabel.textContent = 'El código debe contener exactamente 6 números';
+                    errorLabel.style.display = 'block';
+                    setTimeout(() => {
+                        errorLabel.style.display = 'none';
+                    }, 3000);
+                }
+            });
+    </script>
+    <script>
+        function toggleNewPasswordVisibility() {
+            const passwordInput = document.getElementById('txtNuevaContrasenia');
+            const passwordIcon = document.getElementById('new-password-icon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.classList.remove('fa-eye');
+                passwordIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.classList.remove('fa-eye-slash');
+                passwordIcon.classList.add('fa-eye');
+            }
+        }
+
+        function toggleConfirmPasswordVisibility() {
+            const passwordInput = document.getElementById('txtConfirmarContrasenia');
+            const passwordIcon = document.getElementById('confirm-password-icon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.classList.remove('fa-eye');
+                passwordIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.classList.remove('fa-eye-slash');
+                passwordIcon.classList.add('fa-eye');
+            }
+        }
     </script>
 }

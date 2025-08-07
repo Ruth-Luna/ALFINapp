@@ -52,3 +52,31 @@
 .w-200px {
     width: 200px;
 }
+
+
+/*ESTILOS PARA EL NUEVO M,ODAL DE RECUPERAR CONTRASEÑA*/
+.icon-circle-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.icon-circle-outer {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background-color: #D7E3F4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-circle-inner {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    background-color: #B1CBEF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+}
