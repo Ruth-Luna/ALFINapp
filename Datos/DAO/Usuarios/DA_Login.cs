@@ -99,19 +99,20 @@ namespace ALFINapp.Datos
             return new ViewUsuario { Resultado = 0 };
         }
 
-        public ViewCorreoRecuperacion InsertarSolicitudYObtenerCodigo(string correo, string usuario)
+        public ViewCorreoRecuperacion InsertarSolicitudYObtenerCodigo(string correo, string usuario, string ipAddress)
         {
             var resultado = new ViewCorreoRecuperacion();
 
             try
             {
                 using (SqlConnection conn = new SqlConnection(new Conexion().getCadenaSQL()))
-                using (SqlCommand cmd = new SqlCommand("SP_USUARIO_INSERTAR_SOLICITUD_CORREO  ", conn))
+                using (SqlCommand cmd = new SqlCommand("SP_USUARIO_INSERTAR_SOLICITUD_CORREO", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     cmd.Parameters.AddWithValue("@Usuario", usuario);
                     cmd.Parameters.AddWithValue("@Correo", correo);
+                    cmd.Parameters.AddWithValue("@IP", ipAddress);
 
                     var paramCodigo = new SqlParameter("@CodigoGenerado", SqlDbType.VarChar, 6)
                     {

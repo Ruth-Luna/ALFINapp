@@ -238,7 +238,17 @@ public class HomeController : Controller
     {
         try
         {
-            var resultado = _daLogin.InsertarSolicitudYObtenerCodigo(data.Correo, data.Usuario);
+            // Usar la IP enviada desde el cliente
+            string ipAddress = data.IP;
+
+            // Validar que la IP no sea nula o vacía
+            if (string.IsNullOrEmpty(ipAddress))
+            {
+                return Json(new { success = false, mensaje = "La dirección IP es requerida." });
+            }
+
+            var resultado = _daLogin.InsertarSolicitudYObtenerCodigo(data.Correo, data.Usuario, ipAddress);
+
             Console.WriteLine("id", resultado.IdSolicitud);
             if (resultado != null && !string.IsNullOrEmpty(resultado.Codigo))
             {

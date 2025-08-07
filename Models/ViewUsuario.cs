@@ -83,6 +83,7 @@ namespace ALFINapp.API.Models
         public string Usuario { get; set; } = string.Empty;
         public string Correo { get; set; } = string.Empty;
         public string Codigo { get; set; } = string.Empty;
+        public string IP { get; set; }
         public bool? Estado { get; set; }
         public int IdSolicitud { get; set; }
         public DateTime FechaExpiracion { get; set; }

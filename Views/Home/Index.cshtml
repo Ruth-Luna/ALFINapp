@@ -175,8 +175,9 @@
 
 
                     <div id="alertaCodigo" class="alert alert-primary d-none small rounded-3" role="alert">
-                        Se envió un código de 6 dígitos a tu correo electrónico. Tiene una vigencia de <strong>15 minutos</strong>.
-                    </div>
+                                Se envió un código de <strong>6 dígitos</strong> a tu <strong>correo electrónico</strong>.
+                                Si no lo ves, revisa la <strong>carpeta de spam</strong> o <strong>no deseados</strong> y márcalo como <strong>correo seguro</strong>.
+                            </div>
 
                     <p class="text-muted small mb-3">
                         Ingresa el <strong>código de verificación</strong> que recibiste:
@@ -192,7 +193,7 @@
                     </div>
                     <div class="text-center mb-3">
                       <a class="fw-semibold text-decoration-none" style="font-size: 1rem;" id="tiempoExpiracion">
-                        El código expira en: 05:00
+                        --
                       </a>
                     </div>
           
@@ -222,19 +223,30 @@
                     <div id="alertaCambioContrasena" class="alert alert-success" role="alert">
                       @* ✅ Código verificado correctamente. Ahora puedes cambiar tu contraseña.<br> *@
                       <small class="text-dark">
-                        Tu contraseña debe incluir almenos una mayúscula, un número y un símbolo especial para mejorar tu seguridad.
+                                    Tu contraseña debe incluir almenos <strong>una mayúscula, un número y un símbolo especial</strong> para mejorar tu seguridad.
                       </small>
                     </div>
 
-                    <div class="mb-3">
-                                <label for="txtNuevaContrasenia" class="form-label fw-semibold">Nueva contraseña:</label>
-                                <input type="password" id="txtNuevaContrasenia" class="form-control" placeholder="Ingresa nueva contraseña">
+                    <div class="mb-3 position-relative">
+                        <label for="txtNuevaContrasenia" class="form-label fw-semibold">Nueva contraseña:</label>
+                        <input type="password" id="txtNuevaContrasenia" class="form-control form-control-lg pe-5" placeholder="Ingresa nueva contraseña">
+                        <span class="position-absolute end-0 pe-3 eye-icon d-flex justify-content-center align-items-center"
+                                style="top: 50%; transform: translateY(-27%); height: 100%; cursor: pointer;"
+                                onclick="toggleNewPasswordVisibility()">
+                            <i id="new-password-icon" class="fas fa-eye" style="font-size: 1.5rem;"></i>
+                        </span>
                     </div>
 
-                    <div class="mb-4">
-                                <label for="txtConfirmarContrasenia" class="form-label fw-semibold">Confirmar contraseña:</label>
-                                <input type="password" id="txtConfirmarContrasenia" class="form-control" placeholder="Confirma tu contraseña">
+                    <div class="mb-4 position-relative">
+                        <label for="txtConfirmarContrasenia" class="form-label fw-semibold">Confirmar contraseña:</label>
+                        <input type="password" id="txtConfirmarContrasenia" class="form-control form-control-lg pe-5" placeholder="Confirma tu contraseña">
+                        <span class="position-absolute end-0 pe-3 eye-icon d-flex justify-content-center align-items-center"
+                                style="top: 50%; transform: translateY(-27%); height: 100%; cursor: pointer;"
+                                onclick="toggleConfirmPasswordVisibility()">
+                            <i id="confirm-password-icon" class="fas fa-eye" style="font-size: 1.5rem;"></i>
+                        </span>
                     </div>
+
 
                     <div id="lblMensajeCambio" class="text-danger small text-center mb-2" style="display: none;"></div>
 
@@ -306,5 +318,36 @@
                     }, 3000);
                 }
             });
+    </script>
+    <script>
+        function toggleNewPasswordVisibility() {
+            const passwordInput = document.getElementById('txtNuevaContrasenia');
+            const passwordIcon = document.getElementById('new-password-icon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.classList.remove('fa-eye');
+                passwordIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.classList.remove('fa-eye-slash');
+                passwordIcon.classList.add('fa-eye');
+            }
+        }
+
+        function toggleConfirmPasswordVisibility() {
+            const passwordInput = document.getElementById('txtConfirmarContrasenia');
+            const passwordIcon = document.getElementById('confirm-password-icon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.classList.remove('fa-eye');
+                passwordIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.classList.remove('fa-eye-slash');
+                passwordIcon.classList.add('fa-eye');
+            }
+        }
     </script>
 }
