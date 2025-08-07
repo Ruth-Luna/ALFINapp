@@ -22,6 +22,7 @@ namespace ALFINapp.API.Controllers
         private readonly IUseCaseUploadDerivacion _useCaseUploadDerivacion;
         private readonly DAO_GestionTipificacionesVista _dao_gestionTipificacionesVista;
         private readonly DAO_UploadDerivacion _dao_uploadDerivacion;
+        private readonly DAO_SubirTipificaciones _dao_SubirTipificaciones;
         public TipificacionesController(DBServicesGeneral dbServicesGeneral,
             DBServicesTipificaciones dbServicesTipificaciones,
             MDbContext context,
@@ -29,7 +30,8 @@ namespace ALFINapp.API.Controllers
             IUseCaseUploadDerivacion useCaseUploadDerivacion,
             DBServicesConsultasClientes dbServicesConsultasClientes,
             DAO_GestionTipificacionesVista dao_gestionTipificacionesVista,
-            DAO_UploadDerivacion dao_uploadDerivacion)
+            DAO_UploadDerivacion dao_uploadDerivacion,
+            DAO_SubirTipificaciones dAO_SubirTipificaciones)
         {
             _dbServicesGeneral = dbServicesGeneral;
             _dbServicesTipificaciones = dbServicesTipificaciones;
@@ -39,6 +41,7 @@ namespace ALFINapp.API.Controllers
             _dbServicesConsultasClientes = dbServicesConsultasClientes;
             _dao_gestionTipificacionesVista = dao_gestionTipificacionesVista;
             _dao_uploadDerivacion = dao_uploadDerivacion;
+            _dao_SubirTipificaciones = dAO_SubirTipificaciones;
         }
 
         [HttpPost]
@@ -67,7 +70,9 @@ namespace ALFINapp.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> TipificarMotivo(List<DtoVTipificarCliente> tipificaciones, int IdAsignacion)
+        public async Task<IActionResult> TipificarMotivo(
+            List<DtoVTipificarCliente> tipificaciones
+            , int IdAsignacion)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)
@@ -75,13 +80,17 @@ namespace ALFINapp.API.Controllers
                 TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
                 return RedirectToAction("Index", "Home");
             }
-            var getUseCase = await _useCaseUploadTipificaciones.execute(usuarioId.Value, tipificaciones, IdAsignacion, 2);
-            if (!getUseCase.success)
+            var uploadtipicaciones = await _dao_SubirTipificaciones
+                .SubirTipificacionesAsync(
+                    tipificaciones
+                    , IdAsignacion
+                    , usuarioId.Value);
+            if (!uploadtipicaciones.success)
             {
-                TempData["MessageError"] = getUseCase.message;
+                TempData["MessageError"] = uploadtipicaciones.message;
                 return RedirectToAction("Redireccionar", "Error");
             }
-            TempData["Message"] = getUseCase.message;
+            TempData["Message"] = uploadtipicaciones.message;
             return RedirectToAction("Redireccionar", "Error");
         }
         [HttpGet]

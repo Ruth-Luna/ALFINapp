@@ -1,3 +1,4 @@
+using System.Data;
 using ALFINapp.API.DTOs;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -56,8 +57,8 @@ namespace ALFINapp.Datos.DAO.Tipificaciones
                     return (false, estadoActualizado.message);
                 }
                 // Si todo sale bien, retornamos el mensaje de éxito
-                return (true, "Tipificaciones subidas y estado del cliente actualizado correctamente. + " +
-                               $"{result_tipificaciones.tipificaciones.Count} tipificaciones procesadas." +
+                return (true, "Tipificaciones subidas y estado del cliente actualizado correctamente. " +
+                               $"Se han procesado {result_tipificaciones.tipificaciones.Count} tipificaciones. " +
                                $"{mappedTipificaciones.message}");
             }
             catch (Exception ex)
@@ -72,9 +73,18 @@ namespace ALFINapp.Datos.DAO.Tipificaciones
             {
                 var message = "";
                 var mappedTipificaciones = new List<DtoVTipificarCliente>();
+                if (tipificaciones == null || !tipificaciones.Any())
+                {
+                    return (false, "No hay tipificaciones para procesar.", mappedTipificaciones);
+                }
                 foreach (var tipificacion in tipificaciones)
                 {
-                    if (tipificacion == null || string.IsNullOrEmpty(tipificacion.Telefono))
+                    if (
+                        tipificacion == null
+                        || tipificacion.TipificacionId <= 0
+                        || tipificacion.Telefono == "0"
+                        || tipificacion.Telefono == " "
+                        || string.IsNullOrEmpty(tipificacion.Telefono))
                     {
                         continue;
                     }
@@ -84,18 +94,26 @@ namespace ALFINapp.Datos.DAO.Tipificaciones
                     }
                     if (tipificacion.TipificacionId == 2)
                     {
+                        var outputParam = new SqlParameter
+                        {
+                            ParameterName = "@resultado",
+                            SqlDbType = SqlDbType.Int,
+                            Direction = ParameterDirection.Output
+                        };
 
                         var parameters = new[]
                         {
                             new SqlParameter("@idcliente", tipificacion.Telefono),
                             new SqlParameter("@tipificacion_id", tipificacion.TipificacionId),
                             new SqlParameter("@id_derivacion", tipificacion.idderivacion ?? (object)DBNull.Value),
+                            outputParam
                         };
-                        var verificarderivacion = await _context.Database.ExecuteSqlRawAsync(
-                            "EXEC SP_tipificacion_verificar_tipificacion_cliente @idcliente, @tipificacion_id, @id_derivacion",
+                        await _context.Database.ExecuteSqlRawAsync(
+                            "EXEC SP_tipificacion_verificar_tipificacion_cliente @idcliente, @tipificacion_id, @id_derivacion, @resultado OUTPUT",
                             parameters);
 
-                        if (verificarderivacion <= 0)
+                        var result = (int)(outputParam.Value ?? 0);
+                        if (result <= 0)
                         {
                             return (false, "Error al verificar la tipificación de derivación.", new List<DtoVTipificarCliente>());
                         }
@@ -117,7 +135,7 @@ namespace ALFINapp.Datos.DAO.Tipificaciones
                 return (false, $"Error al mapear y verificar las tipificaciones: {ex.Message}", new List<DtoVTipificarCliente>());
             }
         }
-        public async Task<(bool success, string message, List<(int id_tipificacion, string telefono)> tipificaciones)> subirClienteTipificado(
+        public async Task<(bool success, string message, List<(int id_tipificacion, string telefono, int id_cliente_tip)> tipificaciones)> subirClienteTipificado(
             List<DtoVTipificarCliente> dtos,
             int idAsignacion,
             int idUsuario)
@@ -126,40 +144,42 @@ namespace ALFINapp.Datos.DAO.Tipificaciones
             {
                 if (dtos == null || dtos.Count == 0)
                 {
-                    return (false, "No hay tipificaciones para subir.", new List<(int id_tipificacion, string telefono)>());
+                    return (false, "No hay tipificaciones para subir.", new List<(int id_tipificacion, string telefono, int id_cliente_tip)>());
                 }
-                var tipificaciones = new List<(int id_tipificacion, string telefono)>();
+                var tipificaciones = new List<(int id_tipificacion, string telefono, int id_cliente_tip)>();
                 foreach (var dto in dtos)
                 {
+                    var outputParam = new SqlParameter("@id_cliente_tip", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
                     var parameters = new[]
                     {
                         new SqlParameter("@telefono", dto.Telefono),
                         new SqlParameter("@id_tipificacion", dto.TipificacionId),
                         new SqlParameter("@id_asignacion", idAsignacion),
-                        new SqlParameter("@id_usuario", idUsuario)
+                        new SqlParameter("@id_usuario", idUsuario),
+                        outputParam
                     };
-                    var result = await _context.Database.ExecuteSqlRawAsync(
-                        "EXEC SP_tipificaciones_subir_cliente_tipificado @telefono, @id_tipificacion, @id_asignacion, @id_usuario",
+                    await _context.Database.ExecuteSqlRawAsync(
+                        "EXEC SP_tipificaciones_subir_cliente_tipificado @telefono, @id_tipificacion, @id_asignacion, @id_usuario, @id_cliente_tip OUTPUT",
                         parameters);
-                    if (result > 0)
+                    int insertedId = (int)outputParam.Value;
+                    if (!string.IsNullOrEmpty(dto.Telefono) && insertedId > 0)
                     {
-                        if (!string.IsNullOrEmpty(dto.Telefono))
-                        {
-                            tipificaciones.Add((dto.TipificacionId, dto.Telefono));
-                        }
-                        continue; // Si la tipificación se subió correctamente, continuamos con la siguiente
+                        tipificaciones.Add((dto.TipificacionId, dto.Telefono, insertedId));
                     }
                 }
                 return (true, "Todas las tipificaciones se han subido correctamente.", tipificaciones);
             }
             catch (System.Exception ex)
             {
-                return (false, $"Error al tipificar el cliente: {ex.Message}", new List<(int id_tipificacion, string telefono)>());
+                return (false, $"Error al tipificar el cliente: {ex.Message}", new List<(int id_tipificacion, string telefono, int id_cliente_tip)>());
             }
         }
 
         public async Task<(bool success, string message)> actualizarEstadoTipificacion(
-            List<(int id_tipificacion, string telefono)> tipificaciones,
+            List<(int id_tipificacion, string telefono, int id_cliente_tip)> tipificaciones,
             int id_asignacion
             )
         {
@@ -171,10 +191,11 @@ namespace ALFINapp.Datos.DAO.Tipificaciones
                     {
                         new SqlParameter("@telefono", tipificacion.telefono),
                         new SqlParameter("@id_tipificacion", tipificacion.id_tipificacion),
-                        new SqlParameter("@id_asignacion", id_asignacion)
+                        new SqlParameter("@id_asignacion", id_asignacion),
+                        new SqlParameter("@id_cliente_tip", tipificacion.id_cliente_tip)
                     };
                     var result = await _context.Database.ExecuteSqlRawAsync(
-                        "EXEC SP_tipificaciones_actualizar_estado_tipificacion @telefono, @id_tipificacion, @id_asignacion",
+                        "EXEC SP_tipificaciones_actualizar_estado_tipificacion @telefono, @id_tipificacion, @id_asignacion, @id_cliente_tip",
                         parameters);
                     if (result <= 0)
                     {
