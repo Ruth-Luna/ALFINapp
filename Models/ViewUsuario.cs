@@ -39,7 +39,9 @@ namespace ALFINapp.API.Models
 
         public int? Resultado { get; set; } = null;
         public string Mensaje { get; set; } = string.Empty;
-      
+        public List<ViewUsuario> Asesores { get; set; } = new List<ViewUsuario>();
+        public List<ViewUsuario> Supervisores { get; set; } = new List<ViewUsuario>();
+
         public ViewUsuario() { }
 
         public ViewUsuario(Usuario model)

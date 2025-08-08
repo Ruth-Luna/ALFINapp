@@ -212,36 +212,48 @@ namespace ALFINapp.Datos
         }
         public List<Usuario> ListarAsesores(int? idUsuario = null)
         {
-            var lista = new List<Usuario>();
-            var cn = new Conexion();
-
-            using (SqlConnection connection = new SqlConnection(cn.getCadenaSQL()))
+            try
             {
-                using (SqlCommand cmd = new SqlCommand("SP_USUARIO_LISTAR_ASIGNADOS", connection))
+                var lista = new List<Usuario>();
+                var cn = new Conexion();
+
+                using (SqlConnection connection = new SqlConnection(cn.getCadenaSQL()))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-
-                    if (idUsuario.HasValue)
-                        cmd.Parameters.AddWithValue("@id_usuario", idUsuario.Value);
-
-                    connection.Open();
-                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    using (SqlCommand cmd = new SqlCommand("SP_USUARIO_LISTAR_ASESORES_ASIGNADOS", connection))
                     {
-                        while (dr.Read())
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        if (idUsuario.HasValue)
+                            cmd.Parameters.AddWithValue("@idUsuario", idUsuario.Value);
+
+                        connection.Open();
+                        using (SqlDataReader dr = cmd.ExecuteReader())
                         {
-                            lista.Add(new Usuario
+                            while (dr.Read())
                             {
-                                IdUsuario = Convert.ToInt32(dr["IdUsuario"]),
-                                NombresCompletos = dr["NombresCompletos"].ToString(),
-                                Rol = dr["Rol"].ToString(),
-                                Estado = dr["Estado"].ToString(),
-                            });
+                                lista.Add(new Usuario
+                                {
+                                    IdUsuario = Convert.ToInt32(dr["id_usuario"]),
+                                    NombresCompletos = dr["nombres_completos"].ToString(),
+                                    Rol = dr["rol"].ToString(),
+                                    Estado = dr["estado"].ToString(),
+                                    IDUSUARIOSUP = Convert.ToInt32(dr["ID_USUARIO_SUP"]),
+                                    IdRol = Convert.ToInt32(dr["id_rol"]),
+                                    Dni = dr["dni"].ToString(),
+                                    TipoDocumento = dr["tipo_doc"].ToString(),
+                                    Telefono = dr["telefono"].ToString(),
+                                });
+                            }
                         }
                     }
                 }
-            }
 
-            return lista;
+                return lista;
+            }
+            catch (System.Exception)
+            {
+                return new List<Usuario>();
+            }
         }
         public List<Usuario> ListarSupervisores(int? idUsuario = null)
         {
@@ -255,7 +267,7 @@ namespace ALFINapp.Datos
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     if (idUsuario.HasValue)
-                        cmd.Parameters.AddWithValue("@id_usuario", idUsuario.Value);
+                        cmd.Parameters.AddWithValue("@idUsuario", idUsuario.Value);
 
                     connection.Open();
                     using (SqlDataReader dr = cmd.ExecuteReader())
@@ -264,12 +276,14 @@ namespace ALFINapp.Datos
                         {
                             lista.Add(new Usuario
                             {
-                                IdUsuario = Convert.ToInt32(dr["IdUsuario"]),
-                                Dni = dr["Dni"].ToString(),
-                                TipoDocumento = dr["TipoDocumento"].ToString(),
-                                NombresCompletos = dr["NombresCompletos"].ToString(),
-                                Rol = dr["Rol"].ToString(),
-                                Estado = dr["Estado"].ToString(),
+                                IdUsuario = Convert.ToInt32(dr["id_usuario"]),
+                                Dni = dr["dni"].ToString(),
+                                NombresCompletos = dr["Nombres_Completos"].ToString(),
+                                Rol = dr["rol"].ToString(),
+                                Estado = dr["estado"].ToString(),
+                                IDUSUARIOSUP = Convert.ToInt32(dr["ID_USUARIO_SUP"]),
+                                RESPONSABLESUP = dr["RESPONSABLE_SUP"].ToString(),
+                                REGION = dr["REGION"].ToString(),
                             });
                         }
                     }
@@ -277,6 +291,46 @@ namespace ALFINapp.Datos
             }
 
             return lista;
+        }
+
+        public Usuario? getUsuario(int idUsuario)
+        {
+            try
+            {
+                var cn = new Conexion();
+                using (SqlConnection connection = new SqlConnection(cn.getCadenaSQL()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("SP_USUARIO_GET_USUARIO", connection))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@idUsuario", idUsuario);
+
+                        connection.Open();
+                        using (SqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            if (dr.Read())
+                            {
+                                return new Usuario
+                                {
+                                    IdUsuario = Convert.ToInt32(dr["id_usuario"]),
+                                    Dni = dr["dni"].ToString(),
+                                    TipoDocumento = dr["tipo_doc"].ToString(),
+                                    NombresCompletos = dr["Nombres_Completos"].ToString(),
+                                    Rol = dr["rol"].ToString(),
+                                    Estado = dr["estado"].ToString(),
+                                    IdRol = Convert.ToInt32(dr["id_rol"]),
+                                };
+                            }
+                        }
+                    }
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error en getUsuario: " + ex.Message);
+                return null;
+            }
         }
     }
 }

@@ -160,9 +160,11 @@ public class HomeController : Controller
     }
 
     [HttpPost]
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     public async Task<IActionResult> Login(string usuario, string password)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     {
-        usuario = usuario?.ToUpper().Trim();
+        usuario = usuario.ToUpper().Trim();
         var verusuario = _daLogin.ValidarUsuario(usuario, password);
 
         if (verusuario.Resultado == false || verusuario.usuario == null)
