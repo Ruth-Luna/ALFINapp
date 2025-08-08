@@ -205,7 +205,7 @@ END;
 GO
 
 EXEC SP_tipificaciones_actualizar_estado_tipificacion 
-    @telefono = '952511477',
+    @telefono = '985262345',
     @id_tipificacion = 2,
     @id_asignacion = 1445000,
     @id_cliente_tip = 20280;
@@ -343,29 +343,37 @@ CREATE TRIGGER [dbo].[trg_clientes_tipificados_insert_gestion]
 AS
 BEGIN
     SET NOCOUNT ON;
-
+    INSERT INTO dbo.debug_log (mensaje) VALUES ('Entró al trigger');
     DECLARE @clientes TABLE (id_asignacion INT,
     id_cliente INT,
     id_base INT,
     fuente_base NVARCHAR(100),
     documento_cliente NVARCHAR(50),
-    id_base_banco INT);
+    id_base_banco INT,
+    id_derivacion INT);
 
     insert into @clientes
-    (id_asignacion, id_cliente, id_base, fuente_base, documento_cliente, id_base_banco)
+    (id_asignacion, id_cliente, id_base, fuente_base
+    , documento_cliente, id_base_banco, id_derivacion)
     SELECT
         ca.id_asignacion,
         ce.id_cliente,
         bc.id_base,
         ca.fuente_base,
         bc.dni as documento_cliente,
-        bc.id_base_banco
+        bc.id_base_banco,
+        da.id_derivacion
     FROM clientes_asignados ca
         JOIN clientes_enriquecidos ce ON ca.id_cliente = ce.id_cliente
-        JOIN base_clientes bc ON ce.id_base = bc.id_base;
+        JOIN base_clientes bc ON ce.id_base = bc.id_base
+        LEFT JOIN derivaciones_asesores da ON bc.dni = da.dni_cliente
+    WHERE ca.id_asignacion IN (SELECT id_asignacion FROM inserted);
+
+    INSERT INTO dbo.debug_log (mensaje, info) 
+    VALUES ('Insert @clientes', (SELECT COUNT(*) FROM @clientes));
 
     DECLARE @detalle_base TABLE (id_base INT,
-    id_detalle INt,
+    id_detalle INT,
     oferta DECIMAL(18, 2),
     cod_campana NVARCHAR(50));
 
@@ -462,16 +470,38 @@ BEGIN
     UNION ALL
     SELECT dni, origen_telefono FROM CTE_Telefono_TA;
 
-    DECLARE @usuario_vendedor TABLE (id_asignacion INT, id_usuarioV INT, doc_vendedor NVARCHAR(20));
+    INSERT INTO dbo.debug_log (mensaje, info) 
+VALUES ('Insert @TempTelefono', (SELECT COUNT(*) FROM @TempTelefono));
 
-    INSERT INTO @usuario_vendedor (id_asignacion, id_usuarioV, doc_vendedor)
+    DECLARE @usuarios_info TABLE (
+        id_asignacion INT,
+        id_usuarioV INT,
+        doc_vendedor NVARCHAR(20),
+        id_usuario_supervisor INT,
+        doc_supervisor NVARCHAR(20),
+        nombre_supervisor NVARCHAR(100));
+
+    INSERT INTO @usuarios_info (
+        id_asignacion, 
+        id_usuarioV, 
+        doc_vendedor,
+        id_usuario_supervisor,
+        doc_supervisor,
+        nombre_supervisor)
     SELECT
         ca.id_asignacion,
-        ca.id_usuarioV,
-        u.dni
+        ca.id_usuarioV AS id_usuarioV,
+        uv.dni as doc_vendedor,
+        ca.id_usuarioS AS id_usuario_supervisor,
+        us.dni AS doc_supervisor,
+        us.Nombres_Completos AS nombre_supervisor
     FROM clientes_asignados ca
-        JOIN usuarios u ON ca.id_usuarioV = u.id_usuario
+        JOIN usuarios uv ON ca.id_usuarioV = uv.id_usuario
+        JOIN usuarios us ON ca.id_usuarioS = us.id_usuario
     WHERE ca.id_asignacion IN (SELECT id_asignacion FROM inserted);
+
+    INSERT INTO dbo.debug_log (mensaje, info) 
+VALUES ('Insert @usuarios_info', (SELECT COUNT(*) FROM @usuarios_info));
 
         
     INSERT INTO @detalle_base
@@ -485,7 +515,7 @@ BEGIN
         JOIN
             @clientes c
         ON db.id_base = c.id_base
-        WHERE c.fuente_base <> 'BASE EXTERNA'
+        WHERE c.fuente_base <> 'ALFINBANCO'
             AND db.tipo_base = c.fuente_base
     UNION ALL
         SELECT
@@ -496,7 +526,12 @@ BEGIN
         FROM [CORE_ALFIN].[dbo].[base_clientes_banco] bcb
             JOIN @clientes c
             ON bcb.id_base_banco = c.id_base_banco
-        WHERE c.fuente_base = 'BASE EXTERNA'
+        WHERE c.fuente_base = 'ALFINBANCO'
+
+    INSERT INTO dbo.debug_log (mensaje, info) 
+VALUES ('Insert @detalle_base', (SELECT COUNT(*) FROM @detalle_base));
+
+INSERT INTO dbo.debug_log (mensaje) VALUES ('Antes de insertar en GESTION_DETALLE');
 
     INSERT INTO [CORE_ALFIN].[dbo].[GESTION_DETALLE]
         (
@@ -522,7 +557,7 @@ BEGIN
         )
     SELECT
         i.id_asignacion,
-        'SYSTEMAA365' AS cod_canal,
+        'SYSTEMA365' AS cod_canal,
         'A365' AS canal,
         c.documento_cliente as doc_cliente,
         GETDATE() AS fecha_envio,
@@ -533,21 +568,31 @@ BEGIN
         db.cod_campana AS cod_campaña, -- Assuming a default value, adjust as necessary
         i.id_tipificacion AS cod_tip,
         db.oferta AS oferta, -- Assuming no offer, adjust as necessary
-        uv.doc_vendedor AS doc_asesor, -- Assuming no advisor document, adjust as necessary
+        uf.doc_vendedor AS doc_asesor, -- Assuming no advisor document, adjust as necessary
         'nuevo' AS origen,
         'BD PROPIA' AS archivo_origen, -- Assuming no file origin, adjust as necessary
         GETDATE() AS fecha_carga,
-        NULL AS id_derivacion,
-        NULL AS id_supervisor, -- Assuming no supervisor, adjust as necessary
-        NULL AS supervisor
+        c.id_derivacion AS id_derivacion,
+        uf.id_usuario_supervisor AS id_supervisor, -- Assuming no supervisor, adjust as necessary
+        uf.nombre_supervisor AS supervisor
     -- Assuming no supervisor name, adjust as necessary
     FROM inserted i
         JOIN @clientes c ON i.id_asignacion = c.id_asignacion
         JOIN @detalle_base db ON c.id_base = db.id_base
         JOIN @TempTelefono t ON c.documento_cliente = t.dni
-        JOIN @usuario_vendedor uv ON i.id_asignacion = uv.id_asignacion
-    WHERE i.id_tipificacion <> 2
+        JOIN @usuarios_info uf ON i.id_asignacion = uf.id_asignacion
 END;
 GO
-ALTER TABLE [dbo].[clientes_tipificados] DISABLE TRIGGER [trg_clientes_tipificados_insert_gestion]
+ALTER TABLE [dbo].[clientes_tipificados] ENABLE TRIGGER [trg_clientes_tipificados_insert_gestion]
 GO
+
+DROP TRIGGER [dbo].[trg_clientes_tipificados_insert_gestion]
+
+
+
+
+
+SELECT TOP 1000 * FROM GESTION_DETALLE ORDER BY id_feedback DESC;
+
+
+SELECT TOP 100 * FROM clientes_asignados ORDER BY id_asignacion DESC;
