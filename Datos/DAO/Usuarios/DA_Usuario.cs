@@ -8,7 +8,7 @@ using System.Diagnostics;
 namespace ALFINapp.Datos
 {
     public class DA_Usuario
-    {  
+    {
         public async Task<(bool IsSuccess, string Message)> CrearUsuario(ViewUsuario usuario, int idUsuarioAccion)
         {
             try
@@ -202,6 +202,74 @@ namespace ALFINapp.Datos
                                 IdRol = Convert.ToInt32(dr["IdRol"]),
                                 Rol = dr["Rol"].ToString(),
                                 Descripcion = dr["Descripcion"].ToString(),
+                            });
+                        }
+                    }
+                }
+            }
+
+            return lista;
+        }
+        public List<Usuario> ListarAsesores(int? idUsuario = null)
+        {
+            var lista = new List<Usuario>();
+            var cn = new Conexion();
+
+            using (SqlConnection connection = new SqlConnection(cn.getCadenaSQL()))
+            {
+                using (SqlCommand cmd = new SqlCommand("SP_USUARIO_LISTAR_ASIGNADOS", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    if (idUsuario.HasValue)
+                        cmd.Parameters.AddWithValue("@id_usuario", idUsuario.Value);
+
+                    connection.Open();
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            lista.Add(new Usuario
+                            {
+                                IdUsuario = Convert.ToInt32(dr["IdUsuario"]),
+                                NombresCompletos = dr["NombresCompletos"].ToString(),
+                                Rol = dr["Rol"].ToString(),
+                                Estado = dr["Estado"].ToString(),
+                            });
+                        }
+                    }
+                }
+            }
+
+            return lista;
+        }
+        public List<Usuario> ListarSupervisores(int? idUsuario = null)
+        {
+            var lista = new List<Usuario>();
+            var cn = new Conexion();
+
+            using (SqlConnection connection = new SqlConnection(cn.getCadenaSQL()))
+            {
+                using (SqlCommand cmd = new SqlCommand("SP_USUARIO_LISTAR_SUPERVISORES", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    if (idUsuario.HasValue)
+                        cmd.Parameters.AddWithValue("@id_usuario", idUsuario.Value);
+
+                    connection.Open();
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            lista.Add(new Usuario
+                            {
+                                IdUsuario = Convert.ToInt32(dr["IdUsuario"]),
+                                Dni = dr["Dni"].ToString(),
+                                TipoDocumento = dr["TipoDocumento"].ToString(),
+                                NombresCompletos = dr["NombresCompletos"].ToString(),
+                                Rol = dr["Rol"].ToString(),
+                                Estado = dr["Estado"].ToString(),
                             });
                         }
                     }

@@ -24,7 +24,8 @@ namespace ALFINapp.Application.UseCases.Derivacion
             _repositorySupervisor = repositorySupervisor;
             _repositoryDerivaciones = repositoryDerivaciones;
         }
-        public async Task<(bool success, string message, ViewDerivacionesVistaGeneral data)> Execute(int idUsuario, int idRol)
+        public async Task<(bool success, string message, ViewDerivacionesVistaGeneral data)> Execute(
+            int idUsuario, int idRol)
         {
             try
             {

@@ -1,5 +1,6 @@
 using ALFINapp.API.Filters;
 using ALFINapp.Application.Interfaces.Derivacion;
+using ALFINapp.Datos.DAO.Evidencias;
 using ALFINapp.DTOs;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Services;
@@ -13,12 +14,15 @@ namespace ALFINapp.API.Controllers
         
         private readonly IUseCaseGetDerivacion _useCaseGetDerivacion;
         private readonly IUseCaseUploadEvidencias _useCaseUploadEvidencias;
+        private readonly DAO_SubirEvidencia _dao_subirEvidencia;
         public DerivacionController(
             IUseCaseGetDerivacion useCaseGetDerivacion,
-            IUseCaseUploadEvidencias useCaseUploadEvidencias)
+            IUseCaseUploadEvidencias useCaseUploadEvidencias,
+            DAO_SubirEvidencia dao_subirEvidencia)
         {
             _useCaseGetDerivacion = useCaseGetDerivacion;
             _useCaseUploadEvidencias = useCaseUploadEvidencias;
+            _dao_subirEvidencia = dao_subirEvidencia;
         }
 
         [HttpGet]
@@ -52,7 +56,7 @@ namespace ALFINapp.API.Controllers
         {
             try
             {
-                var result = await _useCaseUploadEvidencias.Execute(evidencia);
+                var result = await _dao_subirEvidencia.marcarEvidenciaDisponible(evidencia);
                 if (!result.success)
                 {
                     return Json(new { success = false, message = result.message });

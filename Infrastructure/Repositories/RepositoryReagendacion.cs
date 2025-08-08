@@ -11,7 +11,8 @@ namespace ALFINapp.Infrastructure.Repositories
         {
             _context = context;
         }
-        public async Task<(bool success, string message)> checkDisReagendacion(int IdDerivacion, DateTime FechaReagendamiento)
+        public async Task<(bool success, string message)> checkDisReagendacion(
+            int IdDerivacion, DateTime FechaReagendamiento)
         {
             try
             {
