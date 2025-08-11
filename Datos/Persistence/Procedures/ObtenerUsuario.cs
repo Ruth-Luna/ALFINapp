@@ -10,6 +10,8 @@ namespace ALFINapp.Datos.Persistence.Procedures
         public string? Apellido_Paterno { get; set; } = null!;
         [Column("Apellido_Materno")]
         public string? Apellido_Materno { get; set; } = null!;
+        [Column("Usuario")]
+        public string? Usuario { get; set; } = null;
         [Column("Nombres")]
         public string? Nombres { get; set; } = null!;
         [Column("dni")]
@@ -38,7 +40,7 @@ namespace ALFINapp.Datos.Persistence.Procedures
         public string? REGION { get; set; }
         public string usuario { get; set; } = string.Empty;
         [Column("contraseña")]
-        public string? contraseña { get; set; }
+        public string? Contrasenia { get; set; }
         [Column("NOMBRE_CAMPAÑA")]
         public string? NOMBRECAMPANIA { get; set; }
         [Column("id_rol")]

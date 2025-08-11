@@ -3,7 +3,8 @@ let gridOptions;
 
 document.addEventListener('DOMContentLoaded', function () {
     ListarUsuarioGerente();
-    ListarRoles();
+    ListarRoles("#txtRol_EditarUsuario"); // Para formulario
+    ListarRoles("#txtFiltrarRol")
     $('#selectTDocumento_EditarUsuario').on('change', function () {
         const tipo = $(this).val();
         const $input = $('#txtDNI_EditarUsuario');
@@ -23,31 +24,61 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+document.querySelectorAll('#filtroDni, #filtroUsuario, #txtFiltrarRol, #txtFiltrarEstado')
+    .forEach(el => {
+        el.addEventListener('input', aplicarFiltroGlobal);
+        el.addEventListener('change', aplicarFiltroGlobal);
+    });
 
+$('#modalEditarUsuarioGerente').on('hidden.bs.modal', function () {
+    $('#formEditarUsuario')[0].reset();
+    $(this).find('input, select, textarea').val('');
+});
 
-function ListarUsuarioGerente(id = null) {
+function ListarUsuarioGerente(id = null, editar = false) {
+    console.log(id)
     $.ajax({
-        url: '/Usuarios/ListarUsuarioAdministrador?id=' + (id ?? ''),
+        url: '/Usuarios/ListarUsuarioAdministrador?idUsuario=' + (id ?? ''),
         type: 'GET',
         success: function (data) {
-            const rowData = data.map(usuario => ({
-                dni: usuario.dni ?? '',
-                usuarioNombre: `${usuario.nombres ?? ''} ${usuario.apellido_Paterno ?? ''} ${usuario.apellido_Materno ?? ''}`,
-                rol: usuario.rol ?? '',
-                supervisor: usuario.responsablesup ?? 'EL USUARIO NO TIENE SUPERVISOR',
-                campaña: usuario.nombrecampaña ?? '',
-                correo: usuario.correo ?? '',
-                telefono: usuario.telefono ?? '',
-                fechaInicio: usuario.fechaInicio ? FechaFormat(usuario.fechaInicio) : '',
-                fechaCese: usuario.fechaCese ? FechaFormat(usuario.fechaCese) : '',
-                estado: usuario.estado ?? '',
-                fechaActualizacion: usuario.fechaActualizacion ? FechaFormat(usuario.fechaActualizacion) : '',
-                idUsuario: usuario.idUsuario // para acciones
-            }));
+            if (!editar) {
+                const rowData = data.map(usuario => ({
+                    dni: usuario.dni ?? '',
+                    usuarioNombre: `${usuario.nombres ?? ''} ${usuario.apellido_Paterno ?? ''} ${usuario.apellido_Materno ?? ''}`,
+                    rol: usuario.rol ?? '',
+                    supervisor: usuario.responsablesup ?? 'EL USUARIO NO TIENE SUPERVISOR',
+                    campania: usuario.nombrecampania ?? '',
+                    correo: usuario.correo ?? '',
+                    telefono: usuario.telefono ?? '',
+                    fechaInicio: usuario.fechaInicio ? FechaFormat(usuario.fechaInicio) : '',
+                    estado: usuario.estado ?? '',
+                    fechaActualizacion: usuario.fechaActualizacion ? FechaFormat(usuario.fechaActualizacion) : '',
+                    idUsuario: usuario.idUsuario
+                }));
 
-            if (gridOptions.api) {
-                gridOptions.api.setRowData(rowData);
+                if (gridOptions.api) {
+                    gridOptions.api.setRowData(rowData);
+                }
+            } else {
+                $('#modalEditarUsuarioGerente').modal('show');
+
+                $('#txtDNI_EditarUsuario').val(data[0].dni ?? '');
+                $('#selectTDocumento_EditarUsuario').val(data[0].tipoDocumento ?? '');
+                $('#txtUser_EditarUsuario').val(data[0].usuario ?? '');
+                $('#txtPassword_EditarUsuario').val(data[0].contrasenia ?? '');
+
+                $('#txtApellidosP_EditarUsuario').val(data[0].apellido_Paterno ?? '');
+                $('#txtApellidosM_EditarUsuario').val(data[0].apellido_Materno ?? '');
+                $('#txtNombres_EditarUsuario').val(data[0].nombres ?? '');
+                $('#txtRegion_EditarUsuario').val(data[0].region ?? '');
+                $('#txtCampania_EditarUsuario').val(data[0].nombrecampania ?? '');
+                $('#txtCorreo_EditarUsuario').val(data[0].correo ?? '');
+                $('#txtRol_EditarUsuario').val(data[0].rol ?? '');
+                $('#selectEstado').val(data[0].estado ?? '')
+
+                $('#btnGuardarCambios').attr('data-id', data[0].idUsuario);
             }
+           
         },
         error: function () {
             alert('Error al cargar la lista de usuarios');
@@ -58,39 +89,49 @@ function ListarUsuarioGerente(id = null) {
 // Inicializa AG Grid al cargar
 document.addEventListener('DOMContentLoaded', function () {
     const columnDefs = [
-        { headerName: "DNI", field: "dni" },
-        { headerName: "Usuario", field: "usuarioNombre" },
-        { headerName: "Rol", field: "rol" },
-        { headerName: "Supervisor Asignado", field: "supervisor" },
-        { headerName: "Campaña", field: "campaña" },
-        { headerName: "Correo", field: "correo" },
-        { headerName: "Teléfono", field: "telefono" },
-        { headerName: "Fecha Inicio", field: "fechaInicio" },
-        { headerName: "Fecha Cese", field: "fechaCese" },
+        {
+            headerName: "#",
+            valueGetter: params => params.node.rowIndex + 1,
+            width: 60,
+        },
+        { headerName: "DNI", field: "dni" ,width: 100 },
+        { headerName: "Usuario", field: "usuarioNombre", width: 200 },
+        { headerName: "Rol", field: "rol", width: 150 },
+        { headerName: "Supervisor Asignado", field: "supervisor", width: 250},
+        { headerName: "Campaña", field: "campania", width: 150 },
+        { headerName: "Correo", field: "correo", width: 250},
+        { headerName: "Fecha Inicio", field: "fechaInicio", width: 130},
         {
             headerName: "Estado",
             field: "estado",
+            width: 110,
+            filter: 'agTextColumnFilter',
+            getQuickFilterText: params => (params.value ?? '').toString().trim().toUpperCase(),
             cellRenderer: (params) => {
-                const clase = params.value === 'ACTIVO' ? 'bg-success' : 'bg-danger';
-                return `<span class="badge rounded-pill w-100 ${clase}">${params.value}</span>`;
+                const esActivo = params.value?.toUpperCase() === 'ACTIVO';
+                const clase = esActivo ? 'bg-success' : 'bg-danger';
+                const nuevoEstado = esActivo ? 0 : 1;
+
+                return `
+          <span 
+              class="badge rounded-pill w-100 text-white py-2 ${clase}" 
+              style="cursor:pointer" onclick="CambiarEstadoUsuario(${nuevoEstado}, '${params.data.idUsuario}')">
+              ${params.value}
+          </span>
+      `;
             }
         },
         {
             headerName: "Acción",
             field: "idUsuario",
+            width: 120,
             cellRenderer: (params) => {
                 const checked = params.data.estado === 'ACTIVO' ? 'checked' : '';
                 return `
             <div class="d-flex flex-column align-items-center">
-              <div class="d-flex justify-content-center gap-2 mb-2">
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" ${checked} 
-                         onchange="CambiarEstadoUsuario(this.checked ? 1 : 0, '${params.value}')">
-                </div>
-                <button class="btn btn-primary btn-sm" onclick="ListarUsuarioxID('${params.value}')">
-                  <i class="bi bi-pencil"></i>
+                <button class="btn btn-primary btn-sm" onclick="ListarUsuarioGerente('${params.value}',true)">
+                  <i class="bi bi-eye"></i>
                 </button>
-              </div>
             </div>
           `;
             }
@@ -99,26 +140,42 @@ document.addEventListener('DOMContentLoaded', function () {
 
     gridOptions = {
         columnDefs: columnDefs,
+         defaultColDef: {
+            resizable: true,
+            sortable: true,
+            filter: true
+        },
         rowData: [],
         pagination: true,
-        paginationPageSize: 10,
-        defaultColDef: {
-            sortable: true,
-            filter: true,
-            resizable: true
+        paginationPageSize: 100,
+        paginationPageSizeSelector: [25, 50, 100],
+        enableCellTextSelection: true,
+        suppressCellSelection: true, 
+        rowClassRules: {
+            'highlight-warning': params => params.data.isHighlighted
         },
-        domLayout: 'autoHeight'
+        onCellDoubleClicked: params => {
+            const textToCopy = params.value;
+            if (textToCopy != null) {
+                navigator.clipboard.writeText(textToCopy)
+                    .then(() => {
+                    })
+                    .catch(err => {
+                        console.error('Error al copiar:', err);
+                    });
+            }
+        },
+        suppressHorizontalScroll: false,
+        localeText: window.localeTextEs
     };
 
     new agGrid.Grid(document.getElementById('clientesGrid'), gridOptions);
 
-    // Llamar por primera vez
     ListarUsuarioGerente();
 });
 
 function CambiarEstadoUsuario(estado, idUsuario) {
 
-    console.log(idUsuario)
     $.ajax({
         url: "/Usuarios/ActualizarEstadoUsuario",
         type: "POST",
@@ -159,56 +216,18 @@ function CambiarEstadoUsuario(estado, idUsuario) {
     });
 }
 
-function ListarUsuarioxID(idUsuario) {
-    $.ajax({
-        url: "/Usuarios/ListarUsuarioAdministrador",
-        type: "GET",
-        data: {
-            idUsuario: idUsuario
-        },
-        success: function (response) {
-            console.log(response)
-            if (response.success === false) {
-                Swal.fire({
-                    title: 'Error al obtener los datos del Usuario',
-                    text: response.message,
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            } else {
-                $('#modalEditarUsuarioGerente').modal('show');
 
-                $('#txtDNI_EditarUsuario').val(response[0].dni ?? '');
-                $('#selectTDocumento_EditarUsuario').val(response[0].tipoDocumento ?? '');
-                $('#txtUser_EditarUsuario').val(response[0].usuario ?? '');
-                $('#txtPassword_EditarUsuario').val(response[0].contrasenia ?? '');
-                
-                $('#txtApellidosP_EditarUsuario').val(response[0].apellido_Paterno ?? '');
-                $('#txtApellidosM_EditarUsuario').val(response[0].apellido_Materno ?? '');
-                $('#txtNombres_EditarUsuario').val(response[0].nombres ?? '');
-                $('#txtRegion_EditarUsuario').val(response[0].region ?? '');
-                $('#txtCampania_EditarUsuario').val(response[0].nombrecampania ?? '');
-                $('#txtCorreo_EditarUsuario').val(response[0].correo ?? '');
-                $('#txtRol_EditarUsuario').val(response[0].rol ?? '');
-                $('#selectEstado').val(response[0].estado ?? '')
-
-                $('#btnGuardarCambios').attr('data-id', response[0].idUsuario);
-            }
-        },
-        error: function (error) {
-            Swal.fire({
-                title: 'Error al obtener los datos del Usuario',
-                text: error,
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        }
-    });
-}
-
+$('#btnAgregarUsuario').on('click', function () {
+    $('#modalEditarUsuarioGerente').modal('show');
+});
 
 $('#btnGuardarCambios').on('click', function () {
     const idUsuario = $(this).attr('data-id');
+    AgregarActualizarCliente(true, idUsuario);
+    
+});
+function AgregarActualizarCliente(agregar = false, idUsuario=null) {
+
     const correo = $('#txtCorreo_EditarUsuario').val();
 
     const data = {
@@ -227,36 +246,36 @@ $('#btnGuardarCambios').on('click', function () {
         estado: $('#selectEstado').val() || null
     };
 
-        if (correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
-            Swal.fire('Formato Inválido', 'El correo ingresado no cumple con los estándares', 'warning');
-            return; 
-        }
-    $.ajax({
-        url: '/Usuarios/ActualizarUsuario',
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(data),
-        success: function (res) {
-            console.log(res)
-            if (res.success) {
-                Swal.fire('Actualizado Correctamente', 'Se ha editado los datos del usuario', 'success');
-                ListarUsuarioGerente()
-                $('#modalEditarUsuarioGerente').modal('hide');
-            } else {
-                Swal.fire('Error', res.message || 'No se pudo actualizar', 'error');
+    if (correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+        Swal.fire('Formato Inválido', 'El correo ingresado no cumple con los estándares', 'warning');
+        return;
+    }
+
+    if (agregar) {
+        $.ajax({
+            url: '/Usuarios/ActualizarUsuario',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function (res) {
+                console.log(res)
+                if (res.success) {
+                    Swal.fire('Actualizado Correctamente', 'Se ha editado los datos del usuario', 'success');
+                    ListarUsuarioGerente()
+                    $('#modalEditarUsuarioGerente').modal('hide');
+                } else {
+                    Swal.fire('Error', res.message || 'No se pudo actualizar', 'error');
+                }
+            },
+            error: function () {
+                Swal.fire('Error', 'Error de servidor o red', 'error');
             }
-        },
-        error: function () {
-            Swal.fire('Error', 'Error de servidor o red', 'error');
-        }
-    });
-});
-function ListarRoles() {
-    const $select = $("#txtRol_EditarUsuario");
+        });
+    } 
+}
 
-    $select.empty(); // Limpia por si acaso
-    $select.append('<option value="" selected disabled>--Seleccione--</option>');
-
+function ListarRoles(idSelect = "#txtFiltrarRol") {
+    const $select = $(idSelect);
     $.ajax({
         url: "/Usuarios/ListarRoles",
         type: "GET",
@@ -285,4 +304,45 @@ function FechaFormat(fechaString) {
     const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
     const anio = fecha.getFullYear();
     return `${dia}/${mes}/${anio}`;
+}
+
+function aplicarFiltroGlobal() {
+    // Tomar todos los valores de filtros
+    const texto = [
+        document.getElementById('filtroDni').value,
+        document.getElementById('filtroUsuario').value,
+        document.getElementById('txtFiltrarRol').value,
+        document.getElementById('txtFiltrarEstado').value
+    ].filter(Boolean).join(' ');
+    console.log(texto)
+
+    const selEstado = document.getElementById('txtFiltrarEstado');
+    selEstado.addEventListener('change', function () {
+        const v = this.value; 
+        const model = gridOptions.api.getFilterModel();
+
+        if (!v) {
+            delete model.estado;
+        } else {
+            model.estado = { filterType: 'text', type: 'equals', filter: v };
+        }
+        gridOptions.api.setFilterModel(model);
+    });
+
+    gridOptions.api.setQuickFilter(texto);
+}
+
+function LimpiarFormularioUsuario() {
+    $('#txtDNI_EditarUsuario').val('');
+    $('#selectTDocumento_EditarUsuario').val('');
+    $('#txtUser_EditarUsuario').val('');
+    $('#txtPassword_EditarUsuario').val('');
+    $('#txtApellidosP_EditarUsuario').val('');
+    $('#txtApellidosM_EditarUsuario').val('');
+    $('#txtNombres_EditarUsuario').val('');
+    $('#txtRegion_EditarUsuario').val('');
+    $('#txtCampania_EditarUsuario').val('');
+    $('#txtCorreo_EditarUsuario').val('');
+    $('#txtRol_EditarUsuario').val('');
+    $('#selectEstado').val('');
 }

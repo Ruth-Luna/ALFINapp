@@ -1,5 +1,6 @@
 ﻿using ALFINapp.API.Models;
 using ALFINapp.Datos.DAO;
+using ALFINapp.Datos.Persistence.Procedures;
 using ALFINapp.Infrastructure.Persistence.Models;
 using Microsoft.Data.SqlClient;
 using System.Data;

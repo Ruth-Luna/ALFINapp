@@ -10,57 +10,51 @@
 
 <div>
     <div class="mb-2">
-        <h3> Administracion de Usuarios </h3>
-        <div class="alert alert-info" role="alert">
-            <p>
-                En esta sección podra administrar los usuarios de la plataforma A365. Aca podra <strong>
-                editar,desactivar y eliminar
-                </strong> usuarios.
-            </p>
-        </div>
+        <h3 style="mb-2">Usuarios</h3>
+    
         <div class="w-100">
             <div class="bg-white rounded shadow-sm px-4 py-3 mb-3 w-100">
-                <div class="row g-4">
+                <div class="row g-4 align-items-end">
 
-                    <!-- DNI -->
                     <div class="col-12 col-md-3">
                         <label for="filtroDni" class="form-label fw-semibold">DNI</label>
-                        <input type="text" id="filtroDni" class="form-control form-control-lg" placeholder="Ingrese DNI">
+                        <input type="text" id="filtroDni" class="form-control form-control-sm" placeholder="Ingrese DNI">
                     </div>
 
-                    <!-- Usuario -->
                     <div class="col-12 col-md-3">
                         <label for="filtroUsuario" class="form-label fw-semibold">Usuario</label>
-                        <input type="text" id="filtroUsuario" class="form-control form-control-lg" placeholder="Ingrese nombre">
+                        <input type="text" id="filtroUsuario" class="form-control form-control-sm" placeholder="Ingrese nombre">
                     </div>
 
-                    <!-- Rol -->
-                    <div class="col-12 col-md-3">
-                        <label for="filtroRol" class="form-label fw-semibold">Rol</label>
-                        <select id="filtroRol" class="form-select form-select-lg">
-                            <option value="">Seleccione</option>
-                            <option value="AGENTE">AGENTE</option>
-                            <option value="SUPERVISOR">SUPERVISOR</option>
-                            <option value="ADMIN">ADMIN</option>
+                    <div class="col-12 col-md-2">
+                        <label for="txtFiltrarRol" class="form-label fw-semibold">Rol</label>
+                        <select id="txtFiltrarRol" class="form-select form-select-sm">
+                            <option value="" selected disaled>--Seleccione--</option>
                         </select>
                     </div>
 
-                    <!-- Estado -->
-                    <div class="col-12 col-md-3">
-                        <label for="filtroEstado" class="form-label fw-semibold">Estado</label>
-                        <select id="filtroEstado" class="form-select form-select-lg">
-                            <option value="">Todos</option>
-                            <option value="ACTIVO">ACTIVO</option>
-                            <option value="INACTIVO">INACTIVO</option>
-                        </select>
+                    <div class="col-12 col-md-2 d-flex gap-2">
+                        <div class="flex-grow-1">
+                            <label for="txtFiltrarEstado" class="form-label fw-semibold">Estado</label>
+                            <select id="txtFiltrarEstado" class="form-select form-select-sm">
+                                <option value="" selected disaled>--Seleccione--</option>
+                                <option value="ACTIVO">ACTIVO</option>
+                                <option value="INACTIVO">INACTIVO</option>
+                            </select>
+                        </div>
                     </div>
 
+                    <div class="col-md-2 d-flex flex-column justify-content-end">
+                        <button id="btnAgregarUsuario" class="btn btn-sm btn-outline-success w-100" title="Agregar Usuario">
+                            <i class="bi bi-person-plus-fill me-2 fs-5"></i>Agregar Usuario
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="table-responsive">
-        <div class="ag-theme-alpine" id="clientesGrid" style="height: 600px; width: 100%;"></div>
+    <div class="table-wrapper" style="overflow-x: auto; width: 100%;">
+        <div id="clientesGrid" class="ag-theme-alpine" style="height: 600px; min-width: 1500px;"></div>
     </div>
 </div>
 
@@ -151,7 +145,7 @@
                     </div>
 
                     <div class="text-end mt-3">
-                        <button type="button" class="btn btn-primary" id="btnGuardarCambios" data-id="">Modificar</button>
+                        <button type="button" class="btn btn-primary" id="btnGuardarCambios" data-id="">Guardar</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     </div>
                 </div>
@@ -190,6 +184,7 @@
 
 
     <script src="~/js/tablefunctions.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/js/Utils/localeEs.js"></script>
     <script src="~/js/Usuarios/Administracion.js?v=@DateTime.Now.Ticks"></script>
 
 }
