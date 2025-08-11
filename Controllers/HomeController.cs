@@ -160,9 +160,11 @@ public class HomeController : Controller
     }
 
     [HttpPost]
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     public async Task<IActionResult> Login(string usuario, string password)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     {
-        usuario = usuario?.ToUpper().Trim();
+        usuario = usuario.ToUpper().Trim();
         var verusuario = _daLogin.ValidarUsuario(usuario, password);
 
         if (verusuario.Resultado == false || verusuario.usuario == null)
@@ -238,7 +240,17 @@ public class HomeController : Controller
     {
         try
         {
-            var resultado = _daLogin.InsertarSolicitudYObtenerCodigo(data.Correo, data.Usuario);
+            // Usar la IP enviada desde el cliente
+            string ipAddress = data.IP;
+
+            // Validar que la IP no sea nula o vacía
+            if (string.IsNullOrEmpty(ipAddress))
+            {
+                return Json(new { success = false, mensaje = "La dirección IP es requerida." });
+            }
+
+            var resultado = _daLogin.InsertarSolicitudYObtenerCodigo(data.Correo, data.Usuario, ipAddress);
+
             Console.WriteLine("id", resultado.IdSolicitud);
             if (resultado != null && !string.IsNullOrEmpty(resultado.Codigo))
             {
@@ -302,18 +314,121 @@ public class HomeController : Controller
         {
             string asunto = "Código de recuperación de contraseña";
             string cuerpo = $@"
-            <div style='font-family: Arial, sans-serif; color: #333;'>
-                <h2 style='color: #2c3e50;'>Recuperación de contraseña</h2>
-                <p>Hola,</p>
-                <p>Hemos recibido una solicitud para restablecer tu contraseña. Usa el siguiente código de verificación:</p>
-                <div style='font-size: 28px; font-weight: bold; letter-spacing: 4px; padding: 12px 20px; background-color: #f0f0f0; width: fit-content; border-radius: 6px; margin: 20px auto; text-align: center;'>
-                    {codigo}
-                </div>
-                <p>Este código tiene una validez de <strong>15 minutos</strong>.</p>
-                <p>Si no realizaste esta solicitud, puedes ignorar este mensaje.</p>
-                <br>
-                <p style='font-size: 12px; color: #888;'>Este es un mensaje automático. Por favor, no respondas a este correo.</p>
-            </div>";
+                <!DOCTYPE html>
+                <html lang=""es"">
+                <head>
+                  <meta charset=""UTF-8"">
+                  <title>Recuperación de contraseña</title>
+                  <meta name=""viewport"" content=""width=device-width, initial-scale=1"">
+                  <style>
+                    body {{
+                      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+                      background-color: #f5f8fa;
+                      margin: 0;
+                      padding: 0;
+                    }}
+                    .container {{
+                      max-width: 600px;
+                      margin: 40px auto;
+                      background-color: white;
+                      border: 1px solid #dcdcdc;
+                      border-radius: 8px;
+                      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+                      overflow: hidden;
+                    }}
+                    .header {{
+                      background-color: #084298;
+                      color: white;
+                      padding: 20px;
+                      text-align: center;
+                      font-size: 20px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      gap: 10px;
+                    }}
+                    .header img {{
+                      height: 40px;
+                      vertical-align: middle;
+                    }}
+                    .header span {{
+                      text-align: center;
+                      width: 100%;
+                    }}
+                    .content {{
+                      padding: 30px;
+                      color: #333;
+                      text-align: left;
+                    }}
+                    .code-box {{
+                      background-color: #e7f1ff;
+                      border: 2px dashed #084298;
+                      color: #084298;
+                      font-size: 32px;
+                      text-align: center;
+                      padding: 20px;
+                      margin: 20px auto;
+                      border-radius: 6px;
+                      font-weight: bold;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      min-width: 200px;
+                      width: fit-content;
+                      max-width: 300px; /* Added to prevent overly wide box */
+                    }}
+                    .code-box span {{
+                      width: 100%;
+                      text-align: center;
+                    }}
+                    .footer {{
+                      font-size: 12px;
+                      color: #777;
+                      text-align: center;
+                      padding: 20px;
+                      background-color: #f0f0f0;
+                    }}
+                    @media (max-width: 600px) {{
+                      .container {{
+                        margin: 20px;
+                      }}
+                      .header {{
+                        flex-direction: column;
+                        gap: 15px;
+                      }}
+                      .header img {{
+                        height: 30px;
+                      }}
+                      .code-box {{
+                        font-size: 24px;
+                        padding: 15px;
+                        min-width: 150px;
+                        max-width: 250px;
+                      }}
+                    }}
+                  </style>
+                </head>
+                <body>
+                  <div class=""container"">
+                    <div class=""header"">
+                      <img src=""https://www.a365.com.pe/wp-content/uploads/2023/06/A365Logo.png"" alt=""A365 Logo"">
+                      <span>Recuperación de Contraseña</span>
+                    </div>
+                    <div class=""content"">
+                      <p>Hola,</p>
+                      <p>Hemos recibido una solicitud para restablecer tu contraseña. Usa el siguiente código de verificación:</p>
+                      <div class=""code-box"">
+                        <span>{codigo}</span>
+                      </div>
+                      <p>Este código tiene una validez de <strong>15 minutos</strong>.</p>
+                      <p>Si no realizaste esta solicitud, puedes ignorar este mensaje.</p>
+                    </div>
+                    <div class=""footer"">
+                      Este es un mensaje automático. Por favor, no respondas a este correo.
+                    </div>
+                  </div>
+                </body>
+                </html>";
 
             MailMessage mensaje = new MailMessage
             {

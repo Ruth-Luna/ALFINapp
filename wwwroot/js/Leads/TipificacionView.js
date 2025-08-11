@@ -117,7 +117,7 @@ async function mostrarTelefonosManuales(data) {
 
     // Limpiar contenido previo si hay
     telefonosContainer.innerHTML = `
-        <input type="hidden" name="IdAsignacionCliente" value="${data.id_asignacion}" id="IdAsignacionCliente">
+        <input type="hidden" name="IdAsignacion" value="${data.id_asignacion}" id="IdAsignacionCliente">
         <h4>Agregue las Tipificaciones a los clientes asignados</h4>
         <hr>
     `;

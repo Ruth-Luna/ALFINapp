@@ -29,9 +29,14 @@ document.addEventListener('DOMContentLoaded', function () {
     $('#btnAbrirModalRecuperarPassword').on('click', function () {
         verificarEstadoCodigo();
     });
-    $('#btnValidarUser, #btnSolicitarNuevoCodigo').on('click', function () {
-        ValidarCorreoUsuario();
+    $('#btnValidarUser').on('click', function () {
+        ValidarCorreoUsuario('btnValidarUser');
     });
+
+    $('#btnSolicitarNuevoCodigo').on('click', function () {
+        ValidarCorreoUsuario('btnSolicitarNuevoCodigo');
+    });
+
     $('#btnVerificarCodigo').on('click', function () {
         VerificarCodigoIngresado();
     });
@@ -49,11 +54,10 @@ function obtenerCodigoOTP() {
     });
     return codigo;
 }
-
-async function ValidarCorreoUsuario() {
+async function ValidarCorreoUsuario(buttonId) {
     const usuario = $('#usuarioRecuperacion').val().trim();
     const correo = $('#correoRecuperacion').val().trim();
-    const btn = document.getElementById('btnValidarUser');
+    const btn = document.getElementById(buttonId);
 
     if (!usuario || !correo) {
         Swal.fire({
@@ -67,6 +71,19 @@ async function ValidarCorreoUsuario() {
     btn.disabled = true;
     btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Enviando...`;
 
+    // Mostrar alerta específica para btnSolicitarNuevoCodigo
+    let alertInstance = null;
+    if (buttonId === 'btnSolicitarNuevoCodigo') {
+        alertInstance = Swal.fire({
+            title: 'Enviando código',
+            text: 'Por favor, espera mientras se envía el código.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+    }
+
     try {
         const response = await $.ajax({
             url: '/Home/ValidarCorreoYUsuario',
@@ -77,13 +94,23 @@ async function ValidarCorreoUsuario() {
         if (response.success) {
             await EnviarCodigoRecuperacionPassword();
 
+            // Actualizar la interfaz para mostrar el paso 2
             document.getElementById("step1").classList.add("d-none");
             document.getElementById("step2").classList.remove("d-none");
             document.getElementById("alertaCodigo").classList.remove("d-none");
 
             const otpInputs = document.querySelectorAll(".otp-input");
             if (otpInputs.length > 0) otpInputs[0].focus();
+
+            // Cerrar la alerta de "Enviando código" si existe
+            if (alertInstance) {
+                Swal.close();
+            }
         } else {
+            // Cerrar la alerta de "Enviando código" si existe antes de mostrar el error
+            if (alertInstance) {
+                Swal.close();
+            }
             Swal.fire({
                 icon: 'error',
                 title: 'Información Incorrecta',
@@ -91,6 +118,10 @@ async function ValidarCorreoUsuario() {
             });
         }
     } catch (error) {
+        // Cerrar la alerta de "Enviando código" si existe antes de mostrar el error
+        if (alertInstance) {
+            Swal.close();
+        }
         Swal.fire({
             icon: 'error',
             title: 'Error del servidor',
@@ -98,29 +129,49 @@ async function ValidarCorreoUsuario() {
         });
     } finally {
         btn.disabled = false;
-        btn.innerHTML = `Enviar código`;
+        btn.innerHTML = buttonId === 'btnValidarUser' ? 'Enviar código' : 'Solicitar nuevo código';
+    }
+}
+async function getPublicIp() {
+    try {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        return data.ip;
+    } catch (error) {
+        console.error('Error al obtener la IP pública:', error);
+        return null;
     }
 }
 
-function EnviarCodigoRecuperacionPassword() {
-
+async function EnviarCodigoRecuperacionPassword() {
     const usuario = $('#usuarioRecuperacion').val().trim();
     const correo = $('#correoRecuperacion').val().trim();
 
-    $.ajax({
+    // Obtener la IP pública
+    const ip = await getPublicIp();
+    if (!ip) {
+        Swal.fire('Error', 'No se pudo obtener la dirección IP.', 'error');
+        return;
+    }
+
+    return $.ajax({
         url: '/Home/InsertarSolicitudRecuperacionContrasenia',
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify({
             usuario: usuario,
-            correo: correo
+            correo: correo,
+            ip: ip
         }),
         success: function (response) {
-            console.log(response)
+            console.log(response);
             if (response.success) {
-                idUsuario = response.idUsuario
+                idUsuario = response.idUsuario;
                 localStorage.setItem("idSolicitud", response.idSolicitud);
                 localStorage.setItem("idUsuario", response.idUsuario);
+
+                // Llamar a verificarEstadoCodigo para actualizar el temporizador
+                verificarEstadoCodigo();
             } else {
                 Swal.fire('Error', response.mensaje, 'error');
             }
@@ -180,6 +231,35 @@ function VerificarCodigoIngresado() {
     });
 }
 
+let timerInterval = null;
+
+function startTimer(fechaExpiracion) {
+    // Limpiar
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+
+    // Actualizar el temporizador
+    const updateTimer = () => {
+        const now = new Date();
+        const diffInSeconds = Math.floor((fechaExpiracion - now) / 1000);
+        if (diffInSeconds <= 0) {
+            document.getElementById("tiempoExpiracion").textContent = "El código ha expirado";
+            clearInterval(timerInterval);
+            timerInterval = null;
+            return;
+        }
+        const minutes = Math.floor(diffInSeconds / 60);
+        const seconds = diffInSeconds % 60;
+        const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        document.getElementById("tiempoExpiracion").innerHTML = `<strong>El código expira en: ${formattedTime}</strong>`;
+    };
+
+    // Actualizar cada segundo
+    updateTimer();
+    timerInterval = setInterval(updateTimer, 1000);
+}
+
 function verificarEstadoCodigo() {
     const idSolicitud = localStorage.getItem("idSolicitud");
     if (!idSolicitud) {
@@ -195,9 +275,9 @@ function verificarEstadoCodigo() {
             console.log(data);
 
             const fechaExpiracion = new Date(data.fechaExpiracion);
-            const ahora = new Date();
-            const codigoExpirado = fechaExpiracion > ahora && data.estado === null;
-            console.log(codigoExpirado)
+            const fechaActual = new Date();
+            const codigoExpirado = fechaExpiracion > fechaActual && data.estado === null;
+            console.log(codigoExpirado);
 
             if (codigoExpirado) {
                 console.log("Código valido");
@@ -206,6 +286,10 @@ function verificarEstadoCodigo() {
                 document.getElementById("step3").classList.add("d-none");
                 document.getElementById("step2").classList.remove("d-none");
                 document.getElementById("lblMensajeAlerta").classList.add("d-none");
+
+                // Iniciar el temporizador
+                startTimer(fechaExpiracion);
+
                 return;
             }
 
@@ -225,7 +309,6 @@ function verificarEstadoCodigo() {
         }
     });
 }
-
 function cambiarContraseniaCorreo() {
     const idUsuario = localStorage.getItem("idUsuario");
     const nueva = $('#txtNuevaContrasenia').val().trim();

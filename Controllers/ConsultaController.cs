@@ -72,11 +72,7 @@ namespace ALFINapp.API.Controllers
                 {
                     return Json(new { success = false, message = $"{asignar.message}" });
                 }
-                if (asignar.success == false)
-                {
-                    return Json(new { success = false, message = $"{asignar.message}" });
-                }
-
+                
                 return Json(new { success = true, message = $"{asignar.message}" });
             }
             catch (System.Exception ex)

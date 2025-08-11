@@ -9,7 +9,7 @@ using System.Diagnostics;
 namespace ALFINapp.Datos
 {
     public class DA_Usuario
-    {  
+    {
         public async Task<(bool IsSuccess, string Message)> CrearUsuario(ViewUsuario usuario, int idUsuarioAccion)
         {
             try
@@ -210,6 +210,128 @@ namespace ALFINapp.Datos
             }
 
             return lista;
+        }
+        public List<Usuario> ListarAsesores(int? idUsuario = null)
+        {
+            try
+            {
+                var lista = new List<Usuario>();
+                var cn = new Conexion();
+
+                using (SqlConnection connection = new SqlConnection(cn.getCadenaSQL()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("SP_USUARIO_LISTAR_ASESORES_ASIGNADOS", connection))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        if (idUsuario.HasValue)
+                            cmd.Parameters.AddWithValue("@idUsuario", idUsuario.Value);
+
+                        connection.Open();
+                        using (SqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            while (dr.Read())
+                            {
+                                lista.Add(new Usuario
+                                {
+                                    IdUsuario = Convert.ToInt32(dr["id_usuario"]),
+                                    NombresCompletos = dr["nombres_completos"].ToString(),
+                                    Rol = dr["rol"].ToString(),
+                                    Estado = dr["estado"].ToString(),
+                                    IDUSUARIOSUP = Convert.ToInt32(dr["ID_USUARIO_SUP"]),
+                                    IdRol = Convert.ToInt32(dr["id_rol"]),
+                                    Dni = dr["dni"].ToString(),
+                                    TipoDocumento = dr["tipo_doc"].ToString(),
+                                    Telefono = dr["telefono"].ToString(),
+                                });
+                            }
+                        }
+                    }
+                }
+
+                return lista;
+            }
+            catch (System.Exception)
+            {
+                return new List<Usuario>();
+            }
+        }
+        public List<Usuario> ListarSupervisores(int? idUsuario = null)
+        {
+            var lista = new List<Usuario>();
+            var cn = new Conexion();
+
+            using (SqlConnection connection = new SqlConnection(cn.getCadenaSQL()))
+            {
+                using (SqlCommand cmd = new SqlCommand("SP_USUARIO_LISTAR_SUPERVISORES", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    if (idUsuario.HasValue)
+                        cmd.Parameters.AddWithValue("@idUsuario", idUsuario.Value);
+
+                    connection.Open();
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            lista.Add(new Usuario
+                            {
+                                IdUsuario = Convert.ToInt32(dr["id_usuario"]),
+                                Dni = dr["dni"].ToString(),
+                                NombresCompletos = dr["Nombres_Completos"].ToString(),
+                                Rol = dr["rol"].ToString(),
+                                Estado = dr["estado"].ToString(),
+                                IDUSUARIOSUP = Convert.ToInt32(dr["ID_USUARIO_SUP"]),
+                                RESPONSABLESUP = dr["RESPONSABLE_SUP"].ToString(),
+                                REGION = dr["REGION"].ToString(),
+                            });
+                        }
+                    }
+                }
+            }
+
+            return lista;
+        }
+
+        public Usuario? getUsuario(int idUsuario)
+        {
+            try
+            {
+                var cn = new Conexion();
+                using (SqlConnection connection = new SqlConnection(cn.getCadenaSQL()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("SP_USUARIO_GET_USUARIO", connection))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@idUsuario", idUsuario);
+
+                        connection.Open();
+                        using (SqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            if (dr.Read())
+                            {
+                                return new Usuario
+                                {
+                                    IdUsuario = Convert.ToInt32(dr["id_usuario"]),
+                                    Dni = dr["dni"].ToString(),
+                                    TipoDocumento = dr["tipo_doc"].ToString(),
+                                    NombresCompletos = dr["Nombres_Completos"].ToString(),
+                                    Rol = dr["rol"].ToString(),
+                                    Estado = dr["estado"].ToString(),
+                                    IdRol = Convert.ToInt32(dr["id_rol"]),
+                                };
+                            }
+                        }
+                    }
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error en getUsuario: " + ex.Message);
+                return null;
+            }
         }
     }
 }

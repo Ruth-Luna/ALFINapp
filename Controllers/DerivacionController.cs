@@ -1,5 +1,7 @@
 using ALFINapp.API.Filters;
 using ALFINapp.Application.Interfaces.Derivacion;
+using ALFINapp.Datos.DAO.Derivaciones;
+using ALFINapp.Datos.DAO.Evidencias;
 using ALFINapp.DTOs;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Services;
@@ -13,12 +15,18 @@ namespace ALFINapp.API.Controllers
         
         private readonly IUseCaseGetDerivacion _useCaseGetDerivacion;
         private readonly IUseCaseUploadEvidencias _useCaseUploadEvidencias;
+        private readonly DAO_DerivacionesVista _dao_derivacionesVista;
+        private readonly DAO_SubirEvidencia _dao_subirEvidencia;
         public DerivacionController(
             IUseCaseGetDerivacion useCaseGetDerivacion,
-            IUseCaseUploadEvidencias useCaseUploadEvidencias)
+            IUseCaseUploadEvidencias useCaseUploadEvidencias,
+            DAO_SubirEvidencia dao_subirEvidencia,
+            DAO_DerivacionesVista dao_derivacionesVista)
         {
             _useCaseGetDerivacion = useCaseGetDerivacion;
             _useCaseUploadEvidencias = useCaseUploadEvidencias;
+            _dao_subirEvidencia = dao_subirEvidencia;
+            _dao_derivacionesVista = dao_derivacionesVista;
         }
 
         [HttpGet]
@@ -37,7 +45,7 @@ namespace ALFINapp.API.Controllers
                 TempData["MessageError"] = "No se ha iniciado sesión.";
                 return RedirectToAction("Redireccionar", "Error");
             }
-            var execute = await _useCaseGetDerivacion.Execute(UsuarioIdSupervisor.Value, rolUsuario.Value);
+            var execute = await _dao_derivacionesVista.getDerivacionesVista((int)UsuarioIdSupervisor, (int)rolUsuario);
             if (!execute.success)
             {
                 TempData["MessageError"] = execute.message;
@@ -52,7 +60,7 @@ namespace ALFINapp.API.Controllers
         {
             try
             {
-                var result = await _useCaseUploadEvidencias.Execute(evidencia);
+                var result = await _dao_subirEvidencia.marcarEvidenciaDisponible(evidencia);
                 if (!result.success)
                 {
                     return Json(new { success = false, message = result.message });

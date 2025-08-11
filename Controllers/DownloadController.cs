@@ -24,7 +24,7 @@ namespace ALFINapp.Controllers
             if (files == null || files.Length == 0)
                 return BadRequest("No file uploaded.");
 
-            var imageName = $"{Guid.NewGuid()}{Path.GetExtension(files.FileName)}"; // Nombre único
+            var imageName = $"{Guid.NewGuid()}{Path.GetExtension(files.FileName)}";
 
             if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "temp-images")))
             {

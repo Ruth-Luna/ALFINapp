@@ -73,7 +73,7 @@ namespace ALFINapp.Datos.DAO.Derivaciones
                         new DtoVTipificarCliente
                         {
                             Telefono = dto.telefono,
-                            TipificacionId = dto.type,
+                            TipificacionId = 2,
                             idderivacion = upload.idderivacion
                         }
                     }, dto.id_asignacion, dto.id_usuario.Value);
