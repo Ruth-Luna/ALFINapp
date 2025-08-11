@@ -68,27 +68,13 @@
             <div class="modal-body">
                 <div class="container">
                     <div class="row">
-                        <label class="form-label fw-bold">DATOS DE LA CUENTA</label>
+                        <label class="form-label fw-bold">DATOS DE SESIÓN</label>
 
-                        <div class="mb-3 col-md-3">
-                            <div class="mb-3">
-                                <label for="selectTDocumento_AR" class="form-label">Tipo Documento</label>
-                                <select class="form-select" id="selectTDocumento_AR">
-                                    <option value="1">DNI</option>
-                                    <option value="2">CARNET EXTRANJERÍA</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="mb-3 col-md-2">
-                            <label for="txtDNI_AR" class="form-label">Documento</label>
-                            <input type="text" class="form-control" id="txtDNI_AR" />
-                        </div>
-                        <div class="mb-3 col-md-3">
+                        <div class="mb-3 col-md-6">
                             <label for="txtUser_AR" class="form-label">Usuario</label>
                             <input type="text" class="form-control" id="txtUser_AR" />
                         </div>
-                        <div class="mb-3 col-md-4">
+                        <div class="mb-3 col-md-6">
                             <label for="txtPassword_AR" class="form-label">Contraseña</label>
                             <div class="position-relative">
                                 <input type="password" class="form-control pe-5" id="txtPassword_AR" />
@@ -98,7 +84,6 @@
                         </div>
 
                         <label class="form-label fw-bold">DATOS PERSONALES</label>
-
                         <div class="mb-3 col-md-4">
                             <label for="txtNombres_AR" class="form-label">Nombres</label>
                             <input type="text" class="form-control" id="txtNombres_AR" />
@@ -110,6 +95,26 @@
                         <div class="mb-3 col-md-4">
                             <label for="txtApellidosM_AR" class="form-label">Apellido Materno</label>
                             <input type="text" class="form-control" id="txtApellidosM_AR" />
+                        </div>
+
+                        <div class="mb-3 col-md-3">
+                            <div class="mb-3">
+                                <label for="selectTDocumento_AR" class="form-label">Tipo Documento</label>
+                                <select class="form-select" id="selectTDocumento_AR">
+                                    <option value="1">DNI</option>
+                                    <option value="2">CARNET EXTRANJERÍA</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 col-md-3">
+                            <label for="txtDNI_AR" class="form-label">Documento</label>
+                            <input type="text" class="form-control" id="txtDNI_AR" />
+                        </div>
+
+                        <div class="mb-3 col-md-6">
+                            <label for="txtCorreo_AR" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="txtCorreo_AR" />
                         </div>
                         <label class="form-label fw-bold">DATOS DE UBICACION</label>
                         <div class="mb-3 col-md-4">
@@ -139,30 +144,27 @@
 
 
                         <label class="form-label fw-bold">DATOS ADICIONALES</label>
-                        <div class="mb-3 col-md-4">
+                        <div class="mb-3 col-md-3">
                             <label for="txtRol_AR" class="form-label">Rol</label>
                             <select class="form-select" id="txtRol_AR">
                                 <!-- Opciones cargadas dinámicamente -->
                             </select>
                         </div>
-                        <div class="mb-3 col-md-4">
+                        <div class="mb-3 col-md-3">
                             <label for="txtTelefono_AR" class="form-label">Telefono</label>
                             <input type="text" class="form-control" id="txtTelefono_AR" />
                         </div>
-                        <div class="mb-3 col-md-4">
+                        <div class="mb-3 col-md-3">
                             <label for="sltEstado_AR" class="form-label">Estado</label>
                             <select class="form-select" id="sltEstado_AR">
                                 <option value="ACTIVO">ACTIVO</option>
                                 <option value="INACTIVO">INACTIVO</option>
                             </select>
                         </div>
-                        <div class="mb-3 col-md-6">
-                            <label for="txtCorreo_AR" class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" id="txtCorreo_AR" />
-                        </div>
 
 
-                        <div class="mb-3 col-md-6">
+
+                        <div class="mb-3 col-md-3">
                             <label for="txtSupervisor_AR" class="form-label">Supervisor</label>
                             <select class="form-select" id="txtSupervisor_AR">
                             </select>
