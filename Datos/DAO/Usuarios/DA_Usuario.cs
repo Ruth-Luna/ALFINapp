@@ -26,7 +26,6 @@ namespace ALFINapp.Datos
                         command.Parameters.AddWithValue("@Paterno", usuario.Apellido_Paterno);
                         command.Parameters.AddWithValue("@Materno", usuario.Apellido_Materno);
                         command.Parameters.AddWithValue("@Nombres", usuario.Nombres);
-                        command.Parameters.AddWithValue("@Rol", usuario.Rol ?? "ASESOR");
                         command.Parameters.AddWithValue("@Departamento", (object?)usuario.Departamento ?? DBNull.Value);
                         command.Parameters.AddWithValue("@Provincia", (object?)usuario.Provincia ?? DBNull.Value);
                         command.Parameters.AddWithValue("@Distrito", (object?)usuario.Distrito ?? DBNull.Value);

@@ -58,7 +58,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalEditarUsuarioGerente" tabindex="-1" aria-labelledby="modalEditarUsuarioGerente" aria-hidden="true">
+<div class="modal fade" id="modalARGerente" tabindex="-1" aria-labelledby="modalARGerente" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -72,8 +72,8 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <div class="mb-3">
-                                    <label for="selectTDocumento_EditarUsuario" class="form-label">Tipo Documento</label>
-                                    <select class="form-select" id="selectTDocumento_EditarUsuario">
+                                    <label for="selectTDocumento_AR" class="form-label">Tipo Documento</label>
+                                    <select class="form-select" id="selectTDocumento_AR">
                                         <option value="1">DNI</option>
                                         <option value="2">CARNET EXTRANJERÍA</option>
                                     </select>
@@ -81,24 +81,36 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="txtUser_EditarUsuario" class="form-label">Usuario</label>
-                                <input type="text" class="form-control" id="txtUser_EditarUsuario" />
+                                <label for="txtUser_AR" class="form-label">Usuario</label>
+                                <input type="text" class="form-control" id="txtUser_AR" />
                             </div>
                             <div class="mb-3">
-                                <label for="txtNombres_EditarUsuario" class="form-label">Nombres</label>
-                                <input type="text" class="form-control" id="txtNombres_EditarUsuario" />
+                                <label for="txtNombres_AR" class="form-label">Nombres</label>
+                                <input type="text" class="form-control" id="txtNombres_AR" />
                             </div>
                             <div class="mb-3">
-                                <label for="txtApellidosM_EditarUsuario" class="form-label">Apellido Materno</label>
-                                <input type="text" class="form-control" id="txtApellidosM_EditarUsuario" />
+                                <label for="txtApellidosM_AR" class="form-label">Apellido Materno</label>
+                                <input type="text" class="form-control" id="txtApellidosM_AR" />
                             </div>
                             <div class="mb-3">
-                                <label for="txtCampania_EditarUsuario" class="form-label">Campaña</label>
-                                <input type="text" class="form-control" id="txtCampania_EditarUsuario" />
+                                <label for="txtCampania_AR" class="form-label">Campaña</label>
+                                <input type="text" class="form-control" id="txtCampania_AR" />
                             </div>
                             <div class="mb-3">
-                                <label for="txtRol_EditarUsuario" class="form-label">Rol</label>
-                                <select class="form-select" id="txtRol_EditarUsuario">
+                                <label for="txtDepartamento_AR" class="form-label">Departamento</label>
+                                <input type="text" class="form-control" id="txtDepartamento_AR" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="txtProvincia_AR" class="form-label">Provincia</label>
+                                <input type="text" class="form-control" id="txtProvincia_AR" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="txtProvincia_AR" class="form-label">Campaña</label>
+                                <input type="text" class="form-control" id="txtProvincia_AR" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="txtRol_AR" class="form-label">Rol</label>
+                                <select class="form-select" id="txtRol_AR">
                                     <!-- Opciones cargadas dinámicamente -->
                                 </select>
                             </div>
@@ -106,39 +118,50 @@
 
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="txtDNI_EditarUsuario" class="form-label">Documento</label>
-                                <input type="text" class="form-control" id="txtDNI_EditarUsuario" />
+                                <label for="txtDNI_AR" class="form-label">Documento</label>
+                                <input type="text" class="form-control" id="txtDNI_AR" />
                             </div>
                            
                             <div class="mb-3">
-                                <label for="txtPassword_EditarUsuario" class="form-label">Contraseña</label>
+                                <label for="txtPassword_AR" class="form-label">Contraseña</label>
                                 <div class="position-relative">
-                                    <input type="password" class="form-control pe-5" id="txtPassword_EditarUsuario" />
+                                    <input type="password" class="form-control pe-5" id="txtPassword_AR" />
                                     <i class="fa fa-eye position-absolute top-50 end-0 translate-middle-y me-3"
                                        id="togglePassword" style="cursor: pointer;"></i>
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label for="txtApellidosP_EditarUsuario" class="form-label">Apellido Paterno</label>
-                                <input type="text" class="form-control" id="txtApellidosP_EditarUsuario" />
+                                <label for="txtApellidosP_AR" class="form-label">Apellido Paterno</label>
+                                <input type="text" class="form-control" id="txtApellidosP_AR" />
                             </div>
    
                             <div class="mb-3">
-                                <label for="txtRegion_EditarUsuario" class="form-label">Región</label>
-                                <input type="text" class="form-control" id="txtRegion_EditarUsuario" />
+                                <label for="txtRegion_AR" class="form-label">Región</label>
+                                <input type="text" class="form-control" id="txtRegion_AR" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="txtTelefono_AR" class="form-label">Telefono</label>
+                                <input type="text" class="form-control" id="txtTelefono_AR" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="txtDistrito_AR" class="form-label">Distrito</label>
+                                <input type="text" class="form-control" id="txtDistrito_AR" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="txtCorreo_AR" class="form-label">Correo Electrónico</label>
+                                <input type="email" class="form-control" id="txtCorreo_AR" />
                             </div>
 
                             <div class="mb-3">
-                                <label for="txtCorreo_EditarUsuario" class="form-label">Correo Electrónico</label>
-                                <input type="email" class="form-control" id="txtCorreo_EditarUsuario" />
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="selectEstado" class="form-label">Estado</label>
-                                <select class="form-select" id="selectEstado">
+                                <label for="sltEstado_AR" class="form-label">Estado</label>
+                                <select class="form-select" id="sltEstado_AR">
                                     <option value="ACTIVO">ACTIVO</option>
                                     <option value="INACTIVO">INACTIVO</option>
-                                    <option value="CAMBIO">CAMBIO DE FECHAS</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="txtSupervisor_AR" class="form-label">Supervisor</label>
+                                <select class="form-select" id="txtSupervisor_AR">
                                 </select>
                             </div>
                         </div>
@@ -160,7 +183,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const passwordInput = document.getElementById("txtPassword_EditarUsuario");
+            const passwordInput = document.getElementById("txtPassword_AR");
             const toggleIcon = document.getElementById("togglePassword");
 
             toggleIcon.addEventListener("click", function () {
@@ -171,8 +194,8 @@
             });
         });
 
-        $('#modalEditarUsuarioGerente').on('show.bs.modal', function () {
-            const passwordInput = document.getElementById("txtPassword_EditarUsuario");
+        $('#modalARGerente').on('show.bs.modal', function () {
+            const passwordInput = document.getElementById("txtPassword_AR");
             const toggleIcon = document.getElementById("togglePassword");
 
             passwordInput.type = "password";
