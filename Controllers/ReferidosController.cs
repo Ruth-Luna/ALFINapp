@@ -1,6 +1,7 @@
 using ALFINapp.API.Filters;
 using Microsoft.AspNetCore.Mvc;
 using ALFINapp.Infrastructure.Services;
+using ALFINapp.Datos.DAO.Referidos;
 
 namespace ALFINapp.API.Controllers
 {
@@ -10,14 +11,20 @@ namespace ALFINapp.API.Controllers
         public DBServicesGeneral _dbServicesGeneral;
         public DBServicesReferido _dbServicesReferido;
         public DBServicesDerivacion _dBServicesDerivacion;
+        private readonly DAO_ClientesReferidosVista _dao_clientesReferidosVista;
+        private readonly DAO_DerivarClienteReferido _dao_DerivarClienteReferido;
         public ReferidosController(
             DBServicesGeneral dbServicesGeneral,
             DBServicesReferido dbServicesReferido,
-            DBServicesDerivacion dBServicesDerivacion)
+            DBServicesDerivacion dBServicesDerivacion,
+            DAO_ClientesReferidosVista dao_clientesReferidosVista,
+            DAO_DerivarClienteReferido dao_DerivarClienteReferido)
         {
             _dbServicesGeneral = dbServicesGeneral;
             _dbServicesReferido = dbServicesReferido;
             _dBServicesDerivacion = dBServicesDerivacion;
+            _dao_clientesReferidosVista = dao_clientesReferidosVista;
+            _dao_DerivarClienteReferido = dao_DerivarClienteReferido;
         }
         [HttpGet]
         [PermissionAuthorization("Referidos", "Referidos")]
@@ -32,7 +39,7 @@ namespace ALFINapp.API.Controllers
                     return RedirectToAction("Index", "Home");
                 }
 
-                var getReferidos = await _dbServicesReferido.GetReferidosGeneral();
+                var getReferidos = await _dao_clientesReferidosVista.GetClientesReferidos();
                 if (getReferidos.IsSuccess == false || getReferidos.Data == null)
                 {
                     TempData["MessageError"] = getReferidos.Message;
@@ -52,7 +59,7 @@ namespace ALFINapp.API.Controllers
         {
             try
             {
-                var referido = await _dbServicesReferido.GetClienteReferidoPorId(IdReferido);
+                var referido = await _dao_clientesReferidosVista.GetClienteReferidoPorId(IdReferido);
                 if (referido.IsSuccess == false || referido.Data == null)
                 {
                     return Json(new { success = false, message = referido.Message });
@@ -69,37 +76,12 @@ namespace ALFINapp.API.Controllers
         {
             try
             {
-                var getReferido = await _dbServicesReferido.GetClienteReferidoPorId(IdReferido);
-                if (getReferido.IsSuccess == false || getReferido.Data == null)
+                var result = await _dao_DerivarClienteReferido.DerivarClienteReferidoAsync(IdReferido);
+                if (!result.IsSuccess)
                 {
-                    return Json(new { success = false, message = getReferido.Message });
+                    return Json(new { success = false, message = result.Message });
                 }
-
-                var enviarDerivacion = await _dBServicesDerivacion.GenerarDerivacion(
-                    getReferido.Data.FechaVisita ?? DateTime.Now,
-                    getReferido.Data.Agencia ?? throw new ArgumentNullException(nameof(getReferido.Data.Agencia) + "no puede ser nulo"),
-                    getReferido.Data.DniAsesor ?? throw new ArgumentNullException(nameof(getReferido.Data.DniAsesor) + "no puede ser nulo"),
-                    getReferido.Data.Telefono ?? throw new ArgumentNullException(nameof(getReferido.Data.Telefono) + "no puede ser nulo"),
-                    getReferido.Data.DniCliente ?? throw new ArgumentNullException(nameof(getReferido.Data.DniCliente) + "no puede ser nulo"),
-                    getReferido.Data.NombreCompletoCliente ?? throw new ArgumentNullException(nameof(getReferido.Data.NombreCompletoCliente) + "no puede ser nulo"));
-
-                if (enviarDerivacion.IsSuccess == false)
-                {
-                    return Json(new { success = false, message = enviarDerivacion.Message });
-                }
-                var verificarDerivacion = await _dBServicesDerivacion.VerificarDerivacionEnviada(getReferido.Data.DniCliente);
-                if (verificarDerivacion.IsSuccess == false)
-                {
-                    return Json(new { success = false, message = verificarDerivacion.Message });
-                }
-                var modificarEstadoReferido = await _dbServicesReferido.ModificarEstadoReferido(IdReferido);
-                if (modificarEstadoReferido.IsSuccess == false)
-                {
-                    return Json(new { success = false, message = modificarEstadoReferido.Message });
-                }
-
                 return Json(new { success = true, message = "Derivacion enviada correctamente, se ha enviado automaticamente el correo de la derivacion a todos los destinatarios correspondientes" });
-                //Si alguien lee esto, por favor debes de refactorizar este codigo, aun no es tarde para hacerlo - 2025 =wT
             }
             catch (System.Exception ex)
             {

@@ -215,14 +215,15 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE PROCEDURE [dbo].[SP_derivacion_insertar_derivacion_nuevo_metodo]
-(
+ALTER PROCEDURE [dbo].[SP_derivacion_insertar_derivacion_nuevo_metodo]
+    (
     @agencia_derivacion NVARCHAR(50),
     @fecha_visita DATETIME,
     @telefono NVARCHAR(50),
     @id_base INT,
-    @id_usuario INT,
+    @id_usuario INT = NULL,
     @nombre_completos NVARCHAR(100) = NULL,
+    @dni_asesor_auxiliar NVARCHAR(20) = NULL,
     @id_derivacion INT OUTPUT
 )
 AS
@@ -230,7 +231,8 @@ BEGIN
     SET NOCOUNT ON;
     IF @nombre_completos IS NULL OR @nombre_completos = ''
     BEGIN
-        SELECT TOP 1 @nombre_completos = CONCAT(x_nombre,' ', x_appaterno,' ', x_apmaterno)
+        SELECT TOP 1
+            @nombre_completos = CONCAT(x_nombre,' ', x_appaterno,' ', x_apmaterno)
         FROM base_clientes
         WHERE id_base = @id_base;
     END
@@ -251,17 +253,49 @@ BEGIN
     WHERE ce.id_base = @id_base;
 
     -- Obtener DNI del asesor y su supervisor
-    SELECT TOP 1
-        @dni_asesor = u.dni,
-        @id_supervisor = u.ID_USUARIO_SUP
-    FROM usuarios u
-    WHERE u.id_usuario = @id_usuario;
+    IF @id_usuario IS NOT NULL AND @id_usuario > 0
+    BEGIN
+        SELECT TOP 1
+            @dni_asesor = u.dni,
+            @id_supervisor = u.ID_USUARIO_SUP
+        FROM usuarios u
+        WHERE u.id_usuario = @id_usuario;
 
-    SELECT TOP 1
-        @nombre_supervisor = u.Nombres_Completos,
-        @dni_supervisor = u.dni
-    FROM usuarios u
-    WHERE u.id_usuario = @id_supervisor;
+        SELECT TOP 1
+            @nombre_supervisor = u.Nombres_Completos,
+            @dni_supervisor = u.dni
+        FROM usuarios u
+        WHERE u.id_usuario = @id_supervisor;
+    END
+    ELSE IF @dni_asesor_auxiliar IS NOT NULL AND @dni_asesor_auxiliar <> '' AND EXISTS (
+        SELECT 1
+        FROM usuarios u
+        WHERE u.dni = @dni_asesor_auxiliar
+    )
+    BEGIN
+        SELECT TOP 1
+            @dni_asesor = @dni_asesor_auxiliar,
+            @id_supervisor = u.ID_USUARIO_SUP
+        FROM usuarios u
+        WHERE u.dni = @dni_asesor_auxiliar;
+
+        SELECT TOP 1
+            @nombre_supervisor = u.Nombres_Completos,
+            @dni_supervisor = u.dni
+        FROM usuarios u
+        WHERE u.id_usuario = @id_supervisor;
+    END
+    ELSE
+    BEGIN
+        -- Si no se proporciona un asesor, usar un valor por defecto
+        SET @dni_asesor = CASE
+            WHEN @dni_asesor_auxiliar IS NOT NULL AND @dni_asesor_auxiliar <> '' THEN @dni_asesor_auxiliar
+            ELSE 'DESCONOCIDO'
+        END;
+        SET @id_supervisor = NULL;
+        SET @dni_supervisor = 'DESCONOCIDO';
+        SET @nombre_supervisor = 'DESCONOCIDO';
+    END
 
     -- Obtener DNI del cliente desde base
     SELECT TOP 1
@@ -270,9 +304,10 @@ BEGIN
     WHERE bc.id_base = @id_base;
 
     -- Intentar obtener oferta desde detalle_base
-    SELECT TOP 1 @oferta = db.oferta_max
+    SELECT TOP 1
+        @oferta = db.oferta_max
     FROM base_clientes bc
-    JOIN detalle_base db ON db.id_base = bc.id_base
+        JOIN detalle_base db ON db.id_base = bc.id_base
     WHERE bc.id_base = @id_base
         AND YEAR(db.fecha_carga) = YEAR(GETDATE())
         AND MONTH(db.fecha_carga) = MONTH(GETDATE())
@@ -281,7 +316,8 @@ BEGIN
     -- Si no hay oferta en detalle_base, intentar en base_clientes_banco
     IF @oferta IS NULL
     BEGIN
-        SELECT TOP 1 @oferta = bcb.oferta_max
+        SELECT TOP 1
+            @oferta = bcb.oferta_max
         FROM base_clientes_banco bcb
         WHERE bcb.dni = @dni_cliente
             AND YEAR(bcb.fecha_subida) = YEAR(GETDATE())
@@ -305,18 +341,18 @@ BEGIN
 
     -- Insertar derivación
     INSERT INTO derivaciones_asesores
-    (
+        (
         fecha_derivacion, dni_asesor, dni_cliente, id_cliente,
         nombre_cliente, telefono_cliente, nombre_agencia, num_agencia,
         fue_procesado, fecha_visita, estado_derivacion, oferta_max,
         doc_supervisor, supervisor, fue_enviado_email
-    )
+        )
     VALUES
-    (
-        GETDATE(), @dni_asesor, @dni_cliente, @id_cliente,
-        @nombre_completos, @telefono, CONCAT('73', @agencia_derivacion), NULL,
-        0, @fecha_visita, 'DERIVACION PENDIENTE', @oferta,
-        @dni_supervisor, @nombre_supervisor, 0
+        (
+            GETDATE(), @dni_asesor, @dni_cliente, @id_cliente,
+            @nombre_completos, @telefono, CONCAT('73', @agencia_derivacion), NULL,
+            0, @fecha_visita, 'DERIVACION PENDIENTE', @oferta,
+            @dni_supervisor, @nombre_supervisor, 0
     );
 
     SET @id_derivacion = SCOPE_IDENTITY();

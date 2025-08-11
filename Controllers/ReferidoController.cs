@@ -1,6 +1,8 @@
 using ALFINapp.API.DTOs;
-using ALFINapp.Application.Interfaces.Consulta;
 using ALFINapp.Application.Interfaces.Referidos;
+using ALFINapp.Datos.DAO;
+using ALFINapp.Datos.DAO.Miscelaneos;
+using ALFINapp.Datos.DAO.Referidos;
 using ALFINapp.Domain.Entities;
 using ALFINapp.Domain.Interfaces;
 using ALFINapp.Infrastructure.Services;
@@ -12,21 +14,24 @@ namespace ALFINapp.API.Controllers
     {
         public DBServicesGeneral _dbServicesGeneral;
         public DBServicesReferido _dbServicesReferido;
-        public IUseCaseConsultaClienteDni _useCaseConsultaClienteDni;
+        private readonly DAO_ClientesConsultas _dao_clientesConsultas;
         public IUseCaseReferirCliente _useCaseReferirCliente;
-        public IRepositoryMiscellaneous _repositoryMiscellaneous;
+        private readonly DAO_ConsultasMiscelaneas _dao_ConsultasMiscelaneas;
+        private readonly DAO_ReferirCliente _dao_ReferirCliente;
         public ReferidoController(
             DBServicesGeneral dbServicesGeneral,
             DBServicesReferido dbServicesReferido,
-            IUseCaseConsultaClienteDni useCaseConsultaClienteDni,
-            IRepositoryMiscellaneous repositoryMiscellaneous,
-            IUseCaseReferirCliente useCaseReferirCliente)
+            IUseCaseReferirCliente useCaseReferirCliente,
+            DAO_ClientesConsultas dao_clientesConsultas,
+            DAO_ConsultasMiscelaneas dao_ConsultasMiscelaneas,
+            DAO_ReferirCliente dao_ReferirCliente)
         {
             _dbServicesGeneral = dbServicesGeneral;
             _dbServicesReferido = dbServicesReferido;
-            _useCaseConsultaClienteDni = useCaseConsultaClienteDni;
-            _repositoryMiscellaneous = repositoryMiscellaneous;
             this._useCaseReferirCliente = useCaseReferirCliente;
+            _dao_clientesConsultas = dao_clientesConsultas;
+            _dao_ConsultasMiscelaneas = dao_ConsultasMiscelaneas;
+            _dao_ReferirCliente = dao_ReferirCliente;
         }
         [HttpGet]
         public IActionResult Referido()
@@ -36,8 +41,8 @@ namespace ALFINapp.API.Controllers
         [HttpGet]
         public async Task<IActionResult> BuscarDNIReferido(string dniBusqueda)
         {
-            var getDniReferido = await _useCaseConsultaClienteDni.Execute(dniBusqueda);
-            var getBases = await _repositoryMiscellaneous.GetUAgenciasConNumeros();
+            var getDniReferido = await _dao_clientesConsultas.GetClienteByDniAsync(dniBusqueda);
+            var getBases = await _dao_ConsultasMiscelaneas.GetAgencias();
 
             if (getDniReferido.IsSuccess == false || getDniReferido.Data == null)
             {
@@ -76,9 +81,9 @@ namespace ALFINapp.API.Controllers
                 Ubigeo = cliente.ubigeo,
                 Banco = cliente.banco
             };
-            
-            var referirCliente = await _useCaseReferirCliente.Execute(clienteEnt, asesorEnt);
-            if (referirCliente.IsSuccess == false)
+
+            var referirCliente = await _dao_ReferirCliente.ReferirClienteAsync(clienteEnt, asesorEnt);
+            if (referirCliente.isSuccess == false)
             {
                 return Json(new { success = false, message = referirCliente.Message });
             }
@@ -92,7 +97,7 @@ namespace ALFINapp.API.Controllers
 
         public async Task<IActionResult> BuscarReferidosDeDNI(string DNI)
         {
-            var getDNIConsulta = await _dbServicesReferido.GetReferidosDelDNI(DNI);
+            var getDNIConsulta = await _dao_ReferirCliente.GetClientesReferidos(DNI);
 
             if (getDNIConsulta.IsSuccess == false)
             {

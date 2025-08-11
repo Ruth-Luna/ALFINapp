@@ -1,5 +1,6 @@
 using ALFINapp.Application.Interfaces.Consulta;
 using ALFINapp.Application.Interfaces.Referidos;
+using ALFINapp.Datos.DAO;
 using ALFINapp.Domain.Entities;
 using ALFINapp.Domain.Interfaces;
 
@@ -9,12 +10,15 @@ namespace ALFINapp.Application.UseCases.Referidos
     {
         private readonly IRepositoryReferidos _repositoryReferidos;
         private readonly IUseCaseConsultaClienteDni _useCaseConsultaClienteDni;
+        private readonly DAO_ClientesConsultas _dao_clientesConsultas;
         public UseCaseReferirCliente(
             IRepositoryReferidos repositoryReferidos,
-            IUseCaseConsultaClienteDni useCaseConsultaClienteDni)
+            IUseCaseConsultaClienteDni useCaseConsultaClienteDni,
+            DAO_ClientesConsultas dao_clientesConsultas)
         {
             _repositoryReferidos = repositoryReferidos;
             _useCaseConsultaClienteDni = useCaseConsultaClienteDni;
+            _dao_clientesConsultas = dao_clientesConsultas;
         }
         public async Task<(bool IsSuccess, string Message)> Execute(Cliente cliente, Vendedor asesor)
         {
@@ -30,7 +34,7 @@ namespace ALFINapp.Application.UseCases.Referidos
                     return (false, "Asesor no puede ser nulo");
                 }
 
-                var getReferido = await _useCaseConsultaClienteDni.Execute(cliente.Dni ?? string.Empty);
+                var getReferido = await _dao_clientesConsultas.GetClienteByDniAsync(cliente.Dni ?? string.Empty);
                 if (getReferido.IsSuccess == false || getReferido.Data == null)
                 {
                     return (false, getReferido.Message);

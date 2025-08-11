@@ -66,6 +66,7 @@ public class MDbContext : DbContext
     public DbSet<GestionConseguirTodasLasAsignacionesPorListas> gestion_conseguir_todas_las_asignaciones_por_listas { get; set; }
     public DbSet<GestionConseguirODescargarAsignacionDeLeadsDeSup> gestion_conseguir_o_descargar_asignacion_de_leads_de_sup { get; set; }
     public DbSet<DerivacionConseguirODescargarAsignacionConDerivacionesDeSup> derivacion_conseguir_o_descargar_asignacion_con_derivaciones_de_sup { get; set; }
+    public DbSet<ReferidosGetReferidosPorDni> referidos_get_referidos_por_dni { get; set; }
     public DbSet<ObtenerUsuario> obtener_Usuario { get; set; }
 
 
@@ -173,6 +174,9 @@ public class MDbContext : DbContext
             .HasNoKey()
             .ToView(null);
         modelBuilder.Entity<ObtenerUsuario>()
+            .HasNoKey()
+            .ToView(null);
+        modelBuilder.Entity<ReferidosGetReferidosPorDni>()
             .HasNoKey()
             .ToView(null);
     }

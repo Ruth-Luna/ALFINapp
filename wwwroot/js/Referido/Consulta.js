@@ -40,10 +40,10 @@ async function BuscarReferidosDeDNI(idDNI) {
                 });
                 document.getElementById("divReferidos").style.display = "none";
                 return;
-            } else {
-                document.getElementById("divReferidos").innerHTML = result.data;
-                document.getElementById("divReferidos").style.display = "block";
             }
+        } else if (contentType.includes("text/html") && contentType) {
+            document.getElementById("divReferidos").innerHTML = await response.text();
+            document.getElementById("divReferidos").style.display = "block";
         }
     } catch (error) {
         Swal.fire({
@@ -55,7 +55,7 @@ async function BuscarReferidosDeDNI(idDNI) {
         document.getElementById("divReferidos").style.display = "none";
         return;
     }
-    
+
     // $.ajax({
     //     url: "/Referido/BuscarReferidosDeDNI",
     //     data: {

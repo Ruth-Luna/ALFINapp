@@ -124,7 +124,8 @@ namespace ALFINapp.Datos.DAO.Derivaciones
         public async Task<(bool success, string message, int idderivacion)> uploadNuevaDerivacion(
             DerivacionesAsesores derivacion,
             int idBase,
-            int idUsuario)
+            int idUsuario = 0,
+            string dni_asesor_auxiliar = "")
         {
             try
             {
@@ -142,10 +143,11 @@ namespace ALFINapp.Datos.DAO.Derivaciones
                     new SqlParameter("@id_base", idBase),
                     new SqlParameter("@id_usuario", idUsuario),
                     new SqlParameter("@nombre_completos", derivacion.NombreCliente ?? string.Empty),
+                    new SqlParameter("@dni_asesor_auxiliar", dni_asesor_auxiliar ?? string.Empty),
                     outputParam
                 };
                 await _context.Database.ExecuteSqlRawAsync(
-                    "EXEC SP_derivacion_insertar_derivacion_nuevo_metodo @agencia_derivacion, @fecha_visita, @telefono, @id_base, @id_usuario, @nombre_completos, @id_derivacion OUTPUT",
+                    "EXEC SP_derivacion_insertar_derivacion_nuevo_metodo @agencia_derivacion, @fecha_visita, @telefono, @id_base, @id_usuario, @nombre_completos, @dni_asesor_auxiliar, @id_derivacion OUTPUT",
                     parametros);
 
                 var id = (int)(outputParam.Value ?? 0);
