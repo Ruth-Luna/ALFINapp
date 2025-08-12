@@ -8,21 +8,12 @@ namespace ALFINapp.API.Controllers
     [RequireSession]
     public class ReferidosController : Controller
     {
-        public DBServicesGeneral _dbServicesGeneral;
-        public DBServicesReferido _dbServicesReferido;
-        public DBServicesDerivacion _dBServicesDerivacion;
         private readonly DAO_ClientesReferidosVista _dao_clientesReferidosVista;
         private readonly DAO_DerivarClienteReferido _dao_DerivarClienteReferido;
         public ReferidosController(
-            DBServicesGeneral dbServicesGeneral,
-            DBServicesReferido dbServicesReferido,
-            DBServicesDerivacion dBServicesDerivacion,
             DAO_ClientesReferidosVista dao_clientesReferidosVista,
             DAO_DerivarClienteReferido dao_DerivarClienteReferido)
         {
-            _dbServicesGeneral = dbServicesGeneral;
-            _dbServicesReferido = dbServicesReferido;
-            _dBServicesDerivacion = dBServicesDerivacion;
             _dao_clientesReferidosVista = dao_clientesReferidosVista;
             _dao_DerivarClienteReferido = dao_DerivarClienteReferido;
         }

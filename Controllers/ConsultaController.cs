@@ -1,46 +1,18 @@
 using ALFINapp.API.Filters;
-using ALFINapp.Application.Interfaces.Asignacion;
-using ALFINapp.Application.Interfaces.Consulta;
 using ALFINapp.Datos.DAO;
-using ALFINapp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace ALFINapp.API.Controllers
 {
     [RequireSession]
     public class ConsultaController : Controller
     {
-        private readonly DBServicesAsignacionesAsesores _dbServicesAsignacionesAsesores;
-        private readonly DBServicesGeneral _dbServicesGeneral;
-        private readonly DBServicesConsultasClientes _dbServicesConsultasClientes;
-        private readonly ILogger<ConsultaController> _logger;
-        private readonly IUseCaseConsultaClienteDni _useCaseConsultaClienteDni;
-        private readonly IUseCaseConsultaClienteTelefono _useCaseConsultaClienteTelefono;
-        private readonly IUseCaseAsignarClienteManual _useCaseAsignarClienteManual;
-        // DAO for client consultations
-        // This DAO is used to interact with the database for client consultation operations
-
         private readonly DAO_ClientesAsignaciones _dao_ClientesAsignaciones;
         private readonly DAO_ClientesConsultas _dao_ClientesConsultas;
         public ConsultaController(
-            DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores,
-            DBServicesGeneral dbServicesGeneral,
-            DBServicesConsultasClientes dbServicesConsultasClientes,
-            ILogger<ConsultaController> logger,
-            IUseCaseConsultaClienteDni useCaseConsultaClienteDni,
-            IUseCaseConsultaClienteTelefono useCaseConsultaClienteTelefono,
-            IUseCaseAsignarClienteManual useCaseAsignarClienteManual,
             DAO_ClientesConsultas dao_ClientesConsultas,
             DAO_ClientesAsignaciones dAO_ClientesAsignaciones)
         {
-            _dbServicesAsignacionesAsesores = dbServicesAsignacionesAsesores;
-            _dbServicesGeneral = dbServicesGeneral;
-            _dbServicesConsultasClientes = dbServicesConsultasClientes;
-            _logger = logger;
-            _useCaseConsultaClienteDni = useCaseConsultaClienteDni;
-            _useCaseConsultaClienteTelefono = useCaseConsultaClienteTelefono;
-            _useCaseAsignarClienteManual = useCaseAsignarClienteManual;
             _dao_ClientesConsultas = dao_ClientesConsultas;
             _dao_ClientesAsignaciones = dAO_ClientesAsignaciones;
         }

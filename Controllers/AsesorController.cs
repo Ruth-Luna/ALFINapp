@@ -1,6 +1,4 @@
-using ALFINapp.API.DTOs;
 using ALFINapp.API.Filters;
-using ALFINapp.Application.Interfaces.Asignacion;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -12,30 +10,20 @@ namespace ALFINapp.API.Controllers
 
     public class AsesorController : Controller
     {
-        private readonly DBServicesAsignacionesAsesores _dbServicesAsignacionesAsesores;
         private readonly DBServicesGeneral _dbServicesGeneral;
         private readonly DBServicesEstadoAsesores _dbServicesEstadoAsesores;
         private readonly MDbContext _context;
         private readonly DBServicesUsuarios _dBServicesUsuarios;
-        private readonly DBServicesConsultasSupervisores _dBServicesConsultasSupervisores;
-        private readonly IUseCaseAsignarClientes _useCaseAsignarClientes;
-
         public AsesorController(
-            DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores,
             DBServicesGeneral dbServicesGeneral,
             DBServicesEstadoAsesores dbServicesEstadoAsesores,
             MDbContext context,
-            DBServicesUsuarios dBServicesUsuarios,
-            DBServicesConsultasSupervisores dBServicesConsultasSupervisores,
-            IUseCaseAsignarClientes useCaseAsignarClientes)
+            DBServicesUsuarios dBServicesUsuarios)
         {
-            _dbServicesAsignacionesAsesores = dbServicesAsignacionesAsesores;
             _dbServicesGeneral = dbServicesGeneral;
             _dbServicesEstadoAsesores = dbServicesEstadoAsesores;
             _context = context;
             _dBServicesUsuarios = dBServicesUsuarios;
-            _dBServicesConsultasSupervisores = dBServicesConsultasSupervisores;
-            _useCaseAsignarClientes = useCaseAsignarClientes;
         }
 
         [HttpPost]

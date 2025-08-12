@@ -12,25 +12,15 @@ namespace ALFINapp.API.Controllers
         private MDbContext _context;
         private IUseCaseGetAsignacion _useCaseGetAsignacion;
         private IUseCaseAsignarClientes _useCaseAsignarClientes;
-        private DBServicesConsultasSupervisores _dbServicesConsultasSupervisores; // Comentado porque está relacionado con supervisores
-        private DBServicesGeneral _dbServicesGeneral;
-        private DBServicesConsultasAdministrador _dbServicesConsultasAdministrador;
-        private DBServicesAsignacionesAdministrador _dbServicesAsignacionesAdministrador;
-
+        private DBServicesConsultasSupervisores _dbServicesConsultasSupervisores;
         public AsignacionController(
             MDbContext context,
-            DBServicesConsultasSupervisores dbServicesConsultasSupervisores, // Comentado
-            DBServicesGeneral dbServicesGeneral,
-            DBServicesConsultasAdministrador dbServicesConsultasAdministrador,
-            DBServicesAsignacionesAdministrador dbServicesAsignacionesAdministrador,
+            DBServicesConsultasSupervisores dbServicesConsultasSupervisores,
             IUseCaseAsignarClientes useCaseAsignarClientes,
             IUseCaseGetAsignacion useCaseGetAsignacion)
         {
             _context = context;
-            _dbServicesConsultasSupervisores = dbServicesConsultasSupervisores; // Comentado
-            _dbServicesGeneral = dbServicesGeneral;
-            _dbServicesConsultasAdministrador = dbServicesConsultasAdministrador;
-            _dbServicesAsignacionesAdministrador = dbServicesAsignacionesAdministrador;
+            _dbServicesConsultasSupervisores = dbServicesConsultasSupervisores;
             _useCaseGetAsignacion = useCaseGetAsignacion;
             _useCaseAsignarClientes = useCaseAsignarClientes;
         }

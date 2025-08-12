@@ -13,21 +13,18 @@ namespace ALFINapp.API.Controllers
     public class ReferidoController : Controller
     {
         public DBServicesGeneral _dbServicesGeneral;
-        public DBServicesReferido _dbServicesReferido;
         private readonly DAO_ClientesConsultas _dao_clientesConsultas;
         public IUseCaseReferirCliente _useCaseReferirCliente;
         private readonly DAO_ConsultasMiscelaneas _dao_ConsultasMiscelaneas;
         private readonly DAO_ReferirCliente _dao_ReferirCliente;
         public ReferidoController(
             DBServicesGeneral dbServicesGeneral,
-            DBServicesReferido dbServicesReferido,
             IUseCaseReferirCliente useCaseReferirCliente,
             DAO_ClientesConsultas dao_clientesConsultas,
             DAO_ConsultasMiscelaneas dao_ConsultasMiscelaneas,
             DAO_ReferirCliente dao_ReferirCliente)
         {
             _dbServicesGeneral = dbServicesGeneral;
-            _dbServicesReferido = dbServicesReferido;
             this._useCaseReferirCliente = useCaseReferirCliente;
             _dao_clientesConsultas = dao_clientesConsultas;
             _dao_ConsultasMiscelaneas = dao_ConsultasMiscelaneas;

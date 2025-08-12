@@ -13,24 +13,13 @@ namespace ALFINapp.API.Controllers
     {
         private readonly MDbContext _context;
         private readonly IUseCaseGetInicio _useCaseGetInicio;
-        private readonly DBServicesGeneral _dbServicesGeneral;
-        private readonly DBServicesTipificaciones _dbServicesTipificaciones;
-        private readonly DBServicesConsultasClientes _dbServicesConsultasClientes;
-        private readonly IUseCaseUploadTipificaciones _useCaseUploadTipificaciones;
         public VendedorController(
             MDbContext context,
-            DBServicesGeneral dbServicesGeneral,
-            DBServicesTipificaciones dbServicesTipificaciones,
-            DBServicesConsultasClientes dbServicesConsultasClientes,
-            IUseCaseGetInicio useCaseGetInicio,
-            IUseCaseUploadTipificaciones useCaseUploadTipificaciones)
+            IUseCaseGetInicio useCaseGetInicio
+            )
         {
             _context = context;
-            _dbServicesGeneral = dbServicesGeneral;
-            _dbServicesTipificaciones = dbServicesTipificaciones;
-            _dbServicesConsultasClientes = dbServicesConsultasClientes;
-            this._useCaseGetInicio = useCaseGetInicio;
-            this._useCaseUploadTipificaciones = useCaseUploadTipificaciones;
+            _useCaseGetInicio = useCaseGetInicio;
         }
 
         [HttpPost]

@@ -1,13 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.API.Filters;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace ALFINapp.API.Controllers
 {
@@ -15,17 +9,12 @@ namespace ALFINapp.API.Controllers
     public class AsesoresController : Controller
     {
         private readonly MDbContext _context;
-        private readonly DBServicesAsignacionesAsesores _dbServicesAsignacionesAsesores;
         private readonly DBServicesConsultasSupervisores _dbServicesConsultasSupervisores;
-        private readonly DBServicesGeneral _dbServicesGeneral;
-        public AsesoresController(DBServicesAsignacionesAsesores dbServicesAsignacionesAsesores,
-                                                DBServicesGeneral dbServicesGeneral,
-                                                DBServicesConsultasSupervisores dbServicesConsultasSupervisores,
-                                                MDbContext context)
+        public AsesoresController(
+            DBServicesConsultasSupervisores dbServicesConsultasSupervisores,
+            MDbContext context)
         {
             _dbServicesConsultasSupervisores = dbServicesConsultasSupervisores;
-            _dbServicesAsignacionesAsesores = dbServicesAsignacionesAsesores;
-            _dbServicesGeneral = dbServicesGeneral;
             _context = context;
         }
         [HttpGet]
@@ -112,6 +101,5 @@ namespace ALFINapp.API.Controllers
             ViewData["AsesoresDelSupervisor"] = AsesoresDelSupervisor.Data;
             return PartialView("_ResultadoTipificacion", viewModel);
         }
-        
     }
 }

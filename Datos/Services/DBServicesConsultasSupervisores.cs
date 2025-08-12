@@ -54,52 +54,6 @@ namespace ALFINapp.Infrastructure.Services
         }
 
         /// <summary>
-        /// Retrieves the number of clients assigned to a specific advisor and supervisor.
-        /// </summary>
-        /// <param name="AsesorBusqueda">The advisor for which the number of clients will be retrieved.</param>
-        /// <param name="IdSupervisor">The supervisor's ID to filter the advisor.</param>
-        /// <returns>
-        /// A tuple containing:
-        /// - IsSuccess: Indicates if the operation was successful
-        /// - Message: Descriptive message about the result
-        /// - Data: VendedorConClientesDTO object containing client assignment data if successful, otherwise null
-        /// </returns>
-        /// <remarks>
-        /// Uses the stored procedure SP_CONSEGUIR_NUM_CLIENTES_POR_ASESOR to get client count data.
-        /// Maps results to a DTO that includes advisor information and activation status.
-        /// </remarks>
-        /// <exception cref="Exception">Thrown when there is an error during the database operation.</exception>
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task<(bool IsSuccess, string Message, VendedorConClientesDTO? Data)> GetNumberTipificacionesPlotedOnDTO(Usuario AsesorBusqueda, int IdSupervisor)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-        {
-            try
-            {
-                var numeroClientes = _context.numeros_enteros_dto
-                                                .FromSqlRaw("EXEC SP_CONSEGUIR_NUM_CLIENTES_POR_ASESOR @AsesorId = {0}, @SupervisorId = {1}", /// This stored Procedure is used to get the number of clients assigned to an asesor.
-                                                AsesorBusqueda.IdUsuario, IdSupervisor)
-                                                .AsEnumerable()
-                                                .FirstOrDefault();
-                if (numeroClientes == null)
-                {
-                    return (false, "El id del asesor es incorrecto.", null);
-                }
-                VendedorConClientesDTO vendedorClientesDTO = new VendedorConClientesDTO
-                {
-                    NombresCompletos = AsesorBusqueda.NombresCompletos,
-                    IdUsuario = AsesorBusqueda.IdUsuario,
-                    NumeroClientes = numeroClientes.NumeroEntero,
-                    estaActivado = AsesorBusqueda.Estado == "ACTIVO" ? true : false
-                };
-                return (true, $"La Consulta se produjo con exito", vendedorClientesDTO);
-            }
-            catch (System.Exception ex)
-            {
-                return (false, $"Ocurrió un error al obtener los asesores: {ex.Message}", null);
-            }
-        }
-        
-        /// <summary>
         /// Retrieves detailed information about all advisors assigned to a supervisor including client assignment metrics.
         /// </summary>
         /// <param name="idSupervisorActual">ID of the supervisor to query advisors for.</param>

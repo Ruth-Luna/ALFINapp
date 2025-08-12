@@ -1,12 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using ALFINapp.Infrastructure.Services;
 using ALFINapp.API.Filters;
 using ALFINapp.API.DTOs;
-using ALFINapp.Application.Interfaces.Tipificacion;
-using ALFINapp.Application.Interfaces.Derivacion;
 using ALFINapp.Datos.DAO.Tipificaciones;
 using ALFINapp.Datos.DAO.Derivaciones;
-using ALFINapp.DTOs; // Replace with the correct namespace where DBServicesGeneral is defined
+using ALFINapp.DTOs;
 
 namespace ALFINapp.API.Controllers
 {
@@ -14,31 +11,14 @@ namespace ALFINapp.API.Controllers
     public class TipificacionesController : Controller
     {
 
-        private readonly DBServicesGeneral _dbServicesGeneral;
-        private readonly DBServicesTipificaciones _dbServicesTipificaciones;
-        private readonly DBServicesConsultasClientes _dbServicesConsultasClientes;
-        private readonly MDbContext _context;
-        private readonly IUseCaseUploadTipificaciones _useCaseUploadTipificaciones;
-        private readonly IUseCaseUploadDerivacion _useCaseUploadDerivacion;
         private readonly DAO_GestionTipificacionesVista _dao_gestionTipificacionesVista;
         private readonly DAO_UploadDerivacion _dao_uploadDerivacion;
         private readonly DAO_SubirTipificaciones _dao_SubirTipificaciones;
-        public TipificacionesController(DBServicesGeneral dbServicesGeneral,
-            DBServicesTipificaciones dbServicesTipificaciones,
-            MDbContext context,
-            IUseCaseUploadTipificaciones useCaseUploadTipificaciones,
-            IUseCaseUploadDerivacion useCaseUploadDerivacion,
-            DBServicesConsultasClientes dbServicesConsultasClientes,
+        public TipificacionesController(
             DAO_GestionTipificacionesVista dao_gestionTipificacionesVista,
             DAO_UploadDerivacion dao_uploadDerivacion,
             DAO_SubirTipificaciones dAO_SubirTipificaciones)
         {
-            _dbServicesGeneral = dbServicesGeneral;
-            _dbServicesTipificaciones = dbServicesTipificaciones;
-            _context = context;
-            _useCaseUploadTipificaciones = useCaseUploadTipificaciones;
-            _useCaseUploadDerivacion = useCaseUploadDerivacion;
-            _dbServicesConsultasClientes = dbServicesConsultasClientes;
             _dao_gestionTipificacionesVista = dao_gestionTipificacionesVista;
             _dao_uploadDerivacion = dao_uploadDerivacion;
             _dao_SubirTipificaciones = dAO_SubirTipificaciones;

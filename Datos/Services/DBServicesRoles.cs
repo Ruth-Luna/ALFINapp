@@ -148,33 +148,6 @@ namespace ALFINapp.Infrastructure.Services
         }
 
         /// <summary>
-        /// Retrieves all roles in the system.
-        /// </summary>
-        /// <returns>
-        /// A tuple containing:
-        /// - Success status indicating if the operation was successful
-        /// - Message describing the result or error
-        /// - List of all roles if successful, otherwise null
-        /// </returns>
-        public async Task<(bool IsSuccess, string Message, List<Roles>? Data)> getRoles()
-        {
-            try
-            {
-                var roles = await (from r in _context.roles
-                                   select r).ToListAsync();
-                if (roles.Count > 0)
-                {
-                    return (true, "Roles encontrados", roles);
-                }
-                return (false, "No se encontraron roles", null);
-            }
-            catch (System.Exception ex)
-            {
-                return (false, ex.Message, null);
-            }
-        }
-
-        /// <summary>
         /// Retrieves all roles in the system (alternative implementation).
         /// </summary>
         /// <returns>

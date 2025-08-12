@@ -13,19 +13,11 @@ namespace ALFINapp.API.Controllers
         DA_Usuario _daUsuario = new DA_Usuario();
 
         private readonly DBServicesConsultasAdministrador _DBServicesConsultasAdministrador;
-        private readonly DBServicesUsuarios _DBServicesUsuarios;
-        private readonly DBServicesGeneral _DBServicesGeneral;
-        private readonly DBServicesRoles _DBServicesRoles;
         public UsuariosController(
-            DBServicesConsultasAdministrador DBServicesConsultasAdministrador,
-            DBServicesUsuarios DBServicesUsuarios,
-            DBServicesGeneral DBServicesGeneral,
-            DBServicesRoles DBServicesRoles)
+            DBServicesConsultasAdministrador DBServicesConsultasAdministrador
+        )
         {
             _DBServicesConsultasAdministrador = DBServicesConsultasAdministrador;
-            _DBServicesUsuarios = DBServicesUsuarios;
-            _DBServicesGeneral = DBServicesGeneral;
-            _DBServicesRoles = DBServicesRoles;
         }
 
         [HttpGet]
