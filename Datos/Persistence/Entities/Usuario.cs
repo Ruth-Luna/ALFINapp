@@ -58,4 +58,6 @@ public partial class Usuario
     public DateTime? FechaCese { get; set; }
     [Column("correo")]
     public string? Correo { get; set; }
+    [Column("tipo_doc")]
+    public int? TipoDoc { get; set; } = null!;
 }

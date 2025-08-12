@@ -14,11 +14,11 @@ namespace ALFINapp.API.Controllers
     [RequireSession]
     public class RolController : Controller
     {
-        private readonly DBServicesGeneral _dbServicesGeneral;
         private readonly DBServicesRoles _dbServicesRoles;
-        public RolController( DBServicesGeneral dbServicesGeneral, DBServicesRoles dbServicesRoles)
+        public RolController(
+            DBServicesRoles dbServicesRoles
+            )
         {
-            _dbServicesGeneral = dbServicesGeneral;
             _dbServicesRoles = dbServicesRoles;
         }
         [HttpGet]

@@ -1,28 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
-using ALFINapp.Infrastructure.Services;
 using ALFINapp.API.Filters;
 using ALFINapp.Application.Interfaces.Asignacion;
 using ALFINapp.API.DTOs;
+using ALFINapp.Datos.DAO.Supervisores;
 
 namespace ALFINapp.API.Controllers
 {
     [RequireSession]
     public class AsignacionController : Controller
     {
-        private MDbContext _context;
         private IUseCaseGetAsignacion _useCaseGetAsignacion;
         private IUseCaseAsignarClientes _useCaseAsignarClientes;
-        private DBServicesConsultasSupervisores _dbServicesConsultasSupervisores;
+        private readonly DAO_SupervisorConsultas _daoSupervisorConsultas;
         public AsignacionController(
-            MDbContext context,
-            DBServicesConsultasSupervisores dbServicesConsultasSupervisores,
             IUseCaseAsignarClientes useCaseAsignarClientes,
-            IUseCaseGetAsignacion useCaseGetAsignacion)
+            IUseCaseGetAsignacion useCaseGetAsignacion,
+            DAO_SupervisorConsultas daoSupervisorConsultas)
         {
-            _context = context;
-            _dbServicesConsultasSupervisores = dbServicesConsultasSupervisores;
             _useCaseGetAsignacion = useCaseGetAsignacion;
             _useCaseAsignarClientes = useCaseAsignarClientes;
+            _daoSupervisorConsultas = daoSupervisorConsultas;
         }
 
         [HttpGet]
@@ -57,7 +54,7 @@ namespace ALFINapp.API.Controllers
                 {
                     return Json(new { success = false, message = "No se ha iniciado sesión" });
                 }
-                var supervisorData = await _dbServicesConsultasSupervisores.ConsultaLeadsDelSupervisorDestino(idSupervisor.Value, filtro);
+                var supervisorData = await _daoSupervisorConsultas.ConsultaLeadsDelSupervisorXDestino(idSupervisor.Value, filtro);
                 if (!supervisorData.IsSuccess)
                 {
                     return Json(new { success = false, message = supervisorData.Message });

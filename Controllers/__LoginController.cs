@@ -10,21 +10,7 @@ public class __LoginController : Controller
 {
     DA_Login _daLogin = new DA_Login();
 
-    private readonly ILogger<__LoginController> _logger;
-    private readonly MDbContext _context;
-    private readonly DBServicesUsuarios _dBServicesUsuarios;
-    private readonly DBServicesGeneral _dBServicesGeneral;
-
-    public __LoginController(ILogger<__LoginController> logger,
-        MDbContext context,
-        DBServicesUsuarios dBServicesUsuarios,
-        DBServicesGeneral dBServicesGeneral)
-    {
-        _logger = logger;
-        _context = context;
-        _dBServicesUsuarios = dBServicesUsuarios;
-        _dBServicesGeneral = dBServicesGeneral;
-    }
+    public __LoginController(){}
 
     public IActionResult Index()
     {
@@ -48,7 +34,9 @@ public class __LoginController : Controller
     }
 
     [HttpPost]
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     public async Task<IActionResult> Login(string usuario, string password)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     {
         var verusuario = _daLogin.ValidarUsuario(usuario, password);
 

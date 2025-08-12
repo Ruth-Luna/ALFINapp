@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.API.DTOs;
 using ALFINapp.Application.Interfaces.Asignacion;
 using ALFINapp.Domain.Interfaces;
-using CsvHelper;
 
 namespace ALFINapp.Application.UseCases.Asignacion
 {

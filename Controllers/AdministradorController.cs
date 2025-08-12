@@ -8,17 +8,13 @@ namespace ALFINapp.API.Controllers
     [RequireSession]
     public class AdministradorController : Controller
     {
-        private readonly DBServicesConsultasAdministrador _dBServicesConsultasAdministrador;
-        public AdministradorController(
-            DBServicesConsultasSupervisores dBServicesConsultasSupervisores,
-            DBServicesConsultasAdministrador dBServicesConsultasAdministrador)
-        {
-            _dBServicesConsultasAdministrador = dBServicesConsultasAdministrador;
-        }
+        public AdministradorController(){}
 
         [HttpGet]
-        [PermissionAuthorization("Administrador", "Inicio")]        
+        [PermissionAuthorization("Administrador", "Inicio")]
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<IActionResult> Inicio()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             int? IdRol = HttpContext.Session.GetInt32("RolUser");
@@ -27,20 +23,6 @@ namespace ALFINapp.API.Controllers
                 TempData["MessageError"] = "No se ha iniciado sesión";
                 return RedirectToAction("Index", "Home");
             }
-
-            var allSupervisor = await _dBServicesConsultasAdministrador.ConseguirTodosLosSupervisores();
-            if (!allSupervisor.IsSuccess || allSupervisor.Data == null)
-            {
-                TempData["MessageError"] = allSupervisor.Message;
-                return RedirectToAction("Redireccionar", "Error");
-            }
-
-            var consultasSupervisorEnriquecidas = new List<EnriquecerConsultasSupervisorDTO>();
-
-            foreach (var supervisor in allSupervisor.Data)
-            {
-            }
-            
             return View("Administrador");
         }
     }

@@ -12,13 +12,7 @@ namespace ALFINapp.API.Controllers
     {
         DA_Usuario _daUsuario = new DA_Usuario();
 
-        private readonly DBServicesConsultasAdministrador _DBServicesConsultasAdministrador;
-        public UsuariosController(
-            DBServicesConsultasAdministrador DBServicesConsultasAdministrador
-        )
-        {
-            _DBServicesConsultasAdministrador = DBServicesConsultasAdministrador;
-        }
+        public UsuariosController(){}
 
         [HttpGet]
         [PermissionAuthorization("Usuarios", "Administracion")]
@@ -33,15 +27,6 @@ namespace ALFINapp.API.Controllers
             var listarUsuario = _daUsuario.ListarUsuarios(idUsuario);
             return Json(listarUsuario);
         }
-
-        [HttpGet]
-        [PermissionAuthorization("Usuarios", "Nuevo")]
-        public async Task<IActionResult> Nuevo()
-        {
-            var getSupervisores = await _DBServicesConsultasAdministrador.ConseguirTodosLosSupervisores();
-            return View("Nuevo", getSupervisores.Data);
-        }
-
         [HttpPost]
         public async Task<IActionResult> CrearUsuario([FromBody] ViewUsuario usuario)
         {
@@ -117,108 +102,5 @@ namespace ALFINapp.API.Controllers
             var listarRol = _daUsuario.ListarRoles();
             return Json(listarRol);
         }
-
-        //[HttpPost]
-        //public async Task<IActionResult> ModificarUsuario([FromBody] Usuario usuario)
-        //{
-        //    try
-        //    {
-        //        var idUsuario = HttpContext.Session.GetInt32("UsuarioId");
-        //        if (idUsuario == null)
-        //        {
-        //            return Json(new { success = false, message = "No se ha podido modificar el usuario" });
-        //        }
-        //        var result = await _DBServicesUsuarios.ModificarUsuario(usuario, idUsuario.Value);
-        //        if (result.IsSuccess)
-        //        {
-        //            return Json(new { success = true, message = "Datos actualizados correctamente" });
-        //        }
-        //        return Json(new { success = false, message = result.Message });
-        //    }
-        //    catch (System.Exception ex)
-        //    {
-        //        return Json(new { success = false, message = ex.Message });
-        //    }
-        //}
-
-        //[HttpPost]
-        //public async Task<IActionResult> CambiarEstadoUsuario(int IdUsuario, int? accion)
-        //{
-        //    try
-        //    {
-        //        var UsuarioIdJefe = HttpContext.Session.GetInt32("UsuarioId");
-        //        if (UsuarioIdJefe == null)
-        //        {
-        //            return Json(new { success = false, message = "No se ha podido cambiar el estado del usuario" });
-        //        }
-        //        if (accion == 0)
-        //        {
-        //            var result = await _DBServicesUsuarios.DesactivarUsuario(IdUsuario, UsuarioIdJefe.Value);
-        //            if (result.IsSuccess)
-        //            {
-        //                return Json(new { success = true, message = "Los datos se han actualizado correctamente" });
-        //            }
-        //            else
-        //            {
-        //                return Json(new { success = false, message = result.Message });
-        //            }
-        //        }
-        //        else if (accion == 1)
-        //        {
-        //            var result = await _DBServicesUsuarios.ActivarUsuario(IdUsuario, UsuarioIdJefe.Value);
-        //            if (result.IsSuccess)
-        //            {
-        //                return Json(new { success = true, message = "Los datos se han actualizado correctamente" });
-        //            }
-        //            else
-        //            {
-        //                return Json(new { success = false, message = result.Message });
-        //            }
-        //        }
-        //        else
-        //        {
-        //            return Json(new { success = false, message = "No se ha podido cambiar el estado del usuario" });
-        //        }
-        //    }
-        //    catch (System.Exception ex)
-        //    {
-        //        return Json(new { success = false, message = ex.Message });
-        //    }
-        //}
-
-
-
-
-
-        //[HttpGet]
-        //public async Task<IActionResult> ModificarUsuarioVista(int IdUsuario)
-        //{
-        //    try
-        //    {
-        //        var getUsuario = await _DBServicesGeneral.GetUserInformation(IdUsuario);
-        //        if (!getUsuario.IsSuccess || getUsuario.Data == null)
-        //        {
-        //            return Json(new { success = false, message = getUsuario.Message });
-        //        }
-        //        var getSupervisores = await _DBServicesConsultasAdministrador.ConseguirTodosLosSupervisores();
-        //        if (!getSupervisores.IsSuccess || getSupervisores.Data == null)
-        //        {
-        //            return Json(new { success = false, message = getSupervisores.Message });
-        //        }
-        //        var getRoles = await _DBServicesRoles.getRoles();
-        //        if (!getRoles.IsSuccess || getRoles.Data == null)
-        //        {
-        //            return Json(new { success = false, message = getRoles.Message });
-        //        }
-        //        ViewData["Roles"] = getRoles.Data;
-        //        ViewData["Supervisores"] = getSupervisores.Data;
-        //        return PartialView("ModificarUsuario", getUsuario.Data);
-        //    }
-        //    catch (System.Exception)
-        //    {
-        //        return RedirectToAction("Administracion");
-        //    }
-
-        //}
     }
 }

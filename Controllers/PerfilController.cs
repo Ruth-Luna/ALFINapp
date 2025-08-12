@@ -1,39 +1,25 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.API.Filters;
+using ALFINapp.API.Models;
 using ALFINapp.Application.Interfaces.Perfil;
-using ALFINapp.Infrastructure.Persistence.Models;
-using ALFINapp.Infrastructure.Services;
+using ALFINapp.Datos;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace ALFINapp.API.Controllers
 {
     [RequireSession]
     public class PerfilController : Controller
     {
-        private readonly DBServicesGeneral _dbservicesgeneral;
-        private readonly DBServicesUsuarios _dbservicesusuarios;
-        private readonly ILogger<PerfilController> _logger;
+        private readonly DA_Usuario _da_usuario = new DA_Usuario();
         private readonly IUseCaseGetPerfil _useCaseGetPerfil;
 
         public PerfilController(
-            DBServicesGeneral dbservicesgeneral, 
-            DBServicesUsuarios dbservicesusuarios, 
-            ILogger<PerfilController> logger,
             IUseCaseGetPerfil useCaseGetPerfil)
         {
-            _dbservicesgeneral = dbservicesgeneral;
-            _dbservicesusuarios = dbservicesusuarios;
             _useCaseGetPerfil = useCaseGetPerfil;
-            _logger = logger;
         }
-        
+
         [HttpGet]
-        [PermissionAuthorization("Perfil", "Perfil")]        
+        [PermissionAuthorization("Perfil", "Perfil")]
         public async Task<IActionResult> Perfil()
         {
             int? RolUser = HttpContext.Session.GetInt32("RolUser");
@@ -62,7 +48,7 @@ namespace ALFINapp.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubmitNewPassword(string newPassword)
+        public IActionResult SubmitNewPassword(string newPassword)
         {
             try
             {
@@ -71,7 +57,26 @@ namespace ALFINapp.API.Controllers
                 {
                     return Json(new { success = false, message = "Usted no ha iniciado sesion" });
                 }
-                var changePasswordResult = await _dbservicesgeneral.UpdatePasswordGeneralFunction(usuarioId.Value, newPassword);
+                if (string.IsNullOrEmpty(newPassword) || newPassword.Trim().Length == 0)
+                {
+                    return Json(new { success = false, message = "La nueva contraseña no puede estar vacía" });
+                }
+                if (newPassword.Length < 8)
+                {
+                    return Json(new { success = false, message = "La nueva contraseña debe tener al menos 8 caracteres" });
+                }
+                var user = _da_usuario.getUsuario(usuarioId.Value);
+                if (user == null)
+                {
+                    return Json(new { success = false, message = "Usuario no encontrado" });
+                }
+                var userv = new ViewUsuario(user);
+                userv.Contrasenia = newPassword;
+                var changePassword = _da_usuario.ActualizarUsuario(userv);
+                if (changePassword == false)
+                {
+                    return Json(new { success = false, message = "Error al cambiar la contraseña" });
+                }
                 return Json(new { success = true, message = "Contraseña cambiada con exito" });
             }
             catch (System.Exception ex)
@@ -79,9 +84,8 @@ namespace ALFINapp.API.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
-
         [HttpPost]
-        public async Task<IActionResult> EnviarEdicion(string campo, string nuevoValor)
+        public IActionResult EnviarEdicion(string campo, string nuevoValor)
         {
             try
             {
@@ -91,10 +95,10 @@ namespace ALFINapp.API.Controllers
                     return Json(new { success = false, message = "Usted no ha iniciado sesion" });
                 }
                 campo = campo.ToLower();
-                var changePasswordResult = await _dbservicesusuarios.UpdateUsuarioXCampo(usuarioId.Value, campo, nuevoValor);
-                if (changePasswordResult.IsSuccess == false)
+                var changePassword = _da_usuario.UpdateCampo(usuarioId.Value, campo, nuevoValor);
+                if (changePassword.IsSuccess == false)
                 {
-                    return Json(new { success = false, message = changePasswordResult.Message });
+                    return Json(new { success = false, message = changePassword.Message });
                 }
                 return Json(new { success = true, message = "Campo actualizado con exito" });
             }

@@ -1,6 +1,4 @@
 using ALFINapp.API.Filters;
-using ALFINapp.Infrastructure.Services;
-using ALFINapp.Infrastructure.Persistence.Models;
 using Microsoft.AspNetCore.Mvc;
 using ALFINapp.API.DTOs;
 using ALFINapp.Application.Interfaces.Asignaciones;
@@ -10,26 +8,21 @@ namespace ALFINapp.API.Controllers
     [RequireSession]
     public class AsignacionesController : Controller
     {
-        private readonly DBServicesGeneral _dbServicesGeneral;
-        private readonly DBServicesConsultasSupervisores _dbServicesConsultasSupervisores;
         private readonly IUseCaseCrossAssignments _useCaseCrossAssignments;
         private readonly IUseCaseAsignarClientesSup _useCaseAsignarClientesSup;
         private readonly IUseCaseGetAsignacionesDelSup _useCaseGetAsignacionesDelSup;
         private readonly IUseCaseDownloadAsignaciones useCaseDownloadAsignaciones;
         private readonly MDbContext _context;
         private readonly ILogger<AsignacionesController> _logger;
-        public AsignacionesController(DBServicesGeneral dbServicesGeneral,
+        public AsignacionesController(
             MDbContext context,
-            DBServicesConsultasSupervisores dbServicesConsultasSupervisores,
             IUseCaseCrossAssignments useCaseCrossAssignments,
             ILogger<AsignacionesController> logger,
             IUseCaseAsignarClientesSup useCaseAsignarClientesSup,
             IUseCaseGetAsignacionesDelSup useCaseGetAsignacionesDelSup,
             IUseCaseDownloadAsignaciones useCaseDownloadAsignaciones)
         {
-            _dbServicesGeneral = dbServicesGeneral;
             _context = context;
-            _dbServicesConsultasSupervisores = dbServicesConsultasSupervisores;
             _useCaseCrossAssignments = useCaseCrossAssignments;
             _logger = logger;
             _useCaseAsignarClientesSup = useCaseAsignarClientesSup;

@@ -1,29 +1,3 @@
-function agregarNuevoAsesorView() {
-    // Realiza una llamada AJAX para cargar la vista parcial
-    $.ajax({
-        url: "/Asesores/AgregarNuevoAsesorView", // URL del controlador que devuelve la vista parcial
-        type: "GET",
-        success: function (response) {
-            $('#interfazAgregarAsesor').html(response);
-            $('#interfazAgregarAsesor').css('display', 'block'); // Asegurar que el contenedor sea visible
-            $('#seccionAgregarAsesores').css('display', 'none');
-        },
-        error: function () {
-            Swal.fire({
-                title: 'Error',
-                text: 'No se pudo cargar la interfaz para agregar un nuevo asesor.',
-                icon: 'error',
-                confirmButtonText: 'Aceptar'
-            });
-        }
-    });
-}
-
-function cerraragregarNuevoAsesorView() {
-    $('#interfazAgregarAsesor').css('display', 'none');
-    $('#seccionAgregarAsesores').css('display', 'block');
-}
-
 function desactivarAsesor(dni, idUsuario) {
     $.ajax({
         type: "POST",

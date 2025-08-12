@@ -3,7 +3,6 @@ using ALFINapp.Datos.DAO;
 using ALFINapp.Infrastructure.Persistence.Models;
 using Microsoft.Data.SqlClient;
 using System.Data;
-using System.Diagnostics;
 
 namespace ALFINapp.Datos
 {
