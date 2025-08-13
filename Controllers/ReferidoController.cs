@@ -1,5 +1,4 @@
 using ALFINapp.API.DTOs;
-using ALFINapp.Application.Interfaces.Referidos;
 using ALFINapp.Datos.DAO;
 using ALFINapp.Datos.DAO.Miscelaneos;
 using ALFINapp.Datos.DAO.Referidos;
@@ -13,16 +12,13 @@ namespace ALFINapp.API.Controllers
     public class ReferidoController : Controller
     {
         private readonly DAO_ClientesConsultas _dao_clientesConsultas;
-        public IUseCaseReferirCliente _useCaseReferirCliente;
         private readonly DAO_ConsultasMiscelaneas _dao_ConsultasMiscelaneas;
         private readonly DAO_ReferirCliente _dao_ReferirCliente;
         public ReferidoController(
-            IUseCaseReferirCliente useCaseReferirCliente,
             DAO_ClientesConsultas dao_clientesConsultas,
             DAO_ConsultasMiscelaneas dao_ConsultasMiscelaneas,
             DAO_ReferirCliente dao_ReferirCliente)
         {
-            this._useCaseReferirCliente = useCaseReferirCliente;
             _dao_clientesConsultas = dao_clientesConsultas;
             _dao_ConsultasMiscelaneas = dao_ConsultasMiscelaneas;
             _dao_ReferirCliente = dao_ReferirCliente;

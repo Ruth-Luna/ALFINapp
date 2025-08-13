@@ -1,5 +1,4 @@
 using ALFINapp.API.Filters;
-using ALFINapp.Application.Interfaces.Derivacion;
 using ALFINapp.Datos.DAO.Derivaciones;
 using ALFINapp.Datos.DAO.Evidencias;
 using ALFINapp.DTOs;
@@ -13,18 +12,12 @@ namespace ALFINapp.API.Controllers
     public class DerivacionController : Controller
     {
         
-        private readonly IUseCaseGetDerivacion _useCaseGetDerivacion;
-        private readonly IUseCaseUploadEvidencias _useCaseUploadEvidencias;
         private readonly DAO_DerivacionesVista _dao_derivacionesVista;
         private readonly DAO_SubirEvidencia _dao_subirEvidencia;
         public DerivacionController(
-            IUseCaseGetDerivacion useCaseGetDerivacion,
-            IUseCaseUploadEvidencias useCaseUploadEvidencias,
             DAO_SubirEvidencia dao_subirEvidencia,
             DAO_DerivacionesVista dao_derivacionesVista)
         {
-            _useCaseGetDerivacion = useCaseGetDerivacion;
-            _useCaseUploadEvidencias = useCaseUploadEvidencias;
             _dao_subirEvidencia = dao_subirEvidencia;
             _dao_derivacionesVista = dao_derivacionesVista;
         }

@@ -60,7 +60,7 @@ namespace ALFINapp.Datos.DAO.Miscelaneos
                 return (false, "Ha ocurrido un error al obtener los destinos.", new List<string?>());
             }
         }
-        public async Task<(bool IsSuccess, string Message, List<string?> Listas)> GetListas(int idUsuario)
+        public async Task<(bool IsSuccess, string Message, List<string> Listas)> GetListas(int idUsuario)
         {
             try
             {
@@ -77,25 +77,68 @@ namespace ALFINapp.Datos.DAO.Miscelaneos
                     .ToListAsync();
                 if (listas_id == null || !listas_id.Any())
                 {
-                    return (false, "No se encontraron listas para el usuario especificado.", new List<string?>());
+                    return (false, "No se encontraron listas para el usuario especificado.", new List<string>());
                 }
                 var listas = await _context.listas_asignacion
                     .Where(l => listas_id.Contains(l.IdLista))
-                    .Select(l => l.NombreLista)
+                    .Select(l => l.NombreLista ?? string.Empty)
                     .Distinct()
                     .ToListAsync();
                 if (listas == null || !listas.Any())
                 {
-                    return (false, "No se encontraron listas con los IDs especificados.", new List<string?>());
+                    return (false, "No se encontraron listas con los IDs especificados.", new List<string>());
                 }
                 return (true, "Listas obtenidas correctamente.", listas);
             }
             catch (System.Exception)
             {
-                return (false, "Ha ocurrido un error al obtener las listas.", new List<string?>());
+                return (false, "Ha ocurrido un error al obtener las listas.", new List<string>());
             }
         }
+        public async Task<List<string>> getDestinos(int idUsuarioS)
+        {
+            try
+            {
+                var destinos = await _context.clientes_asignados
+                    .Where(c => c.IdUsuarioS == idUsuarioS)
+                    .Select(c => c.Destino ?? string.Empty)
+                    .Distinct()
+                    .ToListAsync();
 
+                if (destinos == null || !destinos.Any())
+                {
+                    return new List<string>();
+                }
+                return destinos;
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine($"Error al obtener agencias: {ex.Message}");
+                return new List<string>();
+            }
+        }
+        public async Task<List<string>> getBases(int idUsuarioS)
+        {
+            try
+            {
+                var bases = await _context.clientes_asignados
+                    .Where(c => c.IdUsuarioS == idUsuarioS)
+                    .Select(c => c.FuenteBase ?? string.Empty)
+                    .Distinct()
+                    .ToListAsync();
+
+                if (bases == null || !bases.Any())
+                {
+                    return new List<string>();
+                }
+                return bases;
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine($"Error al obtener listas: {ex.Message}");
+                return new List<string>();
+            }
+        }
         public async Task<(bool IsSuccess, string Message, List<AgenciasDisponiblesDTO> Agencias)> GetAgencias()
         {
             try
@@ -147,5 +190,6 @@ namespace ALFINapp.Datos.DAO.Miscelaneos
                 return null;
             }
         }
+        
     }
 }

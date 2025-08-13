@@ -253,14 +253,14 @@ SELECT
 			WHEN [grupo_tasa] = '3' THEN 'Mantiene tasa'
 			ELSE NULL	  			
 		END AS [grupo_tasa]
-FROM campanasconsultaagosto
+FROM campanas202589
 WHERE dni IS NOT NULL
 	AND dni <> ''
 	AND oferta_max IS NOT NULL
 	AND tasa_1 IS NOT NULL
 
 
-select top 30 * from campanasconsultaagosto
+select top 30 * from campanas202589
 
 UPDATE base_clientes_banco
 SET DNI = RIGHT('00000000' + CAST(DNI AS VARCHAR(8)), 8)

@@ -1,7 +1,7 @@
 SELECT 
     dni
 FROM [CORE_ALFIN].[dbo].[base_clientes_banco]
-WHERE CAST(fecha_subida AS DATE) = '2025-08-01'
+WHERE CAST(fecha_subida AS DATE) = '2025-08-12'
 AND (PATERNO IS NULL OR NOMBRES IS NULL OR MATERNO IS NULL)
 
 UPDATE bcb_destino
@@ -18,7 +18,7 @@ FROM base_clientes_banco bcb_destino
 INNER JOIN base_clientes_banco bcb_origen
     ON bcb_destino.dni = bcb_origen.dni
 WHERE 
-    CAST(bcb_destino.fecha_subida AS DATE) = '2025-08-01'
+    CAST(bcb_destino.fecha_subida AS DATE) = '2025-08-12'
     AND (
         (bcb_destino.NOMBRES IS NULL AND bcb_origen.NOMBRES IS NOT NULL) OR
         (bcb_destino.MATERNO IS NULL AND bcb_origen.MATERNO IS NOT NULL) OR
@@ -54,7 +54,7 @@ SET
 FROM base_clientes_banco bcb_destino
 INNER JOIN bcb_origen ON bcb_destino.dni = bcb_origen.dni
 WHERE 
-    CAST(bcb_destino.fecha_subida AS DATE) = '2025-08-01'
+    CAST(bcb_destino.fecha_subida AS DATE) = '2025-08-12'
     AND (
         (bcb_destino.NOMBRES IS NULL AND bcb_origen.NOMBRES IS NOT NULL) OR
         (bcb_destino.MATERNO IS NULL AND bcb_origen.MATERNO IS NOT NULL) OR
@@ -63,10 +63,10 @@ WHERE
 
 select top 150 * from clientes_enriquecidos
 
-select COUNT(*) from base_clientes_banco WHERE CAST(fecha_subida as date) = '2025-08-01'
+select COUNT(*) from base_clientes_banco WHERE CAST(fecha_subida as date) = '2025-08-12'
 AND (PATERNO IS NULL OR NOMBRES IS NULL OR MATERNO IS NULL)
 
-select dni from base_clientes_banco WHERE CAST(fecha_subida as date) = '2025-08-01'
+select dni from base_clientes_banco WHERE CAST(fecha_subida as date) = '2025-08-12'
 AND (PATERNO IS NULL OR NOMBRES IS NULL OR MATERNO IS NULL)
 
 
@@ -74,7 +74,7 @@ UPDATE base_clientes_banco
 SET
     dni = RIGHT('00000000' + dni, 8)
 WHERE LEN(dni) < 8
-AND CAST(fecha_subida AS DATE) = '2025-08-01';
+AND CAST(fecha_subida AS DATE) = '2025-08-12';
 
 INSERT INTO base_clientes_banco (
     dni,
@@ -173,4 +173,4 @@ select top 150 * from base_clientes_banco WHERE CAST(fecha_subida AS DATE) = CAS
 SELECT COUNT(*) from ENRIQUECERAGOSTO
 
 
-SELECT COUNT(*) FROM detalle_base WHERE fecha_carga = '2025-08-01' 
+SELECT COUNT(*) FROM detalle_base WHERE fecha_carga = '2025-08-12' 

@@ -1,5 +1,4 @@
 using ALFINapp.API.Filters;
-using ALFINapp.Application.Interfaces.Leads;
 using ALFINapp.Datos.DAO.Gestion;
 using Microsoft.AspNetCore.Mvc;
 

@@ -68,8 +68,7 @@ public class MDbContext : DbContext
     public DbSet<DerivacionConseguirODescargarAsignacionConDerivacionesDeSup> derivacion_conseguir_o_descargar_asignacion_con_derivaciones_de_sup { get; set; }
     public DbSet<ReferidosGetReferidosPorDni> referidos_get_referidos_por_dni { get; set; }
     public DbSet<ObtenerUsuario> obtener_Usuario { get; set; }
-
-
+    public DbSet<SupervisoresGetDetallesAsignacionesPorAsesores> supervisores_get_detalles_asignaciones_por_asesores { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -177,6 +176,9 @@ public class MDbContext : DbContext
             .HasNoKey()
             .ToView(null);
         modelBuilder.Entity<ReferidosGetReferidosPorDni>()
+            .HasNoKey()
+            .ToView(null);
+        modelBuilder.Entity<SupervisoresGetDetallesAsignacionesPorAsesores>()
             .HasNoKey()
             .ToView(null);
     }

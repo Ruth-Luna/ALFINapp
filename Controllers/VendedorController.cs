@@ -1,8 +1,6 @@
 using ALFINapp.API.Filters;
-using ALFINapp.Application.Interfaces.Tipificacion;
 using ALFINapp.Application.Interfaces.Vendedor;
 using ALFINapp.Infrastructure.Persistence.Models;
-using ALFINapp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

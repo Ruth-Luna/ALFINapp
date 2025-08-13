@@ -10,17 +10,14 @@ namespace ALFINapp.API.Controllers
     {
         private readonly ILogger<ReagendamientoController> _logger;
         private readonly IUseCaseGetReagendamiento _useCaseGetReagendamiento;
-        private readonly IUseCaseReagendar _useCaseReagendar;
         private readonly DAO_SubirReagendacion _dao_SubirReagendacion;
         public ReagendamientoController(
             ILogger<ReagendamientoController> logger,
             IUseCaseGetReagendamiento useCaseGetReagendamiento,
-            IUseCaseReagendar useCaseReagendar,
             DAO_SubirReagendacion dao_SubirReagendacion)
         {
             _logger = logger;
             _useCaseGetReagendamiento = useCaseGetReagendamiento;
-            _useCaseReagendar = useCaseReagendar;
             _dao_SubirReagendacion = dao_SubirReagendacion;
         }
         public async Task<IActionResult> Reagendar(

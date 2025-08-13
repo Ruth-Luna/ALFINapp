@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ALFINapp.Datos.Persistence.Procedures;
 
 namespace ALFINapp.API.Models
 {
@@ -17,11 +18,21 @@ namespace ALFINapp.API.Models
     }
     public class ViewAsignacionAsesor
     {
-        public string? NombresCompletos { get; set; }
-        public int? IdUsuario { get; set; }
-        public int? NumeroClientes { get; set; }
-        public int? NumeroClientesGestionados { get; set; }
-        public int? NumeroClientesPendientes { get; set; }
-        public bool? estaActivado { get; set; }
+        public string? NombresCompletos { get; set; } = string.Empty;
+        public int? IdUsuario { get; set; } = 0;
+        public int? NumeroClientes { get; set; } = 0;
+        public int? NumeroClientesGestionados { get; set; } = 0;
+        public int? NumeroClientesPendientes { get; set; } = 0;
+        public bool? estaActivado { get; set; } = false;
+        public ViewAsignacionAsesor() { }
+        public ViewAsignacionAsesor(SupervisoresGetDetallesAsignacionesPorAsesores model)
+        {
+            IdUsuario = model.idUsuarioA;
+            NombresCompletos = model.nombreUsuarioA;
+            NumeroClientes = model.totalClientesAsignados;
+            NumeroClientesGestionados = model.totalClientesGestionados;
+            NumeroClientesPendientes = model.totalClientesPendientes;
+            estaActivado = model.estaActivo == "ACTIVO";
+        }
     }
 }

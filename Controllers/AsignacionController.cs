@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using ALFINapp.API.Filters;
-using ALFINapp.Application.Interfaces.Asignacion;
 using ALFINapp.API.DTOs;
 using ALFINapp.Datos.DAO.Supervisores;
 
@@ -9,17 +8,17 @@ namespace ALFINapp.API.Controllers
     [RequireSession]
     public class AsignacionController : Controller
     {
-        private IUseCaseGetAsignacion _useCaseGetAsignacion;
-        private IUseCaseAsignarClientes _useCaseAsignarClientes;
         private readonly DAO_SupervisorConsultas _daoSupervisorConsultas;
+        private readonly DAO_AsignacionSupervisorView _daoAsignacionSupervisorView;
+        private readonly DAO_SupervisorAsignarClientesAAsesores _daoSupervisorAsignarClientesAAsesores;
         public AsignacionController(
-            IUseCaseAsignarClientes useCaseAsignarClientes,
-            IUseCaseGetAsignacion useCaseGetAsignacion,
-            DAO_SupervisorConsultas daoSupervisorConsultas)
+            DAO_SupervisorConsultas daoSupervisorConsultas,
+            DAO_AsignacionSupervisorView daoAsignacionSupervisorView,
+            DAO_SupervisorAsignarClientesAAsesores daoSupervisorAsignarClientesAAsesores)
         {
-            _useCaseGetAsignacion = useCaseGetAsignacion;
-            _useCaseAsignarClientes = useCaseAsignarClientes;
             _daoSupervisorConsultas = daoSupervisorConsultas;
+            _daoAsignacionSupervisorView = daoAsignacionSupervisorView;
+            _daoSupervisorAsignarClientesAAsesores = daoSupervisorAsignarClientesAAsesores;
         }
 
         [HttpGet]
@@ -33,14 +32,12 @@ namespace ALFINapp.API.Controllers
                 TempData["MessageError"] = "No se ha iniciado sesión";
                 return RedirectToAction("Index", "Home");
             }
-
-            var executeUseCase = await _useCaseGetAsignacion.Execute(usuarioId.Value);
+            var executeUseCase = await _daoAsignacionSupervisorView.getViewAsignacion(usuarioId.Value);
             if (executeUseCase.IsSuccess == false)
             {
                 TempData["MessageError"] = executeUseCase.Message;
                 return RedirectToAction("Redireccionar", "Error");
             }
-
             return View("Asignacion", executeUseCase.Data);
         }
 
@@ -112,14 +109,18 @@ namespace ALFINapp.API.Controllers
                 {
                     return Json(new { success = false, message = "No se pudo obtener el ID del supervisor actual recuerde Iniciar Sesion." });
                 }
-                var execute = await _useCaseAsignarClientes.exec(asignacionasesor, filter, type_filter, idSupervisorActual.Value);
-                if (!execute.success)
+                var asignaciones = await _daoSupervisorAsignarClientesAAsesores.AsignarClientesAAsesores(
+                    asignacionasesor,
+                    filter,
+                    type_filter,
+                    idSupervisorActual.Value);
+                if (!asignaciones.success)
                 {
-                    return Json(new { success = false, message = $"{execute.message}" });
+                    return Json(new { success = false, message = $"{asignaciones.message}" });
                 }
                 else
                 {
-                    return Json(new { success = true, message = $"{execute.message}" });
+                    return Json(new { success = true, message = $"{asignaciones.message}" });
                 }
             }
             catch (System.Exception ex)

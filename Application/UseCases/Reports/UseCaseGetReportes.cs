@@ -8,17 +8,14 @@ namespace ALFINapp.Application.UseCases.Reports
     public class UseCaseGetReportes : IUseCaseGetReportes
     {
         private readonly IRepositoryReports _repositoryReports;
-        private readonly IRepositoryClientes _repositoryClientes;
         private readonly IRepositoryUsuarios _repositoryUsuarios;
         private readonly IRepositoryReportsAsync _repositoryReportsAsync;
         public UseCaseGetReportes(
             IRepositoryReports repositoryReports,
-            IRepositoryClientes repositoryClientes,
             IRepositoryUsuarios repositoryUsuarios,
             IRepositoryReportsAsync repositoryReportsAsync)
         {
             _repositoryReports = repositoryReports;
-            _repositoryClientes = repositoryClientes;
             _repositoryUsuarios = repositoryUsuarios;
             _repositoryReportsAsync = repositoryReportsAsync;
         }

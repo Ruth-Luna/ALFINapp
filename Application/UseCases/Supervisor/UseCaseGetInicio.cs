@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.API.Models;
 using ALFINapp.Application.DTOs;
 using ALFINapp.Application.Interfaces.Supervisor;
@@ -11,13 +7,10 @@ namespace ALFINapp.Application.UseCases.Supervisor
 {
     public class UseCaseGetInicio : IUseCaseGetInicio
     {
-        private readonly IRepositorySupervisor _repositorySupervisor;
         private readonly IRepositoryUsuarios _repositoryUsuarios;
         public UseCaseGetInicio(
-            IRepositorySupervisor repositorySupervisor,
             IRepositoryUsuarios repositoryUsuarios)
         {
-            _repositorySupervisor = repositorySupervisor;
             _repositoryUsuarios = repositoryUsuarios;
         }
         public async Task<(bool IsSuccess, string Message, ViewInicioSupervisor Data)> Execute(int idUsuario)

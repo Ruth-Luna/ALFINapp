@@ -1,21 +1,30 @@
+using System.Data;
 using ALFINapp.API.DTOs;
-using ALFINapp.Application.Interfaces.Asignacion;
-using ALFINapp.Domain.Interfaces;
+using ALFINapp.Application.DTOs;
+using ALFINapp.Datos.DAO.Miscelaneos;
+using ALFINapp.Infrastructure.Persistence.Models;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
-namespace ALFINapp.Application.UseCases.Asignacion
+namespace ALFINapp.Datos.DAO.Supervisores
 {
-    public class UseCaseAsignarClientes : IUseCaseAsignarClientes
+    public class DAO_SupervisorAsignarClientesAAsesores
     {
-        private readonly IRepositorySupervisor _repositorySupervisor;
-        private readonly IRepositoryAsignacion _repositoryAsignacion;
-        public UseCaseAsignarClientes(
-            IRepositorySupervisor repositorySupervisor,
-            IRepositoryAsignacion repositoryAsignacion)
+        private readonly DA_Usuario _usuario = new DA_Usuario();
+        private readonly DAO_ConsultasMiscelaneas _consultasMiscelaneas;
+        private readonly MDbContext _context;
+        private readonly DAO_SupervisorConsultas _dao_supervisorConsultas;
+        public DAO_SupervisorAsignarClientesAAsesores(
+            MDbContext context,
+            DAO_ConsultasMiscelaneas consultasMiscelaneas,
+            DAO_SupervisorConsultas dao_supervisorConsultas)
         {
-            _repositorySupervisor = repositorySupervisor;
-            _repositoryAsignacion = repositoryAsignacion;
+            _context = context;
+            _consultasMiscelaneas = consultasMiscelaneas;
+            _dao_supervisorConsultas = dao_supervisorConsultas;
         }
-        public async Task<(bool success, string message)> exec(
+
+        public async Task<(bool success, string message)> AsignarClientesAAsesores(
             List<DtoVAsignarClientes> asignacionAsesor,
             string filter,
             string type_filter,
@@ -23,7 +32,7 @@ namespace ALFINapp.Application.UseCases.Asignacion
         {
             try
             {
-                
+
                 string mensajesError = "";
                 if (asignacionAsesor == null)
                 {
@@ -52,12 +61,16 @@ namespace ALFINapp.Application.UseCases.Asignacion
                     return (false, "No se ha llenado ninguna entrada. Los campos no pueden estar vacíos.");
                 }
                 int contadorClientesAsignados = 0;
-                var totalClientes = await _repositorySupervisor.GetAllAsignacionesFromDestino(idSupervisor, filter);
-                if (totalClientes.Count == 0)
+                var clientes = await _dao_supervisorConsultas.ConsultarAsignaciones(idSupervisor, filter, type_filter);
+                if (clientes.Data.Count == 0)
                 {
-                    return (false, "No se han encontrado clientes disponibles para la asignación.");
+                    return (false, "No se encontraron clientes para asignar.");
                 }
-                
+                if (clientes.Data.All(c => c.IdUsuarioV != null))
+                {
+                    return (false, "No hay clientes disponibles para asignar en la base seleccionada.");
+                }
+
                 foreach (var asignacion in asignacionAsesor)
                 {
                     if (asignacion.NumClientes == 0)
@@ -67,12 +80,12 @@ namespace ALFINapp.Application.UseCases.Asignacion
 
                     int nClientes = asignacion.NumClientes;
                     contadorClientesAsignados = contadorClientesAsignados + nClientes;
-                    if (totalClientes.Count < nClientes)
+                    if (clientes.Data.Count < nClientes)
                     {
-                        mensajesError = mensajesError + $"En la base '{filter}', solo hay {totalClientes.Count} clientes disponibles para la asignación. La entrada ha sido obviada para el usuario '{asignacion.IdVendedor}'.";
+                        mensajesError = mensajesError + $"En la base '{filter}', solo hay {clientes.Data.Count} clientes disponibles para la asignación. La entrada ha sido obviada para el usuario '{asignacion.IdVendedor}'.";
                         continue;
                     }
-                    if (contadorClientesAsignados > totalClientes.Count)
+                    if (contadorClientesAsignados > clientes.Data.Count)
                     {
                         mensajesError = mensajesError + $"Ha ocurrido un error al asignar los clientes. Esta mandando mas entradas del total disponible";
                         continue;
@@ -91,21 +104,20 @@ namespace ALFINapp.Application.UseCases.Asignacion
                     }
                     int nClientes = asignacion.NumClientes;
                     contadorClientesAsignados = contadorClientesAsignados + nClientes;
-                    var clientesDisponibles = totalClientes
+                    var clientesDisponibles = clientes.Data
                         .Where(c => c.IdUsuarioV == null && c.Destino == filter)
                         .Take(nClientes)
                         .ToList();
-                    totalClientes = totalClientes
+                    clientes.Data = clientes.Data
                         .Where(c => c.IdUsuarioV == null && c.Destino == filter)
                         .Skip(nClientes)
                         .ToList();
-
                     foreach (var cliente in clientesDisponibles)
                     {
                         cliente.IdUsuarioV = asignacion.IdVendedor;
                         cliente.FechaAsignacionVendedor = DateTime.Now;
                     }
-                    var actualizacion = await _repositoryAsignacion.AsignarClientesMasivoAsesor(clientesDisponibles);
+                    var actualizacion = await AsignarClientesMasivoAsesor(clientesDisponibles);
                     if (!actualizacion)
                     {
                         mensajesError = mensajesError + $"No se pudo asignar al asesor {asignacion.IdVendedor}. Se saltará la asignación de este asesor. ";
@@ -123,6 +135,39 @@ namespace ALFINapp.Application.UseCases.Asignacion
             catch (System.Exception ex)
             {
                 return (false, ex.Message);
+            }
+        }
+        public async Task<bool> AsignarClientesMasivoAsesor(List<ClientesAsignado> nuevasAsignaciones)
+        {
+            try
+            {
+                var table = new DataTable();
+                table.Columns.Add("IdCliente", typeof(int));
+                table.Columns.Add("IdUsuarioV", typeof(int));
+                table.Columns.Add("IdAsignacion", typeof(int));
+
+                foreach (var item in nuevasAsignaciones)
+                {
+                    table.Rows.Add(item.IdCliente, item.IdUsuarioV, item.IdAsignacion);
+                }
+
+                var param = new SqlParameter("@asignaciones", SqlDbType.Structured)
+                {
+                    TypeName = "dbo.asignacion_clientes_masivo",
+                    Value = table
+                };
+                        
+                var updateAsignacion = await _context
+                    .Database
+                    .ExecuteSqlRawAsync("EXEC sp_Asignacion_clientes_masivo @asignaciones", 
+                        param);
+
+                return true;
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine($"Error en la asignación masiva de clientes: {ex.Message}");
+                return false;
             }
         }
     }
