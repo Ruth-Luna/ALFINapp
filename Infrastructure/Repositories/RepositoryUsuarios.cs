@@ -126,26 +126,5 @@ namespace ALFINapp.Infrastructure.Repositories
                 return (false, "Error al buscar el usuario", null);
             }
         }
-
-        public async Task<bool> RegisterEmail(string? email, int idUsuario)
-        {
-            try
-            {
-                var registerEmail = await _context
-                    .Database
-                    .ExecuteSqlAsync(
-                        $"EXECUTE dbo.sp_usuario_modificacion_existente @IdUsuario={idUsuario}, @Correo={email}");
-                if (registerEmail == 0)
-                {
-                    return false;
-                }
-                return true;
-            }
-            catch (System.Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return false;
-            }
-        }
     }
 }

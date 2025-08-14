@@ -399,7 +399,7 @@ function cargar_asesores_del_supervisor(idSupJson, idAseJson, asesorSelect, idSu
             });
             return;
         }
-        const asesoresData = supervisorInfo["vendedores"];
+        const asesoresData = supervisorInfo["asesores"];
         var asesores = [];
         asesoresData.forEach(asesor => {
             asesores.push({

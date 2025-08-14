@@ -77,7 +77,7 @@ namespace ALFINapp.Datos.DAO.Miscelaneos
                     .ToListAsync();
                 if (listas_id == null || !listas_id.Any())
                 {
-                    return (false, "No se encontraron listas para el usuario especificado.", new List<string>());
+                    return (true, "No se encontraron listas para el usuario especificado.", new List<string>());
                 }
                 var listas = await _context.listas_asignacion
                     .Where(l => listas_id.Contains(l.IdLista))

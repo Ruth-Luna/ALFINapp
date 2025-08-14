@@ -29,3 +29,19 @@ EXEC SP_GET_DETALLES_ASIGNACIONES_POR_ASESORES @misAsesores;
 select * from usuarios where id_rol = 3;
 
 SELECT * FROM derivaciones_asesores WHERE dni_cliente = '20093497'
+
+
+  GO 
+  CREATE PROCEDURE [dbo].[SP_DERIVACION_GET_DERIVACION]
+    @id_derivacion INT
+AS
+BEGIN   
+    SET NOCOUNT ON;
+
+    SELECT top 1 *
+      FROM derivaciones_asesores
+      WHERE id_derivacion = @id_derivacion;
+END
+
+
+SELECT * FROM usuarios WHERE dni = '73393133'

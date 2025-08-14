@@ -1,6 +1,5 @@
 using ALFINapp.API.Filters;
 using ALFINapp.API.Models;
-using ALFINapp.Application.Interfaces.Perfil;
 using ALFINapp.Datos;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,17 +9,12 @@ namespace ALFINapp.API.Controllers
     public class PerfilController : Controller
     {
         private readonly DA_Usuario _da_usuario = new DA_Usuario();
-        private readonly IUseCaseGetPerfil _useCaseGetPerfil;
 
-        public PerfilController(
-            IUseCaseGetPerfil useCaseGetPerfil)
-        {
-            _useCaseGetPerfil = useCaseGetPerfil;
-        }
+        public PerfilController(){}
 
         [HttpGet]
         [PermissionAuthorization("Perfil", "Perfil")]
-        public async Task<IActionResult> Perfil()
+        public IActionResult Perfil()
         {
             int? RolUser = HttpContext.Session.GetInt32("RolUser");
             try
@@ -31,14 +25,14 @@ namespace ALFINapp.API.Controllers
                     TempData["MessageError"] = "Ha ocurrido un error en la autenticación";
                     return RedirectToAction("Index", "Home");
                 }
-                var userInformation = await _useCaseGetPerfil.exec(usuarioId.Value);
-                if (userInformation.success == false)
+                var userInformation = _da_usuario.getUsuario(usuarioId.Value);
+                if (userInformation == null)
                 {
-                    TempData["MessageError"] = userInformation.message;
-                    return RedirectToAction("Redireccionar", "Error");
+                    TempData["MessageError"] = "No se ha encontrado el usuario.";
+                    return RedirectToAction("Index", "Home");
                 }
                 ViewData["RolUser"] = RolUser;
-                return View("Perfil", userInformation.data);
+                return View("Perfil", new ViewUsuario(userInformation));
             }
             catch (System.Exception ex)
             {
@@ -94,7 +88,7 @@ namespace ALFINapp.API.Controllers
                 {
                     return Json(new { success = false, message = "Usted no ha iniciado sesion" });
                 }
-                campo = campo.ToLower();
+                // campo = campo.ToLower();
                 var changePassword = _da_usuario.UpdateCampo(usuarioId.Value, campo, nuevoValor);
                 if (changePassword.IsSuccess == false)
                 {

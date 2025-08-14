@@ -2,7 +2,6 @@ using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.API.Filters;
 using Microsoft.AspNetCore.Mvc;
 using ALFINapp.Infrastructure.Services;
-using ALFINapp.Application.Interfaces.Supervisor;
 using ALFINapp.Datos;
 using ALFINapp.API.Models;
 
@@ -11,16 +10,8 @@ namespace ALFINapp.API.Controllers
     [RequireSession]
     public class SupervisorController : Controller
     {
-        private readonly MDbContext _context;
-        private readonly IUseCaseGetInicio _useCaseGetInicioSup;
         private DA_Usuario _da_usuario = new DA_Usuario();
-        public SupervisorController(
-            MDbContext context,
-            IUseCaseGetInicio useCaseGetInicioSup)
-        {
-            _context = context;
-            _useCaseGetInicioSup = useCaseGetInicioSup;
-        }
+        public SupervisorController(){}
         /// <summary>
         /// Obtiene y muestra la página de inicio del supervisor con información sobre los leads y clientes asignados.
         /// </summary>
@@ -62,7 +53,7 @@ namespace ALFINapp.API.Controllers
         /// </exception>
         [HttpGet]
         [PermissionAuthorization("Supervisor", "Inicio")]
-        public async Task<IActionResult> Inicio()
+        public IActionResult Inicio()
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             int? IdRol = HttpContext.Session.GetInt32("RolUser");
@@ -72,14 +63,13 @@ namespace ALFINapp.API.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var supervisorData = await _useCaseGetInicioSup.Execute(usuarioId.Value);
-            if (supervisorData.IsSuccess == false)
+            var supervisor = _da_usuario.getUsuario(usuarioId.Value);
+            if (supervisor == null)
             {
-                TempData["MessageError"] = supervisorData.Message;
+                TempData["MessageError"] = "No se encontró el usuario";
                 return RedirectToAction("Index", "Home");
             }
-
-            return View("Inicio", supervisorData.Data);
+            return View("Inicio", supervisor);
         }
 
         [HttpGet]

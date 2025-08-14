@@ -1,4 +1,4 @@
-@model ALFINapp.API.Models.ViewInicioSupervisor
+@model ALFINapp.API.Models.ViewUsuario
 
 @section Styles {
     <link rel="stylesheet" href="~/css/main_page.css">
@@ -7,7 +7,7 @@
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h2>Bienvenido, @Model.Supervisor.NombresCompletos</h2>
+            <h2>Bienvenido, @Model.NombresCompletos</h2>
             <p class="text-muted">Este es tu panel de inicio</p>
         </div>
     </div>
@@ -20,12 +20,12 @@
                     Información del Supervisor
                 </div>
                 <div class="card-body">
-                    <p><strong>DNI:</strong> @Model.Supervisor.Dni</p>
-                    <p><strong>Rol:</strong> @Model.Supervisor.Rol</p>
-                    <p><strong>Teléfono:</strong> @Model.Supervisor.Telefono</p>
-                    <p><strong>Correo:</strong> @Model.Supervisor.Correo</p>
-                    <p><strong>Ubicación:</strong> @Model.Supervisor.Departamento, @Model.Supervisor.Provincia, @Model.Supervisor.Distrito</p>
-                    <p><strong>Fecha de Registro:</strong> @Model.Supervisor.FechaRegistro?.ToString("dd/MM/yyyy")</p>
+                    <p><strong>DNI:</strong> @Model.Dni</p>
+                    <p><strong>Rol:</strong> @Model.Rol</p>
+                    <p><strong>Teléfono:</strong> @Model.Telefono</p>
+                    <p><strong>Correo:</strong> @Model.Correo</p>
+                    <p><strong>Ubicación:</strong> @Model.Departamento, @Model.Provincia, @Model.Distrito</p>
+                    <p><strong>Fecha de Registro:</strong> @Model.FechaRegistro?.ToString("dd/MM/yyyy")</p>
                 </div>
             </div>
         </div>
@@ -37,11 +37,11 @@
                     Campaña Actual
                 </div>
                 <div class="card-body">
-                    <p><strong>Nombre de Campaña:</strong> @Model.Supervisor.NOMBRECAMPAÑA</p>
-                    <p><strong>Responsable Supervisor:</strong> @Model.Supervisor.RESPONSABLESUP</p>
-                    <p><strong>Región:</strong> @Model.Supervisor.REGION</p>
-                    <p><strong>Fecha de Inicio:</strong> @Model.Supervisor.FechaInicio?.ToString("dd/MM/yyyy")</p>
-                    <p><strong>Fecha de Cese:</strong> @Model.Supervisor.FechaCese?.ToString("dd/MM/yyyy")</p>
+                    <p><strong>Nombre de Campaña:</strong> @Model.NOMBRECAMPAÑA</p>
+                    <p><strong>Responsable Supervisor:</strong> @Model.RESPONSABLESUP</p>
+                    <p><strong>Región:</strong> @Model.REGION</p>
+                    <p><strong>Fecha de Inicio:</strong> @Model.FechaInicio?.ToString("dd/MM/yyyy")</p>
+                    <p><strong>Fecha de Cese:</strong> @Model.FechaCese?.ToString("dd/MM/yyyy")</p>
                 </div>
             </div>
         </div>
@@ -78,10 +78,10 @@
     {
         <script>
             Swal.fire({
-                title: 'Mensaje', // Título del mensaje
-                text: '@Html.Raw(TempData["Message"] as string)', // Usamos Html.Raw para evitar que se escape el texto
-                icon: 'info', // Tipo de ícono (info, success, error, warning)
-                confirmButtonText: 'Aceptar' // Texto del botón de confirmación
+                title: 'Mensaje',
+                text: '@Html.Raw(TempData["Message"] as string)',
+                icon: 'info',
+                confirmButtonText: 'Aceptar'
             });
         </script>
     }
@@ -90,10 +90,10 @@
     {
         <script>
             Swal.fire({
-                title: 'Error', // Título del mensaje
-                text: '@Html.Raw(TempData["MessageError"] as string)', // Usamos Html.Raw para evitar que se escape el texto
-                icon: 'error', // Tipo de ícono (info, success, error, warning)
-                confirmButtonText: 'Aceptar' // Texto del botón de confirmación
+                title: 'Error',
+                text: '@Html.Raw(TempData["MessageError"] as string)',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
             });
         </script>
     }

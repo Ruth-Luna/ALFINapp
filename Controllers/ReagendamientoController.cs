@@ -1,24 +1,21 @@
 using ALFINapp.API.DTOs;
-using ALFINapp.Application.Interfaces.Reagendamiento;
+using ALFINapp.API.Models;
+using ALFINapp.Datos.DAO.Derivaciones;
 using ALFINapp.Datos.DAO.Reagendacion;
-using ALFINapp.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ALFINapp.API.Controllers
 {
     public class ReagendamientoController : Controller
     {
-        private readonly ILogger<ReagendamientoController> _logger;
-        private readonly IUseCaseGetReagendamiento _useCaseGetReagendamiento;
         private readonly DAO_SubirReagendacion _dao_SubirReagendacion;
+        private readonly DAO_Derivaciones _dao_Derivaciones;
         public ReagendamientoController(
-            ILogger<ReagendamientoController> logger,
-            IUseCaseGetReagendamiento useCaseGetReagendamiento,
-            DAO_SubirReagendacion dao_SubirReagendacion)
+            DAO_SubirReagendacion dao_SubirReagendacion,
+            DAO_Derivaciones dao_Derivaciones)
         {
-            _logger = logger;
-            _useCaseGetReagendamiento = useCaseGetReagendamiento;
             _dao_SubirReagendacion = dao_SubirReagendacion;
+            _dao_Derivaciones = dao_Derivaciones;
         }
         public async Task<IActionResult> Reagendar(
             [FromBody]DtoVReagendar dtovreagendar)
@@ -44,16 +41,16 @@ namespace ALFINapp.API.Controllers
 
         public async Task<IActionResult> Reagendamiento(int id)
         {
-            var exec = await _useCaseGetReagendamiento.exec(id);
-            if (!exec.IsSuccess)
+            var reagendamiento = await _dao_Derivaciones.GetDerivacionAsync(id);
+            if (reagendamiento == null)
             {
-                return Json(new { success = false, message = exec.Message });
+                return Json(new { success = false, message = "No se encontraron datos de la derivación." });
             }
             return Json(new
             {
                 success = true,
-                message = exec.Message,
-                data = exec.Data
+                message = "Datos de la derivación obtenidos correctamente.",
+                data = new ViewClienteReagendado(reagendamiento)
             });
         }
     }

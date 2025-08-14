@@ -1,5 +1,5 @@
 using ALFINapp.API.Filters;
-using ALFINapp.Application.Interfaces.Vendedor;
+using ALFINapp.Datos.DAO.Asesores;
 using ALFINapp.Infrastructure.Persistence.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,14 +10,13 @@ namespace ALFINapp.API.Controllers
     public class VendedorController : Controller
     {
         private readonly MDbContext _context;
-        private readonly IUseCaseGetInicio _useCaseGetInicio;
+        private readonly DAO_AsesorInicioView _dao_asesorInicioView;
         public VendedorController(
             MDbContext context,
-            IUseCaseGetInicio useCaseGetInicio
-            )
+            DAO_AsesorInicioView dao_asesorInicioView)
         {
             _context = context;
-            _useCaseGetInicio = useCaseGetInicio;
+            _dao_asesorInicioView = dao_asesorInicioView;
         }
 
         [HttpPost]
@@ -49,7 +48,6 @@ namespace ALFINapp.API.Controllers
             }
         }
 
-        // Acción para mostrar la página de Inicio
         [HttpGet]
         [PermissionAuthorization("Vendedor", "Inicio")]
         public async Task<IActionResult> Inicio()
@@ -61,14 +59,14 @@ namespace ALFINapp.API.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var executeInicio = await _useCaseGetInicio.Execute(usuarioId.Value);
-            if (!executeInicio.IsSuccess || executeInicio.Data == null)
+            var inicio = await _dao_asesorInicioView.Execute(usuarioId.Value);
+            if (!inicio.IsSuccess || inicio.Data == null)
             {
-                TempData["MessageError"] = executeInicio.Message;
+                TempData["MessageError"] = inicio.Message;
                 return RedirectToAction("Redireccionar", "Error");
             }
 
-            var dataInicio = executeInicio.Data;
+            var dataInicio = inicio.Data;
             return View("Main", dataInicio);
         }
 
