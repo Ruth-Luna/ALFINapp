@@ -234,7 +234,7 @@ function ListarUsuarioGerente(id = null, editar = false) {
                 console.debug(data[0].nombrecampania + ' - ' + $('#txtCampania_AR').val());
                 $('#txtCorreo_AR').val(data[0].correo ?? '');
                 $('#txtRol_AR').val(data[0].idRol?.toString() ?? '').change();
-                $('#selectEstado').val(data[0].estado ?? '')
+                $('#sltEstado_AR').val(data[0].estado ?? '')
                 $('#txtTelefono_AR').val(data[0].telefono ?? '');
                 $('#txtDepartamento_AR').val(data[0].departamento ?? '');
                 $('#txtProvincia_AR').val(data[0].provincia ?? '');
@@ -304,7 +304,7 @@ function AgregarActualizarCliente(actualizar = false, idUsuario = null) {
         Provincia: $('#txtProvincia_AR').val().trim() || '',
         Distrito: $('#txtDistrito_AR').val().trim() || '',
         Telefono: $('#txtTelefono_AR').val().trim() || '',
-        Estado: $('#selectEstado').val() || 'ACTIVO',
+        Estado: $('#sltEstado_AR').val() || 'ACTIVO',
         REGION: $('#txtRegion_AR').val().trim() || '',
         NOMBRECAMPAÑA: $('#txtCampania_AR').val().trim() || '',
         IdRol: parseInt($('#txtRol_AR').val()),
@@ -441,5 +441,5 @@ function LimpiarFormularioUsuario() {
     $('#txtCampania_AR').val('');
     $('#txtCorreo_AR').val('');
     $('#txtRol_AR').val('');
-    $('#selectEstado').val('');
+    $('#sltEstado_AR').val('');
 }
