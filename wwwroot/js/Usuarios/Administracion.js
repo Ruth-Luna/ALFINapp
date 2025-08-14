@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const checked = params.data.estado === 'ACTIVO' ? 'checked' : '';
                 return `
             <div class="d-flex flex-column align-items-center">
-                <button class="btn btn-primary btn-sm" onclick="ListarUsuarioGerente('${params.value}',true)">
+                <button class="btn btn-primary btn-sm btnActualizarUsuario" onclick="ListarUsuarioGerente('${params.value}',true)">
                   <i class="bi bi-eye"></i>
                 </button>
             </div>
@@ -89,16 +89,17 @@ document.addEventListener('DOMContentLoaded', function () {
     ListarUsuarioGerente();
     ListarRoles("#txtRol_AR"); // Para formulario
     ListarRoles("#txtFiltrarRol")
+    ListarSupervisores();
     $('#selectTDocumento_AR').on('change', function () {
         const tipo = $(this).val();
         const $input = $('#txtDNI_AR');
 
-        if (tipo == '1') {
+        if (tipo == 'DNI') {
             $input.attr('maxlength', 8);
             if ($input.val().length > 8) {
                 $input.val($input.val().substring(0, 8)); 
             }
-        } else if (tipo == '2') {
+        } else if (tipo == 'CE') {
             $input.attr('maxlength', 11);
         }
     });
@@ -118,6 +119,8 @@ $('#btnAgregarUsuario').on('click', function () {
     LimpiarFormularioUsuario();
     $('#modalARGerente').modal('show');
     $('#btnGuardarCambios').data('modo', 'agregar');
+    // Ocultar inputs de usuario y contraseña
+    $('.solo-update-input').hide();
 });
 
 $('#btnGuardarCambios').on('click', function () {
@@ -128,6 +131,25 @@ $('#btnGuardarCambios').on('click', function () {
         AgregarActualizarCliente(false); 
     } else {
         AgregarActualizarCliente(true, idUsuario); 
+    }
+});
+
+$('#modalARGerente').on('show.bs.modal', function () {
+    // Forzar la activacion del change del select de rol
+    $('#txtRol_AR').change();
+});
+
+$(document).on('click', '.btnActualizarUsuario', function () {
+    // Mostrar inputs de usuario y contraseña
+    $('.solo-update-input').show();
+});
+
+$(document).on('change', '#txtRol_AR', function () {
+    const rol = $(this).val();
+    if (rol == '3') {
+        $('#txtSupervisor_AR').parent().show();
+    } else {
+        $('#txtSupervisor_AR').parent().hide();
     }
 });
 
@@ -181,9 +203,9 @@ function ListarUsuarioGerente(id = null, editar = false) {
             if (!editar) {
                 const rowData = data.map(usuario => ({
                     dni: usuario.dni ?? '',
-                    usuarioNombre: `${usuario.nombres ?? ''} ${usuario.apellido_Paterno ?? ''} ${usuario.apellido_Materno ?? ''}`,
+                    usuarioNombre: `${usuario.nombresCompletos ?? ''}`,
                     rol: usuario.rol ?? '',
-                    supervisor: usuario.responsablesup ?? 'EL USUARIO NO TIENE SUPERVISOR',
+                    supervisor: (!usuario.responsablesup || usuario.responsablesup.trim() === '') ? 'EL USUARIO NO TIENE SUPERVISOR' : usuario.responsablesup,
                     campania: usuario.nombrecampania ?? '',
                     correo: usuario.correo ?? '',
                     telefono: usuario.telefono ?? '',
@@ -208,10 +230,16 @@ function ListarUsuarioGerente(id = null, editar = false) {
                 $('#txtApellidosM_AR').val(data[0].apellido_Materno ?? '');
                 $('#txtNombres_AR').val(data[0].nombres ?? '');
                 $('#txtRegion_AR').val(data[0].region ?? '');
-                $('#txtCampania_AR').val(data[0].nombrecampania ?? '');
+                $('#txtCampania_AR').val(data[0].nombrecampania);
+                console.debug(data[0].nombrecampania + ' - ' + $('#txtCampania_AR').val());
                 $('#txtCorreo_AR').val(data[0].correo ?? '');
-                $('#txtRol_AR').val(data[0].rol ?? '');
+                $('#txtRol_AR').val(data[0].idRol?.toString() ?? '').change();
                 $('#selectEstado').val(data[0].estado ?? '')
+                $('#txtTelefono_AR').val(data[0].telefono ?? '');
+                $('#txtDepartamento_AR').val(data[0].departamento ?? '');
+                $('#txtProvincia_AR').val(data[0].provincia ?? '');
+                $('#txtDistrito_AR').val(data[0].distrito ?? '');
+                $('#txtSupervisor_AR').val(data[0].idusuariosup?.toString() ?? '').change();
 
                 $('#btnGuardarCambios').attr('data-id', data[0].idUsuario);
             }
@@ -226,30 +254,77 @@ function ListarUsuarioGerente(id = null, editar = false) {
 function AgregarActualizarCliente(actualizar = false, idUsuario = null) {
     const correo = $('#txtCorreo_AR').val();
 
-    const data = {
-        IdUsuario: idUsuario || null,
-        Dni: $('#txtDNI_AR').val() || '',
-        Apellido_Paterno: $('#txtApellidosP_AR').val() || '',
-        Apellido_Materno: $('#txtApellidosM_AR').val() || '',
-        Nombres: $('#txtNombres_AR').val() || '',
-        Departamento: $('#txtDepartamento_AR').val() || '',
-        Provincia: $('#txtProvincia_AR').val() || '',
-        Distrito: $('#txtDistrito_AR').val() || '',
-        Telefono: $('#txtTelefono_AR').val() || '',
-        Estado: $('#selectEstado').val() || 'ACTIVO',
-        IDUSUARIOSUP: 0, // o el valor real si lo tienes
-        RESPONSABLESUP: '',
-        REGION: $('#txtRegion_AR').val() || '',
-        NOMBRECAMPAÑA: $('#txtCampania_AR').val() || '',
-        IdRol: $('#txtRol_AR').val() || '',
-        Usuario: $('#txtUser_AR').val() || '',
-        Correo: $('#txtCorreo_AR').val() || ''
-    };
-    console.log(data)
-    if (correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
-        Swal.fire('Formato Inválido', 'El correo ingresado no cumple con los estándares', 'warning');
+    // Validar inputs
+
+    var validaciones = [];
+
+    if (!$('#selectTDocumento_AR').val()) validaciones.push('Tipo de Documento es requerido.');
+    if (!$('#txtDNI_AR').val()) validaciones.push('El número del documento es requerido.');
+    if (!$('#txtApellidosP_AR').val()) validaciones.push('El apellido paterno es requerido.');
+    if (!$('#txtApellidosM_AR').val()) validaciones.push('El apellido materno es requerido.');
+    if (!$('#txtNombres_AR').val()) validaciones.push('El nombre es requerido.');
+    if (!$('#txtCampania_AR').val()) validaciones.push('La campaña es requerida.');
+    if (!$('#txtRegion_AR').val()) validaciones.push('La región es requerida.');
+    if (!$('#txtDepartamento_AR').val()) validaciones.push('El departamento es requerido.');
+    if (!$('#txtProvincia_AR').val()) validaciones.push('La provincia es requerida.');
+    if (!$('#txtDistrito_AR').val()) validaciones.push('El distrito es requerido.');
+    if (!$('#txtTelefono_AR').val()) validaciones.push('El teléfono es requerido.');
+    if ($('#txtTelefono_AR').val() && !/^\d{9}$/.test($('#txtTelefono_AR').val())) validaciones.push('El teléfono debe tener exactamente 9 dígitos numéricos.');
+    if (!$('#txtCorreo_AR').val()) validaciones.push('El correo es requerido.');
+    if ($('#txtCorreo_AR').val() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($('#txtCorreo_AR').val())) {
+        validaciones.push('El correo ingresado no cumple con los estándares.');
+    }
+    if (!$('#sltEstado_AR').val()) validaciones.push('El estado es requerido.');
+    if (!$('#txtRol_AR').val()) validaciones.push('El rol es requerido.');
+
+    // Validacion exclusivas para rol asesor (3)
+    if ($('#txtRol_AR').val() === '3') {
+        if (!$('#txtSupervisor_AR').val()) validaciones.push('El supervisor es requerido.');
+    }
+
+    // Validacion exlusivas de actualizacion
+    if (actualizar) {
+        if (!$('#txtUser_AR').val()) validaciones.push('El usuario es requerido.');
+        if (!$('#txtPassword_AR').val()) validaciones.push('La contraseña es requerida.');
+    }
+
+    if (validaciones.length > 0) {
+        Swal.fire('Campos faltantes o inválidos', validaciones.join('<br>'), 'warning');
         return;
     }
+
+    const data = {
+        IdUsuario: idUsuario || 0,
+        Dni: $('#txtDNI_AR').val().trim() || '',
+        TipoDocumento: $('#selectTDocumento_AR').val() || null,
+        Apellido_Paterno: $('#txtApellidosP_AR').val().trim() || '',
+        Apellido_Materno: $('#txtApellidosM_AR').val().trim() || '',
+        Nombres: $('#txtNombres_AR').val().trim() || '',
+        Departamento: $('#txtDepartamento_AR').val().trim() || '',
+        Provincia: $('#txtProvincia_AR').val().trim() || '',
+        Distrito: $('#txtDistrito_AR').val().trim() || '',
+        Telefono: $('#txtTelefono_AR').val().trim() || '',
+        Estado: $('#selectEstado').val() || 'ACTIVO',
+        REGION: $('#txtRegion_AR').val().trim() || '',
+        NOMBRECAMPAÑA: $('#txtCampania_AR').val().trim() || '',
+        IdRol: parseInt($('#txtRol_AR').val()),
+        Usuario: actualizar ?
+            $('#txtUser_AR').val().trim() || null :
+            // Al generar un nuevo usuario, se utiliza el formato "nombre.apellido"
+            $('#txtNombres_AR').val().split(' ')[0] + '.' + $('#txtApellidosP_AR').val().split(' ')[0],
+        Correo: $('#txtCorreo_AR').val().trim() || ''
+    };
+
+    if (actualizar) {
+        data.Contrasenia = $('#txtPassword_AR').val().trim() || null;
+    }
+
+    // Si el rol es asesor (3), añadir IDUSUARIOSUP y RESPONSABLESUP
+    if (data.IdRol === 3) {
+        data.IDUSUARIOSUP = parseInt($('#txtSupervisor_AR').val()) || 0;
+        data.RESPONSABLESUP = $('#txtSupervisor_AR option:selected').text() || '';
+    }
+
     console.log(actualizar)
     const url = actualizar ? '/Usuarios/ActualizarUsuario' : '/Usuarios/CrearUsuario';
     const mensajeExito = actualizar ? 'Actualizado Correctamente' : 'Registrado Correctamente';
@@ -271,6 +346,28 @@ function AgregarActualizarCliente(actualizar = false, idUsuario = null) {
         },
         error: function () {
             Swal.fire('Error', 'Error de servidor o red', 'error');
+        }
+    });
+}
+
+function ListarSupervisores() {
+    $.ajax({
+        url: "/Usuarios/ListarSupervisores",
+        type: "GET",
+        success: function (response) {
+            const $select = $('#txtSupervisor_AR');
+            $select.empty();
+            $select.append($("<option>").val("").text("--Seleccione--"));
+            response.forEach(function (supervisor) {
+                $select.append(
+                    $("<option>")
+                        .val(supervisor.idUsuario)
+                        .text(supervisor.nombresCompletos)
+                );
+            });
+        },
+        error: function () {
+            Swal.fire('Error', 'Error al cargar los supervisores', 'error');
         }
     });
 }

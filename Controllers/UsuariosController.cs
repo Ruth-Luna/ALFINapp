@@ -94,7 +94,13 @@ namespace ALFINapp.API.Controllers
                 });
             }
         }
-        
+
+        [HttpGet]
+        public JsonResult ListarSupervisores()
+        {
+            var listarSupervisores = _daUsuario.ListarSupervisores();
+            return Json(listarSupervisores);
+        }
 
         [HttpGet]
         public JsonResult ListarRoles()

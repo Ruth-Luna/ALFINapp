@@ -31,14 +31,15 @@ namespace ALFINapp.Datos
                         command.Parameters.AddWithValue("@Distrito", (object?)usuario.Distrito ?? DBNull.Value);
                         command.Parameters.AddWithValue("@Telefono", (object?)usuario.Telefono ?? DBNull.Value);
                         command.Parameters.AddWithValue("@Estado", (object?)usuario.Estado ?? "ACTIVO");
-                        command.Parameters.AddWithValue("@IDUSUARIOSUP", (object?)usuario.IDUSUARIOSUP ?? DBNull.Value);
-                        command.Parameters.AddWithValue("@RESPONSABLESUP", (object?)usuario.RESPONSABLESUP ?? DBNull.Value);
+                        command.Parameters.AddWithValue("@IDUSUARIOSUP", usuario.IDUSUARIOSUP == 0 ? DBNull.Value : (object?)usuario.IDUSUARIOSUP);
+                        command.Parameters.AddWithValue("@RESPONSABLESUP", string.IsNullOrWhiteSpace(usuario.RESPONSABLESUP) ? DBNull.Value : (object?)usuario.RESPONSABLESUP);
                         command.Parameters.AddWithValue("@REGION", (object?)usuario.REGION ?? DBNull.Value);
                         command.Parameters.AddWithValue("@NOMBRECAMPAÑA", (object?)usuario.NOMBRECAMPAÑA ?? DBNull.Value);
                         command.Parameters.AddWithValue("@IdRol", usuario.IdRol);
                         command.Parameters.AddWithValue("@Usuario", usuario.Usuario);
                         command.Parameters.AddWithValue("@id_usuario_accion", idUsuarioAccion);
                         command.Parameters.AddWithValue("@Correo", (object?)usuario.Correo ?? DBNull.Value);
+                        command.Parameters.AddWithValue("@TipoDocumento", (object?)usuario.TipoDocumento ?? DBNull.Value);
 
                         await connection.OpenAsync();
                         await command.ExecuteNonQueryAsync();
@@ -86,20 +87,24 @@ namespace ALFINapp.Datos
                             {
                                 IdUsuario = Convert.ToInt32(dr["id_usuario"]),
                                 Dni = dr["dni"].ToString() ?? string.Empty,
-                                TipoDocumento = dr["tipo_doc"].ToString() ?? string.Empty,
+                                TipoDocumento = dr["tipo_documento"].ToString() ?? string.Empty,
                                 Nombres = dr["Nombres"].ToString() ?? string.Empty,
                                 Apellido_Paterno = dr["Apellido_Paterno"].ToString() ?? string.Empty,
                                 Apellido_Materno = dr["Apellido_Materno"].ToString() ?? string.Empty,
                                 Usuario = dr["Usuario"].ToString() ?? string.Empty,
-                                Contrasenia = dr["contraseñaH"] == DBNull.Value
-                                ? null
-                                : System.Text.Encoding.Unicode.GetString((byte[])dr["contraseñaH"]),
+                                Contrasenia = dr["contraseñaH"].ToString() ?? string.Empty,
                                 Correo = dr["correo"].ToString() ?? string.Empty,
-                                NombresCompletos = dr["Nombre_Completo"].ToString() ?? string.Empty,
+                                NombresCompletos = dr["Nombres_Completos"].ToString() ?? string.Empty,
                                 NOMBRECAMPANIA = dr["NOMBRE_CAMPAÑA"].ToString() ?? string.Empty,
                                 RESPONSABLESUP = dr["RESPONSABLE_SUP"].ToString() ?? string.Empty,
+                                IDUSUARIOSUP = dr["ID_USUARIO_SUP"] == DBNull.Value ? 0 : Convert.ToInt32(dr["ID_USUARIO_SUP"]),
                                 REGION = dr["region"].ToString() ?? string.Empty,
-                                Rol = dr["rol"].ToString() ?? string.Empty,
+                                Distrito = dr["distrito"].ToString() ?? string.Empty,
+                                Provincia = dr["provincia"].ToString() ?? string.Empty,
+                                Departamento = dr["departamento"].ToString() ?? string.Empty,
+                                Telefono = dr["telefono"].ToString() ?? string.Empty,
+                                Rol = dr["Rol"].ToString() ?? string.Empty,
+                                IdRol = dr["id_rol"] == DBNull.Value ? 0 : Convert.ToInt32(dr["id_rol"]),
                                 Estado = dr["estado"].ToString() ?? string.Empty,
                                 FechaActualizacion = dr["fecha_actualizacion"] == DBNull.Value ? null : Convert.ToDateTime(dr["fecha_actualizacion"]),
                                 FechaInicio = dr["fecha_inicio"] == DBNull.Value ? null : Convert.ToDateTime(dr["fecha_inicio"]),
@@ -125,21 +130,24 @@ namespace ALFINapp.Datos
                         cmd.CommandType = CommandType.StoredProcedure;
 
                         cmd.Parameters.AddWithValue("@id_usuario", usuario.IdUsuario);
-                        cmd.Parameters.AddWithValue("@dni", usuario.Dni != null ? usuario.Dni : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@tipo_doc", usuario.TipoDocumento != null ? usuario.TipoDocumento : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Apellido_Paterno", usuario.Apellido_Paterno != null || usuario.Apellido_Paterno != "" ? usuario.Apellido_Paterno : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Apellido_Materno", usuario.Apellido_Materno != null || usuario.Apellido_Materno != "" ? usuario.Apellido_Materno : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Usuario", usuario.Usuario != null ? usuario.Usuario : DBNull.Value);
-                        cmd.Parameters.Add("@contraseniaH", SqlDbType.VarBinary, -1).Value =
-                            usuario.Contrasenia != null
-                                ? (object)System.Text.Encoding.Unicode.GetBytes(usuario.Contrasenia)
-                                : DBNull.Value;
-                        cmd.Parameters.AddWithValue("@Nombres", usuario.Nombres != null ? usuario.Nombres : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@NOMBRE_CAMPANIA", usuario.NOMBRECAMPANIA != null ? usuario.NOMBRECAMPANIA : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@rol", usuario.Rol != null ? usuario.Rol : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@region", usuario.REGION != null ? usuario.REGION : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@correo", usuario.Correo != null ? usuario.Correo : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@estado", usuario.Estado != null ? usuario.Estado : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@dni", string.IsNullOrWhiteSpace(usuario.Dni) ? DBNull.Value : (object)usuario.Dni);
+                        cmd.Parameters.AddWithValue("@Apellido_Paterno", string.IsNullOrWhiteSpace(usuario.Apellido_Paterno) ? DBNull.Value : (object)usuario.Apellido_Paterno);
+                        cmd.Parameters.AddWithValue("@Apellido_Materno", string.IsNullOrWhiteSpace(usuario.Apellido_Materno) ? DBNull.Value : (object)usuario.Apellido_Materno);
+                        cmd.Parameters.AddWithValue("@Nombres", string.IsNullOrWhiteSpace(usuario.Nombres) ? DBNull.Value : (object)usuario.Nombres);
+                        cmd.Parameters.AddWithValue("@Departamento", string.IsNullOrWhiteSpace(usuario.Departamento) ? DBNull.Value : (object)usuario.Departamento);
+                        cmd.Parameters.AddWithValue("@Provincia", string.IsNullOrWhiteSpace(usuario.Provincia) ? DBNull.Value : (object)usuario.Provincia);
+                        cmd.Parameters.AddWithValue("@Distrito", string.IsNullOrWhiteSpace(usuario.Distrito) ? DBNull.Value : (object)usuario.Distrito);
+                        cmd.Parameters.AddWithValue("@Telefono", string.IsNullOrWhiteSpace(usuario.Telefono) ? DBNull.Value : (object)usuario.Telefono);
+                        cmd.Parameters.AddWithValue("@estado", string.IsNullOrWhiteSpace(usuario.Estado) ? DBNull.Value : (object)usuario.Estado);
+                        cmd.Parameters.AddWithValue("@IDUSUARIOSUP", usuario.IDUSUARIOSUP == 0 ? DBNull.Value : (object)usuario.IDUSUARIOSUP);
+                        cmd.Parameters.AddWithValue("@RESPONSABLESUP", string.IsNullOrWhiteSpace(usuario.RESPONSABLESUP) ? DBNull.Value : (object)usuario.RESPONSABLESUP);
+                        cmd.Parameters.AddWithValue("@region", string.IsNullOrWhiteSpace(usuario.REGION) ? DBNull.Value : (object)usuario.REGION);
+                        cmd.Parameters.AddWithValue("@NOMBRE_CAMPANIA", string.IsNullOrWhiteSpace(usuario.NOMBRECAMPANIA) ? DBNull.Value : (object)usuario.NOMBRECAMPANIA);
+                        cmd.Parameters.AddWithValue("@idRol", usuario.IdRol == 0 ? DBNull.Value : (object)usuario.IdRol);
+                        cmd.Parameters.AddWithValue("@Usuario", string.IsNullOrWhiteSpace(usuario.Usuario) ? DBNull.Value : (object)usuario.Usuario);
+                        cmd.Parameters.AddWithValue("@contraseniaH", string.IsNullOrWhiteSpace(usuario.Contrasenia) ? DBNull.Value : (object)usuario.Contrasenia);
+                        cmd.Parameters.AddWithValue("@correo", string.IsNullOrWhiteSpace(usuario.Correo) ? DBNull.Value : (object)usuario.Correo);
+                        cmd.Parameters.AddWithValue("@tipo_doc", string.IsNullOrWhiteSpace(usuario.TipoDocumento) ? DBNull.Value : (object)usuario.TipoDocumento);
 
                         connection.Open();
                         int filasAfectadas = cmd.ExecuteNonQuery();
@@ -151,7 +159,6 @@ namespace ALFINapp.Datos
             catch (Exception ex)
             {
                 Console.WriteLine("Error en ActualizarUsuario: " + ex.Message);
-                // Puedes lanzar la excepción para que suba al controlador y se capture allí también
                 throw;
             }
         }
