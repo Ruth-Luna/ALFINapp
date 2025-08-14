@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Persistence.Procedures;
 
@@ -23,15 +19,6 @@ namespace ALFINapp.Application.DTOs
             Desembolsos = new List<Desembolsos>();
             ReportesXAsesor = new List<DetallesReportesAsesorDTO>();
             gESTIONDETALLEs = new List<GESTIONDETALLE>();
-        }
-        public DetallesReportesSupervisorDTO(List<ClientesAsignado> clientesAsignados, List<Infrastructure.Persistence.Models.Usuario> asesores, List<DerivacionesAsesores> derivacionesSupervisor, List<Desembolsos> desembolsos, List<DetallesReportesAsesorDTO> reportesXAsesor, List<GESTIONDETALLE> gESTIONDETALLEs)
-        {
-            ClientesAsignados = clientesAsignados;
-            Asesores = asesores;
-            DerivacionesSupervisor = derivacionesSupervisor;
-            Desembolsos = desembolsos;
-            ReportesXAsesor = reportesXAsesor;
-            this.gESTIONDETALLEs = gESTIONDETALLEs;
         }
         public DetallesReportesSupervisorDTO(
             List<ClientesAsignado> clientesAsignados,

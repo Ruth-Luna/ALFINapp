@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ALFINapp.API.Models;
 using ALFINapp.Domain.Entities;
 using ALFINapp.Infrastructure.Persistence.Models;
@@ -80,60 +76,6 @@ namespace ALFINapp.Application.DTOs
                 FechaInicio = FechaInicio == null ? DateTime.Now : FechaInicio.Value,
                 FechaCese = FechaCese == null ? DateTime.Now : FechaCese.Value,
                 Correo = Correo ?? string.Empty
-            };
-        }
-        public Vendedor ToEntityVendedor ()
-        {
-            return new Vendedor
-            {
-                IdUsuario = IdUsuario,
-                Dni = Dni,
-                NombresCompletos = NombresCompletos,
-                Rol = Rol,
-                Departamento = Departamento,
-                Provincia = Provincia,
-                Distrito = Distrito,
-                Telefono = Telefono,
-                FechaRegistro = FechaRegistro,
-                Estado = Estado,
-                IDUSUARIOSUP = IDUSUARIOSUP,
-                RESPONSABLESUP = RESPONSABLESUP,
-                REGION = REGION,
-                NOMBRECAMPAÑA = NOMBRECAMPAÑA,
-                IdRol = IdRol,
-                FechaActualizacion = FechaActualizacion,
-                TipoDocumento = TipoDocumento,
-                IdUsuarioAccion = IdUsuarioAccion,
-                FechaInicio = FechaInicio,
-                FechaCese = FechaCese,
-                Correo = Correo
-            };
-        }
-        public Supervisor ToEntitySupervisor ()
-        {
-            return new Supervisor
-            {
-                IdUsuario = IdUsuario,
-                Dni = Dni,
-                NombresCompletos = NombresCompletos,
-                Rol = Rol,
-                Departamento = Departamento,
-                Provincia = Provincia,
-                Distrito = Distrito,
-                Telefono = Telefono,
-                FechaRegistro = FechaRegistro,
-                Estado = Estado,
-                IDUSUARIOSUP = IDUSUARIOSUP,
-                RESPONSABLESUP = RESPONSABLESUP,
-                REGION = REGION,
-                NOMBRECAMPAÑA = NOMBRECAMPAÑA,
-                IdRol = IdRol,
-                FechaActualizacion = FechaActualizacion,
-                TipoDocumento = TipoDocumento,
-                IdUsuarioAccion = IdUsuarioAccion,
-                FechaInicio = FechaInicio,
-                FechaCese = FechaCese,
-                Correo = Correo
             };
         }
     }

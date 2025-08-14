@@ -58,15 +58,6 @@ namespace ALFINapp.Application.UseCases.Reports
                         }
                         reporteGeneral.Supervisores = supervisoresViews;
                     }
-                    // GRAFICAS DE REPORTES Generales
-                    /*
-                    var lineasGestionDerivacion = await _repositoryReports.LineaGestionVsDerivacionDiaria(idUsuario);
-                    var pieGestionAsignados = await _repositoryReports.GetReportesGpieGeneral(idUsuario);
-                    var barTop5Asesores = await _repositoryReports.GetReportesBarTop5General(idUsuario);
-                    var tablaGestionado = await _repositoryReports.GetReportesTablaGestionDerivadoDesembolsoImporte();
-                    var pieContactabilidad = await _repositoryReports.GetReportesPieContactabilidadCliente(idUsuario);
-                    var etiquetaDesembolsoMonto = await _repositoryReports.GetReportesEtiquetasDesembolsosNImportes(idUsuario);
-                    */
                     var reportesAsync = await _repositoryReportsAsync.GetReportesAsync(idUsuario, anio, mes);
                     var reportesEtiquetas = await _repositoryReports.GetReportesEtiquetasMetas(anio,mes);
                     reporteGeneral.lineaGestionVsDerivacion = reportesAsync.linea.toViewLineaGestionVsDerivacion();

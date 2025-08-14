@@ -1,7 +1,5 @@
-using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.API.Filters;
 using Microsoft.AspNetCore.Mvc;
-using ALFINapp.Infrastructure.Services;
 using ALFINapp.Datos;
 using ALFINapp.API.Models;
 
@@ -69,7 +67,8 @@ namespace ALFINapp.API.Controllers
                 TempData["MessageError"] = "No se encontró el usuario";
                 return RedirectToAction("Index", "Home");
             }
-            return View("Inicio", supervisor);
+            var supervisorv = new ViewUsuario(supervisor);
+            return View("Inicio", supervisorv);
         }
 
         [HttpGet]
@@ -87,7 +86,7 @@ namespace ALFINapp.API.Controllers
                 TempData["MessageError"] = "Asesor no encontrado";
                 return RedirectToAction("Inicio");
             }
-            return PartialView("_InterfazActivarAsesor", new ViewUsuario(asesor)); // Retorna una vista parcial
+            return PartialView("_InterfazActivarAsesor", new ViewUsuario(asesor));
         }
     }
 }

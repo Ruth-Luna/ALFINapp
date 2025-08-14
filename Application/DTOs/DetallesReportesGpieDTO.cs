@@ -54,10 +54,10 @@ namespace ALFINapp.Application.DTOs
                 TOTAL_DERIVADOS = Reportes2 != null ? Reportes2.TOTAL_DERIVADOS : 0,
                 TOTAL_DESEMBOLSADOS = Reportes2 != null ? Reportes2.TOTAL_DESEMBOLSADOS : 0,
                 PORCENTAJE_GESTIONADOS = Reportes != null ? Reportes.PORCENTAJE_GESTIONADOS : 0,
-                PORCENTAJE_NO_GESTIONADOS = Reportes.PORCENTAJE_NO_GESTIONADOS,
-                PORCENTAJE_DERIVADOS = Reportes2.PORCENTAJE_DERIVADOS,
-                PORCENTAJE_DESEMBOLSADOS = Reportes2.PORCENTAJE_DESEMBOLSADOS,
-                PORCENTAJE_NO_DERIVADO = Reportes2.PORCENTAJE_NO_DERIVADO
+                PORCENTAJE_NO_GESTIONADOS = Reportes != null ? Reportes.PORCENTAJE_NO_GESTIONADOS : 0,
+                PORCENTAJE_DERIVADOS = Reportes2 != null ? Reportes2.PORCENTAJE_DERIVADOS : 0,
+                PORCENTAJE_DESEMBOLSADOS = Reportes2 != null ? Reportes2.PORCENTAJE_DESEMBOLSADOS : 0,
+                PORCENTAJE_NO_DERIVADO = Reportes2 != null ? Reportes2.PORCENTAJE_NO_DERIVADO : 0
             };
         }
         public List<ViewReportePieGeneral> toViewPieLista()

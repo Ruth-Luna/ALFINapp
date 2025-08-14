@@ -1,6 +1,5 @@
 @model ALFINapp.API.Models.ViewReportesSupervisor
 
-
 @* 3 *@
 <div class="ba-card mb-3 h-100">
     <div class="ba-card-header">
@@ -65,65 +64,3 @@
 </div>
 
 <div id="reportes-supervisor" data-json='@Html.Raw(Json.Serialize(Model))'></div>
-
-@* <div class="card">
-    <div class="card-header">
-        <h4>Asignaciones Del Supervisor</h4>
-    </div>
-    <div class="card-body">
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="card-header">
-                    <h5>Reportes de Asignaciones</h5>
-                </div>
-                <div class="card-body">
-                    <div id="div-asignaciones-general-supervisor"></div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card-header">
-                    <h5>Reportes de Derivaciones</h5>
-                </div>
-                <div class="card-body">
-                    <div id="div-asignaciones-derivadas-supervisor"></div>
-                </div>
-            </div>
-        </div>
-        <hr>
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <div class="card-header">
-                    <h5>Reportes de Supervisores</h5>
-                </div>
-                <div class="card-body">
-                    <div id="div-reporte-general-supervisor">
-                        @*Aca se cargara las graficas del Supervisor*
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <div class="card-header">
-                    <h5>Derivaciones por Fecha</h5>
-                </div>
-                <div class="card-body">
-                    <div id="div-derivaciones-por-fecha-supervisor"></div>
-                </div>
-            </div>
-        </div>
-        <hr>
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <div class="card-header">
-                    <h5>Desembolsos por Fecha</h5>
-                </div>
-                <div class="card-body">
-                    <div id="div-desembolsos-por-fecha-supervisor"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="reportes-supervisor" data-json='@Html.Raw(Json.Serialize(Model))'></div> *@

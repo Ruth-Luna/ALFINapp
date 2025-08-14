@@ -1,10 +1,7 @@
 using ALFINapp.API.Models;
 using ALFINapp.Application.DTOs;
 using ALFINapp.Application.Interfaces.Reports;
-using ALFINapp.Domain.Entities;
 using ALFINapp.Domain.Interfaces;
-using ALFINapp.Infrastructure.Repositories;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 
 namespace ALFINapp.Application.UseCases.Reports
 {
@@ -84,9 +81,5 @@ namespace ALFINapp.Application.UseCases.Reports
                 return (false, ex.Message, null);
             }
         }
-    }
-
-    public interface IReportesRepository
-    {
     }
 }

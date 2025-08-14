@@ -84,10 +84,5 @@ namespace ALFINapp.Application.DTOs
             }
             return metas;
         }
-
-        internal int Sum(Func<object, object> value)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
