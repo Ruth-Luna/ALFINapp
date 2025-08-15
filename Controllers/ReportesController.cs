@@ -1,5 +1,6 @@
 using ALFINapp.API.Filters;
 using ALFINapp.Application.Interfaces.Reports;
+using ALFINapp.Datos.DAO.Reportes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ALFINapp.API.Controllers
@@ -12,18 +13,33 @@ namespace ALFINapp.API.Controllers
         private readonly IUseCaseGetReportesSupervisor _useCaseGetReportesSupervisor;
         private readonly IUseCaseGetReportesFechas _useCaseGetReportesFechas;
         private readonly IUseCaseGetReportesMetas _useCaseGetReportesMetas;
+        private readonly DAO_GetReportes _daoGetReportes;
+        private readonly DAO_ReportesAsesor _daoReportesAsesor;
+        private readonly DAO_ReportesSupervisor _daoReportesSupervisor;
+        private readonly DAO_ReportesMetas _daoReportesMetas;
+        private readonly DAO_ReportesFechas _daoReportesFechas;
         public ReportesController(
             IUseCaseGetReportesAsesor useCaseGetReportesAsesor,
             IUseCaseGetReportesSupervisor useCaseGetReportesSupervisor,
             IUseCaseGetReportesFechas useCaseGetReportesFechas,
             IUseCaseGetReportes useCaseGetReportes,
-            IUseCaseGetReportesMetas useCaseGetReportesMetas)
+            IUseCaseGetReportesMetas useCaseGetReportesMetas,
+            DAO_GetReportes daoGetReportes,
+            DAO_ReportesAsesor daoReportesAsesor,
+            DAO_ReportesSupervisor daoReportesSupervisor,
+            DAO_ReportesMetas daoReportesMetas,
+            DAO_ReportesFechas daoReportesFechas)
         {
             _useCaseGetReportesAsesor = useCaseGetReportesAsesor;
             _useCaseGetReportesSupervisor = useCaseGetReportesSupervisor;
             _useCaseGetReportesFechas = useCaseGetReportesFechas;
             _useCaseGetReportes = useCaseGetReportes;
             _useCaseGetReportesMetas = useCaseGetReportesMetas;
+            _daoGetReportes = daoGetReportes;
+            _daoReportesAsesor = daoReportesAsesor;
+            _daoReportesSupervisor = daoReportesSupervisor;
+            _daoReportesMetas = daoReportesMetas;
+            _daoReportesFechas = daoReportesFechas;
         }
         [HttpGet]
         [PermissionAuthorization("Reportes", "Reportes")]
@@ -43,7 +59,10 @@ namespace ALFINapp.API.Controllers
                 return RedirectToAction("Index", "Home");
             }
             ViewData["UsuarioId"] = idUsuario.Value;
-            var reportesAdministrador = await _useCaseGetReportes.Execute(idUsuario.Value, anio, mes);
+            var reportesAdministrador = await _daoGetReportes.getAllReportes(
+                idUsuario.Value,
+                anio ?? DateTime.Now.Year,
+                mes ?? DateTime.Now.Month);
             if (!reportesAdministrador.IsSuccess)
             {
                 TempData["MessageError"] = reportesAdministrador.Message;
@@ -63,7 +82,7 @@ namespace ALFINapp.API.Controllers
             {
                 return Json(new { success = false, message = "No se ha iniciado sesión" });
             }
-            var reportesAdministrador = await _useCaseGetReportesAsesor.Execute(
+            var reportesAdministrador = await _daoReportesAsesor.getAllReportes(
                 idAsesor,
                 anio ?? DateTime.Now.Year,
                 mes ?? DateTime.Now.Month);
@@ -81,7 +100,7 @@ namespace ALFINapp.API.Controllers
             {
                 return Json(new { success = false, message = "No se ha iniciado sesión" });
             }
-            var reportesAdministrador = await _useCaseGetReportesSupervisor.Execute(idSupervisor, anio, mes);
+            var reportesAdministrador = await _daoReportesSupervisor.getAllReportes(idSupervisor, anio, mes);
             if (!reportesAdministrador.IsSuccess)
             {
                 return Json(new { success = false, message = reportesAdministrador.Message });
@@ -102,7 +121,7 @@ namespace ALFINapp.API.Controllers
                 return Json(new { success = false, message = "Id de usuario no valido." });
             }
             var fechaString = fecha.ToString("yyyy-MM-dd");
-            var reportesFechas = await _useCaseGetReportesFechas.Execute(fechaString, idUsuario.Value, rol.Value);
+            var reportesFechas = await _daoReportesFechas.Execute(fechaString, idUsuario.Value, rol.Value);
             if (!reportesFechas.IsSuccess)
             {
                 return Json(new { success = false, message = reportesFechas.Message });
@@ -118,7 +137,7 @@ namespace ALFINapp.API.Controllers
                 TempData["MessageError"] = "No ha iniciado sesion.";
                 return RedirectToAction("Index", "Home");
             }
-            var reportes = await _useCaseGetReportesMetas.Execute(id.Value);
+            var reportes = await _daoReportesMetas.Execute(id.Value);
             return View("Metas", reportes.Data);
         }
         [HttpGet]
@@ -134,7 +153,7 @@ namespace ALFINapp.API.Controllers
             {
                 return Json(new { success = false, message = "Id de usuario no valido." });
             }
-            var reportesAdministrador = await _useCaseGetReportesFechas.Execute(DateTime.Now.ToString(), idUsuario.Value, rol.Value, mes, año);
+            var reportesAdministrador = await _daoReportesFechas.Execute(DateTime.Now.ToString(), idUsuario.Value, rol.Value, mes, año);
             if (!reportesAdministrador.IsSuccess)
             {
                 return Json(new { success = false, message = reportesAdministrador.Message });
