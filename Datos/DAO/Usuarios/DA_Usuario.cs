@@ -353,6 +353,7 @@ namespace ALFINapp.Datos
             }
         }
 
+
         public Usuario? getUsuarioPorDni(string dni)
         {
             try
@@ -472,6 +473,56 @@ namespace ALFINapp.Datos
             catch (Exception ex)
             {
                 return (false, ex.Message, null);
+            }
+        }
+
+        public List<object> ExportarUsuariosExcel()
+        {
+            try
+            {
+                var lista = new List<object>();
+                var cn = new Conexion();
+
+                using (var connection = new SqlConnection(cn.getCadenaSQL()))
+                using (var cmd = new SqlCommand("SP_USUARIO_EXPORTAR_EXCEL", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    connection.Open();
+
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            var item = new
+                            {
+                                Dni = dr.IsDBNull(dr.GetOrdinal("Dni")) ? null : dr.GetString(dr.GetOrdinal("Dni")),
+                                TipoDocumento = dr.IsDBNull(dr.GetOrdinal("tipo_documento")) ? null : dr.GetString(dr.GetOrdinal("tipo_documento")),
+                                ApellidoPaterno = dr.IsDBNull(dr.GetOrdinal("Apellido_Paterno")) ? null : dr.GetString(dr.GetOrdinal("Apellido_Paterno")),
+                                ApellidoMaterno = dr.IsDBNull(dr.GetOrdinal("Apellido_Materno")) ? null : dr.GetString(dr.GetOrdinal("Apellido_Materno")),
+                                Nombres = dr.IsDBNull(dr.GetOrdinal("Nombres")) ? null : dr.GetString(dr.GetOrdinal("Nombres")),
+                                Rol = dr.IsDBNull(dr.GetOrdinal("Rol")) ? null : dr.GetString(dr.GetOrdinal("Rol")),
+                                Departamento = dr.IsDBNull(dr.GetOrdinal("Departamento")) ? null : dr.GetString(dr.GetOrdinal("Departamento")),
+                                Provincia = dr.IsDBNull(dr.GetOrdinal("Provincia")) ? null : dr.GetString(dr.GetOrdinal("Provincia")),
+                                Distrito = dr.IsDBNull(dr.GetOrdinal("Distrito")) ? null : dr.GetString(dr.GetOrdinal("Distrito")),
+                                Telefono = dr.IsDBNull(dr.GetOrdinal("Telefono")) ? null : dr.GetString(dr.GetOrdinal("Telefono")),
+                                FechaRegistro = dr.IsDBNull(dr.GetOrdinal("fecha_registro")) ? (DateTime?)null : dr.GetDateTime(dr.GetOrdinal("fecha_registro")),
+                                Estado = dr.IsDBNull(dr.GetOrdinal("Estado")) ? null : dr.GetString(dr.GetOrdinal("Estado")),
+                                Supervisor = dr.IsDBNull(dr.GetOrdinal("Supervisor")) ? null : dr.GetString(dr.GetOrdinal("Supervisor")),
+                                Region = dr.IsDBNull(dr.GetOrdinal("REGION")) ? null : dr.GetString(dr.GetOrdinal("REGION")),
+                                NombreCampania = dr.IsDBNull(dr.GetOrdinal("NOMBRE_CAMPANIA")) ? null : dr.GetString(dr.GetOrdinal("NOMBRE_CAMPANIA"))
+                            };
+
+                            lista.Add(item);
+                        }
+                    }
+                }
+
+                return lista;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error en ExportarUsuariosExcel: " + ex.Message);
+                return new List<object>();
             }
         }
     }

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using Microsoft.Extensions.FileProviders;
+using OfficeOpenXml;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,7 +45,7 @@ builder.Services.AddDbContextFactory<MDbContext>(options =>
 
 builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor();
-
+ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
 var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 foreach (var assembly in assemblies)

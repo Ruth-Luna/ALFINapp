@@ -1,6 +1,10 @@
 ﻿
 let gridOptions;
-
+$(document).ready(function () {
+    $('#btnExportExcel').on('click', function () {
+        DescargarResumenExcel();
+    });
+});
 document.addEventListener('DOMContentLoaded', function () {
 
     const columnDefs = [
@@ -109,38 +113,28 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-document.querySelectorAll('#filtroDni, #filtroUsuario, #txtFiltrarRol, #txtFiltrarEstado')
-    .forEach(el => {
-        el.addEventListener('input', aplicarFiltroGlobal);
-        el.addEventListener('change', aplicarFiltroGlobal);
-    });
-
 $('#btnAgregarUsuario').on('click', function () {
     LimpiarFormularioUsuario();
     $('#modalARGerente').modal('show');
-    $('#btnGuardarCambios').data('modo', 'agregar');
-    // Ocultar inputs de usuario y contraseña
     $('.solo-update-input').hide();
+    $('#sltEstado_AR').val('ACTIVO');
+
 });
 
 $('#btnGuardarCambios').on('click', function () {
-    const modo = $(this).data('modo');
     const idUsuario = $(this).attr('data-id') || null;
-
-    if (modo === 'agregar') {
-        AgregarActualizarCliente(false); 
+    if (idUsuario) {
+        AgregarActualizarCliente(true, idUsuario);
     } else {
-        AgregarActualizarCliente(true, idUsuario); 
+        AgregarActualizarCliente(false); 
     }
 });
 
 $('#modalARGerente').on('show.bs.modal', function () {
-    // Forzar la activacion del change del select de rol
     $('#txtRol_AR').change();
 });
 
 $(document).on('click', '.btnActualizarUsuario', function () {
-    // Mostrar inputs de usuario y contraseña
     $('.solo-update-input').show();
 });
 
@@ -202,7 +196,6 @@ function ListarUsuarioGerente(id = null, editar = false) {
         success: function (data) {
 
             if (!editar) {
-                console.log("🔍 Data cruda del servidor:", data);
 
                 let rowData = (data || []).map(usuario => ({
                     dni: usuario.dni ?? '',
@@ -221,7 +214,7 @@ function ListarUsuarioGerente(id = null, editar = false) {
                 }));
 
                 if (window.gridApi) {
-                    window.gridApi.setGridOption('rowData', rowData); // ✅ API nueva
+                    window.gridApi.setGridOption('rowData', rowData); 
                 } else {
                     console.warn("⚠️ gridApi no está lista todavía");
                 }
@@ -260,42 +253,68 @@ function ListarUsuarioGerente(id = null, editar = false) {
 
 
 function AgregarActualizarCliente(actualizar = false, idUsuario = null) {
-    const correo = $('#txtCorreo_AR').val();
-
-    // Validar inputs
-
     var validaciones = [];
 
-    if (!$('#selectTDocumento_AR').val()) validaciones.push('Tipo de Documento es requerido.');
-    if (!$('#txtDNI_AR').val()) validaciones.push('El número del documento es requerido.');
-    if (!$('#txtApellidosP_AR').val()) validaciones.push('El apellido paterno es requerido.');
-    if (!$('#txtApellidosM_AR').val()) validaciones.push('El apellido materno es requerido.');
-    if (!$('#txtNombres_AR').val()) validaciones.push('El nombre es requerido.');
-    if (!$('#txtCampania_AR').val()) validaciones.push('La campaña es requerida.');
-    if (!$('#txtRegion_AR').val()) validaciones.push('La región es requerida.');
-    if (!$('#txtDepartamento_AR').val()) validaciones.push('El departamento es requerido.');
-    if (!$('#txtProvincia_AR').val()) validaciones.push('La provincia es requerida.');
-    if (!$('#txtDistrito_AR').val()) validaciones.push('El distrito es requerido.');
-    if (!$('#txtTelefono_AR').val()) validaciones.push('El teléfono es requerido.');
-    if ($('#txtTelefono_AR').val() && !/^\d{9}$/.test($('#txtTelefono_AR').val())) validaciones.push('El teléfono debe tener exactamente 9 dígitos numéricos.');
-    if (!$('#txtCorreo_AR').val()) validaciones.push('El correo es requerido.');
-    if ($('#txtCorreo_AR').val() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($('#txtCorreo_AR').val())) {
-        validaciones.push('El correo ingresado no cumple con los estándares.');
-    }
-    if (!$('#sltEstado_AR').val()) validaciones.push('El estado es requerido.');
-    if (!$('#txtRol_AR').val()) validaciones.push('El rol es requerido.');
+    if (!actualizar) {
+        const reglas = [
+            { selector: '#selectTDocumento_AR', mensaje: 'Tipo de Documento es requerido.' },
+            { selector: '#txtDNI_AR', mensaje: 'El número del documento es requerido.' },
+            { selector: '#txtApellidosP_AR', mensaje: 'El apellido paterno es requerido.' },
+            { selector: '#txtApellidosM_AR', mensaje: 'El apellido materno es requerido.' },
+            { selector: '#txtNombres_AR', mensaje: 'El nombre es requerido.' },
+            { selector: '#txtCampania_AR', mensaje: 'La campaña es requerida.' },
+/*            { selector: '#txtRegion_AR', mensaje: 'La región es requerida.' },*/
+        /*    { selector: '#txtDepartamento_AR', mensaje: 'El departamento es requerido.' },*/
+            //{ selector: '#txtProvincia_AR', mensaje: 'La provincia es requerida.' },
+            //{ selector: '#txtDistrito_AR', mensaje: 'El distrito es requerido.' },
+         /*   { selector: '#txtTelefono_AR', mensaje: 'El teléfono es requerido.' },*/
+            { selector: '#txtCorreo_AR', mensaje: 'El correo es requerido.' },
+            { selector: '#sltEstado_AR', mensaje: 'El estado es requerido.' },
+            { selector: '#txtRol_AR', mensaje: 'El rol es requerido.' }
+        ];
 
-    // Validacion exclusivas para rol asesor (3)
-    if ($('#txtRol_AR').val() === '3') {
-        if (!$('#txtSupervisor_AR').val()) validaciones.push('El supervisor es requerido.');
-    }
+        reglas.forEach(regla => {
+            if (!$(regla.selector).val()) {
+                validaciones.push(regla.mensaje);
+            }
+        });
 
-    // Validacion exlusivas de actualizacion
+        const tel = $('#txtTelefono_AR').val();
+        if (tel && !/^\d{9}$/.test(tel)) {
+            validaciones.push('El teléfono debe tener exactamente 9 dígitos numéricos.');
+        }
+
+        const correo = $('#txtCorreo_AR').val();
+        if (correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+            validaciones.push('El correo ingresado no cumple con los estándares.');
+        }
+
+        if ($('#txtRol_AR').val() === '3' && !$('#txtSupervisor_AR').val()) {
+            validaciones.push('El supervisor es requerido.');
+        }
+    }
+    console.log(actualizar)
+    // Validaciones solo para actualizar
     if (actualizar) {
-        if (!$('#txtUser_AR').val()) validaciones.push('El usuario es requerido.');
-        if (!$('#txtPassword_AR').val()) validaciones.push('La contraseña es requerida.');
+        [
+            { selector: '#txtUser_AR', mensaje: 'El usuario es requerido.' },
+            { selector: '#txtPassword_AR', mensaje: 'La contraseña es requerida.' }
+        ].forEach(regla => {
+            if (!$(regla.selector).val()) {
+                validaciones.push(regla.mensaje);
+            }
+        });
     }
 
+
+    if (validaciones.length > 0) {
+        Swal.fire({
+            title: 'Campos incompletos',
+            html: validaciones.map(v => `• ${v}`).join('<br>'),
+            icon: 'info'
+        });
+        return;
+    }
     const data = {
         IdUsuario: idUsuario || 0,
         Dni: $('#txtDNI_AR').val().trim() || '',
@@ -328,7 +347,6 @@ function AgregarActualizarCliente(actualizar = false, idUsuario = null) {
         data.RESPONSABLESUP = $('#txtSupervisor_AR option:selected').text() || '';
     }
 
-    console.log(actualizar)
     const url = actualizar ? '/Usuarios/ActualizarUsuario' : '/Usuarios/CrearUsuario';
     const mensajeExito = actualizar ? 'Actualizado Correctamente' : 'Registrado Correctamente';
 
@@ -339,10 +357,12 @@ function AgregarActualizarCliente(actualizar = false, idUsuario = null) {
         data: JSON.stringify(data),
         success: function (res) {
             if (res.success) {
-                Swal.fire(mensajeExito, '', 'success');
+                Swal.fire(mensajeExito, 'Se ha actualizado el usuario de manera correcta', 'success');
                 ListarUsuarioGerente();
                 $('#modalARGerente').modal('hide');
                 LimpiarFormularioUsuario();
+            } else if (res.message = 'Error al crear el usuario: El DNI ingresado ya se encuentra insertado') {
+                Swal.fire('DNI Existente','El Usuario ya ha sido creado anteriormente', 'warning');
             } else {
                 Swal.fire('Error', res.message || 'No se pudo guardar', 'error');
             }
@@ -407,33 +427,111 @@ function FechaFormat(fechaString) {
     return `${dia}/${mes}/${anio}`;
 }
 
-function aplicarFiltroGlobal() {
-    // Tomar todos los valores de filtros
-    const texto = [
-        document.getElementById('filtroDni').value,
-        document.getElementById('filtroUsuario').value,
-        document.getElementById('txtFiltrarRol').value,
-        document.getElementById('txtFiltrarEstado').value
-    ].filter(Boolean).join(' ');
+// Filtro por DNI
+document.getElementById('filtroDni').addEventListener('input', function () {
+    const v = this.value;
+    const model = window.gridApi.getFilterModel() || {};
+    if (!v) {
+        delete model.dni; // 'dni' debe coincidir con el field en columnDefs
+    } else {
+        model.dni = { filterType: 'text', type: 'contains', filter: v };
+    }
+    window.gridApi.setFilterModel(model);
+});
 
-    // 📌 Filtro por estado
-    const selEstado = document.getElementById('txtFiltrarEstado');
-    selEstado.addEventListener('change', function () {
-        const v = this.value;
-        const model = window.gridApi.getFilterModel() || {};
+// Filtro por Usuario
+document.getElementById('filtroUsuario').addEventListener('input', function () {
+    const v = this.value;
+    const model = window.gridApi.getFilterModel() || {};
+    if (!v) {
+        delete model.usuarioNombre; 
+    } else {
+        model.usuarioNombre = { filterType: 'text', type: 'contains', filter: v };
+    }
+    window.gridApi.setFilterModel(model);
+});
 
-        if (!v) {
-            delete model.estado;
-        } else {
-            model.estado = { filterType: 'text', type: 'equals', filter: v };
-        }
+    const rolesMap = {
+    1: 'ADMINISTRADOR',
+    2: 'SUPERVISOR',
+    3: 'ASESOR',
+    4: 'GERENTE ZONAL'
+};
 
-        window.gridApi.setFilterModel(model);
+document.getElementById('txtFiltrarRol').addEventListener('change', function () {
+    const v = this.value;
+    const model = window.gridApi.getFilterModel() || {};
+
+    if (!v) {
+        delete model.rol; 
+    } else {
+        model.rol = {
+            filterType: 'text',
+            type: 'equals',
+            filter: rolesMap[v] || ''
+        };
+    }
+
+    window.gridApi.setFilterModel(model);
+});
+
+document.getElementById('txtFiltrarEstado').addEventListener('change', function () {
+    const v = this.value;
+    const model = window.gridApi.getFilterModel() || {};
+    if (!v) {
+        delete model.estado;
+    } else {
+        model.estado = { filterType: 'text', type: 'equals', filter: v };
+    }
+    window.gridApi.setFilterModel(model);
+});
+function DescargarResumenExcel() {
+    Swal.fire({
+        title: 'Cargando...',
+        timerProgressBar: true,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => Swal.showLoading()
     });
 
-    // 📌 Filtro global
-    window.gridApi.setGridOption('quickFilterText', texto);
+    $.ajax({
+        url: '/Usuarios/ExportarUsuariosExcel',
+        type: 'GET',
+
+        xhrFields: { responseType: 'blob' },
+        success: function (data, status, xhr) {
+            let filename = 'Usuarios_' + new Date().toISOString().slice(0, 10) + '.xlsx';
+
+            const disposition = xhr.getResponseHeader('Content-Disposition');
+            if (disposition && disposition.indexOf('filename=') !== -1) {
+                const match = disposition.match(/filename\*?=(?:UTF-8'')?["']?([^"';]+)["']?/i);
+            }
+            const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+
+            Swal.close();
+        },
+        error: function (xhr) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error en la operación',
+                text: 'Hubo un problema al generar el archivo Excel',
+                confirmButtonText: 'Ok'
+            });
+            Swal.close();
+        }
+    });
 }
+
 function LimpiarFormularioUsuario() {
     $('#txtDNI_AR').val('');
     $('#selectTDocumento_AR').val('');
@@ -443,6 +541,10 @@ function LimpiarFormularioUsuario() {
     $('#txtApellidosM_AR').val('');
     $('#txtNombres_AR').val('');
     $('#txtRegion_AR').val('');
+    $('#txtDepartamento_AR').val('');
+    $('#txtProvincia_AR').val('')
+    $('#txtDistrito_AR').val('')
+    $('#txtTelefono_AR').val('')
     $('#txtCampania_AR').val('');
     $('#txtCorreo_AR').val('');
     $('#txtRol_AR').val('');

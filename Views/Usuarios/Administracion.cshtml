@@ -10,8 +10,14 @@
 
 <div>
     <div class="mb-2">
-        <h3 style="mb-2">Usuarios</h3>
-    
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="mb-0">Usuarios</h3>
+
+            <button id="btnExportExcel" class="btn btn-success">
+                <i class="bi bi-file-earmark-excel me-2"></i>
+                Descargar Usuarios
+            </button>
+        </div>
         <div class="w-100">
             <div class="bg-white rounded shadow-sm px-4 py-3 mb-3 w-100">
                 <div class="row g-4 align-items-end">
@@ -101,6 +107,7 @@
                             <div class="mb-3">
                                 <label for="selectTDocumento_AR" class="form-label">Tipo Documento</label>
                                 <select class="form-select" id="selectTDocumento_AR">
+                                    <option value="" selected disabled>-- Seleccionar --</option>
                                     <option value="DNI">DNI</option>
                                     <option value="CE">CARNET EXTRANJERÍA</option>
                                 </select>
@@ -149,7 +156,7 @@
                         <div class="mb-3 col-md-3">
                             <label for="txtRol_AR" class="form-label">Rol</label>
                             <select class="form-select" id="txtRol_AR">
-                                <!-- Opciones cargadas dinámicamente -->
+                                <option value="" selected disabled>-- Seleccionar --</option>
                             </select>
                         </div>
                         <div class="mb-3 col-md-3">
@@ -159,7 +166,7 @@
                         <div class="mb-3 col-md-3">
                             <label for="sltEstado_AR" class="form-label">Estado</label>
                             <select class="form-select" id="sltEstado_AR">
-                                <option value="ACTIVO">ACTIVO</option>
+                                <option value="ACTIVO" selected >ACTIVO</option>
                                 <option value="INACTIVO">INACTIVO</option>
                             </select>
                         </div>
