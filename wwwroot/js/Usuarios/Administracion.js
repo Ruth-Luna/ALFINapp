@@ -28,12 +28,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 const nuevoEstado = esActivo ? 0 : 1;
 
                 return `
-          <span 
-              class="badge rounded-pill w-100 text-white py-2 ${clase}" 
-              style="cursor:pointer" onclick="CambiarEstadoUsuario(${nuevoEstado}, '${params.data.idUsuario}')">
-              ${params.value}
-          </span>
-      `;
+                    <span 
+                        class="badge rounded-pill w-100 text-white py-2 ${clase}" 
+                        style="cursor:pointer" onclick="CambiarEstadoUsuario(${nuevoEstado}, '${params.data.idUsuario}')">
+                        ${params.value}
+                    </span>
+                `;
             }
         },
         {
@@ -41,19 +41,18 @@ document.addEventListener('DOMContentLoaded', function () {
             field: "idUsuario",
             width: 120,
             cellRenderer: (params) => {
-                const checked = params.data.estado === 'ACTIVO' ? 'checked' : '';
                 return `
-            <div class="d-flex flex-column align-items-center">
-                <button class="btn btn-primary btn-sm btnActualizarUsuario" onclick="ListarUsuarioGerente('${params.value}',true)">
-                  <i class="bi bi-eye"></i>
-                </button>
-            </div>
-          `;
+                    <div class="d-flex flex-column align-items-center">
+                        <button class="btn btn-primary btn-sm btnActualizarUsuario" onclick="ListarUsuarioGerente('${params.value}',true)">
+                          <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                `;
             }
         }
     ];
 
-    gridOptions = {
+    const gridOptions = {
         columnDefs: columnDefs,
         defaultColDef: {
             resizable: true,
@@ -65,7 +64,6 @@ document.addEventListener('DOMContentLoaded', function () {
         paginationPageSize: 100,
         paginationPageSizeSelector: [25, 50, 100],
         enableCellTextSelection: true,
-        suppressCellSelection: true,
         rowClassRules: {
             'highlight-warning': params => params.data.isHighlighted
         },
@@ -73,23 +71,25 @@ document.addEventListener('DOMContentLoaded', function () {
             const textToCopy = params.value;
             if (textToCopy != null) {
                 navigator.clipboard.writeText(textToCopy)
-                    .then(() => {
-                    })
-                    .catch(err => {
-                        console.error('Error al copiar:', err);
-                    });
+                    .catch(err => console.error('Error al copiar:', err));
             }
         },
         suppressHorizontalScroll: false,
         localeText: window.localeTextEs
     };
 
-    new agGrid.Grid(document.getElementById('clientesGrid'), gridOptions);
+    const gridDiv = document.getElementById('clientesGrid');
+
+    const gridApi = agGrid.createGrid(gridDiv, gridOptions);
+
+    window.gridApi = gridApi;
 
     ListarUsuarioGerente();
-    ListarRoles("#txtRol_AR"); // Para formulario
-    ListarRoles("#txtFiltrarRol")
+
+    ListarRoles("#txtRol_AR");
+    ListarRoles("#txtFiltrarRol");
     ListarSupervisores();
+
     $('#selectTDocumento_AR').on('change', function () {
         const tipo = $(this).val();
         const $input = $('#txtDNI_AR');
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (tipo == 'DNI') {
             $input.attr('maxlength', 8);
             if ($input.val().length > 8) {
-                $input.val($input.val().substring(0, 8)); 
+                $input.val($input.val().substring(0, 8));
             }
         } else if (tipo == 'CE') {
             $input.attr('maxlength', 11);
@@ -200,12 +200,17 @@ function ListarUsuarioGerente(id = null, editar = false) {
         url: '/Usuarios/ListarUsuarioAdministrador?idUsuario=' + (id ?? ''),
         type: 'GET',
         success: function (data) {
+
             if (!editar) {
-                const rowData = data.map(usuario => ({
+                console.log("🔍 Data cruda del servidor:", data);
+
+                let rowData = (data || []).map(usuario => ({
                     dni: usuario.dni ?? '',
-                    usuarioNombre: `${usuario.nombresCompletos ?? ''}`,
+                    usuarioNombre: usuario.nombresCompletos ?? '',
                     rol: usuario.rol ?? '',
-                    supervisor: (!usuario.responsablesup || usuario.responsablesup.trim() === '') ? 'EL USUARIO NO TIENE SUPERVISOR' : usuario.responsablesup,
+                    supervisor: (!usuario.responsablesup || usuario.responsablesup.trim() === '')
+                        ? 'EL USUARIO NO TIENE SUPERVISOR'
+                        : usuario.responsablesup,
                     campania: usuario.nombrecampania ?? '',
                     correo: usuario.correo ?? '',
                     telefono: usuario.telefono ?? '',
@@ -215,9 +220,12 @@ function ListarUsuarioGerente(id = null, editar = false) {
                     idUsuario: usuario.idUsuario
                 }));
 
-                if (gridOptions.api) {
-                    gridOptions.api.setRowData(rowData);
+                if (window.gridApi) {
+                    window.gridApi.setGridOption('rowData', rowData); // ✅ API nueva
+                } else {
+                    console.warn("⚠️ gridApi no está lista todavía");
                 }
+
             } else {
                 $('#modalARGerente').modal('show');
 
@@ -231,7 +239,6 @@ function ListarUsuarioGerente(id = null, editar = false) {
                 $('#txtNombres_AR').val(data[0].nombres ?? '');
                 $('#txtRegion_AR').val(data[0].region ?? '');
                 $('#txtCampania_AR').val(data[0].nombrecampania);
-                console.debug(data[0].nombrecampania + ' - ' + $('#txtCampania_AR').val());
                 $('#txtCorreo_AR').val(data[0].correo ?? '');
                 $('#txtRol_AR').val(data[0].idRol?.toString() ?? '').change();
                 $('#sltEstado_AR').val(data[0].estado ?? '')
@@ -250,6 +257,7 @@ function ListarUsuarioGerente(id = null, editar = false) {
         }
     });
 }
+
 
 function AgregarActualizarCliente(actualizar = false, idUsuario = null) {
     const correo = $('#txtCorreo_AR').val();
@@ -286,11 +294,6 @@ function AgregarActualizarCliente(actualizar = false, idUsuario = null) {
     if (actualizar) {
         if (!$('#txtUser_AR').val()) validaciones.push('El usuario es requerido.');
         if (!$('#txtPassword_AR').val()) validaciones.push('La contraseña es requerida.');
-    }
-
-    if (validaciones.length > 0) {
-        Swal.fire('Campos faltantes o inválidos', validaciones.join('<br>'), 'warning');
-        return;
     }
 
     const data = {
@@ -413,22 +416,24 @@ function aplicarFiltroGlobal() {
         document.getElementById('txtFiltrarEstado').value
     ].filter(Boolean).join(' ');
 
+    // 📌 Filtro por estado
     const selEstado = document.getElementById('txtFiltrarEstado');
     selEstado.addEventListener('change', function () {
-        const v = this.value; 
-        const model = gridOptions.api.getFilterModel();
+        const v = this.value;
+        const model = window.gridApi.getFilterModel() || {};
 
         if (!v) {
             delete model.estado;
         } else {
             model.estado = { filterType: 'text', type: 'equals', filter: v };
         }
-        gridOptions.api.setFilterModel(model);
+
+        window.gridApi.setFilterModel(model);
     });
 
-    gridOptions.api.setQuickFilter(texto);
+    // 📌 Filtro global
+    window.gridApi.setGridOption('quickFilterText', texto);
 }
-
 function LimpiarFormularioUsuario() {
     $('#txtDNI_AR').val('');
     $('#selectTDocumento_AR').val('');

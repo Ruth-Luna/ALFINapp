@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿﻿
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -22,8 +23,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" />
 
     <!-- AG GRID -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-grid.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-theme-alpine.css" />
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
 
 
     <!-- CUSTEM THEME -->
@@ -32,6 +32,10 @@
     <!-- SELECT2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+
+    <!-- GRID.JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridjs/dist/theme/mermaid.min.css" />
+
 </head>
 
 
@@ -83,13 +87,13 @@
 
 
     <!-- GRID.JS -->
-    <script src="https://unpkg.com/ag-grid-community@30.0.0/dist/ag-grid-community.min.noStyle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gridjs/dist/gridjs.umd.js"></script>
 
     <!-- OTROS SCRIPTS -->
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="~/lib/jquery/dist/jquery.min.js?v=@DateTime.Now.Ticks"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js?v=@DateTime.Now.Ticks"></script>
@@ -145,6 +149,6 @@
 </html>
 <script src="~/js/General/General.js?v=@DateTime.Now.Ticks"></script>
 <script src="~/js/modificacionesfunctions.js?v=@DateTime.Now.Ticks"></script>
-@* <script src="~/js/telefonosfunctions.js?v=@DateTime.Now.Ticks"></script> *@
+<script src="~/js/telefonosfunctions.js?v=@DateTime.Now.Ticks"></script>
 <script src="~/js/tipificacionesfunctions.js?v=@DateTime.Now.Ticks"></script>
 <script src="~/js/Utils/Conversiones.js" asp-append-version="true"></script>
