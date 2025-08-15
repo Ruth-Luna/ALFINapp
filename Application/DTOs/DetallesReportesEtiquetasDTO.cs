@@ -39,12 +39,12 @@ namespace ALFINapp.Application.DTOs
                 foreach (var item in model)
                 {
                     var detalleEtiqueta = new DetalleEtiqueta();
-                    detalleEtiqueta.nombreEtiqueta = item.nombre_meta;
-                    detalleEtiqueta.nombrePorcentajeCategoria = item.nombre_porcentaje_categoria;
+                    detalleEtiqueta.nombreEtiqueta = item.nombre_meta ?? string.Empty;
+                    detalleEtiqueta.nombrePorcentajeCategoria = item.nombre_porcentaje_categoria ?? string.Empty;
                     detalleEtiqueta.nombreEtiquetaCategoria = "Porcentaje de Meta Alcanzada";
-                    detalleEtiqueta.cantidadEtiqueta = item.cantidad_meta;
-                    detalleEtiqueta.importeEtiquetas = item.importe_meta;
-                    detalleEtiqueta.porcentajeEtiqueta = item.porcentaje_importe;
+                    detalleEtiqueta.cantidadEtiqueta = item.cantidad_meta ?? 0;
+                    detalleEtiqueta.importeEtiquetas = item.importe_meta ?? 0;
+                    detalleEtiqueta.porcentajeEtiqueta = item.porcentaje_importe ?? 0;
                     etiquetas.Add(detalleEtiqueta);
                 }
             }

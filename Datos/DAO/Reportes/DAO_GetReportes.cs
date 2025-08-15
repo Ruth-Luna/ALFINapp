@@ -21,6 +21,15 @@ namespace ALFINapp.Datos.DAO.Reportes
         {
             try
             {
+                if (idUsuario <= 0)
+                {
+                    return (false, "Id de usuario no valido", null);
+                }
+                if (anio == null || mes == null)
+                {
+                    anio = DateTime.Now.Year;
+                    mes = DateTime.Now.Month;
+                }
                 var user = _da_usuario.getUsuario(idUsuario);
                 if (user == null)
                 {
@@ -122,9 +131,9 @@ namespace ALFINapp.Datos.DAO.Reportes
                 }
                 return convertDto;
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
-                Console.WriteLine("Error al obtener los datos de etiquetas de metas.");
+                Console.WriteLine($"Error al obtener etiquetas y metas: {ex.Message}");
                 return new List<ViewEtiquetas>();
             }
         }

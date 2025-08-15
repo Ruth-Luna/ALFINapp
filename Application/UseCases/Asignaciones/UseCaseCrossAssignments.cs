@@ -1,8 +1,6 @@
 using ALFINapp.Application.DTOs;
 using ALFINapp.Application.Interfaces.Asignaciones;
-using ALFINapp.Domain.Entities;
 using ALFINapp.Domain.Interfaces;
-using NuGet.Protocol.Core.Types;
 
 namespace ALFINapp.Application.UseCases.Asignaciones
 {

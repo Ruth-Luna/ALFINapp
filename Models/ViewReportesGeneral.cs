@@ -1,5 +1,4 @@
 using ALFINapp.Infrastructure.Persistence.Procedures;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace ALFINapp.API.Models
 {
@@ -172,9 +171,9 @@ namespace ALFINapp.API.Models
         public ViewEtiquetas() { }
         public ViewEtiquetas(ReportsDesembolsosNMonto item)
         {
-            nombreEtiqueta = "Desembolsos";
-            nombreCategoria = "Desembolsos";
-            nombrePorcentaje = "Importes";
+            nombreEtiqueta = "DESEMBOLSOS";
+            nombreCategoria = "DESEMBOLSOS";
+            nombrePorcentaje = "IMPORTES";
             cantidadEtiqueta = item.desembolsado ?? 0;
             importeEtiquetas = item.Importe_Desembolsado ?? 0;
             porcentajeEtiqueta = 0;
@@ -184,9 +183,9 @@ namespace ALFINapp.API.Models
             nombreEtiqueta = item.nombre_meta;
             nombreCategoria = "PORCENTAJE DE META ALCANZADA";
             nombrePorcentaje = item.nombre_porcentaje_categoria;
-            cantidadEtiqueta = item.cantidad_meta;
-            importeEtiquetas = item.importe_meta;
-            porcentajeEtiqueta = item.porcentaje_importe;
+            cantidadEtiqueta = item.cantidad_meta ?? 0;
+            importeEtiquetas = item.importe_meta ?? 0;
+            porcentajeEtiqueta = item.porcentaje_importe ?? 0;
         }
     }
 }

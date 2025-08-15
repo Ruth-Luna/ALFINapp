@@ -32,8 +32,7 @@ namespace ALFINapp.Datos.DAO.Reportes
                 }
                 var reportes = await GetReportesAsesor(idUsuario, anio, mes);
                 var viewReportes = new ViewReportesAsesores();
-                var detallesUsuarioDTO = new DetallesUsuarioDTO(usuario);
-                viewReportes.asesor = detallesUsuarioDTO.ToView();
+                viewReportes.asesor = new ViewUsuario(usuario);
                 viewReportes.totalDerivaciones = reportes.DerivacionesDelAsesor
                     .Count();
                 viewReportes.totalDesembolsos = reportes.Desembolsos.Count();
