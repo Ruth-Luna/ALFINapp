@@ -2,7 +2,20 @@
 let gridOptions;
 $(document).ready(function () {
     $('#btnExportExcel').on('click', function () {
-        DescargarResumenExcel();
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Se descargará el archivo Excel con el resumen de usuarios.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, descargar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                DescargarResumenExcel();
+            }
+        });
     });
 });
 document.addEventListener('DOMContentLoaded', function () {
@@ -122,13 +135,18 @@ $('#btnAgregarUsuario').on('click', function () {
 });
 
 $('#btnGuardarCambios').on('click', function () {
-    const idUsuario = $(this).attr('data-id') || null;
+    let idUsuario = $(this).attr('data-id') || null;
     if (idUsuario) {
         AgregarActualizarCliente(true, idUsuario);
     } else {
         AgregarActualizarCliente(false); 
     }
 });
+
+$('#modalARGerente').on('hide.bs.modal', function () {
+    $('#btnGuardarCambios').removeAttr('data-id');
+});
+
 
 $('#modalARGerente').on('show.bs.modal', function () {
     $('#txtRol_AR').change();
@@ -220,8 +238,9 @@ function ListarUsuarioGerente(id = null, editar = false) {
                 }
 
             } else {
+                $('#titlemodalARGerente').text('ACTUALIZAR USUARIO');
                 $('#modalARGerente').modal('show');
-
+                
                 $('#txtDNI_AR').val(data[0].dni ?? '');
                 $('#selectTDocumento_AR').val(data[0].tipoDocumento ?? '');
                 $('#txtUser_AR').val(data[0].usuario ?? '');
@@ -295,16 +314,16 @@ function AgregarActualizarCliente(actualizar = false, idUsuario = null) {
     }
     console.log(actualizar)
     // Validaciones solo para actualizar
-    if (actualizar) {
-        [
-            { selector: '#txtUser_AR', mensaje: 'El usuario es requerido.' },
-            { selector: '#txtPassword_AR', mensaje: 'La contraseña es requerida.' }
-        ].forEach(regla => {
-            if (!$(regla.selector).val()) {
-                validaciones.push(regla.mensaje);
-            }
-        });
-    }
+    //if (actualizar) {
+    //    [
+    //        { selector: '#txtUser_AR', mensaje: 'El usuario es requerido.' },
+    //        { selector: '#txtPassword_AR', mensaje: 'La contraseña es requerida.' }
+    //    ].forEach(regla => {
+    //        if (!$(regla.selector).val()) {
+    //            validaciones.push(regla.mensaje);
+    //        }
+    //    });
+    //}
 
 
     if (validaciones.length > 0) {
@@ -361,8 +380,9 @@ function AgregarActualizarCliente(actualizar = false, idUsuario = null) {
                 ListarUsuarioGerente();
                 $('#modalARGerente').modal('hide');
                 LimpiarFormularioUsuario();
-            } else if (res.message = 'Error al crear el usuario: El DNI ingresado ya se encuentra insertado') {
-                Swal.fire('DNI Existente','El Usuario ya ha sido creado anteriormente', 'warning');
+
+            } else if (res.message && res.message.includes('DNI ingresado ya se encuentra insertado')) {
+                Swal.fire('DNI Existente', 'El Usuario ya ha sido creado anteriormente', 'warning');
             } else {
                 Swal.fire('Error', res.message || 'No se pudo guardar', 'error');
             }
@@ -486,6 +506,12 @@ document.getElementById('txtFiltrarEstado').addEventListener('change', function 
     window.gridApi.setFilterModel(model);
 });
 function DescargarResumenExcel() {
+
+    let dni = $('#filtroDni').val();
+    let usuario = $('#filtroUsuario').val();
+    let txtFiltrarRol = $('#txtFiltrarRol').val();
+    let txtFiltrarEstado = $('#txtFiltrarEstado').val();
+    
     Swal.fire({
         title: 'Cargando...',
         timerProgressBar: true,
@@ -496,7 +522,10 @@ function DescargarResumenExcel() {
     });
 
     $.ajax({
-        url: '/Usuarios/ExportarUsuariosExcel',
+        url: '/Usuarios/ExportarUsuariosExcel?dni=' + encodeURIComponent(dni)
+            + '&usuario=' + encodeURIComponent(usuario)
+            + '&idRol=' + encodeURIComponent(txtFiltrarRol)
+            + '&estado=' + encodeURIComponent(txtFiltrarEstado),
         type: 'GET',
 
         xhrFields: { responseType: 'blob' },

@@ -113,9 +113,9 @@ namespace ALFINapp.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult ExportarUsuariosExcel()
+        public IActionResult ExportarUsuariosExcel(string? dni, string? usuario, int? idRol, string? estado)
         {
-            var usuarios = _daUsuario.ExportarUsuariosExcel();
+            var usuarios = _daUsuario.ExportarUsuariosExcel(dni, usuario, idRol, estado);
 
             using (var package = new ExcelPackage())
             {

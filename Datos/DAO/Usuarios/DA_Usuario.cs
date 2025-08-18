@@ -476,7 +476,7 @@ namespace ALFINapp.Datos
             }
         }
 
-        public List<object> ExportarUsuariosExcel()
+        public List<object> ExportarUsuariosExcel(string dni = null, string usuario = null, int? idRol = null, string estado = null)
         {
             try
             {
@@ -487,6 +487,11 @@ namespace ALFINapp.Datos
                 using (var cmd = new SqlCommand("SP_USUARIO_EXPORTAR_EXCEL", connection))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@dni", (object?)dni ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@usuario", (object?)usuario ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@id_rol", (object?)idRol ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@estado", (object?)estado ?? DBNull.Value);
+
                     connection.Open();
 
                     using (var dr = cmd.ExecuteReader())
