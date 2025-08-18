@@ -8,9 +8,9 @@ namespace ALFINapp.API.Models
         public List<Supervisor> Supervisores { get; set; } = new List<Supervisor>();
         public int RolUsuario { get; set; } = 0;
         public string DniUsuario { get; set; } = string.Empty;
-        public List<ViewDerivaciones> Derivaciones { get; set; } = new List<ViewDerivaciones>();
+        public List<ViewDerivaciones_dl> Derivaciones { get; set; } = new List<ViewDerivaciones_dl>();
     }
-    public class ViewDerivaciones
+    public class ViewDerivaciones_dl
     {
         public int IdDerivacion { get; set; } = 0;
         public DateTime FechaDerivacion { get; set; } = DateTime.Now;
