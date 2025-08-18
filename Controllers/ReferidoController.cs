@@ -3,7 +3,6 @@ using ALFINapp.Datos.DAO;
 using ALFINapp.Datos.DAO.Miscelaneos;
 using ALFINapp.Datos.DAO.Referidos;
 using ALFINapp.Domain.Entities;
-using ALFINapp.Domain.Interfaces;
 using ALFINapp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 

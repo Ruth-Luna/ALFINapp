@@ -1,6 +1,6 @@
-﻿namespace ALFINapp.Application.DTOs
+namespace ALFINapp.Models
 {
-    public class ClienteCruceDTO
+    public class ViewClienteCruce
     {
         public string DniCliente { get; set; } = string.Empty;
         public string ClienteNombre { get; set; } = string.Empty;

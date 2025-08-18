@@ -138,39 +138,48 @@ FROM [dbo].[CAMPANASJULIO18];
 
 UPDATE base_clientes_banco
 SET 
-    PATERNO = ISNULL(base_clientes_banco.PATERNO, ENRIQUECERAGOSTO.PATERNO),
-    MATERNO = ISNULL(base_clientes_banco.MATERNO, ENRIQUECERAGOSTO.MATERNO),
-    NOMBRES = ISNULL(base_clientes_banco.NOMBRES, ENRIQUECERAGOSTO.NOMBRES),
+    PATERNO = ISNULL(base_clientes_banco.PATERNO, ALFIN_20250815.PATERNO),
+    MATERNO = ISNULL(base_clientes_banco.MATERNO, ALFIN_20250815.MATERNO),
+    NOMBRES = ISNULL(base_clientes_banco.NOMBRES, ALFIN_20250815.NOMBRES),
     
-    Numero1 = ISNULL(base_clientes_banco.Numero1, ENRIQUECERAGOSTO.CELULAR_1),
-    Numero2 = ISNULL(base_clientes_banco.Numero2, ENRIQUECERAGOSTO.CELULAR_2),
-    Numero3 = ISNULL(base_clientes_banco.Numero3, ENRIQUECERAGOSTO.CELULAR_3),
-    Numero4 = ISNULL(base_clientes_banco.Numero4, ENRIQUECERAGOSTO.CELULAR_4),
-    Numero5 = ISNULL(base_clientes_banco.Numero5, ENRIQUECERAGOSTO.CELULAR_5)
-
+    Numero1 = ISNULL(base_clientes_banco.Numero1, ALFIN_20250815.CELULAR_1),
+    Numero2 = ISNULL(base_clientes_banco.Numero2, ALFIN_20250815.CELULAR_2),
+    Numero3 = ISNULL(base_clientes_banco.Numero3, ALFIN_20250815.CELULAR_3),
+    Numero4 = ISNULL(base_clientes_banco.Numero4, ALFIN_20250815.CELULAR_4),
+    Numero5 = ISNULL(base_clientes_banco.Numero5, ALFIN_20250815.CELULAR_5)
 FROM base_clientes_banco
-JOIN ENRIQUECERAGOSTO ON base_clientes_banco.dni = ENRIQUECERAGOSTO.dni;
+JOIN ALFIN_20250815 ON base_clientes_banco.dni = ALFIN_20250815.dni
+WHERE 
+    CAST(base_clientes_banco.fecha_subida AS DATE) = '2025-08-15'
+    AND (
+        base_clientes_banco.PATERNO IS NULL OR
+        base_clientes_banco.MATERNO IS NULL OR
+        base_clientes_banco.NOMBRES IS NULL OR
+        base_clientes_banco.Numero1 IS NULL OR
+        base_clientes_banco.Numero2 IS NULL OR
+        base_clientes_banco.Numero3 IS NULL OR
+        base_clientes_banco.Numero4 IS NULL OR
+        base_clientes_banco.Numero5 IS NULL
+    );
 
 SELECT top 150 * FROM base_clientes order by id_base DESC
 
 UPDATE clientes_enriquecidos
 SET 
-    telefono_1 = ISNULL(clientes_enriquecidos.telefono_1, ENRIQUECERAGOSTO.CELULAR_1),
-    telefono_2 = ISNULL(clientes_enriquecidos.telefono_2, ENRIQUECERAGOSTO.CELULAR_2),
-    telefono_3 = ISNULL(clientes_enriquecidos.telefono_3, ENRIQUECERAGOSTO.CELULAR_3),
-    telefono_4 = ISNULL(clientes_enriquecidos.telefono_4, ENRIQUECERAGOSTO.CELULAR_4),
-    telefono_5 = ISNULL(clientes_enriquecidos.telefono_5, ENRIQUECERAGOSTO.CELULAR_5)
+    telefono_1 = ISNULL(clientes_enriquecidos.telefono_1, ALFIN_20250815.CELULAR_1),
+    telefono_2 = ISNULL(clientes_enriquecidos.telefono_2, ALFIN_20250815.CELULAR_2),
+    telefono_3 = ISNULL(clientes_enriquecidos.telefono_3, ALFIN_20250815.CELULAR_3),
+    telefono_4 = ISNULL(clientes_enriquecidos.telefono_4, ALFIN_20250815.CELULAR_4),
+    telefono_5 = ISNULL(clientes_enriquecidos.telefono_5, ALFIN_20250815.CELULAR_5)
 FROM clientes_enriquecidos
 join base_clientes ON clientes_enriquecidos.id_base = base_clientes.id_base
-JOIN ENRIQUECERAGOSTO ON base_clientes.dni = ENRIQUECERAGOSTO.dni;
+JOIN ALFIN_20250815 ON base_clientes.dni = ALFIN_20250815.dni;
 
 
 
 select top 150 * from base_clientes_banco WHERE CAST(fecha_subida AS DATE) = CAST(GETDATE() AS DATE)
 
 
-
-SELECT COUNT(*) from ENRIQUECERAGOSTO
-
-
-SELECT COUNT(*) FROM detalle_base WHERE fecha_carga = '2025-08-15' 
+SELECT TOP 150 * FROM base_clientes_banco
+where (MATERNO IS NOT NULL)
+AND CAST(fecha_subida AS DATE) = '2025-08-15';

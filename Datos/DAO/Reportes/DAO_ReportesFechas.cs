@@ -14,7 +14,7 @@ namespace ALFINapp.Datos.DAO.Reportes
         {
             _context = context;
         }
-        public async Task<(bool IsSuccess, string Message, ViewReportesFecha Data)> Execute(
+        public async Task<(bool IsSuccess, string Message, ViewReportesFecha Data)> getReportByDate(
             string fecha,
             int idUsuario,
             int rol,

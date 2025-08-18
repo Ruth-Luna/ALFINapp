@@ -1,5 +1,5 @@
 using ALFINapp.API.Filters;
-using ALFINapp.Application.Interfaces.Asignaciones;
+using ALFINapp.Datos.DAO.Administrador;
 using ALFINapp.Datos.DAO.Derivaciones;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,19 +14,19 @@ namespace ALFINapp.API.Controllers
     public class ExcelController : Controller
     {
         private readonly MDbContext _context;
-        private readonly IUseCaseDownloadAsignaciones useCaseDownloadAsignaciones;
         private readonly DAO_DescargarDerivaciones dAO_DescargarDerivaciones;
+        private readonly DAO_GetAsignaciones _daoGetAsignaciones;
         private readonly ILogger<ExcelController> _logger;
         public ExcelController(
             MDbContext context,
-            IUseCaseDownloadAsignaciones useCaseDownloadAsignaciones,
             ILogger<ExcelController> logger,
-            DAO_DescargarDerivaciones dAO_DescargarDerivaciones)
+            DAO_DescargarDerivaciones dAO_DescargarDerivaciones,
+            DAO_GetAsignaciones daoGetAsignaciones)
         {
             _context = context;
-            this.useCaseDownloadAsignaciones = useCaseDownloadAsignaciones;
             _logger = logger;
             this.dAO_DescargarDerivaciones = dAO_DescargarDerivaciones;
+            _daoGetAsignaciones = daoGetAsignaciones;
         }
 
         private bool IsValidDni(float dni)
@@ -187,53 +187,53 @@ namespace ALFINapp.API.Controllers
 
                 var detallesClientesSupervisor = supervisorData.Select(detallesClientes => new
                 {
-                    DNI = detallesClientes.Dni,
-                    X_APPATERNO = detallesClientes.XAppaterno,
-                    X_APMATERNO = detallesClientes.XApmaterno,
-                    X_NOMBRE = detallesClientes.XNombre,
-                    EDAD = detallesClientes.Edad,
-                    DEPARTAMENTO = detallesClientes.Departamento,
-                    PROVINCIA = detallesClientes.Provincia,
-                    DISTRITO = detallesClientes.Distrito,
-                    CAMPANA = detallesClientes.Campaña,
-                    OFERTA_MAX = detallesClientes.OfertaMax,
-                    TASA_MINIMA = detallesClientes.TasaMinima,
-                    SUCURSAL_COMERCIAL = detallesClientes.SucursalComercial,
-                    AGENCIA_COMERCIAL = detallesClientes.AgenciaComercial,
-                    PLAZO = detallesClientes.Plazo,
-                    CUOTA = detallesClientes.Cuota,
-                    USUARIO = detallesClientes.Usuario,
-                    USERV3 = detallesClientes.UserV3,
-                    FLAG_DEUDA_V_OFERTA = detallesClientes.FlagDeudaVOferta,
-                    PERFILRO = detallesClientes.PerfilRo,
-                    PROPENSIONV2 = detallesClientes.Propensionv2,
+                    DNI = detallesClientes?.Dni,
+                    X_APPATERNO = detallesClientes?.XAppaterno,
+                    X_APMATERNO = detallesClientes?.XApmaterno,
+                    X_NOMBRE = detallesClientes?.XNombre,
+                    EDAD = detallesClientes?.Edad,
+                    DEPARTAMENTO = detallesClientes?.Departamento,
+                    PROVINCIA = detallesClientes?.Provincia,
+                    DISTRITO = detallesClientes?.Distrito,
+                    CAMPANA = detallesClientes?.Campaña,
+                    OFERTA_MAX = detallesClientes?.OfertaMax,
+                    TASA_MINIMA = detallesClientes?.TasaMinima,
+                    SUCURSAL_COMERCIAL = detallesClientes?.SucursalComercial,
+                    AGENCIA_COMERCIAL = detallesClientes?.AgenciaComercial,
+                    PLAZO = detallesClientes?.Plazo,
+                    CUOTA = detallesClientes?.Cuota,
+                    USUARIO = detallesClientes?.Usuario,
+                    USERV3 = detallesClientes?.UserV3,
+                    FLAG_DEUDA_V_OFERTA = detallesClientes?.FlagDeudaVOferta,
+                    PERFILRO = detallesClientes?.PerfilRo,
+                    PROPENSIONV2 = detallesClientes?.Propensionv2,
 
-                    OFERTA12M = detallesClientes.Oferta12m,
-                    TASA12M = detallesClientes.Tasa12m,
-                    CUOTA12M = detallesClientes.Cuota12m,
-                    OFERTA18M = detallesClientes.Oferta18m,
-                    TASA18M = detallesClientes.Tasa18m,
-                    CUOTA18M = detallesClientes.Cuota18m,
-                    OFERTA24M = detallesClientes.Oferta24m,
-                    TASA24M = detallesClientes.Tasa24m,
-                    CUOTA24M = detallesClientes.Cuota24m,
-                    OFERTA36M = detallesClientes.Oferta36m,
-                    TASA36M = detallesClientes.Tasa36m,
-                    CUOTA36M = detallesClientes.Cuota36m,
+                    OFERTA12M = detallesClientes?.Oferta12m,
+                    TASA12M = detallesClientes?.Tasa12m,
+                    CUOTA12M = detallesClientes?.Cuota12m,
+                    OFERTA18M = detallesClientes?.Oferta18m,
+                    TASA18M = detallesClientes?.Tasa18m,
+                    CUOTA18M = detallesClientes?.Cuota18m,
+                    OFERTA24M = detallesClientes?.Oferta24m,
+                    TASA24M = detallesClientes?.Tasa24m,
+                    CUOTA24M = detallesClientes?.Cuota24m,
+                    OFERTA36M = detallesClientes?.Oferta36m,
+                    TASA36M = detallesClientes?.Tasa36m,
+                    CUOTA36M = detallesClientes?.Cuota36m,
 
-                    GRUPO_TASA = detallesClientes.GrupoTasa,
-                    GRUPO_MONTO = detallesClientes.GrupoMonto,
-                    PROPENSION = detallesClientes.Propension,
-                    TIPO_CLIENTE = detallesClientes.TipoCliente,
-                    CLIENTE_NUEVO = detallesClientes.ClienteNuevo,
-                    COLOR = detallesClientes.Color,
-                    COLOR_FINAL = detallesClientes.ColorFinal,
-                    PRIORIDAD_SISTEMA = detallesClientes.PrioridadSistema,
-                    TELEFONO1 = detallesClientes.Telefono1,
-                    TELEFONO2 = detallesClientes.Telefono2,
-                    TELEFONO3 = detallesClientes.Telefono3,
-                    TELEFONO4 = detallesClientes.Telefono4,
-                    TELEFONO5 = detallesClientes.Telefono5,
+                    GRUPO_TASA = detallesClientes?.GrupoTasa,
+                    GRUPO_MONTO = detallesClientes?.GrupoMonto,
+                    PROPENSION = detallesClientes?.Propension,
+                    TIPO_CLIENTE = detallesClientes?.TipoCliente,
+                    CLIENTE_NUEVO = detallesClientes?.ClienteNuevo,
+                    COLOR = detallesClientes?.Color,
+                    COLOR_FINAL = detallesClientes?.ColorFinal,
+                    PRIORIDAD_SISTEMA = detallesClientes?.PrioridadSistema,
+                    TELEFONO1 = detallesClientes?.Telefono1,
+                    TELEFONO2 = detallesClientes?.Telefono2,
+                    TELEFONO3 = detallesClientes?.Telefono3,
+                    TELEFONO4 = detallesClientes?.Telefono4,
+                    TELEFONO5 = detallesClientes?.Telefono5,
                 }).ToList();
 
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -366,7 +366,7 @@ namespace ALFINapp.API.Controllers
         {
             try
             {
-                var result = await useCaseDownloadAsignaciones.exec(nombre_lista, page);
+                var result = await _daoGetAsignaciones.getAsiggnmentsForDownload(nombre_lista, page);
                 if (!result.success)
                 {
                     return Json(new
@@ -381,7 +381,6 @@ namespace ALFINapp.API.Controllers
                 using var package = new ExcelPackage();
                 var worksheet = package.Workbook.Worksheets.Add("Asignaciones");
 
-                // 1. Metadatos en fila 1 y 2, columnas desde la columna 1
                 var metadata = new Dictionary<(int row, int col), object>
                 {
                     [(1, 1)] = "Nombre de la Lista",
@@ -415,7 +414,6 @@ namespace ALFINapp.API.Controllers
                     worksheet.Cells[r, c].Style.Border.BorderAround(ExcelBorderStyle.Thin);
                 }
 
-                // 2. Cabecera (fila 4)
                 var headers = new[]
                 {
                     "Id Asignación", "Fecha Asignación", "Id UsuarioV",
@@ -442,7 +440,6 @@ namespace ALFINapp.API.Controllers
                     worksheet.Cells[4, i + 1].Style.Border.BorderAround(ExcelBorderStyle.Thin);
                 }
 
-                // 3. Datos (desde fila 5)
                 var row = 5;
                 foreach (var a in data.asignaciones_detalladas)
                 {

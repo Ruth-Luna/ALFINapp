@@ -1,7 +1,7 @@
 using ALFINapp.Domain.Entities;
 using ALFINapp.Infrastructure.Persistence.Procedures;
 
-namespace ALFINapp.Application.DTOs
+namespace ALFINapp.API.DTOs
 {
     public class DetallesAsignacionesDescargaSupDTO
     {

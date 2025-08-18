@@ -23,4 +23,10 @@ namespace ALFINapp.Infrastructure.Persistence.Procedures
         [Column("cod_tip")]
         public int CodTip { get; set; }
     }
+    public class ReportsAsesorTipificacionesTop
+    {
+        public int IdTipificacion { get; set; } = 0;
+        public string? DescripcionTipificaciones { get; set; } = "";
+        public int ContadorTipificaciones { get; set; } = 0;
+    }
 }
