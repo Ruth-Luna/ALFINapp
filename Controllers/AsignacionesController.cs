@@ -1,40 +1,39 @@
 using ALFINapp.API.Filters;
 using Microsoft.AspNetCore.Mvc;
 using ALFINapp.API.DTOs;
-using ALFINapp.Application.Interfaces.Asignaciones;
+using ALFINapp.Datos.DAO.Administrador;
+using ALFINapp.Models.DTOs;
 
 namespace ALFINapp.API.Controllers
 {
     [RequireSession]
     public class AsignacionesController : Controller
     {
-        private readonly IUseCaseCrossAssignments _useCaseCrossAssignments;
-        private readonly IUseCaseAsignarClientesSup _useCaseAsignarClientesSup;
-        private readonly IUseCaseGetAsignacionesDelSup _useCaseGetAsignacionesDelSup;
-        private readonly IUseCaseDownloadAsignaciones useCaseDownloadAsignaciones;
+        private readonly DAO_CruzarAsignaciones dAO_CruzarAsignaciones;
+        private readonly DAO_AsignacionesASupervisores _daoAsignacionesASupervisores;
+        private readonly DAO_GetAsignaciones _daoGetAsignaciones;
         private readonly MDbContext _context;
         private readonly ILogger<AsignacionesController> _logger;
         public AsignacionesController(
             MDbContext context,
-            IUseCaseCrossAssignments useCaseCrossAssignments,
             ILogger<AsignacionesController> logger,
-            IUseCaseAsignarClientesSup useCaseAsignarClientesSup,
-            IUseCaseGetAsignacionesDelSup useCaseGetAsignacionesDelSup,
-            IUseCaseDownloadAsignaciones useCaseDownloadAsignaciones)
+            DAO_CruzarAsignaciones dAO_CruzarAsignaciones,
+            DAO_AsignacionesASupervisores daoAsignacionesASupervisores,
+            DAO_GetAsignaciones daoGetAsignaciones)
         {
             _context = context;
-            _useCaseCrossAssignments = useCaseCrossAssignments;
             _logger = logger;
-            _useCaseAsignarClientesSup = useCaseAsignarClientesSup;
-            _useCaseGetAsignacionesDelSup = useCaseGetAsignacionesDelSup;
-            this.useCaseDownloadAsignaciones = useCaseDownloadAsignaciones;
+            this.dAO_CruzarAsignaciones = dAO_CruzarAsignaciones;
+            this._daoAsignacionesASupervisores = daoAsignacionesASupervisores;
+            this._daoGetAsignaciones = daoGetAsignaciones;
         }
         [HttpPost]
         public async Task<IActionResult> CrossAssignments([FromBody] List<DtoVAsignarClientesSupervisores> asignaciones)
         {
             try
             {
-                var result = await _useCaseCrossAssignments.Execute(new Application.DTOs.DetallesAssignmentsMasive(asignaciones));
+                var asignacionesMasivas = new DetallesAssignmentsMasive(asignaciones);
+                var result = await dAO_CruzarAsignaciones.cruzar(asignacionesMasivas);
                 if (result.IsSuccess)
                 {
                     return Json(new
@@ -70,7 +69,7 @@ namespace ALFINapp.API.Controllers
         {
             try
             {
-                var data = await _useCaseCrossAssignments.GetCrossed(pagina);
+                var data = await dAO_CruzarAsignaciones.GetCrossed(pagina);
                 return Json(new
                 {
                     IsSuccess = true,
@@ -100,7 +99,8 @@ namespace ALFINapp.API.Controllers
 
             try
             {
-                var result = await _useCaseAsignarClientesSup.AsignarMasivoAsync(new Application.DTOs.DetallesAssignmentsMasive(asignaciones));
+                var asignacionesMasivas = new DetallesAssignmentsMasive(asignaciones);
+                var result = await _daoAsignacionesASupervisores.AsignarMasivoAsync(asignacionesMasivas);
                 if (result.IsSuccess)
                 {
                     return Json(new
@@ -134,21 +134,21 @@ namespace ALFINapp.API.Controllers
         {
             try
             {
-                var asignaciones = await _useCaseGetAsignacionesDelSup.exec();
-                if (!asignaciones.success)
+                var asignaciones = await _daoGetAsignaciones.GetAllAssignmentsFromSupervisor();
+                if (!asignaciones.IsSuccess)
                 {
-                    _logger.LogError("Error al obtener asignaciones: {Message}", asignaciones.message);
+                    _logger.LogError("Error al obtener asignaciones: {Message}", asignaciones.Message);
                     return Json(new
                     {
                         isSuccess = false,
-                        message = asignaciones.message
+                        message = asignaciones.Message,
                     });
                 }
                 return Json(new
                 {
                     isSuccess = true,
                     message = "Asignaciones recuperadas correctamente",
-                    data = asignaciones.data
+                    data = asignaciones.asignaciones
                 });
             }
             catch (Exception ex)
@@ -161,6 +161,5 @@ namespace ALFINapp.API.Controllers
                 });
             }
         }
-        
     }
 }

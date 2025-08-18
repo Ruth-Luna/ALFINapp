@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ALFINapp.Domain.Entities;
+using ALFINapp.Infrastructure.Persistence.Procedures;
 
 namespace ALFINapp.API.Models
 {
@@ -16,7 +17,6 @@ namespace ALFINapp.API.Models
         public int totalSinGestionar { get; set; }
         public List<DerivacionesFecha> derivacionesFecha { get; set; } = new List<DerivacionesFecha>();
         public List<DerivacionesFecha> desembolsosFecha { get; set; } = new List<DerivacionesFecha>();
-        public List<ViewGestionDetalle> gestionDetalles { get; set; } = new List<ViewGestionDetalle>();
         public List<ViewTipificacionesGestion> tipificacionesGestion { get; set; } = new List<ViewTipificacionesGestion>();
     }
 
@@ -25,5 +25,12 @@ namespace ALFINapp.API.Models
         public int IdTipificacion { get; set; }
         public string DescripcionTipificaciones { get; set; } = string.Empty;
         public int ContadorTipificaciones { get; set; }
+        public ViewTipificacionesGestion() { }
+        public ViewTipificacionesGestion(ReportsAsesorTipificacionesTop model)
+        {
+            IdTipificacion = model.IdTipificacion;
+            DescripcionTipificaciones = model.DescripcionTipificaciones ?? string.Empty;
+            ContadorTipificaciones = model.ContadorTipificaciones;
+        }
     }
 }

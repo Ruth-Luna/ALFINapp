@@ -1,5 +1,7 @@
 using System.Data;
 using ALFINapp.Application.DTOs;
+using ALFINapp.Models;
+using ALFINapp.Models.DTOs;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -234,9 +236,9 @@ namespace ALFINapp.Datos.DAO.Administrador
         {
             return string.IsNullOrWhiteSpace(input) ? DBNull.Value : input;
         }
-        public async Task<List<ClienteCruceDTO>> GetCrossed(int page = 1)
+        public async Task<List<ViewClienteCruce>> GetCrossed(int page = 1)
         {
-            var resultado = new List<ClienteCruceDTO>();
+            var resultado = new List<ViewClienteCruce>();
 
             _context.Database.SetCommandTimeout(600);
             if (page < 1) page = 1;
@@ -254,7 +256,7 @@ namespace ALFINapp.Datos.DAO.Administrador
                 {
                     while (await reader.ReadAsync())
                     {
-                        resultado.Add(new ClienteCruceDTO
+                        resultado.Add(new ViewClienteCruce
                         {
                             DniCliente = reader["dni"]?.ToString() ?? string.Empty,
                             ClienteNombre = reader["CLIENTE"]?.ToString() ?? string.Empty,

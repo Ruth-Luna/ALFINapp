@@ -1,5 +1,4 @@
-using System.Data;
-using ALFINapp.Application.DTOs;
+using ALFINapp.Models.DTOs;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 

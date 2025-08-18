@@ -1,7 +1,7 @@
 using ALFINapp.API.DTOs;
 using ALFINapp.Domain.Entities;
 
-namespace ALFINapp.Application.DTOs
+namespace ALFINapp.Models.DTOs
 {
     public class DetallesAssignmentsMasive
     {

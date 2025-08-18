@@ -33,45 +33,72 @@ namespace ALFINapp.Datos.DAO.Reportes
                 var reportes = await GetReportesAsesor(idUsuario, anio, mes);
                 var viewReportes = new ViewReportesAsesores();
                 viewReportes.asesor = new ViewUsuario(usuario);
-                viewReportes.totalDerivaciones = reportes.DerivacionesDelAsesor
-                    .Count();
-                viewReportes.totalDesembolsos = reportes.Desembolsos.Count();
-                viewReportes.totalAsignado = reportes.ClientesAsignados.Count();
-                viewReportes.totalGestionado = reportes.gESTIONDETALLEs.Count();
-                viewReportes.totalSinGestionar = reportes.ClientesAsignados.Count - reportes.gESTIONDETALLEs
-                    .Where(x => x.IdAsignacion != null)
-                    .Count();
-                var createDerivacionesFecha = reportes
-                    .gESTIONDETALLEs
-                    .Where(x => x.CodTip == 2)
-                    .GroupBy(x => x.FechaGestion.ToString("%d/%M/%y"))
-                    .Select(x => new DerivacionesFecha { Fecha = x.Key, Contador = x.Count() })
-                    .OrderBy(x => DateTime.TryParseExact(x.Fecha, "d/M/yy", null, System.Globalization.DateTimeStyles.None, out var parsedDate) ? parsedDate : DateTime.MinValue)
-                    .ToList();
-                viewReportes.derivacionesFecha = createDerivacionesFecha;
-                var createDesembolsosFecha = reportes
-                    .Desembolsos
-                    .GroupBy(x => x.FechaDesembolsos != null ? x.FechaDesembolsos.Value.ToString("%d/%M/%y") : "")
-                    .Select(x => new DerivacionesFecha { Fecha = x.Key, Contador = x.Count() })
-                    .OrderBy(x => DateTime.TryParseExact(x.Fecha, "d/M/yy", null, System.Globalization.DateTimeStyles.None, out var parsedDate) ? parsedDate : DateTime.MinValue)
-                    .ToList();
-                viewReportes.desembolsosFecha = createDesembolsosFecha;
-                viewReportes.gestionDetalles = reportes.gESTIONDETALLEs.Select(x => new DetallesGestionDetalleDTO(x).toView()).ToList();
-                var TipificacionesGestion = new List<ViewTipificacionesGestion>();
-                var TipificacionesDescripcion = await _dao_ConsultasMiscelaneas.GetTipificaciones();
-                var dicTipificaciones = TipificacionesDescripcion.Data
-                    .ToDictionary(y => y.idtip, y => y.nombretip);
-                var agruparTipificaciones = viewReportes
-                    .gestionDetalles
-                    .GroupBy(x => x.CodTip)
-                    .Select(g => new ViewTipificacionesGestion
+                viewReportes.totalDerivaciones = reportes.totalDerivaciones;
+                viewReportes.totalDesembolsos = reportes.totalDesembolsos;
+                viewReportes.totalAsignado = reportes.totalAsignado;
+                viewReportes.totalGestionado = reportes.totalGestionado;
+                viewReportes.totalSinGestionar = reportes.totalSinGestionar;
+
+                var createDerivacionesFecha = await _context.GESTION_DETALLE
+                    .Where(x => x.CodTip == 2
+                            && x.DocAsesor == usuario.Dni
+                            && x.FechaGestion.Month == mes
+                            && x.FechaGestion.Year == anio)
+                    .GroupBy(x => x.FechaGestion.Date)
+                    .Select(g => new
                     {
-                        IdTipificacion = g.Key,
-                        DescripcionTipificaciones = dicTipificaciones.TryGetValue(g.Key, out var descripcion) ? descripcion : "",
-                        ContadorTipificaciones = g.Count()
+                        Fecha = g.Key,
+                        Contador = g.Count()
+                    })
+                    .OrderBy(g => g.Fecha)
+                    .ToListAsync();
+
+                var derivacionesFecha = createDerivacionesFecha
+                    .Select(g => new DerivacionesFecha
+                    {
+                        Fecha = g.Fecha.ToString("d/M/yy"),
+                        Contador = g.Contador
                     })
                     .ToList();
-                viewReportes.tipificacionesGestion = agruparTipificaciones;
+
+                viewReportes.derivacionesFecha = derivacionesFecha;
+
+#pragma warning disable CS8629 // Nullable value type may be null.
+                var createDesembolsosFecha = await _context.desembolsos
+                    .Where(x => x.DocAsesor == usuario.Dni
+                            && x.FechaDesembolsos.HasValue
+                            && x.FechaDesembolsos.Value.Month == mes
+                            && x.FechaDesembolsos.Value.Year == anio)
+                    .GroupBy(x => x.FechaDesembolsos.Value.Date)
+                    .Select(g => new
+                    {
+                        Fecha = g.Key,
+                        Contador = g.Count()
+                    })
+                    .OrderBy(g => g.Fecha)
+                    .ToListAsync();
+#pragma warning restore CS8629 // Nullable value type may be null.
+
+                var desembolsosFecha = createDesembolsosFecha
+                    .Select(g => new DerivacionesFecha
+                    {
+                        Fecha = g.Fecha.ToString("d/M/yy"),
+                        Contador = g.Contador
+                    })
+                    .ToList();
+
+                viewReportes.desembolsosFecha = desembolsosFecha;
+
+                var TipificacionesGestion = new List<ViewTipificacionesGestion>();
+
+                var agruparTipificaciones = await _context.reports_asesor_tipificaciones_top
+                    .FromSqlRaw("EXEC SP_REPORTES_ASESOR_TIPIFICACIONES_TOP @Dni = {0}, @Mes = {1}, @Anio = {2}", 
+                        usuario.Dni, mes, anio)
+                    .ToListAsync();
+
+                viewReportes.tipificacionesGestion = agruparTipificaciones
+                    .Select(x => new ViewTipificacionesGestion(x))
+                    .ToList();
                 return (true, "Reportes obtenidos correctamente", viewReportes);
             }
             catch (System.Exception ex)
@@ -79,7 +106,7 @@ namespace ALFINapp.Datos.DAO.Reportes
                 return (false, ex.Message, null);
             }
         }
-        public async Task<DetallesReportesAsesorDTO> GetReportesAsesor(
+        public async Task<ViewReportesAsesores> GetReportesAsesor(
             int idUsuario,
             int? anio = null,
             int? mes = null)
@@ -92,7 +119,7 @@ namespace ALFINapp.Datos.DAO.Reportes
                 if (getUsuario == null)
                 {
                     Console.WriteLine("Usuario no encontrado");
-                    return new DetallesReportesAsesorDTO();
+                    return new ViewReportesAsesores();
                 }
                 var parameters = new SqlParameter[]
                 {
@@ -101,52 +128,75 @@ namespace ALFINapp.Datos.DAO.Reportes
                     new SqlParameter("@anio", anio ?? (object)DBNull.Value)
                 };
 
-                var getAllAsignaciones = await _context.clientes_asignados
+                var asignaciones = await _context.numeros_enteros_dto
                     .FromSqlRaw(
-                        "EXEC SP_Reportes_Asesor_asignaciones @DniAsesor, @mes, @anio",
+                        "EXEC SP_REPORTES_ASIGNACIONES_ASESOR @DniAsesor, @mes, @anio",
                         parameters)
                     .ToListAsync();
 
-                var getAllIds = getAllAsignaciones.Select(x => x.IdAsignacion).ToHashSet();
-                var getAllDerivaciones = await _context.derivaciones_asesores
+                var asignacionContador = asignaciones.FirstOrDefault()?.NumeroEntero ?? 0;
+                if (asignacionContador == 0)
+                {
+                    Console.WriteLine("No se encontraron asignaciones");
+                }
+
+                var getallids = await _context.clientes_asignados
+                    .Where(x => x.IdUsuarioV == idUsuario
+                        && x.FechaAsignacionSup.HasValue
+                        && x.FechaAsignacionSup.Value.Month == mes
+                        && x.FechaAsignacionSup.Value.Year == anio)
+                    .Select(x => x.IdAsignacion)
+                    .ToHashSetAsync();
+
+                var derivaciones = await _context.numeros_enteros_dto
                     .FromSqlRaw(
-                        "EXEC SP_Reportes_Asesor_derivacion @DniAsesor, @mes, @anio",
+                        "EXEC SP_REPORTES_DERIVACIONES_ASESOR @DniAsesor, @mes, @anio",
+                        parameters)
+                    .AsNoTracking()
+                    .ToListAsync();
+                var derivacionContador = derivaciones.FirstOrDefault()?.NumeroEntero ?? 0;
+                if (derivacionContador == 0)
+                {
+                    Console.WriteLine("No se encontraron derivaciones");
+                }
+
+                var gestiones = await _context.numeros_enteros_dto
+                    .FromSqlRaw(
+                        "EXEC SP_REPORTES_GESTION_ASESOR @DniAsesor, @mes, @anio",
                         parameters)
                     .AsNoTracking()
                     .ToListAsync();
 
-                var getAllGestionDetalle = await _context.GESTION_DETALLE
+                var gestionContador = gestiones.FirstOrDefault()?.NumeroEntero ?? 0;
+                if (gestionContador == 0)
+                {
+                    Console.WriteLine("No se encontraron gestiones");
+                }
+
+                var desembolsos = await _context.numeros_enteros_dto
                     .FromSqlRaw(
-                        "EXEC SP_Reportes_Asesor_gestion @DniAsesor, @mes, @anio",
+                        "EXEC SP_REPORTES_DESEMBOLSOS_ASESOR @DniAsesor, @mes, @anio",
                         parameters)
                     .AsNoTracking()
                     .ToListAsync();
 
-                getAllGestionDetalle = getAllGestionDetalle.GroupBy(g => g.DocCliente)
-                    .Select(g => g.OrderByDescending(d => d.CodTip == 2)
-                        .ThenByDescending(d => d.FechaGestion)
-                        .First())
-                    .ToList();
+                var desembolsosContador = desembolsos.FirstOrDefault()?.NumeroEntero ?? 0;
+                if (desembolsosContador == 0)
+                {
+                    Console.WriteLine("No se encontraron desembolsos");
+                }
 
-                var getAllDesembolsos = await _context.desembolsos
-                    .FromSqlRaw(
-                        "EXEC SP_Reportes_Asesor_desembolsos @DniAsesor, @mes, @anio",
-                        parameters)
-                    .AsNoTracking()
-                    .ToListAsync();
-
-                var detallesReporte = new DetallesReportesAsesorDTO();
-                detallesReporte.Usuario = getUsuario;
-                detallesReporte.ClientesAsignados = getAllAsignaciones;
-                detallesReporte.DerivacionesDelAsesor = getAllDerivaciones;
-                detallesReporte.gESTIONDETALLEs = getAllGestionDetalle;
-                detallesReporte.Desembolsos = getAllDesembolsos;
+                var detallesReporte = new ViewReportesAsesores();
+                detallesReporte.totalAsignado = asignacionContador;
+                detallesReporte.totalDerivaciones = derivacionContador;
+                detallesReporte.totalGestionado = gestionContador;
+                detallesReporte.totalDesembolsos = desembolsosContador;
                 return detallesReporte;
             }
             catch (System.Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return new DetallesReportesAsesorDTO();
+                return new ViewReportesAsesores();
             }
         }
     }

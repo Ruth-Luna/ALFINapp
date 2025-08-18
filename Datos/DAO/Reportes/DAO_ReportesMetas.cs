@@ -12,7 +12,7 @@ namespace ALFINapp.Datos.DAO.Reportes
         {
             _context = context;
         }
-        public async Task<(bool IsSuccess, string Message, ViewReportesMetas Data)> Execute(int idUsuario)
+        public async Task<(bool IsSuccess, string Message, ViewReportesMetas Data)> getReportsByGoal(int idUsuario)
         {
             try
             {

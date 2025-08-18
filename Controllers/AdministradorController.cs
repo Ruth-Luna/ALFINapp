@@ -1,6 +1,4 @@
 using ALFINapp.API.Filters;
-using ALFINapp.Infrastructure.Persistence.Models.DTOs;
-using ALFINapp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ALFINapp.API.Controllers

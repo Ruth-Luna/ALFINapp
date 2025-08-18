@@ -1,4 +1,5 @@
 using ALFINapp.API.Models;
+using ALFINapp.Infrastructure.Persistence.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -38,7 +39,16 @@ namespace ALFINapp.Datos.DAO.Reportes
                 var reporteGeneral = new ViewReportesGeneral();
                 if (user.IdRol == 1 || user.IdRol == 4 || user.IdRol == 2)
                 {
-                    var usuarios = _da_usuario.ListarAsesores(idUsuario);
+                    var usuarios = new List<Usuario>();
+                    if (user.IdRol == 2)
+                    {
+                        usuarios = _da_usuario.ListarAsesores(idUsuario);
+                    }
+                    else
+                    {
+                        usuarios = _da_usuario.ListarAsesores();
+                    }
+                    
                     var usuariosViews = new List<ViewUsuario>();
 
                     foreach (var item in usuarios)

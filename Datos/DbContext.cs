@@ -57,6 +57,7 @@ public class MDbContext : DbContext
     public DbSet<ReportsPieContactabilidadCliente> reports_pie_contactabilidad_cliente { get; set; }
     public DbSet<ReportsTablaGestionadoDerivadoDesembolsadoImporte> reports_tabla_gestionado_derivado_desembolsado_importe { get; set; }
     public DbSet<ReportsDesembolsosNMonto> reports_desembolsos_n_monto { get; set; }
+    public DbSet<ReportsAsesorTipificacionesTop> reports_asesor_tipificaciones_top { get; set; }
     public DbSet<DerivacionConsultaDerivacionesXAsesorPorDniConReagendacion> derivaciones_asesores_for_view_derivacion { get; set; }
     public DbSet<ReportsTablasMetas> reports_tablas_metas { get; set; }
     public DbSet<ReportsGeneralDatosActualesPorIdUsuarioFecha> reports_general_datos_actuales { get; set; }
@@ -179,6 +180,9 @@ public class MDbContext : DbContext
             .HasNoKey()
             .ToView(null);
         modelBuilder.Entity<SupervisoresGetDetallesAsignacionesPorAsesores>()
+            .HasNoKey()
+            .ToView(null);
+        modelBuilder.Entity<ReportsAsesorTipificacionesTop>()
             .HasNoKey()
             .ToView(null);
     }
