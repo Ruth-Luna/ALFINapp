@@ -36,6 +36,8 @@ namespace ALFINapp.Models
         public string RealError { get; set; } = string.Empty;
         public bool PuedeSerReagendado { get; set; } = true;
         public DateTime? FechaEvidencia { get; set; } = null;
+        public string estadoEvidencia { get; set; } = "No Enviado";
+        public string acciones { get; set; } = string.Empty;
         public ViewDerivaciones() { }
         public ViewDerivaciones(DerivacionConsultaDerivacionesXAsesorPorDniConReagendacion model)
         {
@@ -62,6 +64,14 @@ namespace ALFINapp.Models
             RealError = model.RealError ?? string.Empty;
             PuedeSerReagendado = model.PuedeSerReagendado ?? true;
             FechaEvidencia = model.FechaEvidencia;
+            if (FechaEvidencia.HasValue)
+            {
+                estadoEvidencia = "Enviado";
+            }
+            else
+            {
+                estadoEvidencia = "No Enviado";
+            }
         }
     }
 }
