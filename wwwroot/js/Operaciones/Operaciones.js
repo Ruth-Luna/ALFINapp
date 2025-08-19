@@ -104,10 +104,27 @@ const derivacionesGridOptions = {
     }
 };
 
+function getAllDerivaciones(params) {
+    // Lógica para obtener todas las derivaciones
+    const url = window.location.href;
+    const final_url = url + 'Operaciones/GetAllDerivaciones';
+
+    fetch(final_url)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+        })
+        .catch(error => {
+            console.error('Error al obtener las derivaciones:', error);
+        });
+}
+
 // Se ejecuta cuando el DOM está completamente cargado.
 document.addEventListener('DOMContentLoaded', () => {
     const gridDiv = document.querySelector('#gridDerivaciones');
     agGrid.createGrid(gridDiv, derivacionesGridOptions);
+
+
 
     function onFilterChanged() {
         externalFilterState.dniCliente = document.getElementById('dniClienteDerivaciones').value;
