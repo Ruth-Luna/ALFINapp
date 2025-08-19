@@ -92,7 +92,7 @@ namespace ALFINapp.Datos
                                 Apellido_Paterno = dr["Apellido_Paterno"].ToString() ?? string.Empty,
                                 Apellido_Materno = dr["Apellido_Materno"].ToString() ?? string.Empty,
                                 Usuario = dr["Usuario"].ToString() ?? string.Empty,
-                                Contrasenia = dr["contraseñaH"].ToString() ?? string.Empty,
+                                Contrasenia = dr["Contrasenia"].ToString() ?? string.Empty,
                                 Correo = dr["correo"].ToString() ?? string.Empty,
                                 NombresCompletos = dr["Nombres_Completos"].ToString() ?? string.Empty,
                                 NOMBRECAMPANIA = dr["NOMBRE_CAMPAÑA"].ToString() ?? string.Empty,
@@ -135,10 +135,8 @@ namespace ALFINapp.Datos
                         cmd.Parameters.AddWithValue("@Apellido_Paterno", usuario.Apellido_Paterno != null || usuario.Apellido_Paterno != "" ? usuario.Apellido_Paterno : DBNull.Value);
                         cmd.Parameters.AddWithValue("@Apellido_Materno", usuario.Apellido_Materno != null || usuario.Apellido_Materno != "" ? usuario.Apellido_Materno : DBNull.Value);
                         cmd.Parameters.AddWithValue("@Usuario", usuario.Usuario != null ? usuario.Usuario : DBNull.Value);
-                        cmd.Parameters.Add("@contraseniaH", SqlDbType.VarBinary, -1).Value =
-                            usuario.Contrasenia != null
-                                ? (object)System.Text.Encoding.Unicode.GetBytes(usuario.Contrasenia)
-                                : DBNull.Value;
+                        cmd.Parameters.AddWithValue("@contrasenia",
+                        string.IsNullOrWhiteSpace(usuario.Contrasenia) ? (object)DBNull.Value : usuario.Contrasenia);
                         cmd.Parameters.AddWithValue("@Nombres", usuario.Nombres != null ? usuario.Nombres : DBNull.Value);
                         cmd.Parameters.AddWithValue("@NOMBRE_CAMPANIA", usuario.NOMBRECAMPANIA != null ? usuario.NOMBRECAMPANIA : DBNull.Value);
                         cmd.Parameters.AddWithValue("@idRol", usuario.IdRol == 0 ? DBNull.Value : (object)usuario.IdRol);
