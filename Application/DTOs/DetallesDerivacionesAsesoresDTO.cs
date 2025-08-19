@@ -86,9 +86,9 @@ namespace ALFINapp.Application.DTOs
             FechaEvidencia = model.FechaEvidencia;
             HayEvidencia = model.HayEvidencia;
         }
-        public ViewDerivaciones_dl ToViewDerivaciones ()
+        public ViewDerivaciones ToViewDerivaciones ()
         {
-            return new ViewDerivaciones_dl
+            return new ViewDerivaciones
             {
                 IdDerivacion = IdDerivacion,
                 FechaDerivacion = FechaDerivacion,

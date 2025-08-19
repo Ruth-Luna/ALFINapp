@@ -8,12 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace ALFINapp.API.Controllers
 {
     [RequireSession]
-    public class DerivacionController_dl : Controller
+    public class DerivacionController : Controller
     {
         
         private readonly IUseCaseGetDerivacion _useCaseGetDerivacion;
         private readonly IUseCaseUploadEvidencias _useCaseUploadEvidencias;
-        public DerivacionController_dl(
+        public DerivacionController(
             IUseCaseGetDerivacion useCaseGetDerivacion,
             IUseCaseUploadEvidencias useCaseUploadEvidencias)
         {

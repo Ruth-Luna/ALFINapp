@@ -1,7 +1,8 @@
 ﻿// Variable global para la API de la grilla.
 let gridApi;
 
-// Definición de las columnas para la tabla.
+
+// Definición de las columnas para la tabla. (REEMPLAZAR ESTE BLOQUE COMPLETO)
 const derivacionesTableColumns = [
     { headerName: "Estado derivación", field: "estadoDerivacion" },
     { headerName: "DNI cliente", field: "dniCliente" },
@@ -28,16 +29,64 @@ const derivacionesTableColumns = [
         headerName: "Acciones",
         field: "acciones",
         cellClass: "d-flex align-items-center justify-content-center",
-        cellRenderer: () => `
-            <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-primary" title="Enviar evidencia"><i class="ri-file-add-line"></i></button>
-                <button class="btn btn-sm btn-info" title="Reagendamiento"><i class="ri-file-list-3-line"></i></button>
-            </div>`,
-        width: 130, // Ancho fijo para esta columna.
+        cellRenderer: (params) => {
+            // Contenedor principal para los botones.
+            const container = document.createElement('div');
+            container.className = 'd-flex gap-2';
+
+            // --- Botón 1: Reagendamiento ---
+            const btnReagendamiento = document.createElement('button');
+            btnReagendamiento.className = 'btn btn-sm btn-primary';
+            btnReagendamiento.title = 'Reagendamiento'; // Corregido
+            btnReagendamiento.innerHTML = '<i class="ri-file-list-3-line"></i>'; // Icono ajustado a la acción
+
+            // Event listener para abrir el modal de reagendamiento.
+            btnReagendamiento.addEventListener('click', () => {
+                const modalElement = document.getElementById('modalReagendamiento');
+                if (modalElement) {
+                    const modalTitle = modalElement.querySelector('#labelModalReagendamiento');
+                    if (modalTitle) {
+                        modalTitle.textContent = `Reagendamiento de cita para: ${params.data.nombreCliente}`;
+                    }
+                    const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+                    modal.show();
+                    console.log("Abriendo modal de reagendamiento para:", params.data);
+                } else {
+                    console.error('El elemento del modal con ID "modalReagendamiento" no fue encontrado en el DOM.');
+                }
+            });
+
+            // --- Botón 2: Enviar evidencia ---
+            const btnEnviarEvidencia = document.createElement('button');
+            btnEnviarEvidencia.className = 'btn btn-sm btn-info';
+            btnEnviarEvidencia.title = 'Enviar evidencia'; // Corregido
+            btnEnviarEvidencia.innerHTML = '<i class="ri-file-add-line"></i>'; // Icono ajustado a la acción
+
+            // Event listener para abrir el modal de evidencias.
+            btnEnviarEvidencia.addEventListener('click', () => {
+                const modalElement = document.getElementById('modalEvidenciasDerivaciones');
+                if (modalElement) {
+                    const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+                    modal.show();
+                    console.log("Abriendo modal de evidencias para la fila:", params.data);
+                } else {
+                    console.error('El elemento del modal con ID "modalEvidenciasDerivaciones" no fue encontrado en el DOM.');
+                }
+            });
+
+            // Añadimos los botones al contenedor en el orden correcto.
+            container.appendChild(btnReagendamiento);
+            container.appendChild(btnEnviarEvidencia);
+
+            // Devolvemos el contenedor para que AG-Grid lo renderice.
+            return container;
+        },
+        width: 130,
         sortable: false,
         resizable: false
     }
 ];
+
 
 // Datos de ejemplo para la tabla.
 const listaDerivaciones = [
