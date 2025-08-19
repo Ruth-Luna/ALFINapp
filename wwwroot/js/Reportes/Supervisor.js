@@ -15,7 +15,6 @@ function cargarReportesSupervisor() {
         totalSinGestionar.push(item["totalSinGestionar"]);
         totalGestionado.push(item["totalGestionado"]);
         
-        // 🔹 Truncar valores mayores a 120
         totalGestionadoTrunc.push(item["totalGestionado"] > 120 ? 120 : item["totalGestionado"]);
 
         totalDerivaciones.push(item["totalDerivaciones"]);

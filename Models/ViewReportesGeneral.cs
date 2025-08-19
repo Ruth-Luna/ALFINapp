@@ -54,8 +54,8 @@ namespace ALFINapp.API.Models
     }
     public class ViewReportePieGeneral
     {
-        public string? estado { get; set; }
-        public string? PERIODO { get; set; }
+        public string? estado { get; set; } = string.Empty;
+        public string? PERIODO { get; set; } = string.Empty;
         public int total { get; set; }
         public int TOTAL_ASIGNADOS { get; set; }
         public int TOTAL_GESTIONADOS { get; set; }
@@ -68,10 +68,10 @@ namespace ALFINapp.API.Models
         public decimal PORCENTAJE_DERIVADOS { get; set; }
         public decimal PORCENTAJE_DESEMBOLSADOS { get; set; }
         public decimal PORCENTAJE_NO_DERIVADO { get; set; }
-        public int metasGestiones { get; set; }
-        public int metasDerivaciones { get; set; }
-        public decimal metasDesembolsos { get; set; }
-        public decimal metasImporte { get; set; }
+        public int metasGestiones { get; set; } = 22000;
+        public int metasDerivaciones { get; set; } = 500;
+        public decimal metasDesembolsos { get; set; } = 120;
+        public decimal metasImporte { get; set; } = 300000.0m;
         public ViewReportePieGeneral() { }
         public ViewReportePieGeneral(ReportsGPiePorcentajeGestionadosSobreAsignados? model,
             ReportsGPiePorcentajeGestionadoDerivadoDesembolsado? model2)
@@ -97,6 +97,66 @@ namespace ALFINapp.API.Models
             estado = item.estado;
             total = item.cantidad;
             porcentaje = item.porcentaje;
+        }
+        public ViewReportePieGeneral(
+            ReportsGPiePorcentajeGestionadoDerivadoDesembolsado item,
+            ReportsGPiePorcentajeGestionadosSobreAsignados item2)
+        {
+            PERIODO = item2 != null ? item2.PERIODO : DateTime.Now.ToString("dd/MM/yyyy");
+            TOTAL_ASIGNADOS = item2 != null ? item2.TOTAL_ASIGNADOS : 0;
+            TOTAL_GESTIONADOS = item2 != null ? item2.TOTAL_GESTIONADOS : 0;
+            TOTAL_DERIVADOS = item != null ? item.TOTAL_DERIVADOS : 0;
+            TOTAL_DESEMBOLSADOS = item != null ? item.TOTAL_DESEMBOLSADOS : 0;
+            PORCENTAJE_GESTIONADOS = item2 != null ? item2.PORCENTAJE_GESTIONADOS : 0;
+            PORCENTAJE_NO_GESTIONADOS = item2 != null ? item2.PORCENTAJE_NO_GESTIONADOS : 0;
+            PORCENTAJE_DERIVADOS = item != null ? item.PORCENTAJE_DERIVADOS : 0;
+            PORCENTAJE_DESEMBOLSADOS = item != null ? item.PORCENTAJE_DESEMBOLSADOS : 0;
+            PORCENTAJE_NO_DERIVADO = item != null ? item.PORCENTAJE_NO_DERIVADO : 0;
+        }
+        public ViewReportePieGeneral(ReportsGPiePorcentajeGestionadosSobreAsignados item)
+        {
+            PERIODO = item != null ? item.PERIODO : DateTime.Now.ToString("dd/MM/yyyy");
+            TOTAL_ASIGNADOS = item != null ? item.TOTAL_ASIGNADOS : 0;
+            TOTAL_GESTIONADOS = item != null ? item.TOTAL_GESTIONADOS : 0;
+            PORCENTAJE_GESTIONADOS = item != null ? item.PORCENTAJE_GESTIONADOS : 0;
+            PORCENTAJE_NO_GESTIONADOS = item != null ? item.PORCENTAJE_NO_GESTIONADOS : 0;
+        }
+        public ViewReportePieGeneral(List<ReportsGeneralDatosActualesPorIdUsuarioFecha> model)
+        {
+            if (model != null && model.Count > 0)
+            {
+                estado = "GENERAL METAS Y ESTADO DE LAS ASIGNACIONES";
+                metasGestiones = 22000;
+                metasDerivaciones = 500;
+                metasDesembolsos = 120;
+                metasImporte = 300000.0m;
+
+                PERIODO = DateTime.Now.ToString("dd/MM/yyyy");
+                total = model.Count();
+                TOTAL_ASIGNADOS = model.Count(x => x.tiene_asignacion != null);
+                TOTAL_GESTIONADOS = model.Count(x => x.cod_tip != null);
+                TOTAL_DERIVADOS = model.Count(x => x.tiene_derivacion != null);
+                TOTAL_DESEMBOLSADOS = model.Count(x => x.tiene_desembolso != null);
+                total_importes = model.Sum(x => x.MONTO_FINANCIADO ?? 0);
+                PORCENTAJE_GESTIONADOS = model.Count(x => x.cod_tip != null) * 100 / model.Count();
+                PORCENTAJE_NO_GESTIONADOS = model.Count(x => x.cod_tip == null) * 100 / model.Count();
+                PORCENTAJE_DERIVADOS = model.Count(x => x.tiene_derivacion != null) * 100 / model.Count();
+                PORCENTAJE_DESEMBOLSADOS = model.Count(x => x.tiene_desembolso != null) * 100 / model.Count();
+                PORCENTAJE_NO_DERIVADO = model.Count(x => x.tiene_derivacion == null) * 100 / model.Count();
+            }
+            else
+            {
+                PERIODO = DateTime.Now.ToString("dd/MM/yyyy");
+                TOTAL_ASIGNADOS = 0;
+                TOTAL_GESTIONADOS = 0;
+                TOTAL_DERIVADOS = 0;
+                TOTAL_DESEMBOLSADOS = 0;
+                PORCENTAJE_GESTIONADOS = 0;
+                PORCENTAJE_NO_GESTIONADOS = 0;
+                PORCENTAJE_DERIVADOS = 0;
+                PORCENTAJE_DESEMBOLSADOS = 0;
+                PORCENTAJE_NO_DERIVADO = 0;
+            }
         }
     }
     public class ViewReporteBarGeneral
@@ -159,6 +219,17 @@ namespace ALFINapp.API.Models
         public decimal? porcentaje_derivados { get; set; } = 0;
         public decimal? porcentaje_desembolsados { get; set; } = 0;
         public decimal? porcentaje_no_derivado { get; set; } = 0;
+        public ViewReporteTablaMeses() { }
+        public ViewReporteTablaMeses(ReportsGPiePorcentajeGestionadoDerivadoDesembolsado item)
+        {
+            periodo = item.PERIODO;
+            total_asignados = 0; // This might need to be set based on your logic
+            total_gestionados = item.TOTAL_GESTIONADOS;
+            total_desembolsados = item.TOTAL_DESEMBOLSADOS;
+            porcentaje_derivados = item.PORCENTAJE_DERIVADOS;
+            porcentaje_desembolsados = item.PORCENTAJE_DESEMBOLSADOS;
+            porcentaje_no_derivado = item.PORCENTAJE_NO_DERIVADO;
+        }
     }
     public class ViewEtiquetas
     {

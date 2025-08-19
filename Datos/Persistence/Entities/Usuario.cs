@@ -59,5 +59,5 @@ public partial class Usuario
     [Column("correo")]
     public string? Correo { get; set; }
     [Column("tipo_doc")]
-    public int? TipoDoc { get; set; } = null!;
+    public int? TipoDoc { get; set; }
 }

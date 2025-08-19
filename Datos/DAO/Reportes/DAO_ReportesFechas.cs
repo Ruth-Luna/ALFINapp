@@ -35,12 +35,14 @@ namespace ALFINapp.Datos.DAO.Reportes
                         return (false, "No se encontraron reportes para la fecha seleccionada", new ViewReportesFecha());
                     }
                     var getReportesFechas = new ViewReportesFecha();
-                    getReportesFechas.ProgresoGeneral = getReportesPie.toViewPie();
+                    getReportesFechas.ProgresoGeneral = getReportesPie;
                     return (true, "ok", getReportesFechas);
                 }
                 if (año != null || mes != null)
                 {
+#pragma warning disable CS8629 // Nullable value type may be null.
                     var getReportesPie = await GetReportesGpieGeneralFechaMeses(idUsuario, mes.Value, año.Value);
+#pragma warning restore CS8629 // Nullable value type may be null.
                     if (getReportesPie == null)
                     {
                         return (false, "No se encontraron reportes para la fecha seleccionada", new ViewReportesFecha());
@@ -51,8 +53,8 @@ namespace ALFINapp.Datos.DAO.Reportes
                         return (false, "No se encontraron reportes para la fecha seleccionada", new ViewReportesFecha());
                     }
                     var getReportesFechas = new ViewReportesFecha();
-                    getReportesFechas.ProgresoGeneral = getReportesPie.toViewPie();
-                    getReportesFechas.reporteTablaPorMeses = getReportesTabla.toViewTablaMeses();
+                    getReportesFechas.ProgresoGeneral = getReportesPie;
+                    getReportesFechas.reporteTablaPorMeses = getReportesTabla;
                     return (true, "ok", getReportesFechas);
                 }
                 else
@@ -65,7 +67,7 @@ namespace ALFINapp.Datos.DAO.Reportes
                 return (false, ex.Message, new ViewReportesFecha());
             }
         }
-        public async Task<DetallesReportesGpieDTO> GetReportesGpieGeneralFecha(DateOnly fecha, int idUsuario)
+        public async Task<ViewReportePieGeneral> GetReportesGpieGeneralFecha(DateOnly fecha, int idUsuario)
         {
             try
             {
@@ -92,16 +94,16 @@ namespace ALFINapp.Datos.DAO.Reportes
                     Console.WriteLine("No se encontraron datos para la consulta.");
                     getDataGes = new List<ReportsGPiePorcentajeGestionadosSobreAsignados>();
                 }
-                var convertDto = new DetallesReportesGpieDTO(getDataGes.FirstOrDefault(), getDataDer.FirstOrDefault());
+                var convertDto = new ViewReportePieGeneral(getDataGes.FirstOrDefault(), getDataDer.FirstOrDefault());
                 return convertDto;
             }
             catch (System.Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return new DetallesReportesGpieDTO();
+                return new ViewReportePieGeneral();
             }
         }
-        public async Task<DetallesReportesGpieDTO> GetReportesGpieGeneralFechaMeses(int idUsuario, int mes, int año)
+        public async Task<ViewReportePieGeneral> GetReportesGpieGeneralFechaMeses(int idUsuario, int mes, int año)
         {
             try
             {
@@ -119,18 +121,19 @@ namespace ALFINapp.Datos.DAO.Reportes
                 if (getData == null || getData.Count == 0)
                 {
                     Console.WriteLine("No se encontraron datos para la consulta.");
-                    return new DetallesReportesGpieDTO();
+                    return new ViewReportePieGeneral();
                 }
-                var convertDto = new DetallesReportesGpieDTO(getData.FirstOrDefault());
+                var convertDto = new ViewReportePieGeneral(getData.FirstOrDefault() ?? new ReportsGPiePorcentajeGestionadosSobreAsignados(),
+                    new ReportsGPiePorcentajeGestionadoDerivadoDesembolsado());
                 return convertDto;
             }
             catch (System.Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return new DetallesReportesGpieDTO();
+                return new ViewReportePieGeneral();
             }
         }
-        public async Task<DetallesReportesTablasDTO> GetReportesTablaGeneralFechaMeses(int idUsuario, int mes, int año)
+        public async Task<List<ViewReporteTablaMeses>> GetReportesTablaGeneralFechaMeses(int idUsuario, int mes, int año)
         {
             try
             {
@@ -148,14 +151,14 @@ namespace ALFINapp.Datos.DAO.Reportes
                 if (getData == null || getData.Count == 0)
                 {
                     Console.WriteLine("No se encontraron datos para la consulta.");
-                    return new DetallesReportesTablasDTO();
+                    return new List<ViewReporteTablaMeses>();
                 }
-                return new DetallesReportesTablasDTO(getData);
+                return getData.Select(item => new ViewReporteTablaMeses(item)).ToList();
             }
             catch (System.Exception ex)
             {
                 Console.WriteLine("Error al obtener los datos de etiquetas de metas: " + ex.Message);
-                return new DetallesReportesTablasDTO();
+                return new List<ViewReporteTablaMeses>();
             }
         }
     }

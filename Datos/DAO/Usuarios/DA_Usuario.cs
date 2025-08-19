@@ -237,15 +237,15 @@ namespace ALFINapp.Datos
                             {
                                 lista.Add(new Usuario
                                 {
-                                    IdUsuario = Convert.ToInt32(dr["id_usuario"]),
-                                    NombresCompletos = dr["nombres_completos"].ToString(),
-                                    Rol = dr["rol"].ToString(),
-                                    Estado = dr["estado"].ToString(),
-                                    IDUSUARIOSUP = Convert.ToInt32(dr["ID_USUARIO_SUP"]),
-                                    IdRol = Convert.ToInt32(dr["id_rol"]),
-                                    Dni = dr["dni"].ToString(),
-                                    TipoDocumento = dr["tipo_doc"].ToString(),
-                                    Telefono = dr["telefono"].ToString(),
+                                    IdUsuario       = dr["id_usuario"]     != DBNull.Value ? Convert.ToInt32(dr["id_usuario"]) : 0,
+                                    NombresCompletos= dr["nombres_completos"]?.ToString(),
+                                    Rol             = dr["rol"]?.ToString(),
+                                    Estado          = dr["estado"]?.ToString(),
+                                    IDUSUARIOSUP    = dr["ID_USUARIO_SUP"] != DBNull.Value ? Convert.ToInt32(dr["ID_USUARIO_SUP"]) : null,
+                                    IdRol           = dr["id_rol"]         != DBNull.Value ? Convert.ToInt32(dr["id_rol"]) : null,
+                                    Dni             = dr["dni"]?.ToString(),
+                                    TipoDocumento   = dr["tipo_doc"]?.ToString(),
+                                    Telefono        = dr["telefono"]?.ToString(),
                                 });
                             }
                         }
@@ -254,8 +254,9 @@ namespace ALFINapp.Datos
 
                 return lista;
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
+                Console.WriteLine("Error en ListarAsesores: " + ex.Message);
                 return new List<Usuario>();
             }
         }

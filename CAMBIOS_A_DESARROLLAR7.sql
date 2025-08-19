@@ -160,3 +160,202 @@ GO
 
 
 exec SP_ASIGNACION_CRUCE_DNIS @Page = 1
+
+
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[SP_REPORTES_SUPERVISOR_GESTION_ULTIMA]
+(
+    @DniSupervisor NVARCHAR(50),
+    @mes INT = NULL,
+    @anio INT = NULL
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @idSupervisor INT;
+
+    IF @mes IS NULL AND @anio IS NULL
+    BEGIN
+        SET @mes = MONTH(GETDATE());
+        SET @anio = YEAR(GETDATE());
+    END;
+
+    -- Get the supervisor's ID based on the provided DNI
+    SELECT TOP 1 @idSupervisor = u.id_usuario
+    FROM usuarios u
+    WHERE u.dni = @DniSupervisor
+      AND u.dni <> '000673385'; -- Exclude the specific DNI
+
+    ;WITH 
+    Gestiones AS (
+        SELECT 
+            gd.doc_cliente,
+            gd.doc_asesor,
+            gd.fecha_gestion,
+            gd.cod_tip,
+            gd.id_feedback,
+            ROW_NUMBER() OVER (
+                PARTITION BY gd.doc_cliente, gd.doc_asesor
+                ORDER BY 
+                    CASE WHEN gd.cod_tip = 2 THEN 1 ELSE 0 END DESC,
+                    gd.fecha_gestion DESC
+            ) AS rn_asesor
+        FROM GESTION_DETALLE gd
+        WHERE gd.id_supervisor = @idSupervisor
+          AND YEAR(gd.fecha_gestion) = @anio
+          AND MONTH(gd.fecha_gestion) = @mes
+    ),
+    GestionCliente AS (
+        SELECT 
+            g.doc_cliente,
+            g.doc_asesor,
+            g.fecha_gestion,
+            g.cod_tip,
+            ROW_NUMBER() OVER (
+                PARTITION BY g.doc_cliente
+                ORDER BY g.fecha_gestion DESC
+            ) AS rn_cliente
+        FROM Gestiones g
+        WHERE g.rn_asesor = 1
+    )
+    SELECT 
+        gc.doc_cliente,
+        gc.doc_asesor,
+        gc.fecha_gestion,
+        gc.cod_tip
+    FROM GestionCliente gc
+    WHERE gc.rn_cliente = 1
+    ORDER BY gc.doc_asesor;
+END;
+GO
+
+
+
+
+
+GO
+ALTER PROCEDURE [dbo].[SP_REPORTES_SUPERVISOR_ASESORES_DEL_SUPERVISOR]
+(
+    @idSupervisor NVARCHAR(50),
+    @mes INT = NULL,
+    @anio INT = NULL
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF @mes IS NULL OR @anio IS NULL
+    BEGIN
+        SET @mes = MONTH(GETDATE());
+        SET @anio = YEAR(GETDATE());
+    END;
+
+    ;WITH datos_asesores AS (
+        SELECT 
+            u.id_usuario,
+            u.dni,
+            u.nombres_completos
+        FROM usuarios u
+        WHERE u.ID_USUARIO_SUP = @idSupervisor
+    ), 
+    ultima_gestion AS (
+        SELECT 
+            t.doc_cliente,
+            t.doc_asesor,
+            t.fecha_gestion,
+            t.cod_tip,
+            t.id_supervisor,
+            t.rn
+        FROM (
+            SELECT 
+                gd.doc_cliente,
+                gd.doc_asesor,
+                gd.fecha_gestion,
+                gd.cod_tip,
+                gd.id_supervisor,
+                ROW_NUMBER() OVER (
+                    PARTITION BY gd.doc_cliente 
+                    ORDER BY gd.fecha_gestion DESC
+                ) AS rn
+            FROM GESTION_DETALLE gd
+            WHERE
+                YEAR(gd.fecha_gestion) = @anio
+            AND MONTH(gd.fecha_gestion) = @mes
+            AND gd.doc_asesor IN (SELECT dni FROM datos_asesores)
+        ) t
+        WHERE t.rn = 1   -- solo la última gestión por cliente
+    ),
+    datos_gestion AS (
+        SELECT 
+            ug.doc_asesor,
+            COUNT(*) AS TOTAL_GESTIONES
+        FROM ultima_gestion ug
+        WHERE ug.doc_asesor IN (SELECT dni FROM datos_asesores)
+        GROUP BY ug.doc_asesor
+    ), 
+    datos_desembolsos AS (
+        SELECT 
+            d.DNI_ASESOR_DERIVACION,
+            COUNT(*) AS TOTAL_DESEMBOLSOS
+        FROM desembolsos d
+        WHERE d.DNI_ASESOR_DERIVACION IN (
+            SELECT dni 
+            FROM datos_asesores 
+        )
+          AND YEAR(d.FECHA_DESEMBOLSOS) = @anio
+          AND MONTH(d.FECHA_DESEMBOLSOS) = @mes
+        GROUP BY d.DNI_ASESOR_DERIVACION
+    ), 
+    datos_derivaciones AS (
+        SELECT 
+            da.dni_asesor,
+            COUNT(*) AS TOTAL_DERIVACIONES
+        FROM derivaciones_asesores da
+        WHERE da.dni_asesor IN (
+            SELECT dni 
+            FROM datos_asesores 
+        )
+          AND YEAR(da.fecha_derivacion) = @anio
+          AND MONTH(da.fecha_derivacion) = @mes
+        GROUP BY da.dni_asesor
+    ),
+    datos_asignaciones AS (
+        SELECT 
+            ca.id_usuarioV,
+            COUNT(*) AS TOTAL_ASIGNACIONES
+        FROM clientes_asignados ca
+        WHERE ca.id_usuarioV IN (
+            SELECT id_usuario 
+            FROM datos_asesores 
+        )
+          AND YEAR(ca.fecha_asignacion_sup) = @anio
+          AND MONTH(ca.fecha_asignacion_sup) = @mes
+        GROUP BY ca.id_usuarioV
+    )
+    SELECT 
+        da.dni AS DniAsesor,
+        da.nombres_completos AS NombreAsesor,
+        ISNULL(dg.TOTAL_GESTIONES, 0) AS TotalGestiones,
+        ISNULL(dd.TOTAL_DESEMBOLSOS, 0) AS TotalDesembolsos,
+        ISNULL(ddr.TOTAL_DERIVACIONES, 0) AS TotalDerivaciones,
+        ISNULL(da2.TOTAL_ASIGNACIONES, 0) AS TotalAsignaciones
+    FROM datos_asesores da
+    LEFT JOIN datos_gestion dg ON da.dni = dg.doc_asesor
+    LEFT JOIN datos_desembolsos dd ON da.dni = dd.DNI_ASESOR_DERIVACION
+    LEFT JOIN datos_derivaciones ddr ON da.dni = ddr.dni_asesor
+    LEFT JOIN datos_asignaciones da2 ON da.id_usuario = da2.id_usuarioV
+    ORDER BY da2.TOTAL_ASIGNACIONES DESC;
+END;
+GO
+
+
+EXEC SP_REPORTES_SUPERVISOR_ASESORES_DEL_SUPERVISOR
+    @idSupervisor = 4176,
+    @mes = 10,
+    @anio = 2023;
+select * from usuarios WHERE ID_USUARIO_SUP = 4176

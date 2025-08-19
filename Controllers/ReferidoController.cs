@@ -37,7 +37,7 @@ namespace ALFINapp.API.Controllers
             {
                 return Json(new { success = false, message = getDniReferido.Message });
             }
-            ViewData["Agencias"] = getBases;
+            ViewData["Agencias"] = getBases.Agencias;
             return PartialView("_Detalle", getDniReferido.Data);
         }
 

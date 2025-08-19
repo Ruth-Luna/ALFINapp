@@ -63,6 +63,7 @@ public class MDbContext : DbContext
     public DbSet<ReportsGeneralDatosActualesPorIdUsuarioFecha> reports_general_datos_actuales { get; set; }
     public DbSet<ReportsEtiquetaMetaImporte> reports_etiqueta_meta_importe { get; set; }
     public DbSet<ReportsSupervisorGestionFecha> reports_supervisor_gestion_fecha { get; set; }
+    public DbSet<ReportsSupervisorAsesoresDelSupervisor> reports_supervisor_asesores_del_supervisor { get; set; }
     public DbSet<SupervisorGetNumberOfLeads> supervisor_get_number_of_leads { get; set; }
     public DbSet<GestionConseguirTodasLasAsignacionesPorListas> gestion_conseguir_todas_las_asignaciones_por_listas { get; set; }
     public DbSet<GestionConseguirODescargarAsignacionDeLeadsDeSup> gestion_conseguir_o_descargar_asignacion_de_leads_de_sup { get; set; }
@@ -183,6 +184,9 @@ public class MDbContext : DbContext
             .HasNoKey()
             .ToView(null);
         modelBuilder.Entity<ReportsAsesorTipificacionesTop>()
+            .HasNoKey()
+            .ToView(null);
+        modelBuilder.Entity<ReportsSupervisorAsesoresDelSupervisor>()
             .HasNoKey()
             .ToView(null);
     }

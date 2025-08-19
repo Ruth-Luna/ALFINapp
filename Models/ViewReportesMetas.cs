@@ -1,3 +1,5 @@
+using ALFINapp.Infrastructure.Persistence.Procedures;
+
 namespace ALFINapp.API.Models
 {
     public class ViewReportesMetas
@@ -21,5 +23,20 @@ namespace ALFINapp.API.Models
         public int metasGestiones { get; set; } = 0;
         public decimal metasImporte { get; set; } = 0;
         public decimal metasDerivaciones { get; set; } = 0;
+        public ViewMetas() { }
+        public ViewMetas(ReportsTablasMetas model)
+        {
+            dni = model.dni ?? string.Empty;
+            nombresCompletos = model.nombre_completo ?? string.Empty;
+            totalDerivaciones = model.total_derivaciones ?? 0;
+            totalImporte = model.total_importe ?? 0;
+            totalGestion = model.total_gestion ?? 0;
+            porcentajeGestiones = model.porcentaje_gestiones ?? 0;
+            porcentajeImporte = model.porcentaje_importe ?? 0;
+            porcentajeDerivaciones = model.porcentaje_derivaciones ?? 0;
+            metasGestiones = model.metas_gestiones ?? 0;
+            metasImporte = model.metas_importe ?? 0;
+            metasDerivaciones = model.metas_derivaciones ?? 0;
+        }
     }
 }

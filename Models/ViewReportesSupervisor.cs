@@ -1,3 +1,5 @@
+using ALFINapp.Datos.Persistence.Procedures;
+
 namespace ALFINapp.API.Models
 {
     public class ViewReportesSupervisor
@@ -24,6 +26,16 @@ namespace ALFINapp.API.Models
         public int? totalDerivaciones { get; set; }
         public int? totalDerivacionesProcesadas { get; set; }
         public int? totalDerivacionesPendientes { get; set; }
+        public ViewTipificacionesAsesor() { }
+        public ViewTipificacionesAsesor(ReportsSupervisorAsesoresDelSupervisor model)
+        {
+            DniAsesor = model.DniAsesor;
+            NombreAsesor = model.NombreAsesor;
+            totalSinGestionar = model.TotalAsignaciones - model.TotalGestiones;
+            totalGestionado = model.TotalGestiones;
+            totalDesembolsos = model.TotalDesembolsos;
+            totalDerivaciones = model.TotalDerivaciones;
+        }
     }
     public class ViewTipificacionesCantidad
     {

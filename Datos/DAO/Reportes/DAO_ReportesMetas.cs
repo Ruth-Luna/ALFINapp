@@ -1,5 +1,4 @@
 using ALFINapp.API.Models;
-using ALFINapp.Application.DTOs;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,17 +22,11 @@ namespace ALFINapp.Datos.DAO.Reportes
                     return (false, "No se encontraron metas para el usuario.", new ViewReportesMetas());
                 }
                 var reporteMetas = new ViewReportesMetas();
-                reporteMetas.metas = metas.toViewMetas();
+                reporteMetas.metas = metas;
                 reporteMetas.totalGestiones = reporteMetas.metas.Sum(x => x.totalGestion);
                 reporteMetas.totalImporte = reporteMetas.metas.Sum(x => x.totalImporte);
                 reporteMetas.totalDerivaciones = reporteMetas.metas.Sum(x => x.totalDerivaciones);
-                reporteMetas.pieFechas = reportesGeneral.toViewPie(
-                    "Datos Generales de Metas y Estado de Asignaciones",
-                    1500,
-                    10,
-                    20,
-                    30000.00m
-                );
+                reporteMetas.pieFechas = reportesGeneral;
                 reporteMetas.pieFechas.PERIODO = DateTime.Now.ToString("dd/MM/yyyy");
                 reporteMetas.pieFechas.estado = "Reporte General de Metas";
                 return (true, "OK", reporteMetas);
@@ -44,7 +37,7 @@ namespace ALFINapp.Datos.DAO.Reportes
                 return (false, ex.Message, new ViewReportesMetas());
             }
         }
-        public async Task<DetallesReportesTablasDTO> GetReportesMetas(int idUsuario)
+        public async Task<List<ViewMetas>> GetReportesMetas(int idUsuario)
         {
             try
             {
@@ -56,17 +49,17 @@ namespace ALFINapp.Datos.DAO.Reportes
                 if (getData == null || getData.Count == 0)
                 {
                     Console.WriteLine("No se encontraron datos para la consulta.");
-                    return new DetallesReportesTablasDTO();
+                    return new List<ViewMetas>();
                 }
-                return new DetallesReportesTablasDTO(getData);
+                return getData.Select(item => new ViewMetas(item)).ToList();
             }
             catch (System.Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return new DetallesReportesTablasDTO();
+                return new List<ViewMetas>();
             }
         }
-        public async Task<DetallesReportesGpieDTO> GetReportesByDate(int idUsuario, DateTime? fecha = null)
+        public async Task<ViewReportePieGeneral> GetReportesByDate(int idUsuario, DateTime? fecha = null)
         {
             try
             {
@@ -83,15 +76,15 @@ namespace ALFINapp.Datos.DAO.Reportes
                 if (getData == null || getData.Count == 0)
                 {
                     Console.WriteLine("No se encontraron datos para la consulta.");
-                    return new DetallesReportesGpieDTO();
+                    return new ViewReportePieGeneral();
                 }
-                var convertDto = new DetallesReportesGpieDTO(getData);
+                var convertDto = new ViewReportePieGeneral(getData);
                 return convertDto;
             }
             catch (System.Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return new DetallesReportesGpieDTO();
+                return new ViewReportePieGeneral();
             }
         }
     }

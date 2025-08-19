@@ -1,7 +1,7 @@
 @model ALFINapp.API.Models.ViewClienteDetalles
 
 @{
-    var Agencias = ViewData["Agencias"] as List<ALFINapp.Domain.Entities.Agencia>;
+    var Agencias = ViewData["Agencias"] as List<ALFINapp.Infrastructure.Persistence.Models.AgenciasDisponiblesDTO>;
 }
 <div class="container justify-content-center align-items-center">
     <div class="alert alert-warning" role="alert">
