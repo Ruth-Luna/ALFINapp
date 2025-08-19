@@ -28,8 +28,4 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Views\Operaciones\Modals\" />
-  </ItemGroup>
 </Project>

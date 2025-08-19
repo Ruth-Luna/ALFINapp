@@ -1,0 +1,33 @@
+﻿
+<div class="modal fade" id="modalEvidenciasDerivaciones" tabindex="-1" aria-labelledby="labelModalEvidenciasDerivaciones" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="labelModalEvidenciasDerivaciones">Evidencia para la derivación</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <label class="form-label w-100">
+                    <div id="drop-area" class="border border-3 border-light bg-light text-center rounded-3 p-5"
+                            style="cursor: pointer;">
+                        <p class="mb-2 fs-5">Haz clic o arrastra archivos aquí</p>
+                        <p class="text-muted">También puedes pegar (Ctrl + V) un archivo</p>
+                    </div>
+                </label>
+                <input type="file" id="evidencia-derivacion-id-input" class="form-control d-none" />
+                
+                <!-- Vista previa de archivos -->
+                <div id="file-preview" class="mb-3 d-none">
+                    <h6>Archivos seleccionados:</h6>
+                    <ul class="list-group" id="file-list"></ul>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success">Enviar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
