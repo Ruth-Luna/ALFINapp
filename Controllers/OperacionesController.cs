@@ -11,7 +11,7 @@ namespace ALFINapp.Controllers
         {
             _dao_derivaciones = dao_derivaciones;
         }
-        public IActionResult Index()
+        public IActionResult Operaciones()
         {
             return View();
         }
