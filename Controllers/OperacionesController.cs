@@ -4,7 +4,7 @@ namespace ALFINapp.Controllers
 {
     public class OperacionesController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Operaciones()
         {
             return View();
         }

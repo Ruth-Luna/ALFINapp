@@ -33,8 +33,7 @@ const derivacionesTableColumns = [
                 <button class="btn btn-sm btn-primary" title="Enviar evidencia"><i class="ri-file-add-line"></i></button>
                 <button class="btn btn-sm btn-info" title="Reagendamiento"><i class="ri-file-list-3-line"></i></button>
             </div>`,
-        flex: 0,
-        width: 130,
+        width: 130, // Ancho fijo para esta columna.
         sortable: false,
         resizable: false
     }
@@ -50,28 +49,29 @@ const listaDerivaciones = [
     { estadoDerivacion: 'En Proceso', dniCliente: '66554433', nombreCliente: 'Luisa Castro', telefono: '944444444', dniAsesor: '33445566', oferta: 'Crédito Vehicular', agencia: 'Agencia Norte', fechaVisita: '2024-08-17', estadoEvidencia: 'Enviado', fechaEvidencia: '2024-08-17', acciones: '' }
 ];
 
-// Lógica para el filtro externo.
-const externalFilterState = {
-    dniCliente: '',
-    agencia: 'Todos',
-    asesor: 'Todos',
-    fechaVisita: ''
-};
-
-function isExternalFilterPresent() {
-    return Object.values(externalFilterState).some(value => value !== '' && value !== 'Todos');
-}
-
+// Objeto para mantener el estado de los filtros externos.
+const externalFilterState = { dniCliente: '', agencia: 'Todos', asesor: 'Todos', fechaVisita: '' };
+function isExternalFilterPresent() { return Object.values(externalFilterState).some(value => value !== '' && value !== 'Todos'); }
 function doesExternalFilterPass(node) {
     const { data } = node;
     const { dniCliente, agencia, asesor, fechaVisita } = externalFilterState;
-
     if (dniCliente && !String(data.dniCliente).includes(dniCliente)) return false;
     if (agencia !== 'Todos' && data.agencia !== agencia) return false;
     if (asesor !== 'Todos' && data.dniAsesor !== asesor) return false;
     if (fechaVisita && data.fechaVisita !== fechaVisita) return false;
-
     return true;
+}
+function actualizarContadores() {
+    if (!gridApi) return;
+    const resultadoContenedor = document.getElementById('resultadoDerivacionesContenedor');
+    const resultadoSpan = document.getElementById('resultadoDerivaciones');
+    if (!resultadoContenedor || !resultadoSpan) return;
+    if (isExternalFilterPresent()) {
+        resultadoSpan.textContent = gridApi.getDisplayedRowCount();
+        resultadoContenedor.classList.remove('d-none');
+    } else {
+        resultadoContenedor.classList.add('d-none');
+    }
 }
 
 // Configuración principal de la grilla de Ag-grid.
@@ -84,8 +84,8 @@ const derivacionesGridOptions = {
     defaultColDef: {
         sortable: true,
         resizable: true,
-        flex: 1,
-        minWidth: 150
+        // Se quita 'flex: 1' para ceder el control a sizeColumnsToFit.
+        minWidth: 150 // Aún es útil para el comportamiento de redimensionamiento manual.
     },
     initialState: {
         sort: { sortModel: [{ colId: 'estadoEvidencia', sort: 'asc' }] }
@@ -95,12 +95,23 @@ const derivacionesGridOptions = {
 
     onGridReady: (params) => {
         gridApi = params.api;
+        document.getElementById('totalDelMesDerivaciones').textContent = listaDerivaciones.length;
+        
+        // Ajusta las columnas al 100% del contenedor al cargar, respetando un ancho mínimo.
+        params.api.sizeColumnsToFit({
+            defaultMinWidth: 150,
+        });
     },
 
-    // AÑADIDO: Ajusta las columnas al 100% del contenedor cada vez que este cambie de tamaño.
-    // Esto provoca el desbordamiento (scroll en X) solo cuando es necesario.
+    // Evento para reajustar las columnas cuando cambia el tamaño del contenedor.
     onGridSizeChanged: (params) => {
-        params.api.sizeColumnsToFit();
+        params.api.sizeColumnsToFit({
+            defaultMinWidth: 150,
+        });
+    },
+
+    onFilterChanged: () => {
+        actualizarContadores();
     }
 };
 
@@ -114,7 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
         externalFilterState.agencia = document.getElementById('agenciaDerivaciones').value;
         externalFilterState.asesor = document.getElementById('asesorDerivaciones').value;
         externalFilterState.fechaVisita = document.getElementById('fechaVisitaDerivacion').value;
-
         if (gridApi) {
             gridApi.onFilterChanged();
         }
@@ -123,14 +133,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const agenciaSelect = document.getElementById('agenciaDerivaciones');
     const asesorSelect = document.getElementById('asesorDerivaciones');
 
-    // Carga dinámica de opciones para los filtros <select>.
     const uniqueAgencies = [...new Set(listaDerivaciones.map(item => item.agencia))];
     const uniqueAdvisors = [...new Set(listaDerivaciones.map(item => item.dniAsesor))];
 
     uniqueAgencies.forEach(agencia => agenciaSelect.appendChild(new Option(agencia, agencia)));
     uniqueAdvisors.forEach(asesor => asesorSelect.appendChild(new Option(asesor, asesor)));
 
-    // Asignación de eventos a los campos de filtro.
     document.getElementById('dniClienteDerivaciones').addEventListener('input', onFilterChanged);
     agenciaSelect.addEventListener('change', onFilterChanged);
     asesorSelect.addEventListener('change', onFilterChanged);
