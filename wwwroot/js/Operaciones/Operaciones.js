@@ -225,6 +225,13 @@ async function getAllDerivaciones() {
 
 // Se ejecuta cuando el DOM está completamente cargado.
 document.addEventListener('DOMContentLoaded', async () => {
+    if (App && App.derivaciones) {
+        App.derivaciones.init();
+    }
+
+    if (App && App.reagendamientos) {
+        App.reagendamientos.init();
+    }
     const gridDiv = document.querySelector('#gridDerivaciones');
     var resultDerivaciones = await getAllDerivaciones();
     console.log('resultDerivaciones:', resultDerivaciones);

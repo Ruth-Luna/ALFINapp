@@ -7,7 +7,8 @@
             font-size: 0.85rem;
         }
 
-        .badge-enviado {
+        .badge-enviado,
+        .badge-reag-enviado {
             background: #80E2A5;
             color: #0B4300;
         }
@@ -16,6 +17,13 @@
             background: #FF9292;
             color: #450202;
         }
+
+        .badge-reag-pendiente {
+            background-color: #ffe69c;
+            color: #664d03;
+        }
+
+
     </style>
 }
 
@@ -30,7 +38,7 @@
                     <button class="nav-link active" id="derivaciones-tab" data-bs-toggle="tab" data-bs-target="#derivaciones-pane" type="button" role="tab" aria-controls="derivaciones-pane" aria-selected="true">Derivaciones</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="reasignamientos-tab" data-bs-toggle="tab" data-bs-target="#reasignamientos-pane" type="button" role="tab" aria-controls="reasignamientos-pane" aria-selected="false">Reasignamientos</button>
+                    <button class="nav-link" id="reagendamientos-tab" data-bs-toggle="tab" data-bs-target="#reagendamientos-pane" type="button" role="tab" aria-controls="reagendamientos-pane" aria-selected="false">Reagendamientos</button>
                 </li>
             </ul>
         </div>
@@ -38,72 +46,11 @@
 
     <div class="tab-content" id="operacionesTabContent">
         <div class="tab-pane fade show active" id="derivaciones-pane" role="tabpanel" aria-labelledby="derivaciones-tab" tabindex="0">
-            <div class="card border-0 shadow-sm mb-3">
-                <div class="card-body">
-                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-3">
-                        <div class="col">
-                            <label for="dniClienteDerivaciones" class="form-label">DNI cliente</label>
-                            <input type="text" class="form-control" id="dniClienteDerivaciones" />
-                        </div>
-                        <div class="col">
-                            <label for="supervisorDerivaciones" class="form-label">Supervisor</label>
-                            <select class="form-select" id="supervisorDerivaciones">
-                                <option selected>Todos</option>
-                            </select>
-                        </div>
-                        <div class="col">
-                            <label for="asesorDerivaciones" class="form-label">Asesor</label>
-                            <select class="form-select" id="asesorDerivaciones">
-                                <option selected>Todos</option>
-                            </select>
-                        </div>
-                        <div class="col">
-                            <label for="agenciaDerivaciones" class="form-label">Agencia</label>
-                            <select class="form-select" id="agenciaDerivaciones">
-                                <option selected>Todos</option>
-                            </select>
-                        </div>
-                        <div class="col">
-                            <label for="fechaDerivacion" class="form-label">Fecha derivación</label>
-                            <input type="date" class="form-control" id="fechaDerivacion" />
-                        </div>
-                        <div class="col">
-                            <label for="fechaVisitaDerivacion" class="form-label">Fecha de visita</label>
-                            <input type="date" class="form-control" id="fechaVisitaDerivacion" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card border-0 shadow-sm mb-3">
-                <div class="card-header bg-white d-flex align-items-center">
-                    <div class="px-3 py-1 rounded-3 border-radius me-2 text-white" style="background-color: #15AFC0;">
-                        Total del mes: <span id="totalDelMesDerivaciones">0</span>
-                    </div>
-                    <div id="resultadoDerivacionesContenedor" class="px-3 py-1 rounded-3 border-radius me-2 text-white d-none" style="background-color: #15C0B8;">
-                        Resultado: <span id="resultadoDerivaciones">0</span>
-                    </div>
-                    <div class="ms-auto">
-                        <!-- al lado derecho del card -->
-                        <button class="btn btn-success" id="btnDescargarDerivaciones">
-                            <span class="d-flex justify-content-center align-items-center gap-2">
-                                <i class="ri-file-download-line"></i>
-                                Descargar
-                            </span>
-                        </button>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div id="gridDerivaciones" class="ag-theme-alpine" style="height: 400px; width: 100%;"></div>
-                </div>
-            </div>
+            <partial name="Components/_PartialDerivaciones" />
         </div>
 
-        <div class="tab-pane fade" id="reasignamientos-pane" role="tabpanel" aria-labelledby="reasignamientos-tab" tabindex="0">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <p>Vista de Reasignamientos en proceso...</p>
-                </div>
-            </div>
+        <div class="tab-pane fade" id="reagendamientos-pane" role="tabpanel" aria-labelledby="reagendamientos-tab" tabindex="0">
+            <partial name="Components/_PartialReagendamientos" />
         </div>
     </div>
 </div>
@@ -119,4 +66,9 @@
     <script src="~/js/Operaciones/Operaciones.js"></script>
     <script src="~/js/Operaciones/OperacionesReagendacion.js"></script>
     <script src="~/js/Operaciones/OperacionesEvidencia.js"></script>
+@*     <script src="~/js/Operaciones/Operaciones.js"></script> *@
+
+    <script src="~/js/Operaciones/derivaciones.js"></script>
+    <script src="~/js/Operaciones/reagendamientos.js"></script>
+    <script src="~/js/Operaciones/operaciones.js"></script>
 }
