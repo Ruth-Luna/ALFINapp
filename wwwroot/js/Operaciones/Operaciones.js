@@ -36,7 +36,8 @@ const derivacionesTableColumns = [
         width: 130, // Ancho fijo para esta columna.
         sortable: false,
         resizable: false
-    }
+    },
+    { headerName: "DNI Supervisor", field: "docSupervisor", hide: true },
 ];
 
 // Datos de ejemplo para la tabla. LA ESTRUCTURA DEBE COINCIDIR CON LA DEFINIDA EN EL MODELO ViewOperacionesDerivaciones.
@@ -50,14 +51,15 @@ let listaDerivaciones = [
 ];
 
 // Objeto para mantener el estado de los filtros externos.
-const externalFilterState = { dniCliente: '', agencia: 'Todos', asesor: 'Todos', fechaVisita: '' };
+const externalFilterState = { dniCliente: '', agencia: 'Todos',supervisor: 'Todos', asesor: 'Todos', fechaVisita: '' };
 function isExternalFilterPresent() { return Object.values(externalFilterState).some(value => value !== '' && value !== 'Todos'); }
 function doesExternalFilterPass(node) {
     const { data } = node;
-    const { dniCliente, agencia, asesor, fechaVisita } = externalFilterState;
+    const { dniCliente, agencia, asesor, supervisor, fechaVisita } = externalFilterState;
     if (dniCliente && !String(data.dniCliente).includes(dniCliente)) return false;
-    if (agencia !== 'Todos' && data.agencia !== agencia) return false;
+    if (agencia !== 'Todos' && data.nombreAgencia !== agencia) return false;
     if (asesor !== 'Todos' && data.dniAsesor !== asesor) return false;
+    if (supervisor !== 'Todos' && data.docSupervisor !== supervisor) return false;
     if (fechaVisita && data.fechaVisita !== fechaVisita) return false;
     return true;
 }
@@ -169,6 +171,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         externalFilterState.dniCliente = document.getElementById('dniClienteDerivaciones').value;
         externalFilterState.agencia = document.getElementById('agenciaDerivaciones').value;
         externalFilterState.asesor = document.getElementById('asesorDerivaciones').value;
+        externalFilterState.supervisor = document.getElementById('supervisorDerivaciones').value;
         externalFilterState.fechaVisita = document.getElementById('fechaVisitaDerivacion').value;
         if (gridApi) {
             gridApi.onFilterChanged();
@@ -177,15 +180,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const agenciaSelect = document.getElementById('agenciaDerivaciones');
     const asesorSelect = document.getElementById('asesorDerivaciones');
+    const supervisorSelect = document.getElementById('supervisorDerivaciones');
 
-    const uniqueAgencies = [...new Set(listaDerivaciones.map(item => item.agencia))];
+    const uniqueAgencies = [...new Set(listaDerivaciones.map(item => item.nombreAgencia))];
     const uniqueAdvisors = [...new Set(listaDerivaciones.map(item => item.dniAsesor))];
+    const uniqueSupervisors = [...new Set(listaDerivaciones.map(item => item.docSupervisor))];
 
     uniqueAgencies.forEach(agencia => agenciaSelect.appendChild(new Option(agencia, agencia)));
     uniqueAdvisors.forEach(asesor => asesorSelect.appendChild(new Option(asesor, asesor)));
+    uniqueSupervisors.forEach(supervisor => supervisorSelect.appendChild(new Option(supervisor, supervisor)));
 
     document.getElementById('dniClienteDerivaciones').addEventListener('input', onFilterChanged);
     agenciaSelect.addEventListener('change', onFilterChanged);
     asesorSelect.addEventListener('change', onFilterChanged);
+    supervisorSelect.addEventListener('change', onFilterChanged);
     document.getElementById('fechaVisitaDerivacion').addEventListener('change', onFilterChanged);
 });
