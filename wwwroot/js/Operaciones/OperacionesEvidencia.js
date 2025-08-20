@@ -132,22 +132,8 @@ function updateFileInput() {
     fileInput.files = dt.files;
 }
 
-async function submit_evidencia_derivacion() {
-    const formData = [];
-    const dataJson = [];
-    for (const file of files) {
-        const hex = await archivoAHex(file);
-        formData.push(hex);
-        dataJson.push({
-            fileName: file.name,
-            fileType: file.name.split('.').pop(), // Obtener la extensión del archivo
-            fileContent: hex,
-            idDerivacion: activeId,
-            type: 0 // Asumiendo que el tipo es 0 para evidencia
-        });
-    }
-
-    if (formData.length === 0) {
+async function submit_evidencia_derivacion(id_derivacion_send) {
+    if (files.length === 0) {
         Swal.fire({
             icon: 'warning',
             title: 'No hay archivos',
@@ -157,8 +143,47 @@ async function submit_evidencia_derivacion() {
         return;
     }
 
-    const convertedFiles = JSON.stringify(dataJson);
+    baseUrl = window.location.origin;
+    const downloadURL = `${baseUrl}/Download/UploadImage`;
 
+    url_strings = [];
+
+    for (const file of files) {
+        try {
+            const formData = new FormData();
+            formData.append('files', file, file.name);
+
+            const requestOptions = {
+                method: 'POST',
+                body: formData,
+                redirect: 'follow'
+            };
+
+            const response1 = await fetch(downloadURL, requestOptions);
+            if (response1.ok) {
+                const result1 = await response1.json();
+                url_strings.push(result1.url);
+            } else {
+                console.error('Error al subir el archivo:', response1.statusText);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al subir archivos',
+                    text: `No se pudo subir el archivo ${file.name}. Por favor, intenta de nuevo.`,
+                    confirmButtonText: 'Aceptar'
+                });
+                return;
+            }
+        } catch (error) {
+            console.error('Error al subir el archivo:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al subir archivos',
+                text: `No se pudo subir el archivo ${file.name}. Por favor, intenta de nuevo.`,
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    }
+    
     const loading = Swal.fire({
         title: 'Subiendo archivos...',
         allowOutsideClick: false,
@@ -167,10 +192,16 @@ async function submit_evidencia_derivacion() {
         }
     });
 
+    const url = `${baseUrl}/Derivacion/UploadEvidencia`;
+    const dto = {
+        idDerivacion: id_derivacion_send,
+        urlEvidencias: url_strings
+    };
+
     try {
-        const response = await fetch('/Operaciones/UploadEvidencia', {
+        const response = await fetch(url, {
             method: 'POST',
-            body: convertedFiles,
+            body: JSON.stringify(dto),
             headers: {
                 'Content-Type': 'application/json'
             }

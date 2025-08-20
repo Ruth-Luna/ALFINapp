@@ -15,27 +15,11 @@ namespace ALFINapp.Application.UseCases.Derivacion
             _repositoryEvidencias = repositoryEvidencias;
             _repositoryDerivaciones = repositoryDerivaciones;
         }
-        public async Task<(bool success, string message)> Execute(List<DtoVUploadFiles> files)
+        public async Task<(bool success, string message)> Execute(DtoVDerivacionEvidencia evidencia)
         {
             try
             {
-                foreach (var file in files)
-                {
-                    if (string.IsNullOrEmpty(file.fileContent) || string.IsNullOrEmpty(file.fileType) || string.IsNullOrEmpty(file.fileName) || file.idDerivacion <= 0)
-                    {
-                        return (false, "Datos de archivo incompletos");
-                    }
-                    var result = await _repositoryEvidencias.UploadFilesAsync(
-                                    file.fileContent,
-                                    file.fileType,
-                                    file.fileName,
-                                    file.idDerivacion);
-                    if (!result.success)
-                    {
-                        return (false, result.message);
-                    }
-                }
-                var check = await _repositoryDerivaciones.marcarEvidenciaDisponible(files[0].idDerivacion);
+                var check = await _repositoryDerivaciones.marcarEvidenciaDisponible(evidencia.idDerivacion, evidencia.urlEvidencias);
                 if (!check.success)
                 {
                     return (false, check.message);
