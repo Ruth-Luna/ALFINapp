@@ -6,12 +6,12 @@ App.derivaciones = (() => {
     let gridApi;
 
     const listaDerivaciones = [
-        { estadoDerivacion: 'Pendiente', dniCliente: '12345678', nombreCliente: 'Juan Pérez', telefono: '987654321', dniAsesor: '87654321', oferta: 'Crédito Personal', agencia: 'Agencia Central', fechaVisita: '2024-08-15', estadoEvidencia: 'No enviado', fechaEvidencia: '2024-08-11', acciones: '' },
-        { estadoDerivacion: 'Completado', dniCliente: '87654321', nombreCliente: 'Ana Gómez', telefono: '912345678', dniAsesor: '12345678', oferta: 'Tarjeta de Crédito', agencia: 'Sucursal Norte', fechaVisita: '2024-08-14', estadoEvidencia: 'Enviado', fechaEvidencia: '2024-08-15', acciones: '' },
-        { estadoDerivacion: 'En Proceso', dniCliente: '11223344', nombreCliente: 'Carlos Ruiz', telefono: '955555555', dniAsesor: '44332211', oferta: 'Seguro de Vida', agencia: 'Agencia Sur', fechaVisita: '2024-08-16', estadoEvidencia: 'Enviado', fechaEvidencia: '2024-08-16', acciones: '' },
-        { estadoDerivacion: 'Completado', dniCliente: '99887766', nombreCliente: 'María López', telefono: '977777777', dniAsesor: '66778899', oferta: 'Préstamo Hipotecario', agencia: 'Agencia Este', fechaVisita: '2024-08-12', estadoEvidencia: 'Enviado', fechaEvidencia: '2024-08-13', acciones: '' },
-        { estadoDerivacion: 'Rechazado', dniCliente: '55443322', nombreCliente: 'José Torres', telefono: '922222222', dniAsesor: '22334455', oferta: 'Línea de Crédito', agencia: 'Sucursal Oeste', fechaVisita: '2024-08-11', estadoEvidencia: 'No enviado', fechaEvidencia: '2024-08-12', acciones: '' },
-        { estadoDerivacion: 'En Proceso', dniCliente: '66554433', nombreCliente: 'Luisa Castro', telefono: '944444444', dniAsesor: '33445566', oferta: 'Crédito Vehicular', agencia: 'Agencia Norte', fechaVisita: '2024-08-17', estadoEvidencia: 'Enviado', fechaEvidencia: '2024-08-17', acciones: '' }
+        { estadoDerivacion: 'Pendiente', dniCliente: '12345678', nombreCliente: 'Juan Pérez', telefono: '987654321', dniAsesor: '87654321', oferta: 'Crédito Personal', agencia: 'Agencia Central', fechaDerivacion: '2024-08-14T10:00:00', fechaVisita: '2024-08-15', estadoEvidencia: 'No enviado', fechaEvidencia: '2024-08-11T11:30:00', acciones: '' },
+        { estadoDerivacion: 'Completado', dniCliente: '87654321', nombreCliente: 'Ana Gómez', telefono: '912345678', dniAsesor: '12345678', oferta: 'Tarjeta de Crédito', agencia: 'Sucursal Norte', fechaDerivacion: '2024-08-13T11:20:15', fechaVisita: '2024-08-14', estadoEvidencia: 'Enviado', fechaEvidencia: '2024-08-15T09:05:10', acciones: '' },
+        { estadoDerivacion: 'En Proceso', dniCliente: '11223344', nombreCliente: 'Carlos Ruiz', telefono: '955555555', dniAsesor: '44332211', oferta: 'Seguro de Vida', agencia: 'Agencia Sur', fechaDerivacion: '2024-08-15T12:00:00', fechaVisita: '2024-08-16', estadoEvidencia: 'Enviado', fechaEvidencia: '2024-08-16T18:00:00', acciones: '' },
+        { estadoDerivacion: 'Completado', dniCliente: '99887766', nombreCliente: 'María López', telefono: '977777777', dniAsesor: '66778899', oferta: 'Préstamo Hipotecario', agencia: 'Agencia Este', fechaDerivacion: '2024-08-11T09:45:30', fechaVisita: '2024-08-12', estadoEvidencia: 'Enviado', fechaEvidencia: '2024-08-13T14:22:05', acciones: '' },
+        { estadoDerivacion: 'Rechazado', dniCliente: '55443322', nombreCliente: 'José Torres', telefono: '922222222', dniAsesor: '22334455', oferta: 'Línea de Crédito', agencia: 'Sucursal Oeste', fechaDerivacion: '2024-08-10T16:10:00', fechaVisita: '2024-08-11', estadoEvidencia: 'No enviado', fechaEvidencia: '2024-08-12T10:00:00', acciones: '' },
+        { estadoDerivacion: 'En Proceso', dniCliente: '66554433', nombreCliente: 'Luisa Castro', telefono: '944444444', dniAsesor: '33445566', oferta: 'Crédito Vehicular', agencia: 'Agencia Norte', fechaDerivacion: '2024-08-16T08:30:00', fechaVisita: '2024-08-17', estadoEvidencia: 'Enviado', fechaEvidencia: '2024-08-17T11:45:12', acciones: '' }
     ];
 
     const derivacionesTableColumns = [
@@ -22,7 +22,17 @@ App.derivaciones = (() => {
         { headerName: "DNI asesor", field: "dniAsesor" },
         { headerName: "Oferta", field: "oferta" },
         { headerName: "Agencia", field: "agencia" },
-        { headerName: "Fecha visita", field: "fechaVisita" },
+        // --- INICIO DE CAMBIOS ---
+        {
+            headerName: "Fecha derivación",
+            field: "fechaDerivacion",
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm:ss')
+        },
+        {
+            headerName: "Fecha visita",
+            field: "fechaVisita",
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy')
+        },
         {
             headerName: "Estado evidencia",
             field: "estadoEvidencia",
@@ -30,12 +40,18 @@ App.derivaciones = (() => {
             cellRenderer: (params) => params.value === "Enviado" ? `<span class="badge-estado badge-enviado">Enviado</span>` : `<span class="badge-estado badge-no-enviado">No enviado</span>`,
             comparator: (valueA, valueB) => (valueA === valueB ? 0 : valueA === 'No enviado' ? -1 : 1)
         },
-        { headerName: "Fecha evidencia", field: "fechaEvidencia" },
+        {
+            headerName: "Fecha evidencia",
+            field: "fechaEvidencia",
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm:ss')
+        },
+        // --- FIN DE CAMBIOS ---
         {
             headerName: "Acciones",
             field: "acciones",
             cellClass: "d-flex align-items-center justify-content-center",
             cellRenderer: (params) => {
+                // ... El resto del cellRenderer de acciones se mantiene igual
                 const container = document.createElement('div');
                 container.className = 'd-flex gap-2';
                 // --- Botón 1: Reagendamiento ---
@@ -77,6 +93,27 @@ App.derivaciones = (() => {
     const externalFilterState = { dniCliente: '', agencia: 'Todos', asesor: 'Todos', fechaVisita: '' };
 
     // --- FUNCIONES PRIVADAS DEL MÓDULO ---
+
+    function formatDateTime(dateString, format = 'dd/mm/yyyy') {
+        if (!dateString) return ''; // Si no hay fecha, retorna vacío
+        const date = new Date(dateString);
+        // Verificamos si la fecha es válida para evitar errores
+        if (isNaN(date.getTime())) return dateString;
+
+        const pad = (num) => String(num).padStart(2, '0');
+        const day = pad(date.getDate());
+        const month = pad(date.getMonth() + 1); // Los meses en JS empiezan en 0
+        const year = date.getFullYear();
+        const hours = pad(date.getHours());
+        const minutes = pad(date.getMinutes());
+        const seconds = pad(date.getSeconds());
+
+        if (format === 'dd/mm/yyyy hh:mm:ss') {
+            return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+        }
+        // Por defecto, o si el formato es 'dd/mm/yyyy'
+        return `${day}/${month}/${year}`;
+    }
 
     function isExternalFilterPresent() { return Object.values(externalFilterState).some(value => value !== '' && value !== 'Todos'); }
 
