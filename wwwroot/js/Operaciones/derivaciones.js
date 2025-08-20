@@ -116,18 +116,18 @@ App.derivaciones = (() => {
         { headerName: "DNI Supervisor", field: "docSupervisor", hide: true },
     ];
 
-    const externalFilterState = { dniCliente: '', agencia: 'Todos', asesor: 'Todos', fechaVisita: '' };
+    const externalFilterState = { dniCliente: '', agencia: 'Todos',supervisor: 'Todos', asesor: 'Todos', fechaVisita: '' };
 
     // --- FUNCIONES PRIVADAS DEL MÓDULO ---
-
     function isExternalFilterPresent() { return Object.values(externalFilterState).some(value => value !== '' && value !== 'Todos'); }
 
     function doesExternalFilterPass(node) {
         const { data } = node;
-        const { dniCliente, agencia, asesor, fechaVisita } = externalFilterState;
+        const { dniCliente, agencia, asesor, fechaVisita, supervisor } = externalFilterState;
         if (dniCliente && !String(data.dniCliente).includes(dniCliente)) return false;
-        if (agencia !== 'Todos' && data.agencia !== agencia) return false;
+        if (agencia !== 'Todos' && data.nombreAgencia !== agencia) return false;
         if (asesor !== 'Todos' && data.dniAsesor !== asesor) return false;
+        if (supervisor !== 'Todos' && data.docSupervisor !== supervisor) return false;
         if (fechaVisita && data.fechaVisita !== fechaVisita) return false;
         return true;
     }
