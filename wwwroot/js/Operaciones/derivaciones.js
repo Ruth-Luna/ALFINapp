@@ -22,7 +22,17 @@ App.derivaciones = (() => {
         { headerName: "DNI asesor", field: "dniAsesor" },
         { headerName: "Oferta", field: "ofertaMax" },
         { headerName: "Agencia", field: "nombreAgencia" },
-        { headerName: "Fecha visita", field: "fechaVisita" },
+        // --- INICIO DE CAMBIOS ---
+        {
+            headerName: "Fecha derivación",
+            field: "fechaDerivacion",
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm:ss')
+        },
+        {
+            headerName: "Fecha visita",
+            field: "fechaVisita",
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy')
+        },
         {
             headerName: "Estado evidencia",
             field: "estadoEvidencia",
@@ -35,7 +45,12 @@ App.derivaciones = (() => {
             },
             comparator: (valueA, valueB) => (valueA === valueB ? 0 : valueA === 'No enviado' ? -1 : 1)
         },
-        { headerName: "Fecha evidencia", field: "fechaEvidencia" },
+        {
+            headerName: "Fecha evidencia",
+            field: "fechaEvidencia",
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm:ss')
+        },
+        // --- FIN DE CAMBIOS ---
         {
             headerName: "Acciones",
             field: "acciones",
@@ -119,6 +134,28 @@ App.derivaciones = (() => {
     const externalFilterState = { dniCliente: '', agencia: 'Todos',supervisor: 'Todos', asesor: 'Todos', fechaVisita: '' };
 
     // --- FUNCIONES PRIVADAS DEL MÓDULO ---
+
+    function formatDateTime(dateString, format = 'dd/mm/yyyy') {
+        if (!dateString) return ''; // Si no hay fecha, retorna vacío
+        const date = new Date(dateString);
+        // Verificamos si la fecha es válida para evitar errores
+        if (isNaN(date.getTime())) return dateString;
+
+        const pad = (num) => String(num).padStart(2, '0');
+        const day = pad(date.getDate());
+        const month = pad(date.getMonth() + 1); // Los meses en JS empiezan en 0
+        const year = date.getFullYear();
+        const hours = pad(date.getHours());
+        const minutes = pad(date.getMinutes());
+        const seconds = pad(date.getSeconds());
+
+        if (format === 'dd/mm/yyyy hh:mm:ss') {
+            return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+        }
+        // Por defecto, o si el formato es 'dd/mm/yyyy'
+        return `${day}/${month}/${year}`;
+    }
+
     function isExternalFilterPresent() { return Object.values(externalFilterState).some(value => value !== '' && value !== 'Todos'); }
 
     function doesExternalFilterPass(node) {
