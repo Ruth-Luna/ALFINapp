@@ -218,7 +218,7 @@ namespace ALFINapp.Infrastructure.Repositories
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task<(bool success, string message)> uploadReagendacion(int idDer, DateTime fechaReagendamiento)
+        public async Task<(bool success, string message)> uploadReagendacion(int idDer, DateTime fechaReagendamiento, string urls)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             try
@@ -226,10 +226,11 @@ namespace ALFINapp.Infrastructure.Repositories
                 var parametros = new[]
                 {
                     new SqlParameter("@nueva_fecha_visita", fechaReagendamiento) { SqlDbType = SqlDbType.DateTime },
-                    new SqlParameter("@id_derivacion", idDer) { SqlDbType = SqlDbType.Int }
+                    new SqlParameter("@id_derivacion", idDer) { SqlDbType = SqlDbType.Int },
+                    new SqlParameter("@urls", urls ?? string.Empty)
                 };
                 var generarReagendacion = _context.Database.ExecuteSqlRaw(
-                    "EXEC sp_reagendamiento_upload_nueva_reagendacion @nueva_fecha_visita, @id_derivacion;",
+                    "EXEC sp_reagendamiento_upload_nueva_reagendacion_refac @nueva_fecha_visita, @id_derivacion, @urls;",
                     parametros);
                 if (generarReagendacion == 0)
                 {
@@ -245,7 +246,7 @@ namespace ALFINapp.Infrastructure.Repositories
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task<(bool success, string message)> uploadReagendacion(string dniCliente, DateTime fechaReagendamiento)
+        public async Task<(bool success, string message)> uploadReagendacion(string dniCliente, DateTime fechaReagendamiento, string urls)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             try
@@ -253,10 +254,11 @@ namespace ALFINapp.Infrastructure.Repositories
                 var parametros = new[]
                 {
                     new SqlParameter("@dni_cliente", dniCliente),
-                    new SqlParameter("@nueva_fecha_visita", fechaReagendamiento) { SqlDbType = SqlDbType.DateTime }
+                    new SqlParameter("@nueva_fecha_visita", fechaReagendamiento) { SqlDbType = SqlDbType.DateTime },
+                    new SqlParameter("@urls", urls ?? string.Empty)
                 };
                 var generarReagendacion = _context.Database.ExecuteSqlRaw(
-                    "EXEC sp_reagendamiento_upload_nueva_reagendacion @dni_cliente, @nueva_fecha_visita",
+                    "EXEC sp_reagendamiento_upload_nueva_reagendacion @dni_cliente, @nueva_fecha_visita, @urls",
                     parametros);
                 if (generarReagendacion == 0)
                 {

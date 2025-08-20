@@ -42,17 +42,26 @@ const derivacionesTableColumns = [
 
             // Event listener para abrir el modal de reagendamiento.
             btnReagendamiento.addEventListener('click', () => {
-                const modalElement = document.getElementById('modalReagendamiento');
+                const modalElement = document.getElementById('modalEvidenciasDerivaciones');
                 if (modalElement) {
-                    const modalTitle = modalElement.querySelector('#labelModalReagendamiento');
+                    const modalTitle = modalElement.querySelector('#labelModalEvidenciasDerivaciones');
                     if (modalTitle) {
                         modalTitle.textContent = `Reagendamiento de cita para: ${params.data.nombreCliente}`;
                     }
+
+                    const modalButton = modalElement.querySelector('#enviar-evidencia-o-reagendacion');
+                    if (modalButton) {
+                        modalButton.onclick = () => enviarReagendacion(params.data.idDerivacion);
+                    }
                     const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+                    
+                    cargarReagendacion(params.data);
+                    modal_id_derivacion_to_be_uploaded(params.data.idDerivacion);
+
                     modal.show();
                     console.log("Abriendo modal de reagendamiento para:", params.data);
                 } else {
-                    console.error('El elemento del modal con ID "modalReagendamiento" no fue encontrado en el DOM.');
+                    console.error('El elemento del modal con ID "modalEvidenciasDerivaciones" no fue encontrado en el DOM.');
                 }
             });
 
@@ -62,11 +71,22 @@ const derivacionesTableColumns = [
             btnEnviarEvidencia.title = 'Enviar evidencia'; // Corregido
             btnEnviarEvidencia.innerHTML = '<i class="ri-file-add-line"></i>'; // Icono ajustado a la acción
 
-            // Event listener para abrir el modal de evidencias.
             btnEnviarEvidencia.addEventListener('click', () => {
                 const modalElement = document.getElementById('modalEvidenciasDerivaciones');
                 if (modalElement) {
+                    const modalTitle = modalElement.querySelector('#labelModalEvidenciasDerivaciones');
+                    if (modalTitle) {
+                        modalTitle.textContent = `Evidencia de derivacion para: ${params.data.nombreCliente}`;
+                    }
+                    const modalButton = modalElement.querySelector('#enviar-evidencia-o-reagendacion');
+                    if (modalButton) {
+                        modalButton.onclick = () => enviarEvidencia(params.data);
+                    }
                     const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+
+                    cargarEvidencia(params.data);
+                    modal_id_derivacion_to_be_uploaded(params.data.idDerivacion);
+
                     modal.show();
                     console.log("Abriendo modal de evidencias para la fila:", params.data);
                 } else {
