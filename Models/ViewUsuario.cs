@@ -27,7 +27,7 @@ namespace ALFINapp.API.Models
         public DateTime FechaCese { get; set; } = DateTime.MinValue;
         public string Correo { get; set; } = string.Empty;
         public string Cci { get; set; } = string.Empty;
-
+        public List<Usuario> usuarios_asignados { get; set; } = new List<Usuario>();
         public ViewUsuario() { }
 
         public ViewUsuario(Usuario model)

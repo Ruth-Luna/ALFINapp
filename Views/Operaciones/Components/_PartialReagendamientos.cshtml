@@ -1,0 +1,55 @@
+﻿
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-body">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-3">
+            <div class="col">
+                <label for="dniClienteReagendamientos" class="form-label">DNI cliente</label>
+                <input type="text" class="form-control" id="dniClienteReagendamientos" />
+            </div>
+            <div class="col">
+                <label for="supervisorReagendamientos" class="form-label">Supervisor</label>
+                <select class="form-select" id="supervisorReagendamientos">
+                    <option selected>Todos</option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="asesorReagendamientos" class="form-label">Asesor</label>
+                <select class="form-select" id="asesorReagendamientos">
+                    <option selected>Todos</option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="agenciaReagendamientos" class="form-label">Agencia</label>
+                <select class="form-select" id="agenciaReagendamientos">
+                    <option selected>Todos</option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="fechaReagendamientos" class="form-label">Fecha de reagendamiento</label>
+                <input type="date" class="form-control" id="fechaReagendamientos" />
+            </div>
+            <div class="col">
+                <label for="fechaVisitaReagendamientos" class="form-label">Fecha de visita</label>
+                <input type="date" class="form-control" id="fechaVisitaReagendamientos" />
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white d-flex align-items-center">
+        <div class="ms-auto">
+            <div class="dropdown">
+                <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Descargar
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Últimos reagendamientos</a></li>
+                    <li><a class="dropdown-item" href="#">Históricos</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div id="gridReagendamientos" class="ag-theme-alpine" style="height: 400px; width: 100%;"></div>
+    </div>
+</div>
