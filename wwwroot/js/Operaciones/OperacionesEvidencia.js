@@ -132,7 +132,7 @@ function updateFileInput() {
     fileInput.files = dt.files;
 }
 
-async function submit_evidencia_derivacion() {
+async function submit_evidencia_derivacion(id_derivacion_send) {
     if (files.length === 0) {
         Swal.fire({
             icon: 'warning',
@@ -194,7 +194,7 @@ async function submit_evidencia_derivacion() {
 
     const url = `${baseUrl}/Derivacion/UploadEvidencia`;
     const dto = {
-        idDerivacion: activeId,
+        idDerivacion: id_derivacion_send,
         urlEvidencias: url_strings
     };
 

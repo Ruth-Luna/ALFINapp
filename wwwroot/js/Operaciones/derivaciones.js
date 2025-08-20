@@ -76,7 +76,6 @@ App.derivaciones = (() => {
                     }
                 });
 
-                // --- Botón 2: Enviar evidencia ---
                 const btnEnviarEvidencia = document.createElement('button');
                 btnEnviarEvidencia.className = 'btn btn-sm btn-info';
                 btnEnviarEvidencia.title = 'Enviar evidencia'; // Corregido
@@ -91,7 +90,7 @@ App.derivaciones = (() => {
                         }
                         const modalButton = modalElement.querySelector('#enviar-evidencia-o-reagendacion');
                         if (modalButton) {
-                            modalButton.onclick = () => enviarEvidencia(params.data);
+                            modalButton.onclick = () => submit_evidencia_derivacion(params.data.idDerivacion);
                         }
                         const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
 
@@ -105,11 +104,9 @@ App.derivaciones = (() => {
                     }
                 });
 
-                // Añadimos los botones al contenedor en el orden correcto.
                 container.appendChild(btnReagendamiento);
                 container.appendChild(btnEnviarEvidencia);
 
-                // Devolvemos el contenedor para que AG-Grid lo renderice.
                 return container;
             },
             width: 130,
