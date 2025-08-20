@@ -34,7 +34,7 @@ namespace ALFINapp.Datos
                         command.Parameters.AddWithValue("@IDUSUARIOSUP", usuario.IDUSUARIOSUP == 0 ? DBNull.Value : (object?)usuario.IDUSUARIOSUP);
                         command.Parameters.AddWithValue("@RESPONSABLESUP", string.IsNullOrWhiteSpace(usuario.RESPONSABLESUP) ? DBNull.Value : (object?)usuario.RESPONSABLESUP);
                         command.Parameters.AddWithValue("@REGION", (object?)usuario.REGION ?? DBNull.Value);
-                        command.Parameters.AddWithValue("@NOMBRECAMPAÑA", (object?)usuario.NOMBRECAMPAÑA ?? DBNull.Value);
+                        command.Parameters.AddWithValue("@NOMBRECAMPAÑA", (object?)usuario.NOMBRECAMPANIA ?? DBNull.Value);
                         command.Parameters.AddWithValue("@IdRol", usuario.IdRol);
                         command.Parameters.AddWithValue("@Usuario", usuario.Usuario);
                         command.Parameters.AddWithValue("@id_usuario_accion", idUsuarioAccion);
@@ -64,7 +64,7 @@ namespace ALFINapp.Datos
         //}
 
 
-        public List<ViewUsuario> ListarUsuarios(int? idUsuario = null)
+        public List<ViewUsuario> ListarUsuarios(int? idUsuario = null, int? idSupervisor = null)
         {
             var lista = new List<ViewUsuario>();
             var cn = new Conexion();
@@ -75,8 +75,8 @@ namespace ALFINapp.Datos
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    if (idUsuario.HasValue)
-                        cmd.Parameters.AddWithValue("@id_usuario", idUsuario.Value);
+                    cmd.Parameters.AddWithValue("@id_usuario", idUsuario.HasValue ? idUsuario.Value : DBNull.Value);
+                    cmd.Parameters.AddWithValue("@id_supervisor", idSupervisor.HasValue ? idSupervisor.Value : DBNull.Value);
 
                     connection.Open();
                     using (SqlDataReader dr = cmd.ExecuteReader())
@@ -144,6 +144,14 @@ namespace ALFINapp.Datos
                         cmd.Parameters.AddWithValue("@Distrito", usuario.Distrito != null ? usuario.Distrito : DBNull.Value);
                         cmd.Parameters.AddWithValue("@correo", usuario.Correo != null ? usuario.Correo : DBNull.Value);
                         cmd.Parameters.AddWithValue("@estado", usuario.Estado != null ? usuario.Estado : DBNull.Value);
+
+                        cmd.Parameters.AddWithValue("@Departamento", usuario.Departamento != null ? usuario.Departamento : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Provincia", usuario.Provincia != null ? usuario.Provincia : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Telefono", usuario.Telefono != null ? usuario.Telefono : DBNull.Value);
+
+                        // Datos supervisor
+                        cmd.Parameters.AddWithValue("@IDUSUARIOSUP", usuario.IDUSUARIOSUP == 0 ? DBNull.Value : (object)usuario.IDUSUARIOSUP);
+                        cmd.Parameters.AddWithValue("@RESPONSABLESUP", usuario.RESPONSABLESUP != null ? usuario.RESPONSABLESUP : DBNull.Value);
 
                         connection.Open();
                         int filasAfectadas = cmd.ExecuteNonQuery();

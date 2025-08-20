@@ -1,12 +1,18 @@
 @{
     var SupervisoresDisponibles = ViewData["Supervisores"] as List<ALFINapp.Infrastructure.Persistence.Models.Usuario>;
     var Roles = ViewData["Roles"] as List<ALFINapp.Infrastructure.Persistence.Models.Roles>;
+    var usuarioId = Context.Session.GetInt32("UsuarioId");
+    var rolUser = Context.Session.GetInt32("RolUser");
+    //var activarCambio = Context.Session.GetInt32("ActivarCambio");
 }
 
 @section Styles {
     <link rel="stylesheet" href="~/css/main_page.css">
     <link rel="stylesheet" href="~/css/Usuarios/Administracion.css">
 }
+
+<input type="hidden" id="rolUser" value="@rolUser" />
+<input type="hidden" id="usuarioId" value="@usuarioId" />
 
 <div>
     <div class="mb-2">
