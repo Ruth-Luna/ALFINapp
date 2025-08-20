@@ -1,11 +1,8 @@
 namespace ALFINapp.DTOs
 {
-    public class DtoVUploadFiles
+    public class DtoVDerivacionEvidencia
     {
-        public string? fileName { get; set; }
-        public string? fileType { get; set; }
-        public string? fileContent { get; set; } // Base64 encoded content or varbinary string for bd
-        public int idDerivacion { get; set; } = 0; // Optional, used for derivations
-        public int type { get; set; } = 0; // 0: Derivacion, 1: Evidencia
+        public int idDerivacion { get; set; } = 0;
+        public List<String> urlEvidencias { get; set; } = new List<string>();
     }
 }

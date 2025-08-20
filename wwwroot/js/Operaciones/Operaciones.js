@@ -1,4 +1,4 @@
-﻿// Variable global para la API de la grilla.
+// Variable global para la API de la grilla.
 let gridApi;
 
 
@@ -185,43 +185,43 @@ const derivacionesGridOptions = {
     }
 };
 
-async function getAllDerivaciones() {
-    const url = window.location.origin;
-    const final_url = url + '/Operaciones/GetAllDerivaciones';
+// async function getAllDerivaciones() {
+//     const url = window.location.origin;
+//     const final_url = url + '/Operaciones/GetAllDerivaciones';
 
-    try {
-        const response = await fetch(final_url, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        if (!response.ok) {
-            throw new Error(data.message || 'Error al obtener las derivaciones');
-        }
-        const data = await response.json();
-        console.log('Derivaciones obtenidas:', data);
-        if (data.success === true) {
-            return data.data || [];
-        } else {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Atención',
-                text: data.message || 'No se encontraron derivaciones.'
-            });
-            return [];
-        }
-    } catch (error) {
-        console.error('Error al obtener las derivaciones:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'No se pudieron cargar las derivaciones. Por favor, inténtelo de nuevo más tarde.'
-        });
-        return;
-    }
+//     try {
+//         const response = await fetch(final_url, {
+//             method: 'GET',
+//             headers: {
+//                 'Content-Type': 'application/json'
+//             }
+//         });
+//         if (!response.ok) {
+//             throw new Error(data.message || 'Error al obtener las derivaciones');
+//         }
+//         const data = await response.json();
+//         console.log('Derivaciones obtenidas:', data);
+//         if (data.success === true) {
+//             return data.data || [];
+//         } else {
+//             Swal.fire({
+//                 icon: 'warning',
+//                 title: 'Atención',
+//                 text: data.message || 'No se encontraron derivaciones.'
+//             });
+//             return [];
+//         }
+//     } catch (error) {
+//         console.error('Error al obtener las derivaciones:', error);
+//         Swal.fire({
+//             icon: 'error',
+//             title: 'Error',
+//             text: 'No se pudieron cargar las derivaciones. Por favor, inténtelo de nuevo más tarde.'
+//         });
+//         return;
+//     }
 
-}
+// }
 
 // Se ejecuta cuando el DOM está completamente cargado.
 document.addEventListener('DOMContentLoaded', async () => {
@@ -232,42 +232,42 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (App && App.reagendamientos) {
         App.reagendamientos.init();
     }
-    const gridDiv = document.querySelector('#gridDerivaciones');
-    var resultDerivaciones = await getAllDerivaciones();
-    console.log('resultDerivaciones:', resultDerivaciones);
+    // const gridDiv = document.querySelector('#gridDerivaciones');
+    // var resultDerivaciones = await getAllDerivaciones();
+    // console.log('resultDerivaciones:', resultDerivaciones);
     
-    listaDerivaciones = resultDerivaciones.derivaciones || [];
-    console.log('listaDerivaciones:', listaDerivaciones);
-    derivacionesGridOptions.rowData = listaDerivaciones;
+    // listaDerivaciones = resultDerivaciones.derivaciones || [];
+    // console.log('listaDerivaciones:', listaDerivaciones);
+    // derivacionesGridOptions.rowData = listaDerivaciones;
 
-    agGrid.createGrid(gridDiv, derivacionesGridOptions);
+    // agGrid.createGrid(gridDiv, derivacionesGridOptions);
 
-    function onFilterChanged() {
-        externalFilterState.dniCliente = document.getElementById('dniClienteDerivaciones').value;
-        externalFilterState.agencia = document.getElementById('agenciaDerivaciones').value;
-        externalFilterState.asesor = document.getElementById('asesorDerivaciones').value;
-        externalFilterState.supervisor = document.getElementById('supervisorDerivaciones').value;
-        externalFilterState.fechaVisita = document.getElementById('fechaVisitaDerivacion').value;
-        if (gridApi) {
-            gridApi.onFilterChanged();
-        }
-    }
+    // function onFilterChanged() {
+    //     externalFilterState.dniCliente = document.getElementById('dniClienteDerivaciones').value;
+    //     externalFilterState.agencia = document.getElementById('agenciaDerivaciones').value;
+    //     externalFilterState.asesor = document.getElementById('asesorDerivaciones').value;
+    //     externalFilterState.supervisor = document.getElementById('supervisorDerivaciones').value;
+    //     externalFilterState.fechaVisita = document.getElementById('fechaVisitaDerivacion').value;
+    //     if (gridApi) {
+    //         gridApi.onFilterChanged();
+    //     }
+    // }
 
-    const agenciaSelect = document.getElementById('agenciaDerivaciones');
-    const asesorSelect = document.getElementById('asesorDerivaciones');
-    const supervisorSelect = document.getElementById('supervisorDerivaciones');
+    // const agenciaSelect = document.getElementById('agenciaDerivaciones');
+    // const asesorSelect = document.getElementById('asesorDerivaciones');
+    // const supervisorSelect = document.getElementById('supervisorDerivaciones');
 
-    const uniqueAgencies = [...new Set(listaDerivaciones.map(item => item.nombreAgencia))];
-    const uniqueAdvisors = [...new Set(listaDerivaciones.map(item => item.dniAsesor))];
-    const uniqueSupervisors = [...new Set(listaDerivaciones.map(item => item.docSupervisor))];
+    // const uniqueAgencies = [...new Set(listaDerivaciones.map(item => item.nombreAgencia))];
+    // const uniqueAdvisors = [...new Set(listaDerivaciones.map(item => item.dniAsesor))];
+    // const uniqueSupervisors = [...new Set(listaDerivaciones.map(item => item.docSupervisor))];
 
-    uniqueAgencies.forEach(agencia => agenciaSelect.appendChild(new Option(agencia, agencia)));
-    uniqueAdvisors.forEach(asesor => asesorSelect.appendChild(new Option(asesor, asesor)));
-    uniqueSupervisors.forEach(supervisor => supervisorSelect.appendChild(new Option(supervisor, supervisor)));
+    // uniqueAgencies.forEach(agencia => agenciaSelect.appendChild(new Option(agencia, agencia)));
+    // uniqueAdvisors.forEach(asesor => asesorSelect.appendChild(new Option(asesor, asesor)));
+    // uniqueSupervisors.forEach(supervisor => supervisorSelect.appendChild(new Option(supervisor, supervisor)));
 
-    document.getElementById('dniClienteDerivaciones').addEventListener('input', onFilterChanged);
-    agenciaSelect.addEventListener('change', onFilterChanged);
-    asesorSelect.addEventListener('change', onFilterChanged);
-    supervisorSelect.addEventListener('change', onFilterChanged);
-    document.getElementById('fechaVisitaDerivacion').addEventListener('change', onFilterChanged);
+    // document.getElementById('dniClienteDerivaciones').addEventListener('input', onFilterChanged);
+    // agenciaSelect.addEventListener('change', onFilterChanged);
+    // asesorSelect.addEventListener('change', onFilterChanged);
+    // supervisorSelect.addEventListener('change', onFilterChanged);
+    // document.getElementById('fechaVisitaDerivacion').addEventListener('change', onFilterChanged);
 });

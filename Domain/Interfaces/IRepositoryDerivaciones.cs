@@ -19,7 +19,6 @@ namespace ALFINapp.Domain.Interfaces
         public Task<DetallesDerivacionesAsesoresDTO?> getDerivacion(int idDer);
         public Task<(bool success, string message)> uploadReagendacion(int idDer, DateTime fechaReagendamiento, string urls);
         public Task<(bool success, string message)> uploadReagendacion(string dniCliente, DateTime fechaReagendamiento, string urls);
-        public Task<(bool success, string message)> uploadReagendacionConEvidencias(List<DtoVUploadFiles> dtovuploadfiles, int idDerivacion, DateTime fechaReagendamiento);
-        public Task<(bool success, string message)> marcarEvidenciaDisponible(int idDerivacion);
+        public Task<(bool success, string message)> marcarEvidenciaDisponible(int idDerivacion, List<String> urls);
     }
 }

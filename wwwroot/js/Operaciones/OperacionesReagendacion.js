@@ -73,7 +73,7 @@ function cargarReagendacion(data) {
 //     }
 // }
 
-async function reagendarCliente(nuevaFechaVisita, idDerivacion, dniCliente) {
+async function enviarReagendacion(nuevaFechaVisita, idDerivacion) {
     Swal.fire({
         title: 'Reagendar cita',
         text: 'Reagendar la cita del cliente. Esto volverá a enviar el formulario y los correos al banco.',
