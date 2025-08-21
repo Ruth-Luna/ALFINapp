@@ -10,12 +10,15 @@ namespace ALFINapp.Controllers
     {
         private readonly DAO_Derivaciones _dao_derivaciones;
         private readonly IUseCaseReagendar _useCaseReagendar;
+        private readonly DAO_Reagendamientos _dao_reagendamientos;
         public OperacionesController(
             DAO_Derivaciones dao_derivaciones,
-            IUseCaseReagendar useCaseReagendar)
+            IUseCaseReagendar useCaseReagendar,
+            DAO_Reagendamientos dao_reagendamientos)
         {
             _dao_derivaciones = dao_derivaciones;
             _useCaseReagendar = useCaseReagendar;
+            _dao_reagendamientos = dao_reagendamientos;
         }
         public IActionResult Operaciones()
         {
@@ -46,6 +49,34 @@ namespace ALFINapp.Controllers
                 // If no derivations are found, return an empty list this is to avoid null reference exceptions
                 // the dao method should handle this case
                 return Json(new { success = true, message = "No se encontraron derivaciones.", data = result.data });
+            }
+            return Json(new { success = true, message = result.message, data = result.data });
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllReagendamientos()
+        {
+            var idUsuario = HttpContext.Session.GetInt32("UsuarioId");
+            if (idUsuario == null)
+            {
+                return Json(new { success = false, message = "No se ha iniciado sesión." });
+            }
+            var idRol = HttpContext.Session.GetInt32("RolUser");
+            if (idRol == null)
+            {
+                return Json(new { success = false, message = "No se ha iniciado sesión." });
+            }
+            var usuarioId = idUsuario.Value;
+            var rolUsuario = idRol.Value;
+            var result = await _dao_reagendamientos.GetAllReagendamientos(usuarioId, rolUsuario);
+            if (!result.issuccess)
+            {
+                return Json(new { success = false, message = result.message });
+            }
+            if (result.data == null || !result.data.Any())
+            {
+                // If no reschedulings are found, return an empty list this is to avoid null reference exceptions
+                // the dao method should handle this case
+                return Json(new { success = true, message = "No se encontraron reagendamientos.", data = new List<ViewReagendamientos>() });
             }
             return Json(new { success = true, message = result.message, data = result.data });
         }

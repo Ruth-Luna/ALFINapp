@@ -421,11 +421,11 @@ namespace ALFINapp.API.Controllers
             if (!getUseCase.success)
             {
                 TempData["MessageError"] = getUseCase.message;
-                return RedirectToAction("Redireccionar", "Error");
+                return RedirectToAction("Gestion", "Leads");
             }
 
             TempData["Message"] = "Las tipificaciones se han guardado correctamente (Se han Obviado los campos Vacios y los campos que fueron llenados con datos incorrectos).";
-            return RedirectToAction("Redireccionar", "Error");
+            return RedirectToAction("Gestion", "Leads");
         }
     }
 }
