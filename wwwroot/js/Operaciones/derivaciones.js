@@ -14,7 +14,7 @@ App.derivaciones = (() => {
         { estadoDerivacion: 'En Proceso', dniCliente: '66554433', nombreCliente: 'Luisa Castro', telefono: '944444444', dniAsesor: '33445566', oferta: 'Crédito Vehicular', agencia: 'Agencia Norte', fechaVisita: '2024-08-17', estadoEvidencia: 'Enviado', fechaEvidencia: '2024-08-17', acciones: '' }
     ];
 
-    const derivacionesTableColumns = [
+    let derivacionesTableColumns = [
         { headerName: "Estado derivación", field: "estadoDerivacion" },
         { headerName: "DNI cliente", field: "dniCliente" },
         { headerName: "Nombre del cliente", field: "nombreCliente" },
@@ -131,7 +131,7 @@ App.derivaciones = (() => {
         { headerName: "DNI Supervisor", field: "docSupervisor", hide: true },
     ];
 
-    const externalFilterState = { dniCliente: '', agencia: 'Todos',supervisor: 'Todos', asesor: 'Todos', fechaVisita: '' };
+    const externalFilterState = { dniCliente: '', agencia: 'Todos', supervisor: 'Todos', asesor: 'Todos', fechaVisita: '' };
 
     // --- FUNCIONES PRIVADAS DEL MÓDULO ---
 
@@ -261,19 +261,63 @@ App.derivaciones = (() => {
         document.getElementById('supervisorDerivaciones').addEventListener('change', onFilterChanged);
     }
 
+    async function createTable(rol) {
+        if (rol === 1 || rol === 4) {
+            // Rol 1 o 4 -> no se elimina nada
+            return;
+        } else if (rol === 2) {
+            // Rol 2 -> eliminar solo la columna de docSupervisor
+            for (let i = derivacionesTableColumns.length - 1; i >= 0; i--) {
+                if (derivacionesTableColumns[i].field === 'docSupervisor') {
+                    derivacionesTableColumns.splice(i, 1); // borra esa entrada
+                }
+            }
+        } else if (rol === 3) {
+            // Rol 3 -> eliminar dniAsesor y docSupervisor
+            for (let i = derivacionesTableColumns.length - 1; i >= 0; i--) {
+                if (derivacionesTableColumns[i].field === 'dniAsesor' || derivacionesTableColumns[i].field === 'docSupervisor') {
+                    derivacionesTableColumns.splice(i, 1);
+                }
+            }
+        }
+    }
+
+
     // Función que pobla los selects de los filtros.
     function populateFilters(rol) {
-        const agenciaSelect = document.getElementById('agenciaDerivaciones');
-        const asesorSelect = document.getElementById('asesorDerivaciones');
-        const supervisorSelect = document.getElementById('supervisorDerivaciones');
+        if (rol === 1 || rol === 4) {
+            const agenciaSelect = document.getElementById('agenciaDerivaciones');
+            const asesorSelect = document.getElementById('asesorDerivaciones');
+            const supervisorSelect = document.getElementById('supervisorDerivaciones');
 
-        const uniqueAgencies = [...new Set(listaDerivaciones.map(item => item.nombreAgencia))];
-        const uniqueAdvisors = [...new Set(listaDerivaciones.map(item => item.dniAsesor))];
-        const uniqueSupervisors = [...new Set(listaDerivaciones.map(item => item.docSupervisor))];
+            const uniqueAgencies = [...new Set(listaDerivaciones.map(item => item.nombreAgencia))];
+            const uniqueAdvisors = [...new Set(listaDerivaciones.map(item => item.dniAsesor))];
+            const uniqueSupervisors = [...new Set(listaDerivaciones.map(item => item.docSupervisor))];
 
-        uniqueAgencies.forEach(agencia => agenciaSelect.appendChild(new Option(agencia, agencia)));
-        uniqueAdvisors.forEach(asesor => asesorSelect.appendChild(new Option(asesor, asesor)));
-        uniqueSupervisors.forEach(supervisor => supervisorSelect.appendChild(new Option(supervisor, supervisor)));
+            uniqueAgencies.forEach(agencia => agenciaSelect.appendChild(new Option(agencia, agencia)));
+            uniqueAdvisors.forEach(asesor => asesorSelect.appendChild(new Option(asesor, asesor)));
+            uniqueSupervisors.forEach(supervisor => supervisorSelect.appendChild(new Option(supervisor, supervisor)));
+        } if (rol === 2) {
+            const agenciaSelect = document.getElementById('agenciaDerivaciones');
+            const asesorSelect = document.getElementById('asesorDerivaciones');
+
+            const uniqueAgencies = [...new Set(listaDerivaciones.map(item => item.nombreAgencia))];
+            const uniqueAdvisors = [...new Set(listaDerivaciones.map(item => item.dniAsesor))];
+
+            uniqueAgencies.forEach(agencia => agenciaSelect.appendChild(new Option(agencia, agencia)));
+            uniqueAdvisors.forEach(asesor => asesorSelect.appendChild(new Option(asesor, asesor)));
+            // Luego ocultamos el select de supervisores.
+            document.getElementById('supervisorDerivacionesCol').classList.add('d-none');
+        } else if (rol === 3) {
+            const agenciaSelect = document.getElementById('agenciaDerivaciones');
+            const uniqueAgencies = [...new Set(listaDerivaciones.map(item => item.nombreAgencia))];
+            uniqueAgencies.forEach(agencia => agenciaSelect.appendChild(new Option(agencia, agencia)));
+            // Luego ocultamos los selects de asesores y supervisores.
+            document.getElementById('asesorDerivacionesCol').classList.add('d-none');
+            document.getElementById('supervisorDerivacionesCol').classList.add('d-none');
+        } else {
+            console.warn('Rol no reconocido. No se poblarán los filtros.');
+        }
     }
 
     // --- INTERFAZ PÚBLICA DEL MÓDULO ---
@@ -283,11 +327,13 @@ App.derivaciones = (() => {
             const gridDiv = document.querySelector('#gridDerivaciones');
             if (gridDiv) {
                 data = await getAllDerivaciones();
-                usuariorol = data.rolUsuario || {};
+                console.log('Datos obtenidos:', data);
+                usuariorol = data.rolUsuario || 0;
                 listaDerivaciones = data.derivaciones || [];
+                await createTable(usuariorol);
                 derivacionesGridOptions.rowData = listaDerivaciones;
                 agGrid.createGrid(gridDiv, derivacionesGridOptions);
-                populateFilters(rol);
+                populateFilters(usuariorol);
                 setupEventListeners();
             }
         }
