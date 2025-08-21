@@ -128,6 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 $('#btnAgregarUsuario').on('click', function () {
     LimpiarFormularioUsuario();
+    $('#titlemodalARGerente').text('REGISTRAR USUARIO');
     $('#modalARGerente').modal('show');
     $('.solo-update-input').hide();
     $('#sltEstado_AR').val('ACTIVO');

@@ -1,169 +1,217 @@
 @section Styles {
     <link rel="stylesheet" href="~/css/main_page.css">
+    <link rel="stylesheet" href="~/css/Usuarios/Administracion.css">
 }
 
-@{
-    var RolUsuarioActual = ViewData["RolActual"] as int?;
-    if (RolUsuarioActual == null)
-    {
-        RolUsuarioActual = 0; // or any default value you prefer
-    }
-}
+<div>
+    <div class="mb-2">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="mb-0">Usuarios</h3>
+        </div>
+        <div class="w-100">
+            <div class="bg-white rounded shadow-sm px-4 py-3 mb-3 w-100">
+                <div class="row g-4 align-items-end">
 
-<div class="container mt-4 mb-4">
-    <div id="interfazAgregarAsesor" class="row mb-4">
-        <div class="container">
-            <div class="row mb-4">
-                <div class="col">
-                    <h3 class="d-inline-block"> Agregar Asesor de Creditos: </h3>
+                    <div class="col-12 col-md-3">
+                        <label for="filtroDni" class="form-label fw-semibold">DNI</label>
+                        <input type="text" id="filtroDni" class="form-control form-control-sm" placeholder="Ingrese DNI">
+                    </div>
+
+                    <div class="col-12 col-md-3">
+                        <label for="filtroUsuario" class="form-label fw-semibold">Usuario</label>
+                        <input type="text" id="filtroUsuario" class="form-control form-control-sm" placeholder="Ingrese nombre">
+                    </div>
+
+                    <div class="col-12 col-md-2">
+                        <label for="txtFiltrarRol" class="form-label fw-semibold">Rol</label>
+                        <select id="txtFiltrarRol" class="form-select form-select-sm">
+                            <option value="" selected disaled>--Seleccione--</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-2 d-flex gap-2">
+                        <div class="flex-grow-1">
+                            <label for="txtFiltrarEstado" class="form-label fw-semibold">Estado</label>
+                            <select id="txtFiltrarEstado" class="form-select form-select-sm">
+                                <option value="" selected disaled>--Seleccione--</option>
+                                <option value="ACTIVO">ACTIVO</option>
+                                <option value="INACTIVO">INACTIVO</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 d-flex flex-column justify-content-end">
+                        <button id="btnAgregarUsuario" class="btn btn-sm btn-outline-success w-100" title="Agregar Usuario">
+                            <i class="bi bi-person-plus-fill me-2 fs-5"></i>Agregar Usuario
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="row mb-4">
-                <div class="alert alert-info">
-                    Llene todos los campos para poder agregar un nuevo usuario.
-                </div>
-                <div class="col-md-6">
+        </div>
+    </div>
+    <div class="table-wrapper" style="overflow-x: auto; width: 100%;">
+        <div id="clientesGrid" class="ag-theme-alpine" style="height: 600px; min-width: 1500px;"></div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalARGerente" tabindex="-1" aria-labelledby="modalARGerente" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="titlemodalARGerente">REGISTRAR USUARIO</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
                     <div class="row">
-                        <div class="col">
-                            <div class="mb-2">
-                                <label for="tipo_documento" class="form-label">Tipo de Documento</label>
-                                <select class="form-control" id="tipo_documento" name="tipo_documento"
-                                    onchange="cambiarTipoDoc(this.value)" required>
-                                    <option value="">Seleccione un tipo de documento</option>
-                                    <option value="DNI">DNI</option>
-                                    <option value="CE">CARNET DE EXTRANJERIA</option>
+                        <label class="form-label fw-bold solo-update-input">DATOS DE SESIÓN</label>
+
+                        <div class="mb-3 col-md-6 solo-update-input">
+                            <label for="txtUser_AR" class="form-label">Usuario</label>
+                            <input type="text" class="form-control" id="txtUser_AR" />
+                        </div>
+                        <div class="mb-3 col-md-6 solo-update-input">
+                            <label for="txtPassword_AR" class="form-label">Contraseña</label>
+                            <div class="position-relative">
+                                <input type="password" class="form-control no-uppercase pe-5" id="txtPassword_AR" />
+                                <i class="fa fa-eye position-absolute top-50 end-0 translate-middle-y me-3"
+                                   id="togglePassword" style="cursor: pointer;"></i>
+                            </div>
+                        </div>
+
+                        <label class="form-label fw-bold">DATOS PERSONALES</label>
+                        <div class="mb-3 col-md-4">
+                            <label for="txtNombres_AR" class="form-label">Nombres</label>
+                            <input type="text" class="form-control" id="txtNombres_AR" />
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label for="txtApellidosP_AR" class="form-label">Apellido Paterno</label>
+                            <input type="text" class="form-control" id="txtApellidosP_AR" />
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label for="txtApellidosM_AR" class="form-label">Apellido Materno</label>
+                            <input type="text" class="form-control" id="txtApellidosM_AR" />
+                        </div>
+
+                        <div class="mb-3 col-md-3">
+                            <div class="mb-3">
+                                <label for="selectTDocumento_AR" class="form-label">Tipo Documento</label>
+                                <select class="form-select" id="selectTDocumento_AR">
+                                    <option value="" selected disabled>-- Seleccionar --</option>
+                                    <option value="1">DNI</option>
+                                    <option value="2">CARNET EXTRANJERÍA</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="col" id="documento-container" style="display: none;">
-                            <div class="mb-2">
-                                <label for="Nuevo_dni" class="form-label" id="label-documento">DNI</label>
-                                <input type="text" class="form-control" id="Nuevo_dni" name="Nuevo_dni" required
-                                    oninput="validarDNISupervisor('Nuevo_dni')">
-                                <div class="invalid-feedback" id="Nuevo_dni-error">
-                                    El Documento debe de tener el formato de DNI (8 Digitos numericos).
-                                </div>
-                            </div>
+
+                        <div class="mb-3 col-md-3">
+                            <label for="txtDNI_AR" class="form-label">Documento</label>
+                            <input type="text" class="form-control" id="txtDNI_AR" />
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="departamento" class="form-label">Departamento</label>
-                        <select class="form-control" id="departamento" name="departamento" required>
-                            <option value="">Seleccione un departamento</option>
-                            <option value="Amazonas">Amazonas</option>
-                            <option value="Áncash">Áncash</option>
-                            <option value="Apurímac">Apurímac</option>
-                            <option value="Arequipa">Arequipa</option>
-                            <option value="Ayacucho">Ayacucho</option>
-                            <option value="Cajamarca">Cajamarca</option>
-                            <option value="Callao">Callao</option>
-                            <option value="Cusco">Cusco</option>
-                            <option value="Huancavelica">Huancavelica</option>
-                            <option value="Huánuco">Huánuco</option>
-                            <option value="Ica">Ica</option>
-                            <option value="Junín">Junín</option>
-                            <option value="La Libertad">La Libertad</option>
-                            <option value="Lambayeque">Lambayeque</option>
-                            <option value="Lima">Lima</option>
-                            <option value="Loreto">Loreto</option>
-                            <option value="Madre de Dios">Madre de Dios</option>
-                            <option value="Moquegua">Moquegua</option>
-                            <option value="Pasco">Pasco</option>
-                            <option value="Piura">Piura</option>
-                            <option value="Puno">Puno</option>
-                            <option value="San Martín">San Martín</option>
-                            <option value="Tacna">Tacna</option>
-                            <option value="Tumbes">Tumbes</option>
-                            <option value="Ucayali">Ucayali</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="provincia" class="form-label">Provincia</label>
-                        <input type="text" class="form-control" id="provincia" name="provincia" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="distrito" class="form-label">Distrito</label>
-                        <input type="text" class="form-control" id="distrito" name="distrito" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="region" class="form-label">Region</label>
-                        <input type="text" class="form-control" id="region" name="region" required
-                            oninput="validarLetras('region')">
-                        <div class="invalid-feedback" id="region-error">
-                            El campo Region solo puede tener letras.
+
+                        <div class="mb-3 col-md-6">
+                            <label for="txtCorreo_AR" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="txtCorreo_AR" />
                         </div>
-                    </div>
-                    @if (RolUsuarioActual == 4 || RolUsuarioActual == 1)
-                    {
-                        <div class="mb-3">
-                            <label for="rol" class="form-label">Rol</label>
-                            <select class="form-control" id="rol" name="rol" required>
-                                <option value="2">SUPERVISOR</option>
-                                <option value="3">ASESOR DE CREDITOS</option>
+                        <label class="form-label fw-bold">DATOS DE UBICACION</label>
+                        <div class="mb-3 col-md-4">
+                            <label for="txtRegion_AR" class="form-label">Región</label>
+                            <input type="text" class="form-control" id="txtRegion_AR" />
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label for="txtCampania_AR" class="form-label">Campaña</label>
+                            <input type="text" class="form-control" id="txtCampania_AR" />
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label for="txtDepartamento_AR" class="form-label">Departamento</label>
+                            <input type="text" class="form-control" id="txtDepartamento_AR" />
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label for="txtProvincia_AR" class="form-label">Provincia</label>
+                            <input type="text" class="form-control" id="txtProvincia_AR" />
+                        </div>
+                        <!--
+                        <div class="mb-3 col-md-4">
+                            <label for="txtProvincia_AR" class="form-label">Campaña</label>
+                            <input type="text" class="form-control" id="txtProvincia_AR" />
+                        </div>
+                        -->
+                        <div class="mb-3 col-md-4">
+                            <label for="txtDistrito_AR" class="form-label">Distrito</label>
+                            <input type="text" class="form-control" id="txtDistrito_AR" />
+                        </div>
+
+
+                        <label class="form-label fw-bold">DATOS ADICIONALES</label>
+                        <div class="mb-3 col-md-3">
+                            <label for="txtRol_AR" class="form-label">Rol</label>
+                            <select class="form-select" id="txtRol_AR">
+                                <option value="" selected disabled>-- Seleccionar --</option>
                             </select>
                         </div>
-                    }
-                    else
-                    {
-                        <div class="mb-3">
-                            <label for="rol" class="form-label">Rol</label>
-                            <input type="text" class="form-control" id="rol" name="rol" required readonly
-                                value="ASESOR DE CREDITOS">
+                        <div class="mb-3 col-md-3">
+                            <label for="txtTelefono_AR" class="form-label">Telefono</label>
+                            <input type="text" class="form-control" id="txtTelefono_AR" />
                         </div>
-                    }
-                </div>
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label for="apellido_paterno" class="form-label">Apellido Paterno</label>
-                        <input type="text" class="form-control" id="apellido_paterno" name="apellido_paterno" required
-                            oninput="validarLetras('apellido_paterno')">
-                        <div class="invalid-feedback" id="apellido_paterno-error">
-                            El campo Apellido Paterno solo puede tener letras.
+                        <div class="mb-3 col-md-3">
+                            <label for="sltEstado_AR" class="form-label">Estado</label>
+                            <select class="form-select" id="sltEstado_AR">
+                                <option value="ACTIVO" selected>ACTIVO</option>
+                                <option value="INACTIVO">INACTIVO</option>
+                            </select>
                         </div>
+
+
+
+                        <div class="mb-3 col-md-3">
+                            <label for="txtSupervisor_AR" class="form-label">Supervisor</label>
+                            <select class="form-select" id="txtSupervisor_AR">
+                            </select>
+                        </div>
+
                     </div>
-                    <div class="mb-3">
-                        <label for="apellido_materno" class="form-label">Apellido Materno</label>
-                        <input type="text" class="form-control" id="apellido_materno" name="apellido_materno" required
-                            oninput="validarLetras('apellido_materno')">
-                        <div class="invalid-feedback" id="apellido_materno-error">
-                            El campo Apellido Materno solo puede tener letras.
-                        </div>
+
+                    <div class="text-end mt-3">
+                        <button type="button" class="btn btn-primary" id="btnGuardarCambios" data-id="">Guardar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     </div>
-                    <div class="mb-3">
-                        <label for="nombres" class="form-label">Nombres Completos</label>
-                        <input type="text" class="form-control" id="nombres" name="nombres" required
-                            oninput="validarLetras('nombres')">
-                        <div class="invalid-feedback" id="nombres-error">
-                            El campo Nombres Completos solo puede tener letras.
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="telefono" class="form-label">Telefono</label>
-                        <input type="text" class="form-control" id="telefono" name="telefono" required
-                            oninput="validarTelefono()">
-                        <div class="invalid-feedback" id="telefono-error">
-                            El telefono solo puede tener números.
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="correo" class="form-label">Correo</label>
-                        <input type="text" class="form-control" id="correo" name="correo" required
-                            oninput="validarEmail('correo')">
-                        <div class="invalid-feedback" id="correo-error">
-                            El formato del correo no es valido.
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <a href="javascript:void(0)" class="btn btn-success" onclick="guardarNuevoAsesor()">Agregar</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+
 @section Scripts {
-    <script src="~/js/Asesores/Usuarios.js?v=@DateTime.Now.Ticks"></script>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const passwordInput = document.getElementById("txtPassword_AR");
+            const toggleIcon = document.getElementById("togglePassword");
+
+            toggleIcon.addEventListener("click", function () {
+                const type = passwordInput.type === "password" ? "text" : "password";
+                passwordInput.type = type;
+                this.classList.toggle("fa-eye");
+                this.classList.toggle("fa-eye-slash");
+            });
+        });
+
+        $('#modalARGerente').on('show.bs.modal', function () {
+            const passwordInput = document.getElementById("txtPassword_AR");
+            const toggleIcon = document.getElementById("togglePassword");
+
+            passwordInput.type = "password";
+
+            toggleIcon.classList.remove("fa-eye");
+            toggleIcon.classList.add("fa-eye-slash");
+        });
+    </script>
+
+
+    <script src="~/js/tablefunctions.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/js/Utils/localeEs.js"></script>
+    <script src="~/js/Usuarios/Administracion.js?v=@DateTime.Now.Ticks"></script>
+
 }

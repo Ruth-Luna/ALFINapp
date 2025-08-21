@@ -8,7 +8,7 @@ namespace ALFINapp.Datos
 {
     public class DA_Login
     {
-        public (bool Resultado, Usuario usuario) ValidarUsuario(string usuario, string password)
+        public (int Resultado, Usuario usuario) ValidarUsuario(string usuario, string password)
         {
             try
             {
@@ -28,16 +28,15 @@ namespace ALFINapp.Datos
                             if (dr.Read())
                             {
                                 int resultado = Convert.ToInt32(dr["Resultado"]);
-
                                 if (resultado == -1)
                                 {
                                     Console.WriteLine("El usuario está inactivo.");
-                                    return (false, new Usuario());
+                                    return (-1, new Usuario());
                                 }
 
                                 if (resultado == 1)
                                 {
-                                    return (true, new Usuario
+                                    return (1, new Usuario
                                     {
                                         IdUsuario = Convert.ToInt32(dr["id_usuario"]),
                                         usuario = dr["usuario"].ToString() ?? string.Empty,
@@ -45,12 +44,13 @@ namespace ALFINapp.Datos
                                         Nombres = dr["nombres"].ToString(),
                                         Apellido_Paterno = dr["apellido_paterno"].ToString(),
                                         Apellido_Materno = dr["apellido_materno"].ToString(),
-
                                         Estado = dr["estado"].ToString(),
-                                        IdRol = Convert.ToInt32(dr["id_rol"]),
+                                        IdRol = Convert.ToInt32(dr["id_rol"])
                                     });
                                 }
-                                return (false, new Usuario());
+
+                                // Caso login incorrecto
+                                return (0, new Usuario());
                             }
                         }
                     }
@@ -59,9 +59,10 @@ namespace ALFINapp.Datos
             catch (Exception ex)
             {
                 Console.WriteLine("Error al validar usuario: " + ex.Message);
+                return (0, new Usuario());
             }
 
-            return (false, new Usuario());
+            return (0, new Usuario()); 
         }
 
         public ViewUsuario ValidarCorreo_Usuario(string usuario, string correo)

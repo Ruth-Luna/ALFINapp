@@ -40,14 +40,24 @@ public class HomeController : Controller
     }
 
     [HttpPost]
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     public async Task<IActionResult> Login(string usuario, string password)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     {
         usuario = usuario.ToUpper().Trim();
         var verusuario = _daLogin.ValidarUsuario(usuario, password);
 
-        if (verusuario.Resultado == false || verusuario.usuario == null)
+        if (string.IsNullOrWhiteSpace(usuario) || string.IsNullOrWhiteSpace(password))
+        {
+            TempData["message"] = "Debe ingresar usuario y contraseña.";
+            return RedirectToAction("Index", "Home");
+        }
+
+        if (verusuario.Resultado == -1)
+        {
+            TempData["message"] = "El usuario se encuentra inactivo. Por favor contacte con el administrador.";
+            return RedirectToAction("Index", "Home");
+        }
+
+        if (verusuario.Resultado == 0 || verusuario.usuario == null)
         {
             TempData["message"] = "Credenciales incorrectas";
             return RedirectToAction("Index", "Home");
@@ -55,11 +65,7 @@ public class HomeController : Controller
 
         var usuarioValido = verusuario.usuario;
 
-        if (usuarioValido.Estado?.ToUpper() == "INACTIVO")
-        {
-            TempData["message"] = "El usuario se encuentra inactivo. Por favor contacte con el administrador.";
-            return RedirectToAction("Index", "Home");
-        }
+
 
         HttpContext.Session.SetInt32("UsuarioId", usuarioValido.IdUsuario);
         HttpContext.Session.SetInt32("RolUser", usuarioValido.IdRol != null ? usuarioValido.IdRol.Value : throw new Exception("El rol del usuario no está definido. Comuníquese con su Supervisor."));
