@@ -262,7 +262,7 @@ App.derivaciones = (() => {
     }
 
     // Función que pobla los selects de los filtros.
-    function populateFilters() {
+    function populateFilters(rol) {
         const agenciaSelect = document.getElementById('agenciaDerivaciones');
         const asesorSelect = document.getElementById('asesorDerivaciones');
         const supervisorSelect = document.getElementById('supervisorDerivaciones');
@@ -283,11 +283,11 @@ App.derivaciones = (() => {
             const gridDiv = document.querySelector('#gridDerivaciones');
             if (gridDiv) {
                 data = await getAllDerivaciones();
+                usuariorol = data.rolUsuario || {};
                 listaDerivaciones = data.derivaciones || [];
-                console.log('Lista de derivaciones:', listaDerivaciones);
                 derivacionesGridOptions.rowData = listaDerivaciones;
                 agGrid.createGrid(gridDiv, derivacionesGridOptions);
-                populateFilters();
+                populateFilters(rol);
                 setupEventListeners();
             }
         }

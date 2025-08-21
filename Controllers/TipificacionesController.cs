@@ -84,28 +84,28 @@ namespace ALFINapp.API.Controllers
             if (!getUseCase.success)
             {
                 TempData["MessageError"] = getUseCase.message;
-                return RedirectToAction("Redireccionar", "Error");
+                return RedirectToAction("Gestion", "Leads");
             }
             TempData["Message"] = getUseCase.message;
-            return RedirectToAction("Redireccionar", "Error");
+            return RedirectToAction("Gestion", "Leads");
         }
-        [HttpGet]
-        public async Task<IActionResult> ViewGeneralTipificacion(int id_base, string traido_de = "A365")
-        {
-            try
-            {
-                var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-                if (usuarioId == null)
-                {
-                    return Json(new { success = false, message = "No ha iniciado sesion, por favor inicie sesion." });
-                }
-                return Json(new { success = true, data = "En progreso..." });
-            }
-            catch (System.Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
-        }
+        // [HttpGet]
+        // public async Task<IActionResult> ViewGeneralTipificacion(int id_base, string traido_de = "A365")
+        // {
+        //     try
+        //     {
+        //         var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+        //         if (usuarioId == null)
+        //         {
+        //             return Json(new { success = false, message = "No ha iniciado sesion, por favor inicie sesion." });
+        //         }
+        //         return Json(new { success = true, data = "En progreso..." });
+        //     }
+        //     catch (System.Exception ex)
+        //     {
+        //         return Json(new { success = false, message = ex.Message });
+        //     }
+        // }
 
         [HttpGet]
         public async Task<IActionResult> TipificarClienteView(int id_base)

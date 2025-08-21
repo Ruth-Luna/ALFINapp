@@ -310,8 +310,12 @@
                             <div class="row">
                                 <div class="col">
                                     <label for="fechaVisita_@contadorNumeros" class="form-label">Fecha de Visita: </label>
-                                    <input class="form-control" type="date" name="tipificaciones[@contadorNumeros].FechaVisita"
-                                        id="fechaVisita_@contadorNumeros" />
+                                    <input 
+                                        class="form-control" 
+                                        type="date" 
+                                        name="tipificaciones[@contadorNumeros].FechaVisita"
+                                        id="fechaVisita_@contadorNumeros" 
+                                        value="@DateTime.Today.ToString("yyyy-MM-dd")"/>
                                 </div>
                                 <div class="col">
                                     <label for="agenciasasignadas_@contadorNumeros" class="form-label">Seleccione una Agencia:
@@ -447,7 +451,8 @@
                                 <div class="col">
                                     <label for="fechaVisita_db_@j" class="form-label">Fecha de Visita:</label>
                                     <input class="form-control" type="date" name="tipificaciones[@i].FechaVisita" 
-                                        id="fechaVisita_db_@j" />
+                                        id="fechaVisita_db_@j"
+                                        value="@DateTime.Today.ToString("yyyy-MM-dd")" />
                                 </div>
                                 <div class="col">
                                     <label for="AgenciaComercialDb_@j" class="form-label">Agencia Comercial:</label>
