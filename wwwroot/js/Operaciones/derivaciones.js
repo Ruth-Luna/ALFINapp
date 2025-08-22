@@ -242,7 +242,7 @@ App.derivaciones = (() => {
     }
 
     // Función que configura los event listeners para los filtros.
-    function setupEventListeners() {
+    function setupEventListeners(data) {
         const onFilterChanged = () => {
             externalFilterState.dniCliente = document.getElementById('dniClienteDerivaciones').value;
             externalFilterState.agencia = document.getElementById('agenciaDerivaciones').value;
@@ -257,8 +257,17 @@ App.derivaciones = (() => {
         document.getElementById('dniClienteDerivaciones').addEventListener('input', onFilterChanged);
         document.getElementById('agenciaDerivaciones').addEventListener('change', onFilterChanged);
         document.getElementById('asesorDerivaciones').addEventListener('change', onFilterChanged);
+        document.getElementById('supervisorDerivaciones').addEventListener('change', (e) => {
+            const selectedSupervisorId = parseInt(e.target.value, 10);
+
+            const uniqueAdvisors = asesores.filter(a => a.idusuariosup === selectedSupervisorId);
+
+            const selectAsesor = document.getElementById('asesorDerivaciones');
+            uniqueAdvisors.forEach(asesor => selectAsesor.appendChild(new Option(asesor.nombresCompletos, asesor.idUsuario)));
+
+            onFilterChanged();
+        });
         document.getElementById('fechaVisitaDerivacion').addEventListener('change', onFilterChanged);
-        document.getElementById('supervisorDerivaciones').addEventListener('change', onFilterChanged);
     }
 
     async function createTable(rol) {
@@ -334,7 +343,7 @@ App.derivaciones = (() => {
                 derivacionesGridOptions.rowData = listaDerivaciones;
                 agGrid.createGrid(gridDiv, derivacionesGridOptions);
                 populateFilters(usuariorol);
-                setupEventListeners();
+                setupEventListeners(data);
             }
         }
     };
