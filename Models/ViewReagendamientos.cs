@@ -5,8 +5,8 @@ namespace ALFINapp.Models
 {
     public class ViewReagendamientosMain
     {
-        public List<Usuario> asesores { get; set; } = new List<Usuario>();
-        public List<Usuario> supervisores { get; set; } = new List<Usuario>();
+        // public List<Usuario> asesores { get; set; } = new List<Usuario>();
+        // public List<Usuario> supervisores { get; set; } = new List<Usuario>();
         public int rolUsuario { get; set; } = 0;
         public string dniUsuario { get; set; } = string.Empty;
         public List<ViewReagendamientos> reagendamientos { get; set; } = new List<ViewReagendamientos>();

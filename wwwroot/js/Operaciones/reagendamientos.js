@@ -1,4 +1,38 @@
-﻿
+﻿async function getAllReagendamientos() {
+    const url = window.location.origin;
+    const final_url = url + '/Operaciones/GetAllReagendamientos';
+    try {
+        const response = await fetch(final_url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!response.ok) {
+            throw new Error(data.message || 'Error al obtener las derivaciones');
+        }
+        const data = await response.json();
+        if (data.success === true) {
+            return data.data || [];
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Atención',
+                text: data.message || 'No se encontraron derivaciones.'
+            });
+            return [];
+        }
+    } catch (error) {
+        console.error('Error al obtener las derivaciones:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudieron cargar las derivaciones. Por favor, inténtelo de nuevo más tarde.'
+        });
+        return;
+    }
+}
+
 var App = App || {};
 
 App.reagendamientos = (() => {
@@ -34,7 +68,7 @@ App.reagendamientos = (() => {
                                 columnDefs: histColumns,
                                 rowData: params.data.history || [],
                                 pagination: true,
-                                paginationPageSize: 10,
+                                paginationPageSize: 20,
                                 defaultColDef: { sortable: true, resizable: true, minWidth: 150 },
                                 onGridReady: (p) => {
                                     p.api.sizeColumnsToFit({ defaultMinWidth: 150 });
@@ -83,42 +117,6 @@ App.reagendamientos = (() => {
         }
         // --- FIN DE CAMBIOS ---
     ];
-    async function fetchReagendamientos() {
-        const url = window.location.origin;
-        const final_url = url + '/Operaciones/GetAllReagendamientos';
-
-        try {
-            const response = await fetch(final_url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            if (!response.ok) {
-                throw new Error(data.message || 'Error al obtener las derivaciones');
-            }
-            const data = await response.json();
-            if (data.success === true) {
-                return data.data || [];
-            } else {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Atención',
-                    text: data.message || 'No se encontraron derivaciones.'
-                });
-                return [];
-            }
-        } catch (error) {
-            console.error('Error al obtener las derivaciones:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'No se pudieron cargar las derivaciones. Por favor, inténtelo de nuevo más tarde.'
-            });
-            return;
-        }
-
-    }
     // Lógica para los filtros externos.
     const externalFilterState = {
         dniCliente: '', supervisor: 'Todos', asesor: 'Todos', agencia: 'Todos', fechaReagendamiento: '', fechaVisita: ''
@@ -167,7 +165,7 @@ App.reagendamientos = (() => {
         columnDefs: reagendamientosTableColumns,
         rowData: listaReagendamientos,
         pagination: true,
-        paginationPageSize: 10,
+        paginationPageSize: 20,
         defaultColDef: { sortable: true, resizable: true, minWidth: 150 },
         onGridReady: (params) => {
             gridApi = params.api;
@@ -224,12 +222,12 @@ App.reagendamientos = (() => {
 
     // --- INTERFAZ PÚBLICA DEL MÓDULO ---
     return {
-        init: async () => {
+        init: async (reagendamientos, rol, asesores, supervisores) => {
             // 3. Renderizado de la tabla en el div especificado.
             const gridDiv = document.querySelector('#gridReagendamientos');
             if (gridDiv) {
-                const data = await fetchReagendamientos();
-                listaReagendamientos = data.reagendamientos || [];
+                // const data = await fetchReagendamientos();
+                listaReagendamientos = reagendamientos || [];
                 reagendamientosGridOptions.rowData = listaReagendamientos;
                 agGrid.createGrid(gridDiv, reagendamientosGridOptions);
                 populateFilters();
