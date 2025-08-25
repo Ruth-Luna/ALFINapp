@@ -1,6 +1,13 @@
 ﻿
 let gridOptions;
 $(document).ready(function () {
+    // Ocultar elementos según el rol del usuario
+    var rolUser = $('#rolUser').val();
+    if (rolUser == 2) {
+        $('#btnExportExcel').hide();
+        $('#txtFiltrarRol').parent().hide();
+    }
+
     $('#btnExportExcel').on('click', function () {
         Swal.fire({
             title: '¿Estás seguro?',
@@ -348,7 +355,7 @@ function AgregarActualizarCliente(actualizar = false, idUsuario = null) {
         Telefono: $('#txtTelefono_AR').val().trim() || '',
         Estado: $('#sltEstado_AR').val() || 'ACTIVO',
         REGION: $('#txtRegion_AR').val().trim() || '',
-        NOMBRECAMPAÑA: $('#txtCampania_AR').val().trim() || '',
+        NOMBRECAMPANIA: $('#txtCampania_AR').val().trim() || '',
         IdRol: parseInt($('#txtRol_AR').val()),
         Usuario: actualizar ?
             $('#txtUser_AR').val().trim() || null :
@@ -409,6 +416,13 @@ function ListarSupervisores() {
                         .text(supervisor.nombresCompletos)
                 );
             });
+
+            // Logica para manejar roles específicos
+            if ($('#rolUser').val() == 2) { // Para supervisor
+                // Preseleccionar al el mismo
+                $select.val($('#usuarioId').val()).change();
+                $select.prop('disabled', true);
+            }
         },
         error: function () {
             Swal.fire('Error', 'Error al cargar los supervisores', 'error');
@@ -429,6 +443,13 @@ function ListarRoles(idSelect = "#txtFiltrarRol") {
                         .text(rol.rol)
                 );
             });
+
+            // Lógica para manejar roles específicos
+            if ($('#rolUser').val() == 2) { // Para supervisor
+                // Preseleccionar a Asesor y deshabilitar
+                $select.val('3').change();
+                $select.prop('disabled', true);
+            }
         },
         error: function (error) {
             Swal.fire({
@@ -579,4 +600,18 @@ function LimpiarFormularioUsuario() {
     $('#txtCorreo_AR').val('');
     $('#txtRol_AR').val('');
     $('#sltEstado_AR').val('');
+
+    // Logica para manejar roles específicos
+    if ($('#rolUser').val() == 2) { // Para supervisor
+        preseleccionarRolSupervisor();
+    }
+}
+
+function preseleccionarRolSupervisor() {
+    // Preseleccionar al el mismo
+    $('#txtSupervisor_AR').val($('#usuarioId').val()).change();
+    $('#txtSupervisor_AR').prop('disabled', true);
+    // Preseleccionar a Asesor y deshabilitar
+    $('#txtRol_AR').val('3').change();
+    $('#txtRol_AR').prop('disabled', true);
 }

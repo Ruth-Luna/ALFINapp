@@ -130,7 +130,19 @@
                         });
                         return;
                     } else {
-                        $('#sidebarToggleRender').html(response); // Asegúrate de que el servidor retorne el HTML correcto
+                        // Crear un contenedor temporal para manipular el HTML
+                        const tempContainer = $('<div>').html(response);
+
+                        // Seleccionar el elemento "Gestión Asesores"
+                        const gestionAsesores = tempContainer.find("a[href='/Usuarios/GestionAsesores']").closest('li.nav-item');
+
+                        // Mover el elemento al tercer lugar
+                        gestionAsesores.detach(); // Elimina temporalmente el elemento del DOM
+                        tempContainer.find('ul.nav.flex-column').children().eq(2).before(gestionAsesores); // Inserta antes del tercer elemento
+
+                        // Insertar el HTML ordenado en el DOM
+                        $('#sidebarToggleRender').html(tempContainer.html());
+
                     }
                 },
                 error: function (xhr, status, error) {

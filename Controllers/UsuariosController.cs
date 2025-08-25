@@ -25,9 +25,32 @@ namespace ALFINapp.API.Controllers
         }
 
         [HttpGet]
+        [PermissionAuthorization("Usuarios", "GestionAsesores")]
+        public IActionResult GestionAsesores()
+        {
+            return View("Administracion");
+        }
+
+
+
+        [HttpGet]
         public JsonResult ListarUsuarioAdministrador(int? idUsuario)
         {
-            var listarUsuario = _daUsuario.ListarUsuarios(idUsuario);
+            // Recuperar el rol del usuario
+            var rolUser = HttpContext.Session.GetInt32("RolUser");
+            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            
+            // Valores opcionales
+            int? idSupervisor = null;
+
+            // Validaciones para rol SUPEREVISOR (2)
+            if (rolUser == 2)
+            {
+                // Si es supervisor, usar su ID como filtro
+                idSupervisor = usuarioId;
+            }
+
+            var listarUsuario = _daUsuario.ListarUsuarios(idUsuario, idSupervisor);
             return Json(listarUsuario);
         }
         [HttpPost]
