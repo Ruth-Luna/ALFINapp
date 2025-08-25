@@ -101,5 +101,30 @@ namespace ALFINapp.API.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> ActualizarCampos(string Departamento, string Provincia, string Distrito, string Telefono, string Correo)
+        {
+            try
+            {
+                int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+                if (usuarioId == null)
+                {
+                    return Json(new { success = false, message = "Usted no ha iniciado sesión" });
+                }
+
+                // Validar el correo si no está vacío
+                if (!string.IsNullOrEmpty(Correo) && !System.Text.RegularExpressions.Regex.IsMatch(Correo, @"^[^\s@]+@[^\s@]+\.[^\s@]+$"))
+                {
+                    return Json(new { success = false, message = "El correo ingresado no es válido" });
+                }
+
+                var result = await _da_usuario.ActualizarCamposUsuario(usuarioId.Value, Departamento, Provincia, Distrito, Telefono, Correo);
+                return Json(new { success = result.IsSuccess, message = result.Message });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error al actualizar los campos: " + ex.Message });
+            }
+        }
     }
 }

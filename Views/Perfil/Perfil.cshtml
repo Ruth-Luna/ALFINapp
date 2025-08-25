@@ -4,150 +4,122 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/main_page.css">
+    <style>
+        @@media (max-width: 767.98px) {
+            .btn-actualizar-campos {
+                width: 100% !important;
+                text-align: center;
+                display: block;
+            }
+        }
+    </style>
 }
 
 <div class="container mt-4">
-    <div class="row">
-        <h3>Bienvenido @Model.NombresCompletos</h3>
-        <div class="alert alert-info" role="alert">
-            En esta Sección podrá modificar su contraseña y otros datos.
-        </div>
-        <div class="col-md-6">
-            <div class="form-group mb-2">
-                <label for="NombresCompletosUsuario" class="form-label mb-1">Nombres Completos del Usuario</label>
-                <input type="text" class="form-control" id="NombresCompletosUsuario" value="@Model.NombresCompletos"
-                    readonly>
-            </div>
-            <div class="form-group mb-2">
-                <label for="DniUsuario" class="form-label mb-1">DNI del Usuario</label>
-                <input type="text" class="form-control" id="DniUsuario" value="@Model.Dni" readonly>
-            </div>
-            <div class="form-group mb-2">
-                <div class="alert alert-warning" id="AlertUpdateCorreo" style="display: none;">
-                    Actualizar el Correo
-                </div>
-                <label for="CorreoUsuario" class="form-label">Correo</label>
-                <div class="row">
-                    <div class="col-md-10">
-                        <input type="text" class="form-control" id="CorreoUsuario" value="@Model.Correo" readonly>
+    <h3>Bienvenido @Model.NombresCompletos</h3>
+    <div class="alert alert-info" role="alert">
+        En esta Sección podrá modificar su contraseña y otros datos.
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="row">
+                <!-- Columna Izquierda -->
+                <div class="col-md-6">
+                    <div class="form-group mb-2">
+                        <label for="NombresCompletosUsuario" class="form-label mb-2">Nombres Completos del Usuario</label>
+                        <input type="text" class="form-control" id="NombresCompletosUsuario" value="@Model.NombresCompletos" readonly>
                     </div>
-                    <div class="col-md-2">
-                        <a href="javascript:void(0)" id="CorreoBotonEdicion" class="btn btn-primary"
-                            onclick="activarEdicion('Correo')" style="display: block;"><i class="bi bi-pencil"></i></a>
-                        <a href="javascript:void(0)" id="CorreoBotonEnvio" class="btn btn-success"
-                            onclick="enviarEdicion('Correo')" style="display: none;"><i class="bi bi-check"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group mb-2">
-                <label for="ContrasenaUsuario" class="form-label">Contraseña</label>
-                <input type="password" class="form-control" id="ContrasenaUsuario" value="@Model.contraseña"
-                    class="form-control" readonly>
-            </div>
-            <div class="form-group mb-2">
-                <div class="row mb-2" style="display: none;" id="AlertUpdatePassword">
-                    <div class="col-md-12">
-                        <div class="alert alert-warning">
-                            Actualizar la contraseña
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="TipoDocumentoUsuario" class="form-label mb-2">Tipo de Documento</label>
+                                <input type="text" class="form-control" id="TipoDocumentoUsuario" value="@Model.TipoDocumento" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="DniUsuario" class="form-label mb-2">DNI del Usuario</label>
+                                <input type="text" class="form-control" id="DniUsuario" value="@Model.Dni" readonly>
+                            </div>
                         </div>
                     </div>
-                    <label for="ContrasenaNueva" class="form-label mb-1">Ingrese la nueva contraseña</label>
-                    <div class="col-md-12">
-                        <input type="text" class="form-control" id="ContrasenaNueva">
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="RolUsuario" class="form-label mb-2">Rol</label>
+                                <input type="text" class="form-control" id="RolUsuario" value="@Model.Rol" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="NombreCampaniaUsuario" class="form-label">Nombre Campaña</label>
+                                <input type="text" class="form-control" id="NombreCampaniaUsuario" value="@Model.NOMBRECAMPANIA" readonly>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <a href="javascript:void(0)" onclick="updatePasswordView(@Model.IdUsuario)"
-                            class="btn btn-primary" id="UpdatePasswordButtonView" style="display: block;">Actualizar
-                            Contraseña</a>
-                        <a href="javascript:void(0)" onclick="updatePasswordSubmit(@Model.IdUsuario)"
-                            class="btn btn-success" id="UpdatePasswordButtonSubmit" style="display: none;">Ingrese la
-                            nueva
-                            Contraseña</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group mb-2">
-                <div class="alert alert-warning" id="AlertUpdateDepartamento" style="display: none;">
-                    Actualizar el Departamento
-                </div>
-                <label for="DepartamentoUsuario" class="form-label">Departamento</label>
-                <div class="row">
-                    <div class="col-md-10">
-                        <input type="text" class="form-control" id="DepartamentoUsuario" value="@Model.Departamento"
-                            readonly>
-                    </div>
-                    <div class="col-md-2">
-                        <a href="javascript:void(0)" id="DepartamentoBotonEdicion" class="btn btn-primary"
-                            onclick="activarEdicion('Departamento')" style="display: block;"><i
-                                class="bi bi-pencil"></i></a>
-                        <a href="javascript:void(0)" id="DepartamentoBotonEnvio" class="btn btn-success"
-                            onclick="enviarEdicion('Departamento')" style="display: none;"><i
-                                class="bi bi-check"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group mb-2">
-                <div class="alert alert-warning" id="AlertUpdateProvincia" style="display: none;">
-                    Actualizar la Provincia
-                </div>
-                <label for="ProvinciaUsuario" class="form-label">Provincia</label>
-                <div class="row">
-                    <div class="col-md-10">
-                        <input type="text" class="form-control" id="ProvinciaUsuario" value="@Model.Provincia" readonly>
-                    </div>
-                    <div class="col-md-2">
-                        <a href="javascript:void(0)" id="ProvinciaBotonEdicion" class="btn btn-primary"
-                            onclick="activarEdicion('Provincia')" style="display: block;"><i
-                                class="bi bi-pencil"></i></a>
-                        <a href="javascript:void(0)" id="ProvinciaBotonEnvio" class="btn btn-success"
-                            onclick="enviarEdicion('Provincia')" style="display: none;"><i class="bi bi-check"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group mb-2">
-                <div class="alert alert-warning" id="AlertUpdateDistrito" style="display: none;">
-                    Actualizar el Distrito
-                </div>
-                <label for="DistritoUsuario" class="form-label">Distrito</label>
-                <div class="row">
-                    <div class="col-md-10">
-                        <input type="text" class="form-control" id="DistritoUsuario" value="@Model.Distrito" readonly>
-                    </div>
-                    <div class="col-md-2">
-                        <a href="javascript:void(0)" id="DistritoBotonEdicion" class="btn btn-primary"
-                            onclick="activarEdicion('Distrito')" style="display: block;"><i
-                                class="bi bi-pencil"></i></a>
-                        <a href="javascript:void(0)" id="DistritoBotonEnvio" class="btn btn-success"
-                            onclick="enviarEdicion('Distrito')" style="display: none;"><i class="bi bi-check"></i></a>
-                    </div>
-                </div>
-            </div>
 
-            <div class="form-group mb-2">
-                <div class="alert alert-warning" id="AlertUpdateTelefono" style="display: none;">
-                    Actualizar el Telefono
+                    <div class="form-group mb-2">
+                        <label for="ContrasenaUsuario" class="form-label">Contraseña</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="ContrasenaUsuario" value="@Model.Contrasenia" readonly>
+                            <button class="btn btn-primary" onclick="updatePasswordView()" id="UpdatePasswordButtonView">Actualizar Contraseña</button>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row mb-2" style="display: none;" id="AlertUpdatePassword">
+                            <label for="ContrasenaNueva" class="form-label mb-1">Ingrese la nueva contraseña</label>
+                            <div class="col-md-12">
+                                <input type="password" class="form-control" id="ContrasenaNueva">
+                            </div>
+                            <div class="col-md-12 mt-2">
+                                <button class="btn btn-success w-100 text-center" onclick="updatePasswordSubmit()" id="UpdatePasswordButtonSubmit" style="display: none;">Confirmar Nueva Contraseña</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <label for="TelefonoUsuario" class="form-label">Teléfono</label>
-                <div class="row">
-                    <div class="col-md-10">
-                        <input type="text" class="form-control" id="TelefonoUsuario" value="@Model.Telefono" readonly>
+                <!-- Columna Derecha -->
+                <div class="col-md-6">
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="CorreoUsuario" class="form-label mb-2">Correo</label>
+                                <input type="email" class="form-control" id="CorreoUsuario" value="@Model.Correo" data-original="@Model.Correo">
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="TelefonoUsuario" class="form-label">Teléfono</label>
+                                <input type="text" class="form-control" id="TelefonoUsuario" value="@Model.Telefono" data-original="@Model.Telefono">
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-2">
-                        <a href="javascript:void(0)" id="TelefonoBotonEdicion" class="btn btn-primary"
-                            onclick="activarEdicion('Telefono')" style="display: block;"><i
-                                class="bi bi-pencil"></i></a>
-                        <a href="javascript:void(0)" id="TelefonoBotonEnvio" class="btn btn-success"
-                            onclick="enviarEdicion('Telefono')" style="display: none;"><i class="bi bi-check"></i></a>
+                    <div class="form-group mb-2">
+                        <label for="DepartamentoUsuario" class="form-label">Departamento</label>
+                        <input type="text" class="form-control" id="DepartamentoUsuario" value="@Model.Departamento" data-original="@Model.Departamento">
                     </div>
+                    <div class="form-group mb-2">
+                        <label for="ProvinciaUsuario" class="form-label">Provincia</label>
+                        <input type="text" class="form-control" id="ProvinciaUsuario" value="@Model.Provincia" data-original="@Model.Provincia">
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="DistritoUsuario" class="form-label">Distrito</label>
+                        <input type="text" class="form-control" id="DistritoUsuario" value="@Model.Distrito" data-original="@Model.Distrito">
+                    </div>
+
+                </div>
+            </div>
+            <!-- Botón Actualizar -->
+            <div class="row mt-3">
+                <div class="col-md-12 text-center">
+                    <button class="btn btn-success btn-actualizar-campos" onclick="actualizarCampos()">Actualizar Campos</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 @section Scripts {
     <script src="~/js/Perfil/Perfil.js?v=@DateTime.Now.Ticks"></script>
 }

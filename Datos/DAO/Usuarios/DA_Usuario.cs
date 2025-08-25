@@ -537,5 +537,42 @@ namespace ALFINapp.Datos
                 return new List<object>();
             }
         }
+        public async Task<(bool IsSuccess, string Message)> ActualizarCamposUsuario(int idUsuario, string departamento, string provincia, string distrito, string telefono, string correo)
+        {
+            try
+            {
+                var cn = new Conexion();
+                using (SqlConnection connection = new SqlConnection(cn.getCadenaSQL()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("SP_USUARIO_ACTUALIZAR_USUARIO_GENERAL", connection))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.AddWithValue("@id_usuario", idUsuario);
+                        cmd.Parameters.AddWithValue("@Departamento", (object?)departamento ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Provincia", (object?)provincia ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Distrito", (object?)distrito ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Telefono", (object?)telefono ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Correo", (object?)correo ?? DBNull.Value);
+
+                        await connection.OpenAsync();
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                int filasAfectadas = reader.GetInt32(reader.GetOrdinal("FilasAfectadas"));
+                                string mensaje = reader.GetString(reader.GetOrdinal("Mensaje"));
+                                return (filasAfectadas > 0 || mensaje == "No se realizaron cambios en los campos", mensaje);
+                            }
+                            return (false, "Error al procesar la respuesta del servidor");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, "Error al actualizar los campos: " + ex.Message);
+            }
+        }
     }
 }
