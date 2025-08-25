@@ -112,8 +112,8 @@ App.reagendamientos = (() => {
         },
         {
             headerName: "Fecha reagendamiento",
-            field: "fechaReagendamiento",
-            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm:ss')
+            field: "fechaAgendamiento",
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm')
         }
         // --- FIN DE CAMBIOS ---
     ];
@@ -122,26 +122,6 @@ App.reagendamientos = (() => {
         dniCliente: '', supervisor: 'Todos', asesor: 'Todos', agencia: 'Todos', fechaReagendamiento: '', fechaVisita: ''
     };
 
-    function formatDateTime(dateString, format = 'dd/mm/yyyy') {
-        if (!dateString) return ''; // Si no hay fecha, retorna vacío
-        const date = new Date(dateString);
-        // Verificamos si la fecha es válida para evitar errores
-        if (isNaN(date.getTime())) return dateString;
-
-        const pad = (num) => String(num).padStart(2, '0');
-        const day = pad(date.getDate());
-        const month = pad(date.getMonth() + 1); // Los meses en JS empiezan en 0
-        const year = date.getFullYear();
-        const hours = pad(date.getHours());
-        const minutes = pad(date.getMinutes());
-        const seconds = pad(date.getSeconds());
-
-        if (format === 'dd/mm/yyyy hh:mm:ss') {
-            return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-        }
-        // Por defecto, o si el formato es 'dd/mm/yyyy'
-        return `${day}/${month}/${year}`;
-    }
 
     function isExternalFilterPresent() {
         return Object.values(externalFilterState).some(value => value !== '' && value !== 'Todos');
@@ -220,15 +200,22 @@ App.reagendamientos = (() => {
         });
     }
 
+    async function createTable(rol) {
+
+    }
+
     // --- INTERFAZ PÚBLICA DEL MÓDULO ---
     return {
         init: async (reagendamientos, rol, asesores, supervisores) => {
             // 3. Renderizado de la tabla en el div especificado.
             const gridDiv = document.querySelector('#gridReagendamientos');
             if (gridDiv) {
-                // const data = await fetchReagendamientos();
+                usuariorol = rol || 0;
+
                 listaReagendamientos = reagendamientos || [];
+
                 reagendamientosGridOptions.rowData = listaReagendamientos;
+                console.log('Datos de reagendamientos cargados:', listaReagendamientos); // --- IGNORE ---
                 agGrid.createGrid(gridDiv, reagendamientosGridOptions);
                 populateFilters();
                 setupEventListeners();

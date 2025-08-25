@@ -1,4 +1,29 @@
-﻿async function getAllDerivaciones() {
+﻿function formatDateTime(dateString, format = 'dd/mm/yyyy') {
+        if (!dateString) return ''; // Si no hay fecha, retorna vacío
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
+
+        const pad = (num) => String(num).padStart(2, '0');
+        const day = pad(date.getDate());
+        const month = pad(date.getMonth() + 1); // Los meses en JS empiezan en 0
+        const year = date.getFullYear();
+        const hours = pad(date.getHours());
+        const minutes = pad(date.getMinutes());
+        const seconds = pad(date.getSeconds());
+
+        if (format === 'dd/mm/yyyy hh:mm:ss') {
+            return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+        } else if (format === 'yyyy-mm-dd') {
+            return `${year}-${month}-${day}`;
+        } else if (format === 'yyyy-mm-dd hh:mm') {
+            return `${year}-${month}-${day} ${hours}:${minutes}`;
+        } else if (format === 'dd/mm/yyyy hh:mm') {
+            return `${day}/${month}/${year} ${hours}:${minutes}`;
+        }
+        return `${day}/${month}/${year}`;
+    }
+
+async function getAllDerivaciones() {
     const url = window.location.origin;
     const final_url = url + '/Operaciones/GetAllDerivaciones';
     try {
@@ -90,7 +115,7 @@ App.derivaciones = (() => {
         {
             headerName: "Fecha derivación",
             field: "fechaDerivacion",
-            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm:ss')
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm')
         },
         {
             headerName: "Fecha visita",
@@ -114,7 +139,7 @@ App.derivaciones = (() => {
         {
             headerName: "Fecha evidencia",
             field: "fechaEvidencia",
-            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm:ss'),
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm'),
             width: 120
         },
         // --- FIN DE CAMBIOS ---
@@ -216,58 +241,50 @@ App.derivaciones = (() => {
     const externalFilterState = {
         dniCliente: '',
         agencia: 'Todos',
-        supervisor: 'Todos',
         asesor: 'Todos',
+        supervisor: 'Todos',
+        fechaVisita: '',
         fechaDerivacion: '',
-        fechaVisita: ''
     };
 
     // --- FUNCIONES PRIVADAS DEL MÓDULO ---
-    function formatDateTime(dateString, format = 'dd/mm/yyyy') {
-        if (!dateString) return ''; // Si no hay fecha, retorna vacío
-        const date = new Date(dateString);
-        // Verificamos si la fecha es válida para evitar errores
-        if (isNaN(date.getTime())) return dateString;
-
-        const pad = (num) => String(num).padStart(2, '0');
-        const day = pad(date.getDate());
-        const month = pad(date.getMonth() + 1); // Los meses en JS empiezan en 0
-        const year = date.getFullYear();
-        const hours = pad(date.getHours());
-        const minutes = pad(date.getMinutes());
-        const seconds = pad(date.getSeconds());
-
-        if (format === 'dd/mm/yyyy hh:mm:ss') {
-            return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-        }
-        // Por defecto, o si el formato es 'dd/mm/yyyy'
-        return `${day}/${month}/${year}`;
-    }
+    
 
     function isExternalFilterPresent() { return Object.values(externalFilterState).some(value => value !== '' && value !== 'Todos'); }
 
     function doesExternalFilterPass(node) {
         const { data } = node;
         const { dniCliente, agencia, asesor, supervisor, fechaVisita, fechaDerivacion } = externalFilterState;
-        console.log('Estado del filtro externo:', externalFilterState);
-        console.log('Datos de la fila:', data);
 
         if (dniCliente && !String(data.dniCliente).includes(dniCliente)) return false;
         if (agencia !== 'Todos' && data.nombreAgencia !== agencia) return false;
         if (asesor !== 'Todos' && data.dniAsesor !== asesor) return false;
         if (supervisor !== 'Todos' && data.docSupervisor !== supervisor) return false;
         if (fechaVisita) {
-            const filtroISO = fechaVisita.toISOString().split('T')[0]; // "2025-08-21"
-            const dataISO = new Date(data.fechaVisita).toISOString().split('T')[0];
-
-            if (filtroISO !== dataISO) {
+            const [year, month, day] = fechaVisita.split('-');
+            const fechaFormattedObj = new Date(Number(year), Number(month) - 1, Number(day));
+            const fechaVisitaData = new Date(data.fechaVisita);
+            if (
+                fechaFormattedObj.getFullYear() !== fechaVisitaData.getFullYear() ||
+                fechaFormattedObj.getMonth() !== fechaVisitaData.getMonth() ||
+                fechaFormattedObj.getDate() !== fechaVisitaData.getDate()
+            ) {
+                console.log(`No coincide la fecha de visita: ${fechaFormattedObj} !== ${fechaVisitaData}`);
                 return false;
             }
         }
-
-        if (fechaDerivacion && data.fechaDerivacion !== fechaDerivacion) {
-            console.log('Filtrado por fechaDerivacion:', { filtro: fechaDerivacion, data: data.fechaDerivacion });
-            return false;
+        if (fechaDerivacion) {
+            const [year, month, day] = fechaDerivacion.split('-');
+            const fechaDerivacionFormatted = new Date(Number(year), Number(month) - 1, Number(day));
+            const fechaDerivacionData = new Date(data.fechaDerivacion);
+            if (
+                fechaDerivacionFormatted.getFullYear() !== fechaDerivacionData.getFullYear() ||
+                fechaDerivacionFormatted.getMonth() !== fechaDerivacionData.getMonth() ||
+                fechaDerivacionFormatted.getDate() !== fechaDerivacionData.getDate()
+            ) {
+                console.log(`No coincide la fecha de derivación: ${fechaDerivacionFormatted} !== ${fechaDerivacionData}`);
+                return false;
+            }
         }
         return true;
     }
@@ -350,16 +367,13 @@ App.derivaciones = (() => {
                 uniqueAdvisors.forEach(asesor => selectAsesor.appendChild(new Option(asesor.nombre, asesor.dni)));
                 const idSupervisor = supervisores.find(s => s.dni === supervisorDni).idUsuario;
                 onFilterChanged();
-
             } else {
-
                 const allAdvisors = asesores.filter(a => a.idusuariosup === idSupervisor);
 
                 const uniqueAdvisors = allAdvisors.map(u => ({
                     dni: u.dni,
                     nombre: u.nombresCompletos
                 }));
-
                 const selectAsesor = document.getElementById('asesorDerivaciones');
                 selectAsesor.innerHTML = '';
                 selectAsesor.appendChild(new Option('Todos', 'Todos'));
@@ -368,6 +382,7 @@ App.derivaciones = (() => {
             }
         });
         document.getElementById('fechaVisitaDerivacion').addEventListener('change', onFilterChanged);
+        document.getElementById('fechaDerivacion').addEventListener('change', onFilterChanged);
     }
 
     async function createTable(rol) {
