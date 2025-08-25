@@ -1,5 +1,8 @@
 ﻿
 let idUsuario = 0
+let usuario = null;
+let correo = null;
+let ip = null;
 document.addEventListener('DOMContentLoaded', function () {
 
     const inputs = document.querySelectorAll('.otp-input');
@@ -34,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     $('#btnSolicitarNuevoCodigo').on('click', function () {
-        ValidarCorreoUsuario('btnSolicitarNuevoCodigo');
+        EnviarCodigoRecuperacionPassword()
     });
 
     $('#btnVerificarCodigo').on('click', function () {
@@ -55,8 +58,12 @@ function obtenerCodigoOTP() {
     return codigo;
 }
 async function ValidarCorreoUsuario(buttonId) {
-    const usuario = $('#usuarioRecuperacion').val().trim();
-    const correo = $('#correoRecuperacion').val().trim();
+    usuario = $('#usuarioRecuperacion').val().trim();
+    correo = $('#correoRecuperacion').val().trim();
+
+    localStorage.setItem("usuarioRecuperacion", usuario);
+    localStorage.setItem("correoRecuperacion", correo);
+
     const btn = document.getElementById(buttonId);
 
     if (!usuario || !correo) {
@@ -67,6 +74,7 @@ async function ValidarCorreoUsuario(buttonId) {
         });
         return;
     }
+    
 
     btn.disabled = true;
     btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Enviando...`;
@@ -144,16 +152,25 @@ async function getPublicIp() {
 }
 
 async function EnviarCodigoRecuperacionPassword() {
-    const usuario = $('#usuarioRecuperacion').val().trim();
-    const correo = $('#correoRecuperacion').val().trim();
+     usuario = $('#usuarioRecuperacion').val().trim();
+     correo = $('#correoRecuperacion').val().trim();
+
+    if (!usuario) {
+        usuario = localStorage.getItem("usuarioRecuperacion");
+    }
+    if (!correo) {
+        correo = localStorage.getItem("correoRecuperacion");
+    }
 
     // Obtener la IP pública
-    const ip = await getPublicIp();
+    ip = await getPublicIp();
     if (!ip) {
         Swal.fire('Error', 'No se pudo obtener la dirección IP.', 'error');
         return;
     }
-
+    console.log(usuario)
+    console.log(correo)
+    console.log(ip)
     return $.ajax({
         url: '/Home/InsertarSolicitudRecuperacionContrasenia',
         type: 'POST',
@@ -166,11 +183,20 @@ async function EnviarCodigoRecuperacionPassword() {
         success: function (response) {
             console.log(response);
             if (response.success) {
+
+
                 idUsuario = response.idUsuario;
                 localStorage.setItem("idSolicitud", response.idSolicitud);
                 localStorage.setItem("idUsuario", response.idUsuario);
+                $('#lblMensajeAlerta')
+                    .removeClass('d-none text-danger')
+                    .addClass('text-success fw-semibold')
+                    .text('Código enviado correctamente.')
+                    .fadeIn();
+                setTimeout(() => {
+                    $('#lblMensajeAlerta').fadeOut();
+                }, 4000);
 
-                // Llamar a verificarEstadoCodigo para actualizar el temporizador
                 verificarEstadoCodigo();
             } else {
                 Swal.fire('Error', response.mensaje, 'error');
@@ -187,9 +213,9 @@ function VerificarCodigoIngresado() {
     const codigoIngresado = obtenerCodigoOTP();
 
     if (codigoIngresado.length !== 6) {
-        console.log("sientro")
         $('#lblMensajeAlerta')
-            .removeClass('d-none') 
+            .removeClass('d-none text-danger')
+            .addClass('text-danger fw-semibold')
             .text('Código Inválido. Por favor ingrese el código completo')
             .fadeIn();
 
@@ -214,9 +240,15 @@ function VerificarCodigoIngresado() {
                 document.getElementById("step3").classList.remove("d-none");
                 document.getElementById("step2").classList.add("d-none");
                 document.getElementById("alertaCambioContrasena").classList.remove("d-none");
+
+                setTimeout(() => {
+                    $('#lblMensajeAlerta').fadeOut();
+                }, 4000);
+
             } else {
                 $('#lblMensajeAlerta')
-                    .removeClass('d-none') 
+                    .removeClass('d-none text-danger')
+                    .addClass('text-danger fw-semibold')
                     .text(response.mensaje)
                     .fadeIn();
 
@@ -263,7 +295,11 @@ function startTimer(fechaExpiracion) {
 function verificarEstadoCodigo() {
     const idSolicitud = localStorage.getItem("idSolicitud");
     if (!idSolicitud) {
+        document.getElementById("step1").classList.remove("d-none");
+        document.getElementById("step2").classList.add("d-none");
+        document.getElementById("step3").classList.add("d-none");
         $('#recuperarContraseñaModal').modal('show');
+
         return;
     }
 
@@ -272,28 +308,24 @@ function verificarEstadoCodigo() {
         type: 'GET',
         data: { idSolicitud: idSolicitud },
         success: function (data) {
-            console.log(data);
 
             const fechaExpiracion = new Date(data.fechaExpiracion);
             const fechaActual = new Date();
             const codigoExpirado = fechaExpiracion > fechaActual && data.estado === null;
-            console.log(codigoExpirado);
 
             if (codigoExpirado) {
-                console.log("Código valido");
                 $('#recuperarContraseñaModal').modal('show');
                 document.getElementById("step1").classList.add("d-none");
                 document.getElementById("step3").classList.add("d-none");
                 document.getElementById("step2").classList.remove("d-none");
-                document.getElementById("lblMensajeAlerta").classList.add("d-none");
-
+   
                 // Iniciar el temporizador
                 startTimer(fechaExpiracion);
+
 
                 return;
             }
 
-            console.log("Código Inválido");
             $('#recuperarContraseñaModal').modal('show');
 
             document.getElementById("step1").classList.remove("d-none");
@@ -337,6 +369,11 @@ function cambiarContraseniaCorreo() {
                 Swal.fire("Éxito", response.mensaje, "success").then(() => {
                     $('#recuperarContraseñaModal').modal('hide');
                     window.location.href = '/';
+                    localStorage.removeItem("correoRecuperacion");
+                    localStorage.removeItem("idSolicitud");
+                    localStorage.removeItem("idUsuario");
+                    localStorage.removeItem("usuarioRecuperacion");
+s
                 });
             } else {
                 Swal.fire("Advertencia", response.mensaje, "error");

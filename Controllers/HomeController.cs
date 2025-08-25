@@ -321,7 +321,7 @@ public class HomeController : Controller
                 Subject = asunto,
                 Body = cuerpo,
                 IsBodyHtml = true,
-                From = new MailAddress("weba365.no.reply@gmail.com", "Nombre de tu sistema")
+                From = new MailAddress("weba365.no.reply@gmail.com", "SGALFIN.a365 - Recuperación de Contraseña")
             };
             mensaje.To.Add(correoDestino);
 
