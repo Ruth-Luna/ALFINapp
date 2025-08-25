@@ -13,7 +13,7 @@ namespace ALFINapp.Datos.DAO.Operaciones
         {
             _context = context;
         }
-        public async Task<(bool issuccess, string message, List<ViewReagendamientos> data)> GetAllReagendamientos(int usuarioId, int rolUsuario)
+        public async Task<(bool issuccess, string message, ViewReagendamientosMain data)> GetAllReagendamientos(int usuarioId, int rolUsuario)
         {
             try
             {
@@ -30,14 +30,17 @@ namespace ALFINapp.Datos.DAO.Operaciones
 
                 if (data == null || !data.Any())
                 {
-                    return (true, "No se encontraron reagendamientos.", new List<ViewReagendamientos>());
+                    return (true, "No se encontraron reagendamientos.", new ViewReagendamientosMain());
                 }
                 var dataview = data.Select(x => new ViewReagendamientos(x)).ToList();
-                return (true, "Reagendamientos obtenidos con éxito.", dataview);
+                return (true, "Reagendamientos obtenidos con éxito.", new ViewReagendamientosMain
+                {
+                    reagendamientos = dataview
+                });
             }
             catch (Exception ex)
             {
-                return (false, $"Error al obtener los reagendamientos: {ex.Message}", new List<ViewReagendamientos>());
+                return (false, $"Error al obtener los reagendamientos: {ex.Message}", new ViewReagendamientosMain());
             }
         }
     }

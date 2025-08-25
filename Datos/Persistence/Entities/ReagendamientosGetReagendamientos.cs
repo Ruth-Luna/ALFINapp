@@ -5,10 +5,10 @@ namespace ALFINapp.Datos.Persistence.Entities
     public class ReagendamientosGetReagendamientos
     {
         [Column("id_derivacion")]
-        public int IdDerivacion { get; set; }
+        public int? IdDerivacion { get; set; }
 
         [Column("id_agendamientos_re")]
-        public int IdAgendamientosRe { get; set; }
+        public int? IdAgendamientosRe { get; set; }
 
         [Column("oferta")]
         public decimal Oferta { get; set; }
@@ -48,8 +48,10 @@ namespace ALFINapp.Datos.Persistence.Entities
 
         [Column("doc_supervisor")]
         public string? DocSupervisor { get; set; }
+        [Column("nombre_cliente")]
+        public string? NombreCliente { get; set; }
 
         [Column("numero_reagendamiento")]
-        public int NumeroReagendamiento { get; set; }
+        public long? NumeroReagendamiento { get; set; }
     }
 }

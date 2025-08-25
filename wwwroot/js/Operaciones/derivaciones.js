@@ -1,26 +1,56 @@
-﻿
-var App = App || {};
+﻿var App = App || {};
 
 App.derivaciones = (() => {
 
     let gridApi;
 
     let listaDerivaciones = [
-        { estadoDerivacion: 'Pendiente', dniCliente: '12345678', nombreCliente: 'Juan Pérez', telefono: '987654321', dniAsesor: '87654321', oferta: 'Crédito Personal', agencia: 'Agencia Central', fechaVisita: '2024-08-15', estadoEvidencia: 'No enviado', fechaEvidencia: '2024-08-11', acciones: '' },
-        { estadoDerivacion: 'Completado', dniCliente: '87654321', nombreCliente: 'Ana Gómez', telefono: '912345678', dniAsesor: '12345678', oferta: 'Tarjeta de Crédito', agencia: 'Sucursal Norte', fechaVisita: '2024-08-14', estadoEvidencia: 'Enviado', fechaEvidencia: '2024-08-15', acciones: '' },
-        { estadoDerivacion: 'En Proceso', dniCliente: '11223344', nombreCliente: 'Carlos Ruiz', telefono: '955555555', dniAsesor: '44332211', oferta: 'Seguro de Vida', agencia: 'Agencia Sur', fechaVisita: '2024-08-16', estadoEvidencia: 'Enviado', fechaEvidencia: '2024-08-16', acciones: '' },
-        { estadoDerivacion: 'Completado', dniCliente: '99887766', nombreCliente: 'María López', telefono: '977777777', dniAsesor: '66778899', oferta: 'Préstamo Hipotecario', agencia: 'Agencia Este', fechaVisita: '2024-08-12', estadoEvidencia: 'Enviado', fechaEvidencia: '2024-08-13', acciones: '' },
-        { estadoDerivacion: 'Rechazado', dniCliente: '55443322', nombreCliente: 'José Torres', telefono: '922222222', dniAsesor: '22334455', oferta: 'Línea de Crédito', agencia: 'Sucursal Oeste', fechaVisita: '2024-08-11', estadoEvidencia: 'No enviado', fechaEvidencia: '2024-08-12', acciones: '' },
-        { estadoDerivacion: 'En Proceso', dniCliente: '66554433', nombreCliente: 'Luisa Castro', telefono: '944444444', dniAsesor: '33445566', oferta: 'Crédito Vehicular', agencia: 'Agencia Norte', fechaVisita: '2024-08-17', estadoEvidencia: 'Enviado', fechaEvidencia: '2024-08-17', acciones: '' }
     ];
 
     let derivacionesTableColumns = [
-        { headerName: "Estado derivación", field: "estadoDerivacion" },
-        { headerName: "DNI cliente", field: "dniCliente" },
-        { headerName: "Nombre del cliente", field: "nombreCliente" },
-        { headerName: "Teléfono", field: "telefonoCliente" },
-        { headerName: "DNI asesor", field: "dniAsesor" },
-        { headerName: "Oferta", field: "ofertaMax" },
+
+        {
+            headerName: "Estado de Derivacion",
+            field: "estadoDerivacion",
+            cellClass: "d-flex align-items-center justify-content-center",
+            cellRenderer: (params) => {
+                if (params.data.fueProcesado && params.data.fueEnviadoEmail) {
+                    return `<span class="badge-estado badge-enviado">Completado</span>`;
+                } else if (params.data.fueProcesado && !params.data.fueEnviadoEmail) {
+                    return `<span class="badge-estado badge-parcial">Parcial</span>`;
+                } else if (!params.data.fueProcesado && !params.data.fueEnviadoEmail) {
+                    return `<span class="badge-estado badge-no-enviado">Pendiente</span>`;
+                } else {
+                    return `<span class="badge-estado badge-no-enviado">Sin información</span>`;
+                }
+            },
+            tooltipValueGetter: (params) => {
+                if (params.data.fueProcesado && params.data.fueEnviadoEmail) {
+                    return "El cliente fue procesado y se envió el correo.";
+                } else if (params.data.fueProcesado && !params.data.fueEnviadoEmail) {
+                    return "El cliente fue procesado pero aún no se envió el correo.";
+                } else if (!params.data.fueProcesado && !params.data.fueEnviadoEmail) {
+                    return "Pendiente de procesar y de enviar correo.";
+                } else {
+                    return "No hay información disponible.";
+                }
+            },
+            width: 150
+        },
+        { headerName: "DNI cliente", field: "dniCliente", width: 90 },
+        { headerName: "Nombre del cliente", field: "nombreCliente", width: 240 },
+        { headerName: "Teléfono", field: "telefonoCliente", width: 100 },
+        { headerName: "DNI Supervisor", field: "docSupervisor", hide: true },
+        { headerName: "DNI asesor", field: "dniAsesor", width: 100 },
+        {
+            headerName: "Oferta",
+            field: "ofertaMax",
+            valueFormatter: params => {
+                if (params.value === 0) return 'No aplica';
+                return params.value.toLocaleString('es-ES', { style: 'currency', currency: 'PEN' });
+            },
+            width: 120
+        },
         { headerName: "Agencia", field: "nombreAgencia" },
         // --- INICIO DE CAMBIOS ---
         {
@@ -31,7 +61,8 @@ App.derivaciones = (() => {
         {
             headerName: "Fecha visita",
             field: "fechaVisita",
-            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy')
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy'),
+            width: 100
         },
         {
             headerName: "Estado evidencia",
@@ -43,12 +74,14 @@ App.derivaciones = (() => {
                 }
                 return `<span class="badge-estado badge-no-enviado">No enviado</span>`;
             },
-            comparator: (valueA, valueB) => (valueA === valueB ? 0 : valueA === 'No enviado' ? -1 : 1)
+            comparator: (valueA, valueB) => (valueA === valueB ? 0 : valueA === 'No enviado' ? -1 : 1),
+            width: 100
         },
         {
             headerName: "Fecha evidencia",
             field: "fechaEvidencia",
-            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm:ss')
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm:ss'),
+            width: 120
         },
         // --- FIN DE CAMBIOS ---
         {
@@ -61,63 +94,107 @@ App.derivaciones = (() => {
                 container.className = 'd-flex gap-2';
 
                 // --- Botón 1: Reagendamiento ---
-                const btnReagendamiento = document.createElement('button');
-                btnReagendamiento.className = 'btn btn-sm btn-primary';
-                btnReagendamiento.title = 'Reagendamiento'; // Corregido
-                btnReagendamiento.innerHTML = '<i class="ri-file-list-3-line"></i>'; // Icono ajustado a la acción
+                let btnReagendamiento = document.createElement('button');
+                let btnEnviarEvidencia = document.createElement('button');
+                if (!params.data.puedeSerReagendado) {
+                    // El botón está deshabilitado.
+                    btnReagendamiento.className = 'btn btn-sm btn-secondary disabled';
+                    btnReagendamiento.title = 'Reagendamiento'; // Corregido
+                    btnReagendamiento.innerHTML = '<i class="ri-file-list-3-line"></i>'; // Icono ajustado a la acción
 
-                // Event listener para abrir el modal de reagendamiento.
-                btnReagendamiento.addEventListener('click', () => {
-                    const modalElement = document.getElementById('modalEvidenciasDerivaciones');
-                    if (modalElement) {
-                        const modalTitle = modalElement.querySelector('#labelModalEvidenciasDerivaciones');
-                        if (modalTitle) {
-                            modalTitle.textContent = `Reagendamiento de cita para: ${params.data.nombreCliente}`;
+                    // Tambien se mostrara el boton de evidencia.
+                    
+                    btnEnviarEvidencia.className = 'btn btn-sm btn-info';
+                    btnEnviarEvidencia.title = 'Enviar evidencia'; // Corregido
+                    btnEnviarEvidencia.innerHTML = '<i class="ri-file-add-line"></i>'; // Icono ajustado a la acción
+
+                    btnEnviarEvidencia.addEventListener('click', () => {
+                        const modalElement = document.getElementById('modalEvidenciasDerivaciones');
+                        if (modalElement) {
+                            const modalTitle = modalElement.querySelector('#labelModalEvidenciasDerivaciones');
+                            if (modalTitle) {
+                                modalTitle.textContent = `Evidencia de derivacion para: ${params.data.nombreCliente}`;
+                            }
+                            const modalButton = modalElement.querySelector('#enviar-evidencia-o-reagendacion');
+                            if (modalButton) {
+                                modalButton.onclick = () => submit_evidencia_derivacion(params.data.idDerivacion);
+                            }
+                            const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+
+                            cargarEvidencia(params.data);
+                            modal_id_derivacion_to_be_uploaded(params.data.idDerivacion);
+
+                            modal.show();
+
+                        } else {
+                            console.error('El elemento del modal con ID "modalEvidenciasDerivaciones" no fue encontrado en el DOM.');
                         }
+                    });
 
-                        const modalButton = modalElement.querySelector('#enviar-evidencia-o-reagendacion');
-                        if (modalButton) {
-                            modalButton.onclick = () => enviarReagendacion('fecha-reagendamiento-nueva', params.data.idDerivacion);
+                } else {
+                    
+                    btnReagendamiento.className = 'btn btn-sm btn-primary';
+                    btnReagendamiento.title = 'Reagendamiento'; // Corregido
+                    btnReagendamiento.innerHTML = '<i class="ri-file-list-3-line"></i>'; // Icono ajustado a la acción
+
+                    // Event listener para abrir el modal de reagendamiento.
+                    btnReagendamiento.addEventListener('click', () => {
+                        const modalElement = document.getElementById('modalEvidenciasDerivaciones');
+                        if (modalElement) {
+                            const modalTitle = modalElement.querySelector('#labelModalEvidenciasDerivaciones');
+                            if (modalTitle) {
+                                modalTitle.textContent = `Reagendamiento de cita para: ${params.data.nombreCliente}`;
+                            }
+
+                            const modalButton = modalElement.querySelector('#enviar-evidencia-o-reagendacion');
+                            if (modalButton) {
+                                modalButton.onclick = () => enviarReagendacion('fecha-reagendamiento-nueva', params.data.idDerivacion);
+                            }
+                            const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+
+                            cargarReagendacion(params.data);
+                            modal_id_derivacion_to_be_uploaded(params.data.idDerivacion);
+
+                            modal.show();
+
+                        } else {
+                            console.error('El elemento del modal con ID "modalEvidenciasDerivaciones" no fue encontrado en el DOM.');
                         }
-                        const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+                    });
 
-                        cargarReagendacion(params.data);
-                        modal_id_derivacion_to_be_uploaded(params.data.idDerivacion);
+                    btnEnviarEvidencia.className = 'btn btn-sm btn-secondary disabled';
+                    btnEnviarEvidencia.title = 'Enviar evidencia'; // Corregido
+                    btnEnviarEvidencia.innerHTML = '<i class="ri-file-add-line"></i>'; // Icono ajustado a la acción
 
-                        modal.show();
-                        console.log("Abriendo modal de reagendamiento para:", params.data);
-                    } else {
-                        console.error('El elemento del modal con ID "modalEvidenciasDerivaciones" no fue encontrado en el DOM.');
-                    }
-                });
+                }
 
-                const btnEnviarEvidencia = document.createElement('button');
-                btnEnviarEvidencia.className = 'btn btn-sm btn-info';
-                btnEnviarEvidencia.title = 'Enviar evidencia'; // Corregido
-                btnEnviarEvidencia.innerHTML = '<i class="ri-file-add-line"></i>'; // Icono ajustado a la acción
+                // const btnEnviarEvidencia = document.createElement('button');
+                // btnEnviarEvidencia.className = 'btn btn-sm btn-info';
+                // btnEnviarEvidencia.title = 'Enviar evidencia'; // Corregido
+                // btnEnviarEvidencia.innerHTML = '<i class="ri-file-add-line"></i>'; // Icono ajustado a la acción
 
-                btnEnviarEvidencia.addEventListener('click', () => {
-                    const modalElement = document.getElementById('modalEvidenciasDerivaciones');
-                    if (modalElement) {
-                        const modalTitle = modalElement.querySelector('#labelModalEvidenciasDerivaciones');
-                        if (modalTitle) {
-                            modalTitle.textContent = `Evidencia de derivacion para: ${params.data.nombreCliente}`;
-                        }
-                        const modalButton = modalElement.querySelector('#enviar-evidencia-o-reagendacion');
-                        if (modalButton) {
-                            modalButton.onclick = () => submit_evidencia_derivacion(params.data.idDerivacion);
-                        }
-                        const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+                // btnEnviarEvidencia.addEventListener('click', () => {
+                //     const modalElement = document.getElementById('modalEvidenciasDerivaciones');
+                //     if (modalElement) {
+                //         const modalTitle = modalElement.querySelector('#labelModalEvidenciasDerivaciones');
+                //         if (modalTitle) {
+                //             modalTitle.textContent = `Evidencia de derivacion para: ${params.data.nombreCliente}`;
+                //         }
+                //         const modalButton = modalElement.querySelector('#enviar-evidencia-o-reagendacion');
+                //         if (modalButton) {
+                //             modalButton.onclick = () => submit_evidencia_derivacion(params.data.idDerivacion);
+                //         }
+                //         const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
 
-                        cargarEvidencia(params.data);
-                        modal_id_derivacion_to_be_uploaded(params.data.idDerivacion);
+                //         cargarEvidencia(params.data);
+                //         modal_id_derivacion_to_be_uploaded(params.data.idDerivacion);
 
-                        modal.show();
-                        console.log("Abriendo modal de evidencias para la fila:", params.data);
-                    } else {
-                        console.error('El elemento del modal con ID "modalEvidenciasDerivaciones" no fue encontrado en el DOM.');
-                    }
-                });
+                //         modal.show();
+
+                //     } else {
+                //         console.error('El elemento del modal con ID "modalEvidenciasDerivaciones" no fue encontrado en el DOM.');
+                //     }
+                // });
 
                 container.appendChild(btnReagendamiento);
                 container.appendChild(btnEnviarEvidencia);
@@ -127,11 +204,17 @@ App.derivaciones = (() => {
             width: 130,
             sortable: false,
             resizable: false
-        },
-        { headerName: "DNI Supervisor", field: "docSupervisor", hide: true },
+        }
     ];
 
-    const externalFilterState = { dniCliente: '', agencia: 'Todos', supervisor: 'Todos', asesor: 'Todos', fechaVisita: '' };
+    const externalFilterState = { 
+        dniCliente: '', 
+        agencia: 'Todos', 
+        supervisor: 'Todos', 
+        asesor: 'Todos', 
+        fechaDerivacion: '',
+        fechaVisita: '' 
+    };
 
     // --- FUNCIONES PRIVADAS DEL MÓDULO ---
 
@@ -160,12 +243,19 @@ App.derivaciones = (() => {
 
     function doesExternalFilterPass(node) {
         const { data } = node;
-        const { dniCliente, agencia, asesor, fechaVisita, supervisor } = externalFilterState;
+        const { dniCliente, agencia, asesor, fechaVisita, supervisor, fechaDerivacion } = externalFilterState;
         if (dniCliente && !String(data.dniCliente).includes(dniCliente)) return false;
         if (agencia !== 'Todos' && data.nombreAgencia !== agencia) return false;
         if (asesor !== 'Todos' && data.dniAsesor !== asesor) return false;
         if (supervisor !== 'Todos' && data.docSupervisor !== supervisor) return false;
-        if (fechaVisita && data.fechaVisita !== fechaVisita) return false;
+        if (fechaVisita && data.fechaVisita !== fechaVisita) 
+        {
+            return false;
+        }
+        if (fechaDerivacion && data.fechaDerivacion !== fechaDerivacion) {
+            console.log('Filtrado por fechaDerivacion:', { filtro: fechaDerivacion, data: data.fechaDerivacion });
+            return false;
+        }
         return true;
     }
 
@@ -186,21 +276,21 @@ App.derivaciones = (() => {
         columnDefs: derivacionesTableColumns,
         rowData: listaDerivaciones,
         pagination: true,
-        paginationPageSize: 10,
+        paginationPageSize: 20,
         enableBrowserTooltips: true,
-        defaultColDef: { sortable: true, resizable: true, minWidth: 150 },
+        defaultColDef: { sortable: true, resizable: true, minWidth: 50, flex: 1 },
         initialState: { sort: { sortModel: [{ colId: 'estadoEvidencia', sort: 'asc' }] } },
         isExternalFilterPresent: isExternalFilterPresent,
         doesExternalFilterPass: doesExternalFilterPass,
         onGridReady: (params) => {
             gridApi = params.api;
             document.getElementById('totalDelMesDerivaciones').textContent = listaDerivaciones.length;
-            params.api.sizeColumnsToFit({ defaultMinWidth: 150 });
+            params.api.sizeColumnsToFit({ defaultMinWidth: 50 });
         },
         onGridSizeChanged: (params) => {
-            params.api.sizeColumnsToFit({ defaultMinWidth: 150 });
+            params.api.sizeColumnsToFit({ defaultMinWidth: 50 });
         },
-        onFilterChanged: actualizarContadores
+        onFilterChanged: actualizarContadores,
     };
 
     async function getAllDerivaciones() {
@@ -218,7 +308,6 @@ App.derivaciones = (() => {
                 throw new Error(data.message || 'Error al obtener las derivaciones');
             }
             const data = await response.json();
-            // console.log('Derivaciones obtenidas:', data);
             if (data.success === true) {
                 return data.data || [];
             } else {
@@ -249,6 +338,9 @@ App.derivaciones = (() => {
             externalFilterState.asesor = document.getElementById('asesorDerivaciones').value;
             externalFilterState.supervisor = document.getElementById('supervisorDerivaciones').value;
             externalFilterState.fechaVisita = document.getElementById('fechaVisitaDerivacion').value;
+            if (externalFilterState.fechaVisita) {
+                externalFilterState.fechaVisita = formatDateTime(externalFilterState.fechaVisita, 'dd/mm/yyyy');
+            }
             if (gridApi) {
                 gridApi.onFilterChanged();
             }
@@ -258,13 +350,27 @@ App.derivaciones = (() => {
         document.getElementById('agenciaDerivaciones').addEventListener('change', onFilterChanged);
         document.getElementById('asesorDerivaciones').addEventListener('change', onFilterChanged);
         document.getElementById('supervisorDerivaciones').addEventListener('change', (e) => {
-            const selectedSupervisorId = parseInt(e.target.value, 10);
+            const supervisorDni = e.target.value;
+            const idSupervisor = data.supervisores.find(s => s.dni === supervisorDni).idUsuario;
+            const asesores = data.asesores || [];
 
-            const uniqueAdvisors = asesores.filter(a => a.idusuariosup === selectedSupervisorId);
+            const allAdvisors = asesores.filter(a => a.idusuariosup === idSupervisor);
+
+            const uniqueAdvisors = [
+                ...new Map(allAdvisors.map(item => [item.dni, {
+                    dni: item.dni,
+                    nombresCompletos: item.nombresCompletos
+                }])).values()
+            ];
+
+            const uniqueAdvisorsWithDerivaciones = uniqueAdvisors.filter(asesor =>
+                listaDerivaciones.some(derivacion => derivacion.dniAsesor === asesor.dni)
+            );
 
             const selectAsesor = document.getElementById('asesorDerivaciones');
-            uniqueAdvisors.forEach(asesor => selectAsesor.appendChild(new Option(asesor.nombresCompletos, asesor.idUsuario)));
-
+            selectAsesor.innerHTML = '';
+            selectAsesor.appendChild(new Option('Todos', 'Todos'));
+            uniqueAdvisorsWithDerivaciones.forEach(asesor => selectAsesor.appendChild(new Option(asesor.nombresCompletos, asesor.dni)));
             onFilterChanged();
         });
         document.getElementById('fechaVisitaDerivacion').addEventListener('change', onFilterChanged);
@@ -291,30 +397,70 @@ App.derivaciones = (() => {
         }
     }
 
-
     // Función que pobla los selects de los filtros.
-    function populateFilters(rol) {
+    function populateFilters(rol, dataasesores = [], datasupervisores = []) {
         if (rol === 1 || rol === 4) {
             const agenciaSelect = document.getElementById('agenciaDerivaciones');
             const asesorSelect = document.getElementById('asesorDerivaciones');
             const supervisorSelect = document.getElementById('supervisorDerivaciones');
 
             const uniqueAgencies = [...new Set(listaDerivaciones.map(item => item.nombreAgencia))];
-            const uniqueAdvisors = [...new Set(listaDerivaciones.map(item => item.dniAsesor))];
-            const uniqueSupervisors = [...new Set(listaDerivaciones.map(item => item.docSupervisor))];
+            let uniqueAdvisors = [
+                ...new Map(listaDerivaciones.map(item => [item.dniAsesor, {
+                    dni: item.dniAsesor
+                }])).values()
+            ];
+
+            let enrichmentAdvisors = uniqueAdvisors.map(asesor => {
+                const usuario = dataasesores.find(u => u.dni === asesor.dni);
+                return {
+                    dni: asesor.dni,
+                    nombre: usuario ? usuario.nombresCompletos : 'Desconocido'
+                };
+            });
+
+            const uniqueSupervisors = [
+                ...new Map(listaDerivaciones.map(item => [item.docSupervisor, {
+                    dni: item.docSupervisor
+                }])).values()
+            ];
+
+            let enrichmentSupervisors = uniqueSupervisors.map(supervisor => {
+                const usuario = datasupervisores.find(u => u.dni === supervisor.dni);
+                return {
+                    dni: supervisor.dni,
+                    nombre: usuario ? usuario.nombresCompletos : 'Desconocido'
+                };
+            });
 
             uniqueAgencies.forEach(agencia => agenciaSelect.appendChild(new Option(agencia, agencia)));
-            uniqueAdvisors.forEach(asesor => asesorSelect.appendChild(new Option(asesor, asesor)));
-            uniqueSupervisors.forEach(supervisor => supervisorSelect.appendChild(new Option(supervisor, supervisor)));
+            enrichmentAdvisors.forEach(asesor => {
+                asesorSelect.appendChild(new Option(asesor.nombre, asesor.dni));
+            });
+
+            enrichmentSupervisors.forEach(supervisor => {
+                supervisorSelect.appendChild(new Option(supervisor.nombre, supervisor.dni));
+            });
         } if (rol === 2) {
             const agenciaSelect = document.getElementById('agenciaDerivaciones');
             const asesorSelect = document.getElementById('asesorDerivaciones');
 
             const uniqueAgencies = [...new Set(listaDerivaciones.map(item => item.nombreAgencia))];
-            const uniqueAdvisors = [...new Set(listaDerivaciones.map(item => item.dniAsesor))];
+            let uniqueAdvisors = [
+                ...new Map(listaDerivaciones.map(item => [item.dniAsesor, {
+                    dni: item.dniAsesor
+                }])).values()
+            ];
+            let enrichmentAdvisors = uniqueAdvisors.map(asesor => {
+                const usuario = dataasesores.find(u => u.dni === asesor.dni);
+                return {
+                    dni: asesor.dni,
+                    nombre: usuario ? usuario.nombresCompletos : 'Desconocido'
+                };
+            });
 
             uniqueAgencies.forEach(agencia => agenciaSelect.appendChild(new Option(agencia, agencia)));
-            uniqueAdvisors.forEach(asesor => asesorSelect.appendChild(new Option(asesor, asesor)));
+            enrichmentAdvisors.forEach(asesor => asesorSelect.appendChild(new Option(asesor.nombre, asesor.dni)));
             // Luego ocultamos el select de supervisores.
             document.getElementById('supervisorDerivacionesCol').classList.add('d-none');
         } else if (rol === 3) {
@@ -336,13 +482,13 @@ App.derivaciones = (() => {
             const gridDiv = document.querySelector('#gridDerivaciones');
             if (gridDiv) {
                 data = await getAllDerivaciones();
-                console.log('Datos obtenidos:', data);
+
                 usuariorol = data.rolUsuario || 0;
                 listaDerivaciones = data.derivaciones || [];
                 await createTable(usuariorol);
                 derivacionesGridOptions.rowData = listaDerivaciones;
                 agGrid.createGrid(gridDiv, derivacionesGridOptions);
-                populateFilters(usuariorol);
+                populateFilters(usuariorol, data.asesores || [], data.supervisores || []);
                 setupEventListeners(data);
             }
         }

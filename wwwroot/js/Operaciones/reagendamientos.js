@@ -5,36 +5,7 @@ App.reagendamientos = (() => {
 
     let gridApi;
 
-    const listaReagendamientos = [
-        {
-            historico: '', estadoReagendamiento: 'Enviado', numReagendamiento: 'R-001', dniCliente: '12345678', nombreCliente: 'Juan Pérez', telefono: '987654321', dniAsesor: '87654321', oferta: 'Crédito Personal', agencia: 'Agencia Central', fechaVisita: '2025-08-15', fechaReagendamiento: '2025-08-20T09:30:00', supervisor: 'Supervisor A', history: [
-                { estadoReagendamiento: 'Pendiente', numReagendamiento: 'R-001-1', dniCliente: '12345678', nombreCliente: 'Juan Pérez', telefono: '987654321', dniAsesor: '87654321', oferta: 'Crédito Personal', agencia: 'Agencia Central', fechaVisita: '2025-08-10', fechaReagendamiento: '2025-08-15T11:00:00', supervisor: 'Supervisor A' },
-                { estadoReagendamiento: 'Enviado', numReagendamiento: 'R-001-2', dniCliente: '12345678', nombreCliente: 'Juan Pérez', telefono: '987654321', dniAsesor: '87654321', oferta: 'Crédito Personal', agencia: 'Agencia Central', fechaVisita: '2025-08-12', fechaReagendamiento: '2025-08-18T14:20:00', supervisor: 'Supervisor A' }
-            ]
-        },
-        {
-            historico: '', estadoReagendamiento: 'Pendiente', numReagendamiento: 'R-002', dniCliente: '87654321', nombreCliente: 'Ana Gómez', telefono: '912345678', dniAsesor: '12345678', oferta: 'Tarjeta de Crédito', agencia: 'Sucursal Norte', fechaVisita: '2025-08-14', fechaReagendamiento: '2025-08-22T16:00:00', supervisor: 'Supervisor B', history: [
-                { estadoReagendamiento: 'Enviado', numReagendamiento: 'R-002-1', dniCliente: '87654321', nombreCliente: 'Ana Gómez', telefono: '912345678', dniAsesor: '12345678', oferta: 'Tarjeta de Crédito', agencia: 'Sucursal Norte', fechaVisita: '2025-08-09', fechaReagendamiento: '2025-08-14T10:15:00', supervisor: 'Supervisor B' }
-            ]
-        },
-        {
-            historico: '', estadoReagendamiento: 'Enviado', numReagendamiento: 'R-003', dniCliente: '11223344', nombreCliente: 'Carlos Ruiz', telefono: '955555555', dniAsesor: '44332211', oferta: 'Seguro de Vida', agencia: 'Agencia Sur', fechaVisita: '2025-08-16', fechaReagendamiento: '2025-08-21T12:45:00', supervisor: 'Supervisor A', history: [
-                { estadoReagendamiento: 'Pendiente', numReagendamiento: 'R-003-1', dniCliente: '11223344', nombreCliente: 'Carlos Ruiz', telefono: '955555555', dniAsesor: '44332211', oferta: 'Seguro de Vida', agencia: 'Agencia Sur', fechaVisita: '2025-08-11', fechaReagendamiento: '2025-08-16T13:00:00', supervisor: 'Supervisor A' },
-                { estadoReagendamiento: 'Enviado', numReagendamiento: 'R-003-2', dniCliente: '11223344', nombreCliente: 'Carlos Ruiz', telefono: '955555555', dniAsesor: '44332211', oferta: 'Seguro de Vida', agencia: 'Agencia Sur', fechaVisita: '2025-08-13', fechaReagendamiento: '2025-08-19T18:00:00', supervisor: 'Supervisor A' }
-            ]
-        },
-        {
-            historico: '', estadoReagendamiento: 'Pendiente', numReagendamiento: 'R-004', dniCliente: '55443322', nombreCliente: 'José Torres', telefono: '922222222', dniAsesor: '22334455', oferta: 'Línea de Crédito', agencia: 'Sucursal Oeste', fechaVisita: '2025-08-11', fechaReagendamiento: '2025-08-19T08:00:00', supervisor: 'Supervisor B', history: [
-                { estadoReagendamiento: 'Enviado', numReagendamiento: 'R-004-1', dniCliente: '55443322', nombreCliente: 'José Torres', telefono: '922222222', dniAsesor: '22334455', oferta: 'Línea de Crédito', agencia: 'Sucursal Oeste', fechaVisita: '2025-08-06', fechaReagendamiento: '2025-08-11T17:30:00', supervisor: 'Supervisor B' }
-            ]
-        },
-        {
-            historico: '', estadoReagendamiento: 'Enviado', numReagendamiento: 'R-005', dniCliente: '66554433', nombreCliente: 'Luisa Castro', telefono: '944444444', dniAsesor: '33445566', oferta: 'Crédito Vehicular', agencia: 'Agencia Norte', fechaVisita: '2025-08-17', fechaReagendamiento: '2025-08-25T11:20:00', supervisor: 'Supervisor A', history: [
-                { estadoReagendamiento: 'Pendiente', numReagendamiento: 'R-005-1', dniCliente: '66554433', nombreCliente: 'Luisa Castro', telefono: '944444444', dniAsesor: '33445566', oferta: 'Crédito Vehicular', agencia: 'Agencia Norte', fechaVisita: '2025-08-12', fechaReagendamiento: '2025-08-17T15:00:00', supervisor: 'Supervisor A' },
-                { estadoReagendamiento: 'Enviado', numReagendamiento: 'R-005-2', dniCliente: '66554433', nombreCliente: 'Luisa Castro', telefono: '944444444', dniAsesor: '33445566', oferta: 'Crédito Vehicular', agencia: 'Agencia Norte', fechaVisita: '2025-08-14', fechaReagendamiento: '2025-08-20T09:00:00', supervisor: 'Supervisor A' }
-            ]
-        }
-    ];
+    let listaReagendamientos = [];
 
     // Definición de las columnas para la tabla de Reagendamientos.
     // Definición de las columnas para la tabla de Reagendamientos.
@@ -74,7 +45,6 @@ App.reagendamientos = (() => {
                             };
                             agGrid.createGrid(histGridDiv, histGridOptions);
                         }
-                        console.log('Abrir modal histórico para:', params.data);
                     } else {
                         console.error('Modal con ID #modalHistoricoReagendamiento no encontrado.');
                     }
@@ -93,7 +63,7 @@ App.reagendamientos = (() => {
                 return `<span class="badge-estado badge-reag-pendiente">Pendiente</span>`;
             }
         },
-        { headerName: "N° reagendamiento", field: "numReagendamiento" },
+        { headerName: "N° reagendamiento", field: "numeroReagendamiento" },
         { headerName: "DNI cliente", field: "dniCliente" },
         { headerName: "Nombre cliente", field: "nombreCliente" },
         { headerName: "Teléfono", field: "telefono" },
@@ -113,7 +83,42 @@ App.reagendamientos = (() => {
         }
         // --- FIN DE CAMBIOS ---
     ];
+    async function fetchReagendamientos() {
+        const url = window.location.origin;
+        const final_url = url + '/Operaciones/GetAllReagendamientos';
 
+        try {
+            const response = await fetch(final_url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (!response.ok) {
+                throw new Error(data.message || 'Error al obtener las derivaciones');
+            }
+            const data = await response.json();
+            if (data.success === true) {
+                return data.data || [];
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Atención',
+                    text: data.message || 'No se encontraron derivaciones.'
+                });
+                return [];
+            }
+        } catch (error) {
+            console.error('Error al obtener las derivaciones:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudieron cargar las derivaciones. Por favor, inténtelo de nuevo más tarde.'
+            });
+            return;
+        }
+
+    }
     // Lógica para los filtros externos.
     const externalFilterState = {
         dniCliente: '', supervisor: 'Todos', asesor: 'Todos', agencia: 'Todos', fechaReagendamiento: '', fechaVisita: ''
@@ -219,14 +224,16 @@ App.reagendamientos = (() => {
 
     // --- INTERFAZ PÚBLICA DEL MÓDULO ---
     return {
-        init: () => {
+        init: async () => {
             // 3. Renderizado de la tabla en el div especificado.
             const gridDiv = document.querySelector('#gridReagendamientos');
             if (gridDiv) {
+                const data = await fetchReagendamientos();
+                listaReagendamientos = data.reagendamientos || [];
+                reagendamientosGridOptions.rowData = listaReagendamientos;
                 agGrid.createGrid(gridDiv, reagendamientosGridOptions);
                 populateFilters();
                 setupEventListeners();
-                console.log("Módulo de Reagendamientos inicializado.");
             }
         }
     };

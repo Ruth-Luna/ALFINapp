@@ -72,7 +72,7 @@ namespace ALFINapp.Controllers
             {
                 return Json(new { success = false, message = result.message });
             }
-            if (result.data == null || !result.data.Any())
+            if (result.data == null)
             {
                 // If no reschedulings are found, return an empty list this is to avoid null reference exceptions
                 // the dao method should handle this case

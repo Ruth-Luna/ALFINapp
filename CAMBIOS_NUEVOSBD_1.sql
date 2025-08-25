@@ -1,4 +1,7 @@
-GO 
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 ALTER PROCEDURE [dbo].[SP_REAGENDAMIENTOS_GET_REAGENDAMIENTOS_VIEW]
 (
     @id_usuario INT = NULL,
@@ -101,8 +104,8 @@ BEGIN
         ar.*, 
         CASE
             WHEN ar.fecha_agendamiento BETWEEN @fecha_reagendacion1 AND @fecha_reagendacion2 
-            THEN 1
-            ELSE 0
+            THEN CAST(1 AS BIT)
+            ELSE CAST(0 AS BIT)
         END AS [puede_ser_reagendado],
         ROW_NUMBER() OVER (PARTITION BY ar.id_derivacion ORDER BY ar.id_agendamientos_re DESC) AS rn,
         ROW_NUMBER() OVER (PARTITION BY ar.id_derivacion ORDER BY ar.id_agendamientos_re ASC) AS rn_asc
@@ -125,6 +128,7 @@ BEGIN
         da.estado_derivacion,
         da.fecha_derivacion AS fecha_derivacion_original,
         da.doc_supervisor,
+        da.nombre_cliente,
         R.rn_asc AS numero_reagendamiento
     FROM CTE_REAGENDAMIENTOS R
     LEFT JOIN [CORE_ALFIN].[dbo].[usuarios] U ON R.dni_asesor = U.dni
@@ -138,6 +142,7 @@ BEGIN
         AND R.rn_asc <> 1
     ORDER BY R.fecha_visita DESC, R.fecha_agendamiento DESC;
 END
+GO
 
 
 
