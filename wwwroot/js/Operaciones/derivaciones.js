@@ -1,27 +1,27 @@
 ﻿function formatDateTime(dateString, format = 'dd/mm/yyyy') {
-        if (!dateString) return ''; // Si no hay fecha, retorna vacío
-        const date = new Date(dateString);
-        if (isNaN(date.getTime())) return dateString;
+    if (!dateString) return ''; // Si no hay fecha, retorna vacío
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
 
-        const pad = (num) => String(num).padStart(2, '0');
-        const day = pad(date.getDate());
-        const month = pad(date.getMonth() + 1); // Los meses en JS empiezan en 0
-        const year = date.getFullYear();
-        const hours = pad(date.getHours());
-        const minutes = pad(date.getMinutes());
-        const seconds = pad(date.getSeconds());
+    const pad = (num) => String(num).padStart(2, '0');
+    const day = pad(date.getDate());
+    const month = pad(date.getMonth() + 1); // Los meses en JS empiezan en 0
+    const year = date.getFullYear();
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const seconds = pad(date.getSeconds());
 
-        if (format === 'dd/mm/yyyy hh:mm:ss') {
-            return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-        } else if (format === 'yyyy-mm-dd') {
-            return `${year}-${month}-${day}`;
-        } else if (format === 'yyyy-mm-dd hh:mm') {
-            return `${year}-${month}-${day} ${hours}:${minutes}`;
-        } else if (format === 'dd/mm/yyyy hh:mm') {
-            return `${day}/${month}/${year} ${hours}:${minutes}`;
-        }
-        return `${day}/${month}/${year}`;
+    if (format === 'dd/mm/yyyy hh:mm:ss') {
+        return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+    } else if (format === 'yyyy-mm-dd') {
+        return `${year}-${month}-${day}`;
+    } else if (format === 'yyyy-mm-dd hh:mm') {
+        return `${year}-${month}-${day} ${hours}:${minutes}`;
+    } else if (format === 'dd/mm/yyyy hh:mm') {
+        return `${day}/${month}/${year} ${hours}:${minutes}`;
     }
+    return `${day}/${month}/${year}`;
+}
 
 async function getAllDerivaciones() {
     const url = window.location.origin;
@@ -248,7 +248,6 @@ App.derivaciones = (() => {
     };
 
     // --- FUNCIONES PRIVADAS DEL MÓDULO ---
-    
 
     function isExternalFilterPresent() { return Object.values(externalFilterState).some(value => value !== '' && value !== 'Todos'); }
 
@@ -497,6 +496,12 @@ App.derivaciones = (() => {
                 populateFilters(usuariorol, asesores || [], supervisores || []);
                 setupEventListeners(asesores || [], supervisores || []);
             }
+        },
+        exportXLSX: () => {
+            if (!gridApi) return;
+            const csv = gridApi.getDataAsCsv();
+            const workbook = XLSX.read(csv, { type: "string" });
+            XLSX.writeFile(workbook, "derivaciones.xlsx");
         }
     };
 })();

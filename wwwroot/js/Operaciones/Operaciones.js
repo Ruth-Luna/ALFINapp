@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', async () => {
+﻿document.addEventListener('DOMContentLoaded', async () => {
     data = await getAllDerivaciones();
     rol = data.rolUsuario || 0;
     usuarioAsesores = data.asesores || [];
