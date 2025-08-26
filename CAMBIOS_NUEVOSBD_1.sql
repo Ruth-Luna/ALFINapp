@@ -103,7 +103,7 @@ BEGIN
     SELECT 
         ar.*, 
         CASE
-            WHEN ar.fecha_agendamiento BETWEEN @fecha_reagendacion1 AND @fecha_reagendacion2 
+            WHEN CAST(ar.fecha_agendamiento AS date) <= @fecha_reagendacion2
             THEN CAST(1 AS BIT)
             ELSE CAST(0 AS BIT)
         END AS [puede_ser_reagendado],
@@ -144,6 +144,8 @@ BEGIN
 END
 GO
 
+
+EXEC SP_REAGENDAMIENTOS_GET_REAGENDAMIENTOS_VIEW
 
 
 GO 
