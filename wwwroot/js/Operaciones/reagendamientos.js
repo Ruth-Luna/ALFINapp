@@ -118,7 +118,8 @@ App.reagendamientos = (() => {
             headerName: "Estado reagendamiento", field: "estadoReagendamiento",
             cellClass: "d-flex align-items-center justify-content-center",
             cellRenderer: (params) => {
-                if (params.value === "Enviado") {
+                console.log(params.value)
+                if (params.value === "REAGENDACION EXITOSA") {
                     return `<span class="badge-estado badge-reag-enviado">Enviado</span>`;
                 }
                 return `<span class="badge-estado badge-reag-pendiente">Pendiente</span>`;
@@ -194,6 +195,12 @@ App.reagendamientos = (() => {
         rowData: listaReagendamientos,
         pagination: true,
         paginationPageSize: 20,
+
+        copyHeadersToClipboard: true,
+        suppressClipboardPaste: true,
+        enableCellTextSelection: true,
+        enableBrowserTooltips: true,
+
         defaultColDef: { sortable: true, resizable: true, minWidth: 150 },
         onGridReady: (params) => {
             gridApi = params.api;
