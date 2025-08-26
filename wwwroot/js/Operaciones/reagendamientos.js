@@ -1,4 +1,38 @@
-﻿
+﻿async function getAllReagendamientos() {
+    const url = window.location.origin;
+    const final_url = url + '/Operaciones/GetAllReagendamientos';
+    try {
+        const response = await fetch(final_url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!response.ok) {
+            throw new Error(data.message || 'Error al obtener las derivaciones');
+        }
+        const data = await response.json();
+        if (data.success === true) {
+            return data.data || [];
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Atención',
+                text: data.message || 'No se encontraron derivaciones.'
+            });
+            return [];
+        }
+    } catch (error) {
+        console.error('Error al obtener las derivaciones:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudieron cargar las derivaciones. Por favor, inténtelo de nuevo más tarde.'
+        });
+        return;
+    }
+}
+
 
 var App = App || {};
 
@@ -6,27 +40,49 @@ App.reagendamientos = (() => {
 
     let gridApi;
 
-    const listaReagendamientos = [
-        { historico: '', estadoReagendamiento: 'Enviado', numReagendamiento: 'R-001', dniCliente: '12345678', nombreCliente: 'Juan Pérez', telefono: '987654321', dniAsesor: '87654321', oferta: 'Crédito Personal', agencia: 'Agencia Central', fechaVisita: '2025-08-15', fechaReagendamiento: '2025-08-20', supervisor: 'Supervisor A' },
-        { historico: '', estadoReagendamiento: 'Pendiente', numReagendamiento: 'R-002', dniCliente: '87654321', nombreCliente: 'Ana Gómez', telefono: '912345678', dniAsesor: '12345678', oferta: 'Tarjeta de Crédito', agencia: 'Sucursal Norte', fechaVisita: '2025-08-14', fechaReagendamiento: '2025-08-22', supervisor: 'Supervisor B' },
-        { historico: '', estadoReagendamiento: 'Enviado', numReagendamiento: 'R-003', dniCliente: '11223344', nombreCliente: 'Carlos Ruiz', telefono: '955555555', dniAsesor: '44332211', oferta: 'Seguro de Vida', agencia: 'Agencia Sur', fechaVisita: '2025-08-16', fechaReagendamiento: '2025-08-21', supervisor: 'Supervisor A' },
-        { historico: '', estadoReagendamiento: 'Pendiente', numReagendamiento: 'R-004', dniCliente: '55443322', nombreCliente: 'José Torres', telefono: '922222222', dniAsesor: '22334455', oferta: 'Línea de Crédito', agencia: 'Sucursal Oeste', fechaVisita: '2025-08-11', fechaReagendamiento: '2025-08-19', supervisor: 'Supervisor B' },
-        { historico: '', estadoReagendamiento: 'Enviado', numReagendamiento: 'R-005', dniCliente: '66554433', nombreCliente: 'Luisa Castro', telefono: '944444444', dniAsesor: '33445566', oferta: 'Crédito Vehicular', agencia: 'Agencia Norte', fechaVisita: '2025-08-17', fechaReagendamiento: '2025-08-25', supervisor: 'Supervisor A' }
-    ];
+    let listaReagendamientos = [];
 
+    // Definición de las columnas para la tabla de Reagendamientos.
     // Definición de las columnas para la tabla de Reagendamientos.
     const reagendamientosTableColumns = [
         {
             headerName: "Histórico", field: "historico",
             cellClass: "d-flex align-items-center justify-content-center",
             cellRenderer: (params) => {
+                // ... (el contenido de esta función no cambia)
                 const btn = document.createElement('button');
                 btn.className = 'btn btn-sm btn-primary';
                 btn.title = 'Ver Histórico';
                 btn.innerHTML = '<i class="ri-history-line"></i>';
                 btn.addEventListener('click', () => {
-                    // La lógica para abrir el modal irá aquí en el futuro.
-                    console.log('Abrir modal histórico para:', params.data);
+                    const modalElement = document.getElementById('modalHistoricoReagendamiento');
+                    if (modalElement) {
+                        const modal = new bootstrap.Modal(modalElement);
+                        modal.show();
+                        const histGridDiv = document.getElementById('gridHistóricoReagendamientos');
+                        if (histGridDiv) {
+                            while (histGridDiv.firstChild) {
+                                histGridDiv.removeChild(histGridDiv.firstChild);
+                            }
+                            const histColumns = reagendamientosTableColumns.slice(1);
+                            const histGridOptions = {
+                                columnDefs: histColumns,
+                                rowData: params.data.history || [],
+                                pagination: true,
+                                paginationPageSize: 20,
+                                defaultColDef: { sortable: true, resizable: true, minWidth: 150 },
+                                onGridReady: (p) => {
+                                    p.api.sizeColumnsToFit({ defaultMinWidth: 150 });
+                                },
+                                onGridSizeChanged: (p) => {
+                                    p.api.sizeColumnsToFit({ defaultMinWidth: 150 });
+                                },
+                            };
+                            agGrid.createGrid(histGridDiv, histGridOptions);
+                        }
+                    } else {
+                        console.error('Modal con ID #modalHistoricoReagendamiento no encontrado.');
+                    }
                 });
                 return btn;
             },
@@ -37,26 +93,37 @@ App.reagendamientos = (() => {
             cellClass: "d-flex align-items-center justify-content-center",
             cellRenderer: (params) => {
                 if (params.value === "Enviado") {
-                    return `<span class="badge-estado badge-reag-enviado">Enviado</span>`; // Requiere una clase CSS verde
+                    return `<span class="badge-estado badge-reag-enviado">Enviado</span>`;
                 }
-                return `<span class="badge-estado badge-reag-pendiente">Pendiente</span>`; // Requiere una clase CSS amarilla
+                return `<span class="badge-estado badge-reag-pendiente">Pendiente</span>`;
             }
         },
-        { headerName: "N° reagendamiento", field: "numReagendamiento" },
+        { headerName: "N° reagendamiento", field: "numeroReagendamiento" },
         { headerName: "DNI cliente", field: "dniCliente" },
         { headerName: "Nombre cliente", field: "nombreCliente" },
         { headerName: "Teléfono", field: "telefono" },
         { headerName: "DNI asesor", field: "dniAsesor" },
         { headerName: "Oferta", field: "oferta" },
         { headerName: "Agencia", field: "agencia" },
-        { headerName: "Fecha visita", field: "fechaVisita" },
-        { headerName: "Fecha reagendamiento", field: "fechaReagendamiento" }
+        // --- INICIO DE CAMBIOS ---
+        {
+            headerName: "Fecha visita",
+            field: "fechaVisita",
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy')
+        },
+        {
+            headerName: "Fecha reagendamiento",
+            field: "fechaAgendamiento",
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm')
+        }
+        // --- FIN DE CAMBIOS ---
     ];
 
     // Lógica para los filtros externos.
     const externalFilterState = {
         dniCliente: '', supervisor: 'Todos', asesor: 'Todos', agencia: 'Todos', fechaReagendamiento: '', fechaVisita: ''
     };
+
 
     function isExternalFilterPresent() {
         return Object.values(externalFilterState).some(value => value !== '' && value !== 'Todos');
@@ -80,7 +147,7 @@ App.reagendamientos = (() => {
         columnDefs: reagendamientosTableColumns,
         rowData: listaReagendamientos,
         pagination: true,
-        paginationPageSize: 10,
+        paginationPageSize: 20,
         defaultColDef: { sortable: true, resizable: true, minWidth: 150 },
         onGridReady: (params) => {
             gridApi = params.api;
@@ -135,12 +202,22 @@ App.reagendamientos = (() => {
         });
     }
 
+    async function createTable(rol) {
+
+    }
+
     // --- INTERFAZ PÚBLICA DEL MÓDULO ---
     return {
-        init: () => {
+        init: async (reagendamientos, rol, asesores, supervisores) => {
             // 3. Renderizado de la tabla en el div especificado.
             const gridDiv = document.querySelector('#gridReagendamientos');
             if (gridDiv) {
+                usuariorol = rol || 0;
+
+                listaReagendamientos = reagendamientos || [];
+
+                reagendamientosGridOptions.rowData = listaReagendamientos;
+                console.log('Datos de reagendamientos cargados:', listaReagendamientos); // --- IGNORE ---
                 agGrid.createGrid(gridDiv, reagendamientosGridOptions);
                 populateFilters();
                 setupEventListeners();

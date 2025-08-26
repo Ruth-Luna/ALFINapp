@@ -33,7 +33,7 @@ namespace ALFINapp.API.Controllers
             var exec = await _useCaseReagendar.exec(
                 dtovreagendar.IdDerivacion.Value,
                 dtovreagendar.FechaReagendamiento.Value,
-                dtovreagendar.evidencias);
+                dtovreagendar.urlEvidencias);
             if (!exec.IsSuccess)
             {
                 return Json(new { success = false, message = exec.Message });

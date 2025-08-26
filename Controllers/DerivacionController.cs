@@ -1,8 +1,6 @@
 using ALFINapp.API.Filters;
 using ALFINapp.Application.Interfaces.Derivacion;
 using ALFINapp.DTOs;
-using ALFINapp.Infrastructure.Persistence.Models;
-using ALFINapp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ALFINapp.API.Controllers
@@ -48,11 +46,11 @@ namespace ALFINapp.API.Controllers
         }
         [HttpPost]
         [PermissionAuthorization("Derivacion", "Derivacion")]
-        public async Task<IActionResult> UploadEvidencia([FromBody] List<DtoVUploadFiles> files)
+        public async Task<IActionResult> UploadEvidencia([FromBody] DtoVDerivacionEvidencia evidencia)
         {
             try
             {
-                var result = await _useCaseUploadEvidencias.Execute(files);
+                var result = await _useCaseUploadEvidencias.Execute(evidencia);
                 if (!result.success)
                 {
                     return Json(new { success = false, message = result.message });

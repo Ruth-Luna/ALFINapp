@@ -1,3 +1,4 @@
+using ALFINapp.Datos.Persistence.Entities;
 using ALFINapp.Infrastructure.Persistence.Models;
 using ALFINapp.Infrastructure.Persistence.Procedures;
 using Microsoft.EntityFrameworkCore;
@@ -63,6 +64,7 @@ public class MDbContext : DbContext
     public DbSet<GestionConseguirTodasLasAsignacionesPorListas> gestion_conseguir_todas_las_asignaciones_por_listas { get; set; }
     public DbSet<GestionConseguirODescargarAsignacionDeLeadsDeSup> gestion_conseguir_o_descargar_asignacion_de_leads_de_sup { get; set; }
     public DbSet<DerivacionConseguirODescargarAsignacionConDerivacionesDeSup> derivacion_conseguir_o_descargar_asignacion_con_derivaciones_de_sup { get; set; }
+    public DbSet<ReagendamientosGetReagendamientos> reagendamientos_get_reagendamientos { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -164,6 +166,9 @@ public class MDbContext : DbContext
             .HasNoKey()
             .ToView(null);
         modelBuilder.Entity<DerivacionConseguirODescargarAsignacionConDerivacionesDeSup>()
+            .HasNoKey()
+            .ToView(null);
+        modelBuilder.Entity<ReagendamientosGetReagendamientos>()
             .HasNoKey()
             .ToView(null);
     }

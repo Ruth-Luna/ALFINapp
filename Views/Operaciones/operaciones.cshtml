@@ -1,6 +1,4 @@
-﻿
-@section Styles {
-
+﻿@section Styles {
     <style>
         .badge-estado {
             padding: 2px 14px;
@@ -27,7 +25,6 @@
 
 
     </style>
-
 }
 
 
@@ -60,13 +57,23 @@
 
 
 <!-- MODALS -->
+<partial name="Modals/_ModalEvidenciasDerivacionesReagendamientos" />
+@* <partial name="Modals/_ModalReagendamiento" /> *@
+<partial name="Modals/_ModalEvidenciasDerivaciones" />
+<partial name="Modals/_ModalReagendamiento" />
+<partial name="Modals/_ModalHistoricoReagendamiento" />
+
+<!-- MODALS -->
 <partial name="Modals/_ModalEvidenciasDerivaciones" />
 <partial name="Modals/_ModalReagendamiento" />
 
 @section Scripts {
+    <script src="~/js/Operaciones/Operaciones.js" asp-append-version="true"></script>
+    <script src="~/js/Operaciones/OperacionesReagendacion.js" asp-append-version="true"></script>
+    <script src="~/js/Operaciones/OperacionesEvidencia.js" asp-append-version="true"></script>
 @*     <script src="~/js/Operaciones/Operaciones.js"></script> *@
 
-    <script src="~/js/Operaciones/derivaciones.js"></script>
-    <script src="~/js/Operaciones/reagendamientos.js"></script>
-    <script src="~/js/Operaciones/operaciones.js"></script>
+    <script src="~/js/Operaciones/derivaciones.js" asp-append-version="true"></script>
+    <script src="~/js/Operaciones/reagendamientos.js" asp-append-version="true"></script>
+    @* <script src="~/js/Operaciones/operaciones.js"></script> *@
 }

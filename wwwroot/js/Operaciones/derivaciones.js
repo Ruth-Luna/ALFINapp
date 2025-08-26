@@ -1,71 +1,235 @@
-﻿
+﻿function formatDateTime(dateString, format = 'dd/mm/yyyy') {
+        if (!dateString) return ''; // Si no hay fecha, retorna vacío
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
+
+        const pad = (num) => String(num).padStart(2, '0');
+        const day = pad(date.getDate());
+        const month = pad(date.getMonth() + 1); // Los meses en JS empiezan en 0
+        const year = date.getFullYear();
+        const hours = pad(date.getHours());
+        const minutes = pad(date.getMinutes());
+        const seconds = pad(date.getSeconds());
+
+        if (format === 'dd/mm/yyyy hh:mm:ss') {
+            return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+        } else if (format === 'yyyy-mm-dd') {
+            return `${year}-${month}-${day}`;
+        } else if (format === 'yyyy-mm-dd hh:mm') {
+            return `${year}-${month}-${day} ${hours}:${minutes}`;
+        } else if (format === 'dd/mm/yyyy hh:mm') {
+            return `${day}/${month}/${year} ${hours}:${minutes}`;
+        }
+        return `${day}/${month}/${year}`;
+    }
+
+async function getAllDerivaciones() {
+    const url = window.location.origin;
+    const final_url = url + '/Operaciones/GetAllDerivaciones';
+    try {
+        const response = await fetch(final_url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!response.ok) {
+            throw new Error(data.message || 'Error al obtener las derivaciones');
+        }
+        const data = await response.json();
+        if (data.success === true) {
+            return data.data || [];
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Atención',
+                text: data.message || 'No se encontraron derivaciones.'
+            });
+            return [];
+        }
+    } catch (error) {
+        console.error('Error al obtener las derivaciones:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudieron cargar las derivaciones. Por favor, inténtelo de nuevo más tarde.'
+        });
+        return;
+    }
+}
+
 var App = App || {};
 
 App.derivaciones = (() => {
 
     let gridApi;
 
-    const listaDerivaciones = [
-        { estadoDerivacion: 'Pendiente', dniCliente: '12345678', nombreCliente: 'Juan Pérez', telefono: '987654321', dniAsesor: '87654321', oferta: 'Crédito Personal', agencia: 'Agencia Central', fechaVisita: '2024-08-15', estadoEvidencia: 'No enviado', fechaEvidencia: '2024-08-11', acciones: '' },
-        { estadoDerivacion: 'Completado', dniCliente: '87654321', nombreCliente: 'Ana Gómez', telefono: '912345678', dniAsesor: '12345678', oferta: 'Tarjeta de Crédito', agencia: 'Sucursal Norte', fechaVisita: '2024-08-14', estadoEvidencia: 'Enviado', fechaEvidencia: '2024-08-15', acciones: '' },
-        { estadoDerivacion: 'En Proceso', dniCliente: '11223344', nombreCliente: 'Carlos Ruiz', telefono: '955555555', dniAsesor: '44332211', oferta: 'Seguro de Vida', agencia: 'Agencia Sur', fechaVisita: '2024-08-16', estadoEvidencia: 'Enviado', fechaEvidencia: '2024-08-16', acciones: '' },
-        { estadoDerivacion: 'Completado', dniCliente: '99887766', nombreCliente: 'María López', telefono: '977777777', dniAsesor: '66778899', oferta: 'Préstamo Hipotecario', agencia: 'Agencia Este', fechaVisita: '2024-08-12', estadoEvidencia: 'Enviado', fechaEvidencia: '2024-08-13', acciones: '' },
-        { estadoDerivacion: 'Rechazado', dniCliente: '55443322', nombreCliente: 'José Torres', telefono: '922222222', dniAsesor: '22334455', oferta: 'Línea de Crédito', agencia: 'Sucursal Oeste', fechaVisita: '2024-08-11', estadoEvidencia: 'No enviado', fechaEvidencia: '2024-08-12', acciones: '' },
-        { estadoDerivacion: 'En Proceso', dniCliente: '66554433', nombreCliente: 'Luisa Castro', telefono: '944444444', dniAsesor: '33445566', oferta: 'Crédito Vehicular', agencia: 'Agencia Norte', fechaVisita: '2024-08-17', estadoEvidencia: 'Enviado', fechaEvidencia: '2024-08-17', acciones: '' }
+    let listaDerivaciones = [
     ];
 
-    const derivacionesTableColumns = [
-        { headerName: "Estado derivación", field: "estadoDerivacion" },
-        { headerName: "DNI cliente", field: "dniCliente" },
-        { headerName: "Nombre del cliente", field: "nombreCliente" },
-        { headerName: "Teléfono", field: "telefono" },
-        { headerName: "DNI asesor", field: "dniAsesor" },
-        { headerName: "Oferta", field: "oferta" },
-        { headerName: "Agencia", field: "agencia" },
-        { headerName: "Fecha visita", field: "fechaVisita" },
+    let derivacionesTableColumns = [
+
+        {
+            headerName: "Estado de Derivacion",
+            field: "estadoDerivacion",
+            cellClass: "d-flex align-items-center justify-content-center",
+            cellRenderer: (params) => {
+                if (params.data.fueProcesado && params.data.fueEnviadoEmail) {
+                    return `<span class="badge-estado badge-enviado">Completado</span>`;
+                } else if (params.data.fueProcesado && !params.data.fueEnviadoEmail) {
+                    return `<span class="badge-estado badge-parcial">Parcial</span>`;
+                } else if (!params.data.fueProcesado && !params.data.fueEnviadoEmail) {
+                    return `<span class="badge-estado badge-no-enviado">Pendiente</span>`;
+                } else {
+                    return `<span class="badge-estado badge-no-enviado">Sin información</span>`;
+                }
+            },
+            tooltipValueGetter: (params) => {
+                if (params.data.fueProcesado && params.data.fueEnviadoEmail) {
+                    return "El cliente fue procesado y se envió el correo.";
+                } else if (params.data.fueProcesado && !params.data.fueEnviadoEmail) {
+                    return "El cliente fue procesado pero aún no se envió el correo.";
+                } else if (!params.data.fueProcesado && !params.data.fueEnviadoEmail) {
+                    return "Pendiente de procesar y de enviar correo.";
+                } else {
+                    return "No hay información disponible.";
+                }
+            },
+            width: 150
+        },
+        { headerName: "DNI cliente", field: "dniCliente", width: 90 },
+        { headerName: "Nombre del cliente", field: "nombreCliente", width: 240 },
+        { headerName: "Teléfono", field: "telefonoCliente", width: 100 },
+        { headerName: "DNI asesor", field: "dniAsesor", width: 100 },
+        {
+            headerName: "Oferta",
+            field: "ofertaMax",
+            valueFormatter: params => {
+                if (params.value === 0) return 'No aplica';
+                return params.value.toLocaleString('es-ES', { style: 'currency', currency: 'PEN' });
+            },
+            width: 120
+        },
+        { headerName: "Agencia", field: "nombreAgencia" },
+        // --- INICIO DE CAMBIOS ---
+        {
+            headerName: "Fecha derivación",
+            field: "fechaDerivacion",
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm')
+        },
+        {
+            headerName: "Fecha visita",
+            field: "fechaVisita",
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy'),
+            width: 100
+        },
         {
             headerName: "Estado evidencia",
             field: "estadoEvidencia",
             cellClass: "d-flex align-items-center justify-content-center",
-            cellRenderer: (params) => params.value === "Enviado" ? `<span class="badge-estado badge-enviado">Enviado</span>` : `<span class="badge-estado badge-no-enviado">No enviado</span>`,
-            comparator: (valueA, valueB) => (valueA === valueB ? 0 : valueA === 'No enviado' ? -1 : 1)
+            cellRenderer: (params) => {
+                if (params.value === "Enviado") {
+                    return `<span class="badge-estado badge-enviado">Enviado</span>`;
+                }
+                return `<span class="badge-estado badge-no-enviado">No enviado</span>`;
+            },
+            comparator: (valueA, valueB) => (valueA === valueB ? 0 : valueA === 'No enviado' ? -1 : 1),
+            width: 100
         },
-        { headerName: "Fecha evidencia", field: "fechaEvidencia" },
+        {
+            headerName: "Fecha evidencia",
+            field: "fechaEvidencia",
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm'),
+            width: 120
+        },
+        // --- FIN DE CAMBIOS ---
         {
             headerName: "Acciones",
             field: "acciones",
             cellClass: "d-flex align-items-center justify-content-center",
             cellRenderer: (params) => {
+                // Contenedor principal para los botones.
                 const container = document.createElement('div');
                 container.className = 'd-flex gap-2';
+
                 // --- Botón 1: Reagendamiento ---
-                const btnReagendamiento = document.createElement('button');
-                btnReagendamiento.className = 'btn btn-sm btn-primary';
-                btnReagendamiento.title = 'Reagendamiento';
-                btnReagendamiento.innerHTML = '<i class="ri-file-list-3-line"></i>';
-                btnReagendamiento.addEventListener('click', () => {
-                    const modalElement = document.getElementById('modalReagendamiento');
-                    if (modalElement) {
-                        const modalTitle = modalElement.querySelector('#labelModalReagendamiento');
-                        if (modalTitle) {
-                            modalTitle.textContent = `Reagendamiento de cita para: ${params.data.nombreCliente}`;
+                let btnReagendamiento = document.createElement('button');
+                let btnEnviarEvidencia = document.createElement('button');
+                if (!params.data.puedeSerReagendado) {
+                    // El botón está deshabilitado.
+                    btnReagendamiento.className = 'btn btn-sm btn-secondary disabled';
+                    btnReagendamiento.title = 'Reagendamiento'; // Corregido
+                    btnReagendamiento.innerHTML = '<i class="ri-file-list-3-line"></i>'; // Icono ajustado a la acción
+
+                    // Tambien se mostrara el boton de evidencia.
+
+                    btnEnviarEvidencia.className = 'btn btn-sm btn-info';
+                    btnEnviarEvidencia.title = 'Enviar evidencia'; // Corregido
+                    btnEnviarEvidencia.innerHTML = '<i class="ri-file-add-line"></i>'; // Icono ajustado a la acción
+
+                    btnEnviarEvidencia.addEventListener('click', () => {
+                        const modalElement = document.getElementById('modalEvidenciasDerivaciones');
+                        if (modalElement) {
+                            const modalTitle = modalElement.querySelector('#labelModalEvidenciasDerivaciones');
+                            if (modalTitle) {
+                                modalTitle.textContent = `Evidencia de derivacion para: ${params.data.nombreCliente}`;
+                            }
+                            const modalButton = modalElement.querySelector('#enviar-evidencia-o-reagendacion');
+                            if (modalButton) {
+                                modalButton.onclick = () => submit_evidencia_derivacion(params.data.idDerivacion);
+                            }
+                            const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+
+                            cargarEvidencia(params.data);
+                            modal_id_derivacion_to_be_uploaded(params.data.idDerivacion);
+
+                            modal.show();
+
+                        } else {
+                            console.error('El elemento del modal con ID "modalEvidenciasDerivaciones" no fue encontrado en el DOM.');
                         }
-                        bootstrap.Modal.getOrCreateInstance(modalElement).show();
-                    }
-                });
-                // --- Botón 2: Enviar evidencia ---
-                const btnEnviarEvidencia = document.createElement('button');
-                btnEnviarEvidencia.className = 'btn btn-sm btn-info';
-                btnEnviarEvidencia.title = 'Enviar evidencia';
-                btnEnviarEvidencia.innerHTML = '<i class="ri-file-add-line"></i>';
-                btnEnviarEvidencia.addEventListener('click', () => {
-                    const modalElement = document.getElementById('modalEvidenciasDerivaciones');
-                    if (modalElement) {
-                        bootstrap.Modal.getOrCreateInstance(modalElement).show();
-                    }
-                });
+                    });
+
+                } else {
+
+                    btnReagendamiento.className = 'btn btn-sm btn-primary';
+                    btnReagendamiento.title = 'Reagendamiento'; // Corregido
+                    btnReagendamiento.innerHTML = '<i class="ri-file-list-3-line"></i>'; // Icono ajustado a la acción
+
+                    // Event listener para abrir el modal de reagendamiento.
+                    btnReagendamiento.addEventListener('click', () => {
+                        const modalElement = document.getElementById('modalEvidenciasDerivaciones');
+                        if (modalElement) {
+                            const modalTitle = modalElement.querySelector('#labelModalEvidenciasDerivaciones');
+                            if (modalTitle) {
+                                modalTitle.textContent = `Reagendamiento de cita para: ${params.data.nombreCliente}`;
+                            }
+
+                            const modalButton = modalElement.querySelector('#enviar-evidencia-o-reagendacion');
+                            if (modalButton) {
+                                modalButton.onclick = () => enviarReagendacion('fecha-reagendamiento-nueva', params.data.idDerivacion);
+                            }
+                            const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+
+                            cargarReagendacion(params.data);
+                            modal_id_derivacion_to_be_uploaded(params.data.idDerivacion);
+
+                            modal.show();
+
+                        } else {
+                            console.error('El elemento del modal con ID "modalEvidenciasDerivaciones" no fue encontrado en el DOM.');
+                        }
+                    });
+
+                    btnEnviarEvidencia.className = 'btn btn-sm btn-secondary disabled';
+                    btnEnviarEvidencia.title = 'Enviar evidencia'; // Corregido
+                    btnEnviarEvidencia.innerHTML = '<i class="ri-file-add-line"></i>'; // Icono ajustado a la acción
+
+                }
+
                 container.appendChild(btnReagendamiento);
                 container.appendChild(btnEnviarEvidencia);
+
                 return container;
             },
             width: 130,
@@ -74,19 +238,54 @@ App.derivaciones = (() => {
         }
     ];
 
-    const externalFilterState = { dniCliente: '', agencia: 'Todos', asesor: 'Todos', fechaVisita: '' };
+    const externalFilterState = {
+        dniCliente: '',
+        agencia: 'Todos',
+        asesor: 'Todos',
+        supervisor: 'Todos',
+        fechaVisita: '',
+        fechaDerivacion: '',
+    };
 
     // --- FUNCIONES PRIVADAS DEL MÓDULO ---
+    
 
     function isExternalFilterPresent() { return Object.values(externalFilterState).some(value => value !== '' && value !== 'Todos'); }
 
     function doesExternalFilterPass(node) {
         const { data } = node;
-        const { dniCliente, agencia, asesor, fechaVisita } = externalFilterState;
+        const { dniCliente, agencia, asesor, supervisor, fechaVisita, fechaDerivacion } = externalFilterState;
+
         if (dniCliente && !String(data.dniCliente).includes(dniCliente)) return false;
-        if (agencia !== 'Todos' && data.agencia !== agencia) return false;
+        if (agencia !== 'Todos' && data.nombreAgencia !== agencia) return false;
         if (asesor !== 'Todos' && data.dniAsesor !== asesor) return false;
-        if (fechaVisita && data.fechaVisita !== fechaVisita) return false;
+        if (supervisor !== 'Todos' && data.docSupervisor !== supervisor) return false;
+        if (fechaVisita) {
+            const [year, month, day] = fechaVisita.split('-');
+            const fechaFormattedObj = new Date(Number(year), Number(month) - 1, Number(day));
+            const fechaVisitaData = new Date(data.fechaVisita);
+            if (
+                fechaFormattedObj.getFullYear() !== fechaVisitaData.getFullYear() ||
+                fechaFormattedObj.getMonth() !== fechaVisitaData.getMonth() ||
+                fechaFormattedObj.getDate() !== fechaVisitaData.getDate()
+            ) {
+                console.log(`No coincide la fecha de visita: ${fechaFormattedObj} !== ${fechaVisitaData}`);
+                return false;
+            }
+        }
+        if (fechaDerivacion) {
+            const [year, month, day] = fechaDerivacion.split('-');
+            const fechaDerivacionFormatted = new Date(Number(year), Number(month) - 1, Number(day));
+            const fechaDerivacionData = new Date(data.fechaDerivacion);
+            if (
+                fechaDerivacionFormatted.getFullYear() !== fechaDerivacionData.getFullYear() ||
+                fechaDerivacionFormatted.getMonth() !== fechaDerivacionData.getMonth() ||
+                fechaDerivacionFormatted.getDate() !== fechaDerivacionData.getDate()
+            ) {
+                console.log(`No coincide la fecha de derivación: ${fechaDerivacionFormatted} !== ${fechaDerivacionData}`);
+                return false;
+            }
+        }
         return true;
     }
 
@@ -107,30 +306,45 @@ App.derivaciones = (() => {
         columnDefs: derivacionesTableColumns,
         rowData: listaDerivaciones,
         pagination: true,
-        paginationPageSize: 10,
+        paginationPageSize: 20,
         enableBrowserTooltips: true,
-        defaultColDef: { sortable: true, resizable: true, minWidth: 150 },
+        defaultColDef: { sortable: true, resizable: true, minWidth: 50, flex: 1 },
+
+        copyHeadersToClipboard: true,
+        suppressClipboardPaste: true,
+        enableCellTextSelection: true,
+
+        // rowSelection: {
+        //     mode: 'multiRow',
+        //     copySelectedRows: true,
+        // },
+
         initialState: { sort: { sortModel: [{ colId: 'estadoEvidencia', sort: 'asc' }] } },
         isExternalFilterPresent: isExternalFilterPresent,
         doesExternalFilterPass: doesExternalFilterPass,
         onGridReady: (params) => {
             gridApi = params.api;
             document.getElementById('totalDelMesDerivaciones').textContent = listaDerivaciones.length;
-            params.api.sizeColumnsToFit({ defaultMinWidth: 150 });
+            params.api.sizeColumnsToFit({ defaultMinWidth: 50 });
+            gridApi.getColumnDefs().forEach(col => {
+                console.log(col.field, "hide:", col.hide);
+            });
         },
         onGridSizeChanged: (params) => {
-            params.api.sizeColumnsToFit({ defaultMinWidth: 150 });
+            params.api.sizeColumnsToFit({ defaultMinWidth: 50 });
         },
-        onFilterChanged: actualizarContadores
+        onFilterChanged: actualizarContadores,
     };
 
     // Función que configura los event listeners para los filtros.
-    function setupEventListeners() {
+    function setupEventListeners(asesores, supervisores) {
         const onFilterChanged = () => {
             externalFilterState.dniCliente = document.getElementById('dniClienteDerivaciones').value;
             externalFilterState.agencia = document.getElementById('agenciaDerivaciones').value;
             externalFilterState.asesor = document.getElementById('asesorDerivaciones').value;
+            externalFilterState.supervisor = document.getElementById('supervisorDerivaciones').value;
             externalFilterState.fechaVisita = document.getElementById('fechaVisitaDerivacion').value;
+            externalFilterState.fechaDerivacion = document.getElementById('fechaDerivacion').value;
             if (gridApi) {
                 gridApi.onFilterChanged();
             }
@@ -139,30 +353,135 @@ App.derivaciones = (() => {
         document.getElementById('dniClienteDerivaciones').addEventListener('input', onFilterChanged);
         document.getElementById('agenciaDerivaciones').addEventListener('change', onFilterChanged);
         document.getElementById('asesorDerivaciones').addEventListener('change', onFilterChanged);
+        document.getElementById('supervisorDerivaciones').addEventListener('change', (e) => {
+            const supervisorDni = e.target.value;
+
+            if (supervisorDni === 'Todos') {
+                const selectAsesor = document.getElementById('asesorDerivaciones');
+                selectAsesor.innerHTML = '';
+                selectAsesor.appendChild(new Option('Todos', 'Todos'));
+                const uniqueAdvisors = asesores.map(u => ({
+                    dni: u.dni,
+                    nombre: u.nombresCompletos
+                }));
+                uniqueAdvisors.forEach(asesor => selectAsesor.appendChild(new Option(asesor.nombre, asesor.dni)));
+                const idSupervisor = supervisores.find(s => s.dni === supervisorDni).idUsuario;
+                onFilterChanged();
+            } else {
+                const allAdvisors = asesores.filter(a => a.idusuariosup === idSupervisor);
+
+                const uniqueAdvisors = allAdvisors.map(u => ({
+                    dni: u.dni,
+                    nombre: u.nombresCompletos
+                }));
+                const selectAsesor = document.getElementById('asesorDerivaciones');
+                selectAsesor.innerHTML = '';
+                selectAsesor.appendChild(new Option('Todos', 'Todos'));
+                uniqueAdvisors.forEach(asesor => selectAsesor.appendChild(new Option(asesor.nombre, asesor.dni)));
+                onFilterChanged();
+            }
+        });
         document.getElementById('fechaVisitaDerivacion').addEventListener('change', onFilterChanged);
+        document.getElementById('fechaDerivacion').addEventListener('change', onFilterChanged);
+    }
+
+    async function createTable(rol) {
+        if (rol === 1 || rol === 4) {
+            // Rol 1 o 4 -> no se elimina nada
+            return;
+        } else if (rol === 2) {
+            // Rol 2 -> eliminar solo la columna de docSupervisor
+            for (let i = derivacionesTableColumns.length - 1; i >= 0; i--) {
+                if (derivacionesTableColumns[i].field === 'docSupervisor') {
+                    derivacionesTableColumns.splice(i, 1); // borra esa entrada
+                }
+            }
+        } else if (rol === 3) {
+            // Rol 3 -> eliminar dniAsesor y docSupervisor
+            for (let i = derivacionesTableColumns.length - 1; i >= 0; i--) {
+                if (derivacionesTableColumns[i].field === 'dniAsesor' || derivacionesTableColumns[i].field === 'docSupervisor') {
+                    derivacionesTableColumns.splice(i, 1);
+                }
+            }
+        }
     }
 
     // Función que pobla los selects de los filtros.
-    function populateFilters() {
-        const agenciaSelect = document.getElementById('agenciaDerivaciones');
-        const asesorSelect = document.getElementById('asesorDerivaciones');
+    function populateFilters(rol, dataasesores = [], datasupervisores = []) {
+        if (rol === 1 || rol === 4) {
+            const agenciaSelect = document.getElementById('agenciaDerivaciones');
+            const asesorSelect = document.getElementById('asesorDerivaciones');
+            const supervisorSelect = document.getElementById('supervisorDerivaciones');
 
-        const uniqueAgencies = [...new Set(listaDerivaciones.map(item => item.agencia))];
-        const uniqueAdvisors = [...new Set(listaDerivaciones.map(item => item.dniAsesor))];
+            const uniqueAgencies = [...new Set(listaDerivaciones.map(item => item.nombreAgencia))];
 
-        uniqueAgencies.forEach(agencia => agenciaSelect.appendChild(new Option(agencia, agencia)));
-        uniqueAdvisors.forEach(asesor => asesorSelect.appendChild(new Option(asesor, asesor)));
+            const uniqueAdvisors = dataasesores.map(u => ({
+                dni: u.dni,
+                nombre: u.nombresCompletos
+            }));
+
+            const uniqueSupervisors = [
+                ...new Map(listaDerivaciones.map(item => [item.docSupervisor, {
+                    dni: item.docSupervisor
+                }])).values()
+            ];
+
+            let enrichmentSupervisors = uniqueSupervisors.map(supervisor => {
+                const usuario = datasupervisores.find(u => u.dni === supervisor.dni);
+                return {
+                    dni: supervisor.dni,
+                    nombre: usuario ? usuario.nombresCompletos : 'Desconocido'
+                };
+            });
+
+            uniqueAgencies.forEach(agencia => agenciaSelect.appendChild(new Option(agencia, agencia)));
+            uniqueAdvisors.forEach(asesor => {
+                asesorSelect.appendChild(new Option(asesor.nombre, asesor.dni));
+            });
+
+            enrichmentSupervisors.forEach(supervisor => {
+                supervisorSelect.appendChild(new Option(supervisor.nombre, supervisor.dni));
+            });
+        } else if (rol === 2) {
+            const agenciaSelect = document.getElementById('agenciaDerivaciones');
+            const asesorSelect = document.getElementById('asesorDerivaciones');
+
+            const uniqueAgencies = [...new Set(listaDerivaciones.map(item => item.nombreAgencia))];
+            const uniqueAdvisors = dataasesores.map(u => ({
+                dni: u.dni,
+                nombre: u.nombresCompletos
+            }));
+
+            uniqueAgencies.forEach(agencia => agenciaSelect.appendChild(new Option(agencia, agencia)));
+            uniqueAdvisors.forEach(asesor => asesorSelect.appendChild(new Option(asesor.nombre, asesor.dni)));
+            // Luego ocultamos el select de supervisores.
+            document.getElementById('supervisorDerivacionesCol').classList.add('d-none');
+        } else if (rol === 3) {
+            const agenciaSelect = document.getElementById('agenciaDerivaciones');
+            const uniqueAgencies = [...new Set(listaDerivaciones.map(item => item.nombreAgencia))];
+            uniqueAgencies.forEach(agencia => agenciaSelect.appendChild(new Option(agencia, agencia)));
+            // Luego ocultamos los selects de asesores y supervisores.
+            document.getElementById('asesorDerivacionesCol').classList.add('d-none');
+            document.getElementById('supervisorDerivacionesCol').classList.add('d-none');
+        } else {
+            console.warn('Rol no reconocido. No se poblarán los filtros.');
+        }
     }
 
     // --- INTERFAZ PÚBLICA DEL MÓDULO ---
     // Exponemos solo la función 'init' para que pueda ser llamada desde fuera.
     return {
-        init: () => {
+        init: async (derivaciones, rol, asesores, supervisores) => {
             const gridDiv = document.querySelector('#gridDerivaciones');
             if (gridDiv) {
+                usuariorol = rol || 0;
+                listaDerivaciones = derivaciones || [];
+                await createTable(usuariorol);
+                derivacionesGridOptions.rowData = listaDerivaciones;
+
                 agGrid.createGrid(gridDiv, derivacionesGridOptions);
-                populateFilters();
-                setupEventListeners();
+                populateFilters(usuariorol, asesores || [], supervisores || []);
+                setupEventListeners(asesores || [], supervisores || []);
             }
         }
     };

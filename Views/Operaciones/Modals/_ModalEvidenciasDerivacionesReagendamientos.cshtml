@@ -1,0 +1,67 @@
+﻿<div class="modal fade" id="modalEvidenciasDerivaciones" tabindex="-1" aria-labelledby="labelModalEvidenciasDerivaciones" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="labelModalEvidenciasDerivaciones">Evidencia para la derivación</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row row-cols-4 g-3 mb-3 d-none" id="reagendacion-de-derivacion-content">
+                    <div class="col">
+                        <label for="dni-reagendamiento" class="form-label">DNI cliente</label>
+                        <input type="text" class="form-control" id="dni-reagendamiento" name="dni-reagendamiento"
+                               @* value="@Model.Dni" *@ readonly>
+                    </div>
+                    <div class="col">
+                        <label for="oferta-reagendamiento" class="form-label">Oferta a enviar</label>
+                        <input type="text" class="form-control" id="oferta-reagendamiento" name="oferta-reagendamiento"
+                               @* value="@Model.OfertaMax" *@ readonly>
+                    </div>
+                    <div class="col-6">
+                        <label for="nombre-reagendamiento" class="form-label">Nombre cliente</label>
+                        <input type="text" class="form-control" id="nombre-reagendamiento" name="nombre-reagendamiento"
+                               @* value="@Model.NombresCompletos" *@ readonly>
+                    </div>
+                    <div class="col">
+                        <label for="agencia-reagendamiento" class="form-label">Agencia asignada</label>
+                        <input type="text" class="form-control" id="agencia-reagendamiento" name="agencia-reagendamiento"
+                               @* value="@Model.AgenciaAsignada" *@ readonly>
+                    </div>
+                    <div class="col">
+                        <label for="telefono-reagendamiento" class="form-label">Teléfono cliente</label>
+                        <input type="text" class="form-control" id="telefono-reagendamiento" name="telefono-reagendamiento"
+                               @* value="@Model.Telefono" *@ readonly>
+                    </div>
+                    <div class="col">
+                        <label for="fecha-reagendamiento-previo" class="form-label text-truncate d-block" style="max-width: 100%;"
+                               title="Fecha previa agendamiento">Fecha previa agendamiento</label>
+                        <input type="text" class="form-control" id="fecha-reagendamiento-previo" name="fecha-reagendamiento-previo"
+                               @* value="@Model.FechaVisitaPrevia" *@ readonly>
+                    </div>
+                    <div class="col">
+                        <label for="fecha-reagendamiento-nueva" class="form-label">Nueva fecha de visita</label>
+                        <input type="date" class="form-control" id="fecha-reagendamiento-nueva" name="fecha-reagendamiento-nueva">
+                    </div>
+                </div>
+                <label class="form-label w-100">
+                    <div id="drop-area" class="border border-3 border-light bg-light text-center rounded-3 p-5"
+                            style="cursor: pointer;">
+                        <p class="mb-2 fs-5">Haz clic o arrastra archivos aquí</p>
+                        <p class="text-muted">También puedes pegar (Ctrl + V) un archivo</p>
+                    </div>
+                </label>
+                <input type="file" id="evidencia-derivacion-id-input" class="form-control d-none" />
+                
+                <!-- Vista previa de archivos -->
+                <div id="file-preview" class="mb-3 d-none">
+                    <h6>Archivos seleccionados:</h6>
+                    <ul class="list-group" id="file-list"></ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="enviar-evidencia-o-reagendacion">Enviar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
