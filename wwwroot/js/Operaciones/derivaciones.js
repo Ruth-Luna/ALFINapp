@@ -247,6 +247,8 @@ App.derivaciones = (() => {
     function isExternalFilterPresent() {
         return Object.values(externalFilterState).some(value => value !== '' && value !== 'Todos');
     }
+    function isExternalFilterPresent() { return Object.values(externalFilterState).some(value => value !== '' && value !== 'Todos'); }
+    function isExternalFilterPresent() { return Object.values(externalFilterState).some(value => value !== '' && value !== 'Todos'); }
 
     function doesExternalFilterPass(node) {
         const { data } = node;
@@ -353,9 +355,9 @@ App.derivaciones = (() => {
                     nombre: u.nombresCompletos
                 }));
                 uniqueAdvisors.forEach(asesor => selectAsesor.appendChild(new Option(asesor.nombre, asesor.dni)));
-                const idSupervisor = supervisores.find(s => s.dni === supervisorDni).idUsuario;
                 onFilterChanged();
             } else {
+                const idSupervisor = supervisores.find(s => s.dni === supervisorDni).idUsuario;
                 const allAdvisors = asesores.filter(a => a.idusuariosup === idSupervisor);
 
                 const uniqueAdvisors = allAdvisors.map(u => ({
@@ -398,6 +400,10 @@ App.derivaciones = (() => {
             const supervisorSelect = document.getElementById('supervisorDerivaciones');
 
             const uniqueAgencies = [...new Set(listaDerivaciones.map(item => item.nombreAgencia))];
+            const enrichmentAgencies = uniqueAgencies.map(a => {
+                const nameAgencia = a.split(' - ')[1];
+                return [nameAgencia, a];
+            });
 
             const uniqueAdvisors = dataasesores.map(u => ({
                 dni: u.dni,
@@ -418,7 +424,9 @@ App.derivaciones = (() => {
                 };
             });
 
-            uniqueAgencies.forEach(agencia => agenciaSelect.appendChild(new Option(agencia, agencia)));
+            enrichmentAgencies.forEach(([name, full]) => {
+                agenciaSelect.appendChild(new Option(name, full));
+            });
             uniqueAdvisors.forEach(asesor => {
                 asesorSelect.appendChild(new Option(asesor.nombre, asesor.dni));
             });
@@ -431,18 +439,22 @@ App.derivaciones = (() => {
             const asesorSelect = document.getElementById('asesorDerivaciones');
 
             const uniqueAgencies = [...new Set(listaDerivaciones.map(item => item.nombreAgencia))];
+            const enrichmentAgencies = uniqueAgencies.map(a => {
+                const nameAgencia = a.split(' - ')[1];
+                return [nameAgencia, a];
+            });
             const uniqueAdvisors = dataasesores.map(u => ({
                 dni: u.dni,
                 nombre: u.nombresCompletos
             }));
 
-            uniqueAgencies.forEach(agencia => agenciaSelect.appendChild(new Option(agencia, agencia)));
+            enrichmentAgencies.forEach(([name, full]) => agenciaSelect.appendChild(new Option(name, full)));
             uniqueAdvisors.forEach(asesor => asesorSelect.appendChild(new Option(asesor.nombre, asesor.dni)));
             document.getElementById('supervisorDerivacionesCol').classList.add('d-none');
         } else if (rol === 3) {
-            const agenciaSelect = document.getElementById('agenciaDerivaciones');
-            const uniqueAgencies = [...new Set(listaDerivaciones.map(item => item.nombreAgencia))];
             uniqueAgencies.forEach(agencia => agenciaSelect.appendChild(new Option(agencia, agencia)));
+            // Luego ocultamos los selects de asesores y supervisores.
+            // Luego ocultamos los selects de asesores y supervisores.
             document.getElementById('asesorDerivacionesCol').classList.add('d-none');
             document.getElementById('supervisorDerivacionesCol').classList.add('d-none');
         } else {
@@ -463,6 +475,12 @@ App.derivaciones = (() => {
                 populateFilters(usuariorol, asesores || [], supervisores || []);
                 setupEventListeners(asesores || [], supervisores || []);
             }
+        },
+        exportXLSX: () => {
+            if (!gridApi) return;
+            const csv = gridApi.getDataAsCsv();
+            const workbook = XLSX.read(csv, { type: "string" });
+            XLSX.writeFile(workbook, "derivaciones.xlsx");
         }
     };
 

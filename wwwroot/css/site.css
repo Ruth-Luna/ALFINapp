@@ -257,3 +257,35 @@ body {
     background-color: #f8f9f9 !important;
 }
 /* NUEVO DISEÑO .CARDS :: END */
+
+
+/* Módulo Operaciones */
+.af-badge {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.2rem;
+    border-radius: 1rem;
+    padding: 2px 6px;
+    font-size: 14px;
+    height: 20px;
+}
+
+    .af-badge > i {
+        font-size: 12px;
+        margin: 0px;
+    }
+
+    .af-badge > span {
+        font-weight: bold;
+    }
+
+.af-badge-bg-sucess {
+    background-color: #E5F9EE;
+    color: #1CB256;
+}
+
+.af-badge-bg-warning {
+    background-color: #FFF6DE;
+    color: #F3A434;
+}

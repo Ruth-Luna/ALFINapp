@@ -20,6 +20,7 @@ namespace ALFINapp.Controllers
             _useCaseReagendar = useCaseReagendar;
             _dao_reagendamientos = dao_reagendamientos;
         }
+        [Route("operaciones")]
         public IActionResult Operaciones()
         {
             return View();
@@ -100,6 +101,25 @@ namespace ALFINapp.Controllers
                 return Json(new { success = false, message = exec.Message });
             }
             return Json(new { success = true, message = exec.Message });
+        }
+        public async Task<IActionResult> GetHistoricoReagendamientos(int idDerivacion)
+        {
+            if (idDerivacion <= 0)
+            {
+                return Json(new { success = false, message = "El id de derivación es obligatorio." });
+            }
+            var result = await _dao_reagendamientos.GetHistoricoReagendamientos(idDerivacion);
+            if (!result.issuccess)
+            {
+                return Json(new { success = false, message = result.message });
+            }
+            if (result.data == null)
+            {
+                // If no reschedulings are found, return an empty list this is to avoid null reference exceptions
+                // the dao method should handle this case
+                return Json(new { success = true, message = "No se encontraron reagendamientos.", data = new List<ViewReagendamientos>() });
+            }
+            return Json(new { success = true, message = result.message, historico = result.data });
         }
     }
 }

@@ -23,7 +23,9 @@
             color: #664d03;
         }
 
-
+        .modal-dialog.modal-xxl {
+            max-width: 80% !important;
+        }
     </style>
 }
 
@@ -35,21 +37,27 @@
         <div class="card-body">
             <ul class="nav nav-tabs" id="operacionesTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="derivaciones-tab" data-bs-toggle="tab" data-bs-target="#derivaciones-pane" type="button" role="tab" aria-controls="derivaciones-pane" aria-selected="true">Derivaciones</button>
+                    <button class="nav-link active" id="derivaciones-tab" data-bs-toggle="tab"
+                        data-bs-target="#derivaciones-pane" type="button" role="tab" aria-controls="derivaciones-pane"
+                        aria-selected="true">Derivaciones</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="reagendamientos-tab" data-bs-toggle="tab" data-bs-target="#reagendamientos-pane" type="button" role="tab" aria-controls="reagendamientos-pane" aria-selected="false">Reagendamientos</button>
+                    <button class="nav-link" id="reagendamientos-tab" data-bs-toggle="tab"
+                        data-bs-target="#reagendamientos-pane" type="button" role="tab"
+                        aria-controls="reagendamientos-pane" aria-selected="false">Reagendamientos</button>
                 </li>
             </ul>
         </div>
     </div>
 
     <div class="tab-content" id="operacionesTabContent">
-        <div class="tab-pane fade show active" id="derivaciones-pane" role="tabpanel" aria-labelledby="derivaciones-tab" tabindex="0">
+        <div class="tab-pane fade show active" id="derivaciones-pane" role="tabpanel" aria-labelledby="derivaciones-tab"
+            tabindex="0">
             <partial name="Components/_PartialDerivaciones" />
         </div>
 
-        <div class="tab-pane fade" id="reagendamientos-pane" role="tabpanel" aria-labelledby="reagendamientos-tab" tabindex="0">
+        <div class="tab-pane fade" id="reagendamientos-pane" role="tabpanel" aria-labelledby="reagendamientos-tab"
+            tabindex="0">
             <partial name="Components/_PartialReagendamientos" />
         </div>
     </div>
@@ -71,9 +79,11 @@
     <script src="~/js/Operaciones/Operaciones.js" asp-append-version="true"></script>
     <script src="~/js/Operaciones/OperacionesReagendacion.js" asp-append-version="true"></script>
     <script src="~/js/Operaciones/OperacionesEvidencia.js" asp-append-version="true"></script>
-@*     <script src="~/js/Operaciones/Operaciones.js"></script> *@
+    @*     <script src="~/js/Operaciones/Operaciones.js"></script> *@
 
     <script src="~/js/Operaciones/derivaciones.js" asp-append-version="true"></script>
     <script src="~/js/Operaciones/reagendamientos.js" asp-append-version="true"></script>
+    <script src="~/js/Operaciones/historico.js" asp-append-version="true"></script>
     @* <script src="~/js/Operaciones/operaciones.js"></script> *@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 }

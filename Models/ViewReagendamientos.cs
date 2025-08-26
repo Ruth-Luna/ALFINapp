@@ -30,6 +30,7 @@ namespace ALFINapp.Models
         public DateTime? FechaDerivacionOriginal { get; set; } = null;
         public string? DocSupervisor { get; set; } = String.Empty;
         public int NumeroReagendamiento { get; set; } = 0;
+        public int TotalReagendamientos { get; set; } = 0;
         public ViewReagendamientos() { }
         public ViewReagendamientos(ReagendamientosGetReagendamientos entity)
         {
@@ -50,6 +51,24 @@ namespace ALFINapp.Models
             DocSupervisor = entity.DocSupervisor;
             NumeroReagendamiento = entity.NumeroReagendamiento != null ? (int)entity.NumeroReagendamiento : 0;
             NombreCliente = entity.NombreCliente;
+        }
+        public ViewReagendamientos(ReagendamientosGetReagendamientosHistorico entity)
+        {
+            IdDerivacion = entity.IdDerivacion ?? 0;
+            IdAgendamientosRe = entity.IdAgendamientosRe ?? 0;
+            Oferta = entity.Oferta;
+            FechaVisita = entity.FechaVisita;
+            Telefono = entity.Telefono;
+            Agencia = entity.Agencia;
+            FechaAgendamiento = entity.FechaAgendamiento;
+            FechaDerivacion = entity.FechaDerivacion;
+            DniAsesor = entity.DniAsesor;
+            DniCliente = entity.DniCliente;
+            TotalReagendamientos = entity.total_reagendamientos ?? 0;
+            NumeroReagendamiento = entity.NumeroReagendamiento != null ? (int)entity.NumeroReagendamiento : 0;
+            NombreCliente = entity.NombreCliente;
+            EstadoReagendamiento = entity.EstadoDerivacion;
+            NombreAsesor = entity.NombreAsesor;
         }
     }
 }
