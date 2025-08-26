@@ -123,15 +123,32 @@ App.reagendamientos = (() => {
                     return `<span class="badge-estado badge-reag-enviado">Enviado</span>`;
                 }
                 return `<span class="badge-estado badge-reag-pendiente">Pendiente</span>`;
-            }
+            }, 
+            width: 100
         },
-        { headerName: "N° reagendamiento", field: "numeroReagendamiento" },
-        { headerName: "DNI cliente", field: "dniCliente" },
-        { headerName: "Nombre cliente", field: "nombreCliente" },
-        { headerName: "Teléfono", field: "telefono" },
-        { headerName: "DNI asesor", field: "dniAsesor" },
-        { headerName: "Oferta", field: "oferta" },
-        { headerName: "Agencia", field: "agencia" },
+        { 
+            headerName: "N° reagendamiento", 
+            field: "numeroReagendamiento",
+            width: 80
+        },
+        { 
+            headerName: "DNI cliente", 
+            field: "dniCliente",
+            width: 120
+        },
+        { headerName: "Nombre cliente", field: "nombreCliente", width: 200 },
+        { headerName: "Teléfono", field: "telefono", width: 120 },
+        { headerName: "DNI asesor", field: "dniAsesor", width: 120 },
+        { 
+            headerName: "Oferta", 
+            field: "oferta",
+            valueFormatter: params => {
+                if (params.value === 0) return 'No aplica';
+                return params.value.toLocaleString('es-ES', { style: 'currency', currency: 'PEN' });
+            },
+            width: 120 
+        },
+        { headerName: "Agencia", field: "agencia", width: 120 },
         // --- INICIO DE CAMBIOS ---
         {
             headerName: "Fecha visita",
@@ -201,7 +218,9 @@ App.reagendamientos = (() => {
         enableCellTextSelection: true,
         enableBrowserTooltips: true,
 
-        defaultColDef: { sortable: true, resizable: true, minWidth: 150 },
+        initialState: { sort: { sortModel: [{ colId: 'estadoReagendamiento', sort: 'asc' }] } },
+
+        defaultColDef: { sortable: true, resizable: true, minWidth: 50, flex: 1 },
         onGridReady: (params) => {
             gridApi = params.api;
             params.api.sizeColumnsToFit({ defaultMinWidth: 150 });
