@@ -74,27 +74,35 @@ App.derivaciones = (() => {
             cellRenderer: (params) => {
                 const container = document.createElement('div');
                 container.className = 'd-inline-flex gap-2';
-
+                console.log(params.data)
                 // Badge para Derivacion_status (D)
                 const badgeD = document.createElement('div');
-                const derivacionStatus = params.data.Derivacion_status !== undefined ? params.data.Derivacion_status : 0;
-                badgeD.className = `af-badge ${derivacionStatus === 1 ? 'af-badge-bg-success' : 'af-badge-bg-warning'}`;
+                badgeD.className = `af-badge ${params.data.fueProcesado ? 'af-badge-bg-success' : 'af-badge-bg-warning'}`;
                 badgeD.innerHTML = `
-                    <i class="${derivacionStatus === 1 ? 'ri-checkbox-circle-fill' : 'ri-indeterminate-circle-fill'}"></i>
+                    <i class="${params.data.fueProcesado ? 'ri-checkbox-circle-fill' : 'ri-indeterminate-circle-fill'}"></i>
                     <span>D</span>
                 `;
 
                 // Badge para Correo_status (C)
                 const badgeC = document.createElement('div');
-                const correoStatus = params.data.Correo_status !== undefined ? params.data.Correo_status : 0;
-                badgeC.className = `af-badge ${correoStatus === 1 ? 'af-badge-bg-success' : 'af-badge-bg-warning'}`;
+                badgeC.className = `af-badge ${params.data.fueEnviadoEmail ? 'af-badge-bg-success' : 'af-badge-bg-warning'}`;
                 badgeC.innerHTML = `
-                    <i class="${correoStatus === 1 ? 'ri-checkbox-circle-fill' : 'ri-indeterminate-circle-fill'}"></i>
+                    <i class="${params.data.fueEnviadoEmail ? 'ri-checkbox-circle-fill' : 'ri-indeterminate-circle-fill'}"></i>
                     <span>C</span>
                 `;
 
+                // Badge para Correo_status (F)
+                const badgeF = document.createElement('div');
+                badgeF.className = `af-badge ${params.data.fueProcesado ? 'af-badge-bg-success' : 'af-badge-bg-warning'}`;
+                badgeF.innerHTML = `
+                    <i class="${params.data.fueProcesado ? 'ri-checkbox-circle-fill' : 'ri-indeterminate-circle-fill'}"></i>
+                    <span>F</span>
+                `;
+
+
                 container.appendChild(badgeD);
                 container.appendChild(badgeC);
+                container.appendChild(badgeF);
 
                 return container;
             },
