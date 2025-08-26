@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     usuarioSupervisores = data.supervisores || [];
 
     derivaciones = data.derivaciones || [];
+    console.log(derivaciones)
     if (App && App.derivaciones) {
         App.derivaciones.init(derivaciones, rol, usuarioAsesores, usuarioSupervisores);
     }

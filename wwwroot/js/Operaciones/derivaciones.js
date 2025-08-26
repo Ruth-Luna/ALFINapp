@@ -37,6 +37,7 @@ async function getAllDerivaciones() {
             throw new Error(data.message || 'Error al obtener las derivaciones');
         }
         const data = await response.json();
+
         if (data.success === true) {
             return data.data || [];
         } else {
@@ -61,7 +62,7 @@ async function getAllDerivaciones() {
 var App = App || {};
 
 App.derivaciones = (() => {
-
+    console.log(App)
     let gridApi;
 
     let listaDerivaciones = [
@@ -97,8 +98,8 @@ App.derivaciones = (() => {
             },
             width: 150
         },
-        { headerName: "DNI cliente", field: "dniCliente", width: 90 },
-        { headerName: "Nombre del cliente", field: "nombreCliente", width: 240 },
+        { headerName: "DNI Cliente", field: "dniCliente", width: 110 },
+        { headerName: "Cliente", field: "nombreCliente", width: 150 },
         { headerName: "Teléfono", field: "telefonoCliente", width: 100 },
         { headerName: "DNI asesor", field: "dniAsesor", width: 100 },
         {
@@ -106,16 +107,17 @@ App.derivaciones = (() => {
             field: "ofertaMax",
             valueFormatter: params => {
                 if (params.value === 0) return 'No aplica';
-                return params.value.toLocaleString('es-ES', { style: 'currency', currency: 'PEN' });
+                return `S/. ${Number(params.value).toLocaleString('es-PE')}`;
             },
-            width: 120
+            width: 100
         },
-        { headerName: "Agencia", field: "nombreAgencia" },
+        { headerName: "Agencia", field: "nombreAgencia", width: 100 },
         // --- INICIO DE CAMBIOS ---
         {
             headerName: "Fecha derivación",
             field: "fechaDerivacion",
-            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm')
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm'),
+            width: 120
         },
         {
             headerName: "Fecha visita",
@@ -136,6 +138,7 @@ App.derivaciones = (() => {
             comparator: (valueA, valueB) => (valueA === valueB ? 0 : valueA === 'No enviado' ? -1 : 1),
             width: 100
         },
+
         {
             headerName: "Fecha evidencia",
             field: "fechaEvidencia",
@@ -254,8 +257,8 @@ App.derivaciones = (() => {
 
     function doesExternalFilterPass(node) {
         const { data } = node;
-        const { dniCliente, agencia, asesor, supervisor, fechaVisita, fechaDerivacion } = externalFilterState;
 
+        const { dniCliente, agencia, asesor, supervisor, fechaVisita, fechaDerivacion } = externalFilterState;
         if (dniCliente && !String(data.dniCliente).includes(dniCliente)) return false;
         if (agencia !== 'Todos' && data.nombreAgencia !== agencia) return false;
         if (asesor !== 'Todos' && data.dniAsesor !== asesor) return false;
