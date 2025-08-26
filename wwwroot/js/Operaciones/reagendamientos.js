@@ -1,40 +1,45 @@
-﻿
+﻿async function getAllReagendamientos() {
+    const url = window.location.origin;
+    const final_url = url + '/Operaciones/GetAllReagendamientos';
+    try {
+        const response = await fetch(final_url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!response.ok) {
+            throw new Error(data.message || 'Error al obtener las derivaciones');
+        }
+        const data = await response.json();
+        if (data.success === true) {
+            return data.data || [];
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Atención',
+                text: data.message || 'No se encontraron derivaciones.'
+            });
+            return [];
+        }
+    } catch (error) {
+        console.error('Error al obtener las derivaciones:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudieron cargar las derivaciones. Por favor, inténtelo de nuevo más tarde.'
+        });
+        return;
+    }
+}
+
 var App = App || {};
 
 App.reagendamientos = (() => {
 
     let gridApi;
 
-    const listaReagendamientos = [
-        {
-            historico: '', estadoReagendamiento: 'Enviado', numReagendamiento: 'R-001', dniCliente: '12345678', nombreCliente: 'Juan Pérez', telefono: '987654321', dniAsesor: '87654321', oferta: 'Crédito Personal', agencia: 'Agencia Central', fechaVisita: '2025-08-15', fechaReagendamiento: '2025-08-20T09:30:00', supervisor: 'Supervisor A', history: [
-                { estadoReagendamiento: 'Pendiente', numReagendamiento: 'R-001-1', dniCliente: '12345678', nombreCliente: 'Juan Pérez', telefono: '987654321', dniAsesor: '87654321', oferta: 'Crédito Personal', agencia: 'Agencia Central', fechaVisita: '2025-08-10', fechaReagendamiento: '2025-08-15T11:00:00', supervisor: 'Supervisor A' },
-                { estadoReagendamiento: 'Enviado', numReagendamiento: 'R-001-2', dniCliente: '12345678', nombreCliente: 'Juan Pérez', telefono: '987654321', dniAsesor: '87654321', oferta: 'Crédito Personal', agencia: 'Agencia Central', fechaVisita: '2025-08-12', fechaReagendamiento: '2025-08-18T14:20:00', supervisor: 'Supervisor A' }
-            ]
-        },
-        {
-            historico: '', estadoReagendamiento: 'Pendiente', numReagendamiento: 'R-002', dniCliente: '87654321', nombreCliente: 'Ana Gómez', telefono: '912345678', dniAsesor: '12345678', oferta: 'Tarjeta de Crédito', agencia: 'Sucursal Norte', fechaVisita: '2025-08-14', fechaReagendamiento: '2025-08-22T16:00:00', supervisor: 'Supervisor B', history: [
-                { estadoReagendamiento: 'Enviado', numReagendamiento: 'R-002-1', dniCliente: '87654321', nombreCliente: 'Ana Gómez', telefono: '912345678', dniAsesor: '12345678', oferta: 'Tarjeta de Crédito', agencia: 'Sucursal Norte', fechaVisita: '2025-08-09', fechaReagendamiento: '2025-08-14T10:15:00', supervisor: 'Supervisor B' }
-            ]
-        },
-        {
-            historico: '', estadoReagendamiento: 'Enviado', numReagendamiento: 'R-003', dniCliente: '11223344', nombreCliente: 'Carlos Ruiz', telefono: '955555555', dniAsesor: '44332211', oferta: 'Seguro de Vida', agencia: 'Agencia Sur', fechaVisita: '2025-08-16', fechaReagendamiento: '2025-08-21T12:45:00', supervisor: 'Supervisor A', history: [
-                { estadoReagendamiento: 'Pendiente', numReagendamiento: 'R-003-1', dniCliente: '11223344', nombreCliente: 'Carlos Ruiz', telefono: '955555555', dniAsesor: '44332211', oferta: 'Seguro de Vida', agencia: 'Agencia Sur', fechaVisita: '2025-08-11', fechaReagendamiento: '2025-08-16T13:00:00', supervisor: 'Supervisor A' },
-                { estadoReagendamiento: 'Enviado', numReagendamiento: 'R-003-2', dniCliente: '11223344', nombreCliente: 'Carlos Ruiz', telefono: '955555555', dniAsesor: '44332211', oferta: 'Seguro de Vida', agencia: 'Agencia Sur', fechaVisita: '2025-08-13', fechaReagendamiento: '2025-08-19T18:00:00', supervisor: 'Supervisor A' }
-            ]
-        },
-        {
-            historico: '', estadoReagendamiento: 'Pendiente', numReagendamiento: 'R-004', dniCliente: '55443322', nombreCliente: 'José Torres', telefono: '922222222', dniAsesor: '22334455', oferta: 'Línea de Crédito', agencia: 'Sucursal Oeste', fechaVisita: '2025-08-11', fechaReagendamiento: '2025-08-19T08:00:00', supervisor: 'Supervisor B', history: [
-                { estadoReagendamiento: 'Enviado', numReagendamiento: 'R-004-1', dniCliente: '55443322', nombreCliente: 'José Torres', telefono: '922222222', dniAsesor: '22334455', oferta: 'Línea de Crédito', agencia: 'Sucursal Oeste', fechaVisita: '2025-08-06', fechaReagendamiento: '2025-08-11T17:30:00', supervisor: 'Supervisor B' }
-            ]
-        },
-        {
-            historico: '', estadoReagendamiento: 'Enviado', numReagendamiento: 'R-005', dniCliente: '66554433', nombreCliente: 'Luisa Castro', telefono: '944444444', dniAsesor: '33445566', oferta: 'Crédito Vehicular', agencia: 'Agencia Norte', fechaVisita: '2025-08-17', fechaReagendamiento: '2025-08-25T11:20:00', supervisor: 'Supervisor A', history: [
-                { estadoReagendamiento: 'Pendiente', numReagendamiento: 'R-005-1', dniCliente: '66554433', nombreCliente: 'Luisa Castro', telefono: '944444444', dniAsesor: '33445566', oferta: 'Crédito Vehicular', agencia: 'Agencia Norte', fechaVisita: '2025-08-12', fechaReagendamiento: '2025-08-17T15:00:00', supervisor: 'Supervisor A' },
-                { estadoReagendamiento: 'Enviado', numReagendamiento: 'R-005-2', dniCliente: '66554433', nombreCliente: 'Luisa Castro', telefono: '944444444', dniAsesor: '33445566', oferta: 'Crédito Vehicular', agencia: 'Agencia Norte', fechaVisita: '2025-08-14', fechaReagendamiento: '2025-08-20T09:00:00', supervisor: 'Supervisor A' }
-            ]
-        }
-    ];
+    let listaReagendamientos = [];
 
     // Definición de las columnas para la tabla de Reagendamientos.
     // Definición de las columnas para la tabla de Reagendamientos.
@@ -43,43 +48,69 @@ App.reagendamientos = (() => {
             headerName: "Histórico", field: "historico",
             cellClass: "d-flex align-items-center justify-content-center",
             cellRenderer: (params) => {
+                const container = document.createElement('div');
+                container.className = 'd-flex gap-2';
                 // ... (el contenido de esta función no cambia)
-                const btn = document.createElement('button');
-                btn.className = 'btn btn-sm btn-primary';
-                btn.title = 'Ver Histórico';
-                btn.innerHTML = '<i class="ri-history-line"></i>';
-                btn.addEventListener('click', () => {
+                let btnHistorico = document.createElement('button');
+                btnHistorico.className = 'btn btn-sm btn-primary';
+                btnHistorico.title = 'Ver Histórico';
+                btnHistorico.innerHTML = '<i class="ri-history-line"></i>';
+                btnHistorico.addEventListener('click', async () => {
                     const modalElement = document.getElementById('modalHistoricoReagendamiento');
                     if (modalElement) {
                         const modal = new bootstrap.Modal(modalElement);
                         modal.show();
                         const histGridDiv = document.getElementById('gridHistóricoReagendamientos');
-                        if (histGridDiv) {
-                            while (histGridDiv.firstChild) {
-                                histGridDiv.removeChild(histGridDiv.firstChild);
-                            }
-                            const histColumns = reagendamientosTableColumns.slice(1);
-                            const histGridOptions = {
-                                columnDefs: histColumns,
-                                rowData: params.data.history || [],
-                                pagination: true,
-                                paginationPageSize: 10,
-                                defaultColDef: { sortable: true, resizable: true, minWidth: 150 },
-                                onGridReady: (p) => {
-                                    p.api.sizeColumnsToFit({ defaultMinWidth: 150 });
-                                },
-                                onGridSizeChanged: (p) => {
-                                    p.api.sizeColumnsToFit({ defaultMinWidth: 150 });
-                                },
-                            };
-                            agGrid.createGrid(histGridDiv, histGridOptions);
-                        }
-                        console.log('Abrir modal histórico para:', params.data);
+                        var historicoData = await getHistorico(params.data.idDerivacion);
+                        console.log('Datos de histórico obtenidos:', historicoData); // --- IGNORE ---
+                        App.historico.init(
+                            historicoData,
+                            usuariorol,
+                            usuarioAsesores,
+                            usuarioSupervisores
+                        );
                     } else {
                         console.error('Modal con ID #modalHistoricoReagendamiento no encontrado.');
                     }
                 });
-                return btn;
+                btnReagendamiento = document.createElement('button');
+
+                if (params.data.puedeSerReagendado === true) {
+                    btnReagendamiento.className = 'btn btn-sm btn-primary';
+                    btnReagendamiento.title = 'Reagendamiento'; // Corregido
+                    btnReagendamiento.innerHTML = '<i class="ri-file-list-3-line"></i>'; // Icono ajustado a la acción
+
+                    btnReagendamiento.addEventListener('click', () => {
+                        const modalElement = document.getElementById('modalEvidenciasDerivaciones');
+                        if (modalElement) {
+                            const modalTitle = modalElement.querySelector('#labelModalEvidenciasDerivaciones');
+                            if (modalTitle) {
+                                modalTitle.textContent = `Reagendamiento de cita para: ${params.data.nombreCliente}`;
+                            }
+
+                            const modalButton = modalElement.querySelector('#enviar-evidencia-o-reagendacion');
+                            if (modalButton) {
+                                modalButton.onclick = () => enviarReagendacion('fecha-reagendamiento-nueva', params.data.idDerivacion);
+                            }
+                            const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+
+                            cargarReagendacion(params.data);
+                            modal_id_derivacion_to_be_uploaded(params.data.idDerivacion);
+
+                            modal.show();
+                        } else {
+                            console.error('El elemento del modal con ID "modalEvidenciasDerivaciones" no fue encontrado en el DOM.');
+                        }
+                    });
+                } else {
+                    btnReagendamiento.className = 'btn btn-sm btn-secondary disabled';
+                    btnReagendamiento.title = 'No puede ser reagendado'; // Corregido
+                    btnReagendamiento.innerHTML = '<i class="ri-file-list-3-line"></i>'; // Icono ajustado a la acción
+                }
+
+                container.appendChild(btnHistorico);
+                container.appendChild(btnReagendamiento);
+                return container;
             },
             sortable: false, resizable: false, width: 100
         },
@@ -87,19 +118,37 @@ App.reagendamientos = (() => {
             headerName: "Estado reagendamiento", field: "estadoReagendamiento",
             cellClass: "d-flex align-items-center justify-content-center",
             cellRenderer: (params) => {
-                if (params.value === "Enviado") {
+                console.log(params.value)
+                if (params.value === "REAGENDACION EXITOSA") {
                     return `<span class="badge-estado badge-reag-enviado">Enviado</span>`;
                 }
                 return `<span class="badge-estado badge-reag-pendiente">Pendiente</span>`;
-            }
+            }, 
+            width: 100
         },
-        { headerName: "N° reagendamiento", field: "numReagendamiento" },
-        { headerName: "DNI cliente", field: "dniCliente" },
-        { headerName: "Nombre cliente", field: "nombreCliente" },
-        { headerName: "Teléfono", field: "telefono" },
-        { headerName: "DNI asesor", field: "dniAsesor" },
-        { headerName: "Oferta", field: "oferta" },
-        { headerName: "Agencia", field: "agencia" },
+        { 
+            headerName: "N° reagendamiento", 
+            field: "numeroReagendamiento",
+            width: 80
+        },
+        { 
+            headerName: "DNI cliente", 
+            field: "dniCliente",
+            width: 120
+        },
+        { headerName: "Nombre cliente", field: "nombreCliente", width: 200 },
+        { headerName: "Teléfono", field: "telefono", width: 120 },
+        { headerName: "DNI asesor", field: "dniAsesor", width: 120 },
+        { 
+            headerName: "Oferta", 
+            field: "oferta",
+            valueFormatter: params => {
+                if (params.value === 0) return 'No aplica';
+                return params.value.toLocaleString('es-ES', { style: 'currency', currency: 'PEN' });
+            },
+            width: 120 
+        },
+        { headerName: "Agencia", field: "agencia", width: 120 },
         // --- INICIO DE CAMBIOS ---
         {
             headerName: "Fecha visita",
@@ -108,37 +157,16 @@ App.reagendamientos = (() => {
         },
         {
             headerName: "Fecha reagendamiento",
-            field: "fechaReagendamiento",
-            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm:ss')
+            field: "fechaAgendamiento",
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm')
         }
         // --- FIN DE CAMBIOS ---
     ];
-
     // Lógica para los filtros externos.
     const externalFilterState = {
         dniCliente: '', supervisor: 'Todos', asesor: 'Todos', agencia: 'Todos', fechaReagendamiento: '', fechaVisita: ''
     };
 
-    function formatDateTime(dateString, format = 'dd/mm/yyyy') {
-        if (!dateString) return ''; // Si no hay fecha, retorna vacío
-        const date = new Date(dateString);
-        // Verificamos si la fecha es válida para evitar errores
-        if (isNaN(date.getTime())) return dateString;
-
-        const pad = (num) => String(num).padStart(2, '0');
-        const day = pad(date.getDate());
-        const month = pad(date.getMonth() + 1); // Los meses en JS empiezan en 0
-        const year = date.getFullYear();
-        const hours = pad(date.getHours());
-        const minutes = pad(date.getMinutes());
-        const seconds = pad(date.getSeconds());
-
-        if (format === 'dd/mm/yyyy hh:mm:ss') {
-            return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-        }
-        // Por defecto, o si el formato es 'dd/mm/yyyy'
-        return `${day}/${month}/${year}`;
-    }
 
     function isExternalFilterPresent() {
         return Object.values(externalFilterState).some(value => value !== '' && value !== 'Todos');
@@ -152,9 +180,30 @@ App.reagendamientos = (() => {
         if (supervisor !== 'Todos' && data.supervisor !== supervisor) return false;
         if (asesor !== 'Todos' && data.dniAsesor !== asesor) return false;
         if (agencia !== 'Todos' && data.agencia !== agencia) return false;
-        if (fechaReagendamiento && data.fechaReagendamiento !== fechaReagendamiento) return false;
-        if (fechaVisita && data.fechaVisita !== fechaVisita) return false;
-
+        if (fechaReagendamiento) {
+            const [year, month, day] = fechaReagendamiento.split('-');
+            const fechaFormattedObj = new Date(Number(year), Number(month) - 1, Number(day));
+            const fechaReagendamientoData = new Date(data.fechaAgendamiento);
+            if (
+                fechaFormattedObj.getFullYear() !== fechaReagendamientoData.getFullYear() ||
+                fechaFormattedObj.getMonth() !== fechaReagendamientoData.getMonth() ||
+                fechaFormattedObj.getDate() !== fechaReagendamientoData.getDate()
+            ) {
+                return false;
+            }
+        }
+        if (fechaVisita) {
+            const [year, month, day] = fechaVisita.split('-');
+            const fechaFormattedObj = new Date(Number(year), Number(month) - 1, Number(day));
+            const fechaVisitaData = new Date(data.fechaVisita);
+            if (
+                fechaFormattedObj.getFullYear() !== fechaVisitaData.getFullYear() ||
+                fechaFormattedObj.getMonth() !== fechaVisitaData.getMonth() ||
+                fechaFormattedObj.getDate() !== fechaVisitaData.getDate()
+            ) {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -162,8 +211,16 @@ App.reagendamientos = (() => {
         columnDefs: reagendamientosTableColumns,
         rowData: listaReagendamientos,
         pagination: true,
-        paginationPageSize: 10,
-        defaultColDef: { sortable: true, resizable: true, minWidth: 150 },
+        paginationPageSize: 20,
+
+        copyHeadersToClipboard: true,
+        suppressClipboardPaste: true,
+        enableCellTextSelection: true,
+        enableBrowserTooltips: true,
+
+        initialState: { sort: { sortModel: [{ colId: 'estadoReagendamiento', sort: 'asc' }] } },
+
+        defaultColDef: { sortable: true, resizable: true, minWidth: 50, flex: 1 },
         onGridReady: (params) => {
             gridApi = params.api;
             params.api.sizeColumnsToFit({ defaultMinWidth: 150 });
@@ -175,21 +232,88 @@ App.reagendamientos = (() => {
         doesExternalFilterPass: doesExternalFilterPass,
     };
 
-    function populateFilters() {
-        const supervisorSelect = document.getElementById('supervisorReagendamientos');
-        const asesorSelect = document.getElementById('asesorReagendamientos');
-        const agenciaSelect = document.getElementById('agenciaReagendamientos');
+    function populateFilters(rol, asesores = [], supervisores = []) {
+        if (rol === 1 || rol === 4) {
+            const supervisorSelect = document.getElementById('supervisorReagendamientos');
+            const asesorSelect = document.getElementById('asesorReagendamientos');
+            const agenciaSelect = document.getElementById('agenciaReagendamientos');
 
-        const uniqueSupervisors = [...new Set(listaReagendamientos.map(item => item.supervisor))];
-        const uniqueAdvisors = [...new Set(listaReagendamientos.map(item => item.dniAsesor))];
-        const uniqueAgencies = [...new Set(listaReagendamientos.map(item => item.agencia))];
+            const uniqueSupervisors = [
+                ...new Map(listaReagendamientos.map(item => [item.docSupervisor, {
+                    dni: item.docSupervisor
+                }])).values()
+            ];
 
-        uniqueSupervisors.forEach(supervisor => supervisorSelect.appendChild(new Option(supervisor, supervisor)));
-        uniqueAdvisors.forEach(asesor => asesorSelect.appendChild(new Option(asesor, asesor)));
-        uniqueAgencies.forEach(agencia => agenciaSelect.appendChild(new Option(agencia, agencia)));
+            let enrichmentSupervisors = uniqueSupervisors.map(supervisor => {
+                const usuario = supervisores.find(u => u.dni === supervisor.dni);
+                return {
+                    dni: supervisor.dni,
+                    nombre: usuario ? usuario.nombresCompletos : 'Desconocido'
+                };
+            });
+
+            const uniqueAdvisors = asesores.map(a => ({
+                dni: a.dni,
+                nombre: a.nombresCompletos
+            }));
+
+            const uniqueAgencies = [...new Set(listaReagendamientos.map(item => item.agencia))];
+            const enrichmentAgencies = uniqueAgencies.map(a => {
+                const nameAgencia = a.split(' - ')[1];
+                return [nameAgencia, a];
+            });
+
+            enrichmentSupervisors.forEach(supervisor => {
+                supervisorSelect.appendChild(new Option(supervisor.nombre, supervisor.dni));
+            });
+            uniqueAdvisors.forEach(asesor => {
+                asesorSelect.appendChild(new Option(asesor.nombre, asesor.dni));
+            });
+            enrichmentAgencies.forEach(([name, full]) => {
+                agenciaSelect.appendChild(new Option(name, full));
+            });
+        } else if (rol === 2) {
+            const supervisorSelect = document.getElementById('supervisorReagendamientos');
+            const asesorSelect = document.getElementById('asesorReagendamientos');
+            const agenciaSelect = document.getElementById('agenciaReagendamientos');
+
+            const uniqueAdvisors = asesores.map(a => ({
+                dni: a.dni,
+                nombre: a.nombresCompletos
+            }));
+
+            const uniqueAgencies = [...new Set(listaReagendamientos.map(item => item.agencia))];
+            const enrichmentAgencies = uniqueAgencies.map(a => {
+                const nameAgencia = a.split(' - ')[1];
+                return [nameAgencia, a];
+            });
+
+            uniqueAdvisors.forEach(asesor => {
+                asesorSelect.appendChild(new Option(asesor.nombre, asesor.dni));
+            });
+            enrichmentAgencies.forEach(([name, full]) => {
+                agenciaSelect.appendChild(new Option(name, full));
+            });
+
+            // Luego ocultamos el select de supervisores.
+            document.getElementById('supervisorReagendamientosCol').classList.add('d-none');
+        } else if (rol === 3) {
+            const agenciaSelect = document.getElementById('agenciaReagendamientos');
+            const uniqueAgencies = [...new Set(listaReagendamientos.map(item => item.agencia))];
+            const enrichmentAgencies = uniqueAgencies.map(a => {
+                const nameAgencia = a.split(' - ')[1];
+                return [nameAgencia, a];
+            });
+            enrichmentAgencies.forEach(([name, full]) => {
+                agenciaSelect.appendChild(new Option(name, full));
+            });
+            // Luego ocultamos los selects de asesores y supervisores.
+            document.getElementById('asesorReagendamientosCol').classList.add('d-none');
+            document.getElementById('supervisorReagendamientosCol').classList.add('d-none');
+        }
     }
 
-    function setupEventListeners() {
+    function setupEventListeners(asesores, supervisores) {
         const onFilterChanged = () => {
             externalFilterState.dniCliente = document.getElementById('dniClienteReagendamientos').value;
             externalFilterState.supervisor = document.getElementById('supervisorReagendamientos').value;
@@ -209,24 +333,84 @@ App.reagendamientos = (() => {
         ];
 
         filterInputs.forEach(id => {
-            const element = document.getElementById(id);
-            if (element) {
-                const eventType = element.type === 'text' ? 'input' : 'change';
-                element.addEventListener(eventType, onFilterChanged);
+            if (id === 'supervisorReagendamientos') {
+                let element = document.getElementById(id);
+                if (element) {
+                    const eventType = element.type === 'text' ? 'input' : 'change';
+                    element.addEventListener(
+                        eventType, (e) => {
+                            const supervisorDni = e.target.value;
+                            if (supervisorDni === 'Todos') {
+                                // Mostrar todos los asesores
+                                const asesorSelect = document.getElementById('asesorReagendamientos');
+                                asesorSelect.innerHTML = '';
+                                asesorSelect.appendChild(new Option('Todos', 'Todos'));
+                                const uniqueAdvisors = asesores.map(a => ({
+                                    dni: a.dni,
+                                    nombre: a.nombresCompletos
+                                }));
+                                uniqueAdvisors.forEach(asesor => {
+                                    asesorSelect.appendChild(new Option(asesor.nombre, asesor.dni));
+                                });
+                                onFilterChanged();
+                            } else {
+                                const idSupervisor = supervisores.find(s => s.dni === supervisorDni).idUsuario;
+                                const allAdvisors = asesores.filter(a => a.idusuariosup === idSupervisor);
+
+                                const uniqueAdvisors = allAdvisors.map(u => ({
+                                    dni: u.dni,
+                                    nombre: u.nombresCompletos
+                                }));
+                                const selectAsesor = document.getElementById('asesorReagendamientos');
+                                selectAsesor.innerHTML = '';
+                                selectAsesor.appendChild(new Option('Todos', 'Todos'));
+                                uniqueAdvisors.forEach(asesor => {
+                                    selectAsesor.appendChild(new Option(asesor.nombre, asesor.dni));
+                                });
+                                onFilterChanged();
+                            }
+                        }
+                    );
+                }
+            } else {
+                element = document.getElementById(id);
+                if (element) {
+                    const eventType = element.type === 'text' ? 'input' : 'change';
+                    element.addEventListener(eventType, onFilterChanged);
+                }
             }
         });
     }
 
+    async function updateTableData(rol) {
+        if (rol === 1 || rol === 4 || rol === 2) {
+            return;
+        } else if (rol === 3) {
+            for (let i = reagendamientosTableColumns.length - 1; i >= 0; i--) {
+                if (reagendamientosTableColumns[i].field === 'dniAsesor') {
+                    listaReagendamientos.splice(i, 1);
+                }
+            }
+        }
+    }
+
     // --- INTERFAZ PÚBLICA DEL MÓDULO ---
     return {
-        init: () => {
+        init: async (reagendamientos, rol, asesores, supervisores) => {
             // 3. Renderizado de la tabla en el div especificado.
             const gridDiv = document.querySelector('#gridReagendamientos');
             if (gridDiv) {
+                usuariorol = rol || 0;
+
+                listaReagendamientos = reagendamientos || [];
+
+                await updateTableData(usuariorol);
+
+                reagendamientosGridOptions.rowData = listaReagendamientos;
+                console.log('Datos de reagendamientos cargados:', listaReagendamientos); // --- IGNORE ---
                 agGrid.createGrid(gridDiv, reagendamientosGridOptions);
-                populateFilters();
-                setupEventListeners();
-                console.log("Módulo de Reagendamientos inicializado.");
+                populateFilters(usuariorol, asesores, supervisores);
+                setupEventListeners(asesores, supervisores);
             }
         }
     };

@@ -1,12 +1,13 @@
 function cargarReagendacion(data) {
+    console.log(data);
     document.getElementById('reagendacion-de-derivacion-content').classList.remove('d-none');
     document.getElementById('dni-reagendamiento').value = data.dniCliente;
-    document.getElementById('oferta-reagendamiento').value = data.nombreCliente;
-    document.getElementById('nombre-reagendamiento').value = data.telefonoCliente;
-    document.getElementById('agencia-reagendamiento').value = data.dniAsesor;
-    document.getElementById('telefono-reagendamiento').value = data.ofertaMax;
-    document.getElementById('fecha-reagendamiento-previo').value = data.nombreAgencia;
-    document.getElementById('fecha-reagendamiento-nueva').value = data.fechaVisita;
+    document.getElementById('oferta-reagendamiento').value = data.ofertaMax != undefined ? data.ofertaMax : data.oferta;
+    document.getElementById('nombre-reagendamiento').value = data.nombreCliente;
+    document.getElementById('agencia-reagendamiento').value = data.nombreAgencia != undefined ? data.nombreAgencia : data.agencia;
+    document.getElementById('telefono-reagendamiento').value = data.telefonoCliente != undefined ? data.telefonoCliente : data.telefono;
+    document.getElementById('fecha-reagendamiento-previo').value = formatDateTime(data.fechaVisita, 'dd/mm/yyyy');
+    // document.getElementById('fecha-reagendamiento-nueva').value = data.fechaVisita;
 }
 
 // async function reagendarView(IdDerivacion, puedeSerReagendado) {

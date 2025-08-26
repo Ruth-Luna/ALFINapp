@@ -8,7 +8,6 @@ async function reagendarCliente(nuevaFechaVisita, idDerivacion) {
         cancelButtonText: 'No, cancelar'
     }).then(async (result) => {
         if (!result.isConfirmed) return;
-        
         let fechaVisitaInput;
         let fechaVisita;
         try {
