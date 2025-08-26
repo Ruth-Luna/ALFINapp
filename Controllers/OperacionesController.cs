@@ -20,6 +20,7 @@ namespace ALFINapp.Controllers
             _useCaseReagendar = useCaseReagendar;
             _dao_reagendamientos = dao_reagendamientos;
         }
+        [Route("operaciones")]
         public IActionResult Operaciones()
         {
             return View();

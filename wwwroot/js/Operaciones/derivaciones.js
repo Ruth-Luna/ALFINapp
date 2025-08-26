@@ -1,27 +1,27 @@
 ﻿function formatDateTime(dateString, format = 'dd/mm/yyyy') {
-        if (!dateString) return ''; // Si no hay fecha, retorna vacío
-        const date = new Date(dateString);
-        if (isNaN(date.getTime())) return dateString;
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
 
-        const pad = (num) => String(num).padStart(2, '0');
-        const day = pad(date.getDate());
-        const month = pad(date.getMonth() + 1); // Los meses en JS empiezan en 0
-        const year = date.getFullYear();
-        const hours = pad(date.getHours());
-        const minutes = pad(date.getMinutes());
-        const seconds = pad(date.getSeconds());
+    const pad = (num) => String(num).padStart(2, '0');
+    const day = pad(date.getDate());
+    const month = pad(date.getMonth() + 1);
+    const year = date.getFullYear();
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const seconds = pad(date.getSeconds());
 
-        if (format === 'dd/mm/yyyy hh:mm:ss') {
-            return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-        } else if (format === 'yyyy-mm-dd') {
-            return `${year}-${month}-${day}`;
-        } else if (format === 'yyyy-mm-dd hh:mm') {
-            return `${year}-${month}-${day} ${hours}:${minutes}`;
-        } else if (format === 'dd/mm/yyyy hh:mm') {
-            return `${day}/${month}/${year} ${hours}:${minutes}`;
-        }
-        return `${day}/${month}/${year}`;
+    if (format === 'dd/mm/yyyy hh:mm:ss') {
+        return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+    } else if (format === 'yyyy-mm-dd') {
+        return `${year}-${month}-${day}`;
+    } else if (format === 'yyyy-mm-dd hh:mm') {
+        return `${year}-${month}-${day} ${hours}:${minutes}`;
+    } else if (format === 'dd/mm/yyyy hh:mm') {
+        return `${day}/${month}/${year} ${hours}:${minutes}`;
     }
+    return `${day}/${month}/${year}`;
+}
 
 async function getAllDerivaciones() {
     const url = window.location.origin;
@@ -65,36 +65,54 @@ App.derivaciones = (() => {
     console.log(App)
     let gridApi;
 
-    let listaDerivaciones = [
-    ];
+    let listaDerivaciones = [];
 
     let derivacionesTableColumns = [
-
         {
             headerName: "Estado de Derivacion",
             field: "estadoDerivacion",
             cellClass: "d-flex align-items-center justify-content-center",
             cellRenderer: (params) => {
-                if (params.data.fueProcesado && params.data.fueEnviadoEmail) {
-                    return `<span class="badge-estado badge-enviado">Completado</span>`;
-                } else if (params.data.fueProcesado && !params.data.fueEnviadoEmail) {
-                    return `<span class="badge-estado badge-parcial">Parcial</span>`;
-                } else if (!params.data.fueProcesado && !params.data.fueEnviadoEmail) {
-                    return `<span class="badge-estado badge-no-enviado">Pendiente</span>`;
-                } else {
-                    return `<span class="badge-estado badge-no-enviado">Sin información</span>`;
-                }
+                const container = document.createElement('div');
+                container.className = 'd-inline-flex gap-2';
+                console.log(params.data)
+                // Badge para Derivacion_status (D)
+                const badgeD = document.createElement('div');
+                badgeD.className = `af-badge ${params.data.fueProcesado ? 'af-badge-bg-success' : 'af-badge-bg-warning'}`;
+                badgeD.innerHTML = `
+                    <i class="${params.data.fueProcesado ? 'ri-checkbox-circle-fill' : 'ri-indeterminate-circle-fill'}"></i>
+                    <span>D</span>
+                `;
+
+                // Badge para Correo_status (C)
+                const badgeC = document.createElement('div');
+                badgeC.className = `af-badge ${params.data.fueEnviadoEmail ? 'af-badge-bg-success' : 'af-badge-bg-warning'}`;
+                badgeC.innerHTML = `
+                    <i class="${params.data.fueEnviadoEmail ? 'ri-checkbox-circle-fill' : 'ri-indeterminate-circle-fill'}"></i>
+                    <span>C</span>
+                `;
+
+                // Badge para Correo_status (F)
+                const badgeF = document.createElement('div');
+                badgeF.className = `af-badge ${params.data.fueProcesado ? 'af-badge-bg-success' : 'af-badge-bg-warning'}`;
+                badgeF.innerHTML = `
+                    <i class="${params.data.fueProcesado ? 'ri-checkbox-circle-fill' : 'ri-indeterminate-circle-fill'}"></i>
+                    <span>F</span>
+                `;
+
+
+                container.appendChild(badgeD);
+                container.appendChild(badgeC);
+                container.appendChild(badgeF);
+
+                return container;
             },
             tooltipValueGetter: (params) => {
-                if (params.data.fueProcesado && params.data.fueEnviadoEmail) {
-                    return "El cliente fue procesado y se envió el correo.";
-                } else if (params.data.fueProcesado && !params.data.fueEnviadoEmail) {
-                    return "El cliente fue procesado pero aún no se envió el correo.";
-                } else if (!params.data.fueProcesado && !params.data.fueEnviadoEmail) {
-                    return "Pendiente de procesar y de enviar correo.";
-                } else {
-                    return "No hay información disponible.";
-                }
+                const derivacionStatus = params.data.Derivacion_status !== undefined ? params.data.Derivacion_status : 0;
+                const correoStatus = params.data.Correo_status !== undefined ? params.data.Correo_status : 0;
+                const derivacionText = derivacionStatus === 1 ? 'Derivación completada' : 'Derivación pendiente';
+                const correoText = correoStatus === 1 ? 'Correo enviado' : 'Correo no enviado';
+                return `${derivacionText}. ${correoText}.`;
             },
             width: 150
         },
@@ -111,8 +129,7 @@ App.derivaciones = (() => {
             },
             width: 100
         },
-        { headerName: "Agencia", field: "nombreAgencia", width: 100 },
-        // --- INICIO DE CAMBIOS ---
+        { headerName: "Agencia", field: "nombreAgencia" },
         {
             headerName: "Fecha derivación",
             field: "fechaDerivacion",
@@ -145,30 +162,25 @@ App.derivaciones = (() => {
             valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm'),
             width: 120
         },
-        // --- FIN DE CAMBIOS ---
         {
             headerName: "Acciones",
             field: "acciones",
             cellClass: "d-flex align-items-center justify-content-center",
             cellRenderer: (params) => {
-                // Contenedor principal para los botones.
+                // ... El resto del cellRenderer de acciones se mantiene igual
                 const container = document.createElement('div');
                 container.className = 'd-flex gap-2';
 
-                // --- Botón 1: Reagendamiento ---
                 let btnReagendamiento = document.createElement('button');
                 let btnEnviarEvidencia = document.createElement('button');
                 if (!params.data.puedeSerReagendado) {
-                    // El botón está deshabilitado.
                     btnReagendamiento.className = 'btn btn-sm btn-secondary disabled';
-                    btnReagendamiento.title = 'Reagendamiento'; // Corregido
-                    btnReagendamiento.innerHTML = '<i class="ri-file-list-3-line"></i>'; // Icono ajustado a la acción
-
-                    // Tambien se mostrara el boton de evidencia.
+                    btnReagendamiento.title = 'Reagendamiento';
+                    btnReagendamiento.innerHTML = '<i class="ri-file-list-3-line"></i>';
 
                     btnEnviarEvidencia.className = 'btn btn-sm btn-info';
-                    btnEnviarEvidencia.title = 'Enviar evidencia'; // Corregido
-                    btnEnviarEvidencia.innerHTML = '<i class="ri-file-add-line"></i>'; // Icono ajustado a la acción
+                    btnEnviarEvidencia.title = 'Enviar evidencia';
+                    btnEnviarEvidencia.innerHTML = '<i class="ri-file-add-line"></i>';
 
                     btnEnviarEvidencia.addEventListener('click', () => {
                         const modalElement = document.getElementById('modalEvidenciasDerivaciones');
@@ -187,19 +199,15 @@ App.derivaciones = (() => {
                             modal_id_derivacion_to_be_uploaded(params.data.idDerivacion);
 
                             modal.show();
-
                         } else {
                             console.error('El elemento del modal con ID "modalEvidenciasDerivaciones" no fue encontrado en el DOM.');
                         }
                     });
-
                 } else {
-
                     btnReagendamiento.className = 'btn btn-sm btn-primary';
-                    btnReagendamiento.title = 'Reagendamiento'; // Corregido
-                    btnReagendamiento.innerHTML = '<i class="ri-file-list-3-line"></i>'; // Icono ajustado a la acción
+                    btnReagendamiento.title = 'Reagendamiento';
+                    btnReagendamiento.innerHTML = '<i class="ri-file-list-3-line"></i>';
 
-                    // Event listener para abrir el modal de reagendamiento.
                     btnReagendamiento.addEventListener('click', () => {
                         const modalElement = document.getElementById('modalEvidenciasDerivaciones');
                         if (modalElement) {
@@ -218,16 +226,14 @@ App.derivaciones = (() => {
                             modal_id_derivacion_to_be_uploaded(params.data.idDerivacion);
 
                             modal.show();
-
                         } else {
                             console.error('El elemento del modal con ID "modalEvidenciasDerivaciones" no fue encontrado en el DOM.');
                         }
                     });
 
                     btnEnviarEvidencia.className = 'btn btn-sm btn-secondary disabled';
-                    btnEnviarEvidencia.title = 'Enviar evidencia'; // Corregido
-                    btnEnviarEvidencia.innerHTML = '<i class="ri-file-add-line"></i>'; // Icono ajustado a la acción
-
+                    btnEnviarEvidencia.title = 'Enviar evidencia';
+                    btnEnviarEvidencia.innerHTML = '<i class="ri-file-add-line"></i>';
                 }
 
                 container.appendChild(btnReagendamiento);
@@ -250,9 +256,10 @@ App.derivaciones = (() => {
         fechaDerivacion: '',
     };
 
-    // --- FUNCIONES PRIVADAS DEL MÓDULO ---
-    
-
+    function isExternalFilterPresent() {
+        return Object.values(externalFilterState).some(value => value !== '' && value !== 'Todos');
+    }
+    function isExternalFilterPresent() { return Object.values(externalFilterState).some(value => value !== '' && value !== 'Todos'); }
     function isExternalFilterPresent() { return Object.values(externalFilterState).some(value => value !== '' && value !== 'Todos'); }
 
     function doesExternalFilterPass(node) {
@@ -312,16 +319,9 @@ App.derivaciones = (() => {
         paginationPageSize: 20,
         enableBrowserTooltips: true,
         defaultColDef: { sortable: true, resizable: true, minWidth: 50, flex: 1 },
-
         copyHeadersToClipboard: true,
         suppressClipboardPaste: true,
         enableCellTextSelection: true,
-
-        // rowSelection: {
-        //     mode: 'multiRow',
-        //     copySelectedRows: true,
-        // },
-
         initialState: { sort: { sortModel: [{ colId: 'estadoEvidencia', sort: 'asc' }] } },
         isExternalFilterPresent: isExternalFilterPresent,
         doesExternalFilterPass: doesExternalFilterPass,
@@ -339,7 +339,6 @@ App.derivaciones = (() => {
         onFilterChanged: actualizarContadores,
     };
 
-    // Función que configura los event listeners para los filtros.
     function setupEventListeners(asesores, supervisores) {
         const onFilterChanged = () => {
             externalFilterState.dniCliente = document.getElementById('dniClienteDerivaciones').value;
@@ -390,17 +389,14 @@ App.derivaciones = (() => {
 
     async function createTable(rol) {
         if (rol === 1 || rol === 4) {
-            // Rol 1 o 4 -> no se elimina nada
             return;
         } else if (rol === 2) {
-            // Rol 2 -> eliminar solo la columna de docSupervisor
             for (let i = derivacionesTableColumns.length - 1; i >= 0; i--) {
                 if (derivacionesTableColumns[i].field === 'docSupervisor') {
-                    derivacionesTableColumns.splice(i, 1); // borra esa entrada
+                    derivacionesTableColumns.splice(i, 1);
                 }
             }
         } else if (rol === 3) {
-            // Rol 3 -> eliminar dniAsesor y docSupervisor
             for (let i = derivacionesTableColumns.length - 1; i >= 0; i--) {
                 if (derivacionesTableColumns[i].field === 'dniAsesor' || derivacionesTableColumns[i].field === 'docSupervisor') {
                     derivacionesTableColumns.splice(i, 1);
@@ -409,7 +405,6 @@ App.derivaciones = (() => {
         }
     }
 
-    // Función que pobla los selects de los filtros.
     function populateFilters(rol, dataasesores = [], datasupervisores = []) {
         if (rol === 1 || rol === 4) {
             const agenciaSelect = document.getElementById('agenciaDerivaciones');
@@ -467,16 +462,10 @@ App.derivaciones = (() => {
 
             enrichmentAgencies.forEach(([name, full]) => agenciaSelect.appendChild(new Option(name, full)));
             uniqueAdvisors.forEach(asesor => asesorSelect.appendChild(new Option(asesor.nombre, asesor.dni)));
-            // Luego ocultamos el select de supervisores.
             document.getElementById('supervisorDerivacionesCol').classList.add('d-none');
         } else if (rol === 3) {
-            const agenciaSelect = document.getElementById('agenciaDerivaciones');
-            const uniqueAgencies = [...new Set(listaDerivaciones.map(item => item.nombreAgencia))];
-            const enrichmentAgencies = uniqueAgencies.map(a => {
-                const nameAgencia = a.split(' - ')[1];
-                return [nameAgencia, a];
-            });
-            enrichmentAgencies.forEach(([name, full]) => agenciaSelect.appendChild(new Option(name, full)));
+            uniqueAgencies.forEach(agencia => agenciaSelect.appendChild(new Option(agencia, agencia)));
+            // Luego ocultamos los selects de asesores y supervisores.
             // Luego ocultamos los selects de asesores y supervisores.
             document.getElementById('asesorDerivacionesCol').classList.add('d-none');
             document.getElementById('supervisorDerivacionesCol').classList.add('d-none');
@@ -485,8 +474,6 @@ App.derivaciones = (() => {
         }
     }
 
-    // --- INTERFAZ PÚBLICA DEL MÓDULO ---
-    // Exponemos solo la función 'init' para que pueda ser llamada desde fuera.
     return {
         init: async (derivaciones, rol, asesores, supervisores) => {
             const gridDiv = document.querySelector('#gridDerivaciones');
@@ -500,6 +487,13 @@ App.derivaciones = (() => {
                 populateFilters(usuariorol, asesores || [], supervisores || []);
                 setupEventListeners(asesores || [], supervisores || []);
             }
+        },
+        exportXLSX: () => {
+            if (!gridApi) return;
+            const csv = gridApi.getDataAsCsv();
+            const workbook = XLSX.read(csv, { type: "string" });
+            XLSX.writeFile(workbook, "derivaciones.xlsx");
         }
     };
+
 })();

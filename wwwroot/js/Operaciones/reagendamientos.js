@@ -162,6 +162,7 @@ App.reagendamientos = (() => {
         }
         // --- FIN DE CAMBIOS ---
     ];
+
     // Lógica para los filtros externos.
     const externalFilterState = {
         dniCliente: '', supervisor: 'Todos', asesor: 'Todos', agencia: 'Todos', fechaReagendamiento: '', fechaVisita: ''
