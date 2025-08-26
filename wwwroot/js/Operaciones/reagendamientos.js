@@ -33,7 +33,6 @@
     }
 }
 
-
 var App = App || {};
 
 App.reagendamientos = (() => {

@@ -156,6 +156,7 @@ App.derivaciones = (() => {
             field: "acciones",
             cellClass: "d-flex align-items-center justify-content-center",
             cellRenderer: (params) => {
+                // ... El resto del cellRenderer de acciones se mantiene igual
                 const container = document.createElement('div');
                 container.className = 'd-flex gap-2';
 
