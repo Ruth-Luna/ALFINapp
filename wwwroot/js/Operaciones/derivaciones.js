@@ -75,18 +75,19 @@ App.derivaciones = (() => {
             cellRenderer: (params) => {
                 const container = document.createElement('div');
                 container.className = 'd-inline-flex gap-2';
-                console.log(params.data)
                 // Badge para Derivacion_status (D)
                 const badgeD = document.createElement('div');
                 badgeD.className = `af-badge ${params.data.fueProcesado ? 'af-badge-bg-success' : 'af-badge-bg-warning'}`;
+                badgeD.title = params.data.fueProcesado ? 'Derivación' : 'Derivación';
                 badgeD.innerHTML = `
-                    <i class="${params.data.fueProcesado ? 'ri-checkbox-circle-fill' : 'ri-indeterminate-circle-fill'}"></i>
-                    <span>D</span>
+                  <i class="${params.data.fueProcesado ? 'ri-checkbox-circle-fill' : 'ri-indeterminate-circle-fill'}"></i>
+                  <span>D</span>
                 `;
 
                 // Badge para Correo_status (C)
                 const badgeC = document.createElement('div');
                 badgeC.className = `af-badge ${params.data.fueEnviadoEmail ? 'af-badge-bg-success' : 'af-badge-bg-warning'}`;
+                badgeC.title = params.data.fueEnviadoEmail ? 'Correo electrónico' : 'Correo electrónico';
                 badgeC.innerHTML = `
                     <i class="${params.data.fueEnviadoEmail ? 'ri-checkbox-circle-fill' : 'ri-indeterminate-circle-fill'}"></i>
                     <span>C</span>
@@ -95,6 +96,7 @@ App.derivaciones = (() => {
                 // Badge para Correo_status (F)
                 const badgeF = document.createElement('div');
                 badgeF.className = `af-badge ${params.data.fueProcesado ? 'af-badge-bg-success' : 'af-badge-bg-warning'}`;
+                badgeF.title = params.data.fueProcesado ? 'Formulario' : 'Formulario';
                 badgeF.innerHTML = `
                     <i class="${params.data.fueProcesado ? 'ri-checkbox-circle-fill' : 'ri-indeterminate-circle-fill'}"></i>
                     <span>F</span>
@@ -116,7 +118,17 @@ App.derivaciones = (() => {
             //},
             width: 150
         },
-        { headerName: "DNI Cliente", field: "dniCliente", width: 90 },
+        {
+            headerName: "DNI Cliente",
+            field: "dniCliente",
+            width: 120,
+            cellRenderer: params => {
+                if (!params.value) return '';
+                return params.data.fueDesembolsado === true
+                    ? `${params.value} ⭐`
+                    : `${params.value}`;
+            }
+        },
         { headerName: "Cliente", field: "nombreCliente", width: 150 },
         { headerName: "Teléfono", field: "telefonoCliente", width: 90 },
         { headerName: "DNI asesor", field: "dniAsesor", width: 90 },
