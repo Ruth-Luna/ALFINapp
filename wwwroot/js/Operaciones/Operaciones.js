@@ -1,16 +1,16 @@
 ﻿document.addEventListener('DOMContentLoaded', async () => {
-    let data = await getAllDerivaciones();
-    let rol = data.rolUsuario || 0;
-    let usuarioAsesores = data.asesores || [];
-    let usuarioSupervisores = data.supervisores || [];
+    data = await getAllDerivaciones();
+    rol = data.rolUsuario || 0;
+    usuarioAsesores = data.asesores || [];
+    usuarioSupervisores = data.supervisores || [];
 
-    let derivaciones = data.derivaciones || [];
+    derivaciones = data.derivaciones || [];
     if (App && App.derivaciones) {
         App.derivaciones.init(derivaciones, rol, usuarioAsesores, usuarioSupervisores);
     }
 
-    let data2 = await getAllReagendamientos();
-    let reagendamientos = data2.reagendamientos || [];
+    data2 = await getAllReagendamientos();
+    reagendamientos = data2.reagendamientos || [];
     if (App && App.reagendamientos) {
         App.reagendamientos.init(reagendamientos, rol, usuarioAsesores, usuarioSupervisores);
     }
