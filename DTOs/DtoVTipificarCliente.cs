@@ -5,5 +5,6 @@ namespace ALFINapp.API.DTOs
         public string Telefono { get; set; } = string.Empty;
         public int TipificacionId { get; set; }
         public int? idderivacion { get; set; }
+        public string Comentario { get; set; } = string.Empty;
     }
 }
