@@ -49,6 +49,10 @@ namespace ALFINapp.API.Models
             IdUsuario = model.IdUsuario;
             Dni = model.Dni ?? string.Empty;
             NombresCompletos = model.NombresCompletos ?? string.Empty;
+            Apellido_Materno = model.Apellido_Materno ?? string.Empty;
+            Apellido_Paterno = model.Apellido_Paterno ?? string.Empty;
+            Nombres = model.Nombres ?? string.Empty;
+            Usuario = model.usuario ?? string.Empty;
             Rol = model.Rol ?? string.Empty;
             Departamento = model.Departamento ?? string.Empty;
             Provincia = model.Provincia ?? string.Empty;

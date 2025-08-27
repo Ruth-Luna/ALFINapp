@@ -41,6 +41,24 @@ namespace ALFINapp.API.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult ObtenerDatosUsuario()
+        {
+            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+            {
+                return Json(new { success = false, message = "Usted no ha iniciado sesion" });
+            }
+
+            var userInformation = _da_usuario.getUsuario(usuarioId.Value);
+            if (userInformation == null)
+            {
+                return Json(new { success = false, message = "No se ha encontrado el usuario" });
+            }
+
+            return Json(new { success = true, data = userInformation });
+        }
+
         [HttpPost]
         public IActionResult SubmitNewPassword(string newPassword)
         {

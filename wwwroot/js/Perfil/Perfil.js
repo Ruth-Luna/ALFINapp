@@ -1,3 +1,67 @@
+// Document ready
+$(document).ready(function () {
+    // carga inicial de datos
+    cargarDatosUsuario();
+});
+
+function cargarDatosUsuario() {
+    // Lógica para cargar los datos del usuario
+    $.ajax({
+        url: '/Perfil/ObtenerDatosUsuario',
+        type: 'GET',
+        success: function (response) {
+            if (response.success === false) {
+                Swal.fire({
+                    title: 'Error',
+                    text: response.message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            const usuario = response.data;
+
+            // Campos de solo lectura
+            $('#NombresCompletosUsuario').val(usuario.nombresCompletos || '');
+            $('#TipoDocumentoUsuario').val(usuario.tipoDocumento || '');
+            $('#DniUsuario').val(usuario.dni || '');
+            $('#RolUsuario').val(usuario.rol || '');
+            $('#NombreCampaniaUsuario').val(usuario.nombrecampania || '');
+            $('#ContrasenaUsuario').val(usuario.contraseña || '');
+
+            // Campos editables con data-original
+            $('#CorreoUsuario').val(usuario.correo || '').attr('data-original', usuario.correo || '');
+            $('#TelefonoUsuario').val(usuario.telefono || '').attr('data-original', usuario.telefono || '');
+            $('#DepartamentoUsuario').val(usuario.departamento || '').attr('data-original', usuario.departamento || '');
+            $('#ProvinciaUsuario').val(usuario.provincia || '').attr('data-original', usuario.provincia || '');
+            $('#DistritoUsuario').val(usuario.distrito || '').attr('data-original', usuario.distrito || '');
+            $('#RegionUsuario').val(usuario.region || '').attr('data-original', usuario.region || '');
+
+            // Campos ocultos
+            $('#IdUsuarioUsuario').val(usuario.idUsuario || '');
+            $('#ApellidoPaternoUsuario').val(usuario.apellido_Paterno || '');
+            $('#ApellidoMaternoUsuario').val(usuario.apellido_Materno || '');
+            $('#NombresUsuario').val(usuario.nombres || '');
+            $('#UsuarioUsuario').val(usuario.usuario || '');
+            $('#IdRolUsuario').val(usuario.idRol || '');
+            $('#IdSupervisorUsuario').val(usuario.idusuariosup || '');
+            $('#ResponsableSupervisorUsuario').val(usuario.responsablesup || '');
+
+            // Actualizar el saludo dinámicamente
+            $('h3').text('Bienvenido ' + (usuario.nombresCompletos || 'Usuario'));
+        },
+        error: function (xhr, status, error) {
+            Swal.fire({
+                title: 'Error al cargar los datos',
+                text: 'Ocurrió un error al obtener la información del usuario: ' + error,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    });
+}
+
 function activarEdicion(campo) {
     const BotonEnvio = document.getElementById(campo + "BotonEnvio");
     const BotonEdicion = document.getElementById(campo + "BotonEdicion");
@@ -111,10 +175,9 @@ function updatePasswordSubmit() {
                     icon: 'success',
                     confirmButtonText: 'Aceptar',
                     timer: 5000
+                }).then(() => {
+                    cargarDatosUsuario();
                 });
-                setTimeout(function () {
-                    location.reload();
-                }, 5000);
             } else {
                 Swal.fire({
                     title: 'Error al actualizar la contraseña',
@@ -142,7 +205,8 @@ function actualizarCampos() {
         { id: "ProvinciaUsuario", name: "Provincia" },
         { id: "DistritoUsuario", name: "Distrito" },
         { id: "TelefonoUsuario", name: "Telefono" },
-        { id: "CorreoUsuario", name: "Correo" }
+        { id: "CorreoUsuario", name: "Correo" },
+        { id: "RegionUsuario", name: "Region" }
     ];
 
     const data = {};
@@ -167,7 +231,7 @@ function actualizarCampos() {
 
         // Incluir solo si el valor ha cambiado
         if (value !== original) {
-            data[field.name] = value || null;
+            //data[field.name] = value || null;
             hasChanges = true;
         }
     }
@@ -185,11 +249,35 @@ function actualizarCampos() {
         return;
     }
 
+    // Agregar todos los datos para la actualización, garantizando no perder información
+    data.IdUsuario = $("#IdUsuarioUsuario").val();
+    data.IdRol = parseInt($('#IdRolUsuario').val());
+
+    data.Departamento = $('#DepartamentoUsuario').val()?.trim() || '';
+    data.Provincia = $('#ProvinciaUsuario').val()?.trim() || '';
+    data.Distrito = $('#DistritoUsuario').val()?.trim() || '';
+    data.REGION = $('#RegionUsuario').val()?.trim() || '';
+
+    data.Telefono = $('#TelefonoUsuario').val()?.trim() || '';
+    data.Correo = $('#CorreoUsuario').val()?.trim() || '';
+
+    data.TipoDocumento = $('#TipoDocumentoUsuario').val() || null;
+    data.Apellido_Paterno = $('#ApellidoPaternoUsuario').val()?.trim() || '';
+    data.Apellido_Materno = $('#ApellidoMaternoUsuario').val()?.trim() || '';
+    data.Nombres = $('#NombresUsuario').val()?.trim() || '';
+
+    data.Estado = $('#EstadoUsuario').val() || 'ACTIVO';
+    data.NOMBRECAMPANIA = $('#NombreCampaniaUsuario').val()?.trim() || '';
+
+    data.IDUSUARIOSUP = parseInt($('#IdSupervisorUsuario').val()) || 0;
+    data.RESPONSABLESUP = $('#ResponsableSupervisorUsuario').val()?.trim() || '';
+
     // Enviar solicitud AJAX
     $.ajax({
-        url: "/Perfil/ActualizarCampos",
-        type: "POST",
-        data: data,
+        url: "/Usuarios/ActualizarUsuario",
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
         success: function (response) {
             if (response.success) {
                 Swal.fire({
@@ -199,7 +287,7 @@ function actualizarCampos() {
                     confirmButtonText: 'OK'
                 }).then(() => {
                     if (response.message !== "No se realizaron cambios en los campos" && response.message !== "El usuario no existe") {
-                        location.reload();
+                        cargarDatosUsuario();
                     }
                 });
             } else {

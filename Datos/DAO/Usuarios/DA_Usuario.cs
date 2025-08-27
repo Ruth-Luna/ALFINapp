@@ -71,7 +71,7 @@ namespace ALFINapp.Datos
 
             using (SqlConnection connection = new SqlConnection(cn.getCadenaSQL()))
             {
-                using (SqlCommand cmd = new SqlCommand("SP_USUARIO_LISTAR_USUARIOS", connection))
+                using (SqlCommand cmd = new SqlCommand("[SP_USUARIO_LISTAR_USUARIOS]", connection))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
@@ -130,28 +130,29 @@ namespace ALFINapp.Datos
                         cmd.CommandType = CommandType.StoredProcedure;
 
                         cmd.Parameters.AddWithValue("@id_usuario", usuario.IdUsuario);
-                        cmd.Parameters.AddWithValue("@dni", usuario.Dni != null ? usuario.Dni : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@tipo_doc", usuario.TipoDocumento != null ? usuario.TipoDocumento : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Apellido_Paterno", usuario.Apellido_Paterno != null || usuario.Apellido_Paterno != "" ? usuario.Apellido_Paterno : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Apellido_Materno", usuario.Apellido_Materno != null || usuario.Apellido_Materno != "" ? usuario.Apellido_Materno : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Usuario", usuario.Usuario != null ? usuario.Usuario : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@contrasenia",
-                        string.IsNullOrWhiteSpace(usuario.Contrasenia) ? (object)DBNull.Value : usuario.Contrasenia);
-                        cmd.Parameters.AddWithValue("@Nombres", usuario.Nombres != null ? usuario.Nombres : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@NOMBRE_CAMPANIA", usuario.NOMBRECAMPANIA != null ? usuario.NOMBRECAMPANIA : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@idRol", usuario.IdRol == 0 ? DBNull.Value : (object)usuario.IdRol);
-                        cmd.Parameters.AddWithValue("@region", usuario.REGION != null ? usuario.REGION : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Distrito", usuario.Distrito != null ? usuario.Distrito : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@correo", usuario.Correo != null ? usuario.Correo : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@estado", usuario.Estado != null ? usuario.Estado : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@dni", string.IsNullOrWhiteSpace(usuario.Dni) ? DBNull.Value : usuario.Dni);
+                        cmd.Parameters.AddWithValue("@tipo_doc", string.IsNullOrWhiteSpace(usuario.TipoDocumento) ? DBNull.Value : usuario.TipoDocumento);
+                        cmd.Parameters.AddWithValue("@Apellido_Paterno", string.IsNullOrWhiteSpace(usuario.Apellido_Paterno) ? DBNull.Value : usuario.Apellido_Paterno);
+                        cmd.Parameters.AddWithValue("@Apellido_Materno", string.IsNullOrWhiteSpace(usuario.Apellido_Materno) ? DBNull.Value : usuario.Apellido_Materno);
+                        cmd.Parameters.AddWithValue("@Usuario", string.IsNullOrWhiteSpace(usuario.Usuario) ? DBNull.Value : usuario.Usuario);
+                        cmd.Parameters.AddWithValue("@contrasenia", string.IsNullOrWhiteSpace(usuario.Contrasenia) ? DBNull.Value : usuario.Contrasenia);
+                        cmd.Parameters.AddWithValue("@Nombres", string.IsNullOrWhiteSpace(usuario.Nombres) ? DBNull.Value : usuario.Nombres);
+                        cmd.Parameters.AddWithValue("@NOMBRE_CAMPANIA", string.IsNullOrWhiteSpace(usuario.NOMBRECAMPANIA) ? DBNull.Value : usuario.NOMBRECAMPANIA);
+                        cmd.Parameters.AddWithValue("@idRol", usuario.IdRol == 0 ? DBNull.Value : usuario.IdRol);
+                        cmd.Parameters.AddWithValue("@region", string.IsNullOrWhiteSpace(usuario.REGION) ? DBNull.Value : usuario.REGION);
+                        cmd.Parameters.AddWithValue("@correo", string.IsNullOrWhiteSpace(usuario.Correo) ? DBNull.Value : usuario.Correo);
+                        cmd.Parameters.AddWithValue("@estado", string.IsNullOrWhiteSpace(usuario.Estado) ? DBNull.Value : usuario.Estado);
 
-                        cmd.Parameters.AddWithValue("@Departamento", usuario.Departamento != null ? usuario.Departamento : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Provincia", usuario.Provincia != null ? usuario.Provincia : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Telefono", usuario.Telefono != null ? usuario.Telefono : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Departamento", string.IsNullOrWhiteSpace(usuario.Departamento) ? DBNull.Value : usuario.Departamento);
+                        cmd.Parameters.AddWithValue("@Provincia", string.IsNullOrWhiteSpace(usuario.Provincia) ? DBNull.Value : usuario.Provincia);
+                        cmd.Parameters.AddWithValue("@Distrito", string.IsNullOrWhiteSpace(usuario.Distrito) ? DBNull.Value : usuario.Distrito);
+
+
+                        cmd.Parameters.AddWithValue("@Telefono", string.IsNullOrWhiteSpace(usuario.Telefono) ? DBNull.Value : usuario.Telefono);
 
                         // Datos supervisor
-                        cmd.Parameters.AddWithValue("@IDUSUARIOSUP", usuario.IDUSUARIOSUP == 0 ? DBNull.Value : (object)usuario.IDUSUARIOSUP);
-                        cmd.Parameters.AddWithValue("@RESPONSABLESUP", usuario.RESPONSABLESUP != null ? usuario.RESPONSABLESUP : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@IDUSUARIOSUP", usuario.IDUSUARIOSUP == 0 ? DBNull.Value : usuario.IDUSUARIOSUP);
+                        cmd.Parameters.AddWithValue("@RESPONSABLESUP", string.IsNullOrWhiteSpace(usuario.RESPONSABLESUP) ? DBNull.Value : usuario.RESPONSABLESUP);
 
                         connection.Open();
                         int filasAfectadas = cmd.ExecuteNonQuery();
@@ -315,10 +316,10 @@ namespace ALFINapp.Datos
                 var cn = new Conexion();
                 using (SqlConnection connection = new SqlConnection(cn.getCadenaSQL()))
                 {
-                    using (SqlCommand cmd = new SqlCommand("SP_USUARIO_GET_USUARIO", connection))
+                    using (SqlCommand cmd = new SqlCommand("[SP_USUARIO_LISTAR_USUARIOS]", connection))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@idUsuario", idUsuario);
+                        cmd.Parameters.AddWithValue("@id_usuario", idUsuario);
 
                         connection.Open();
                         using (SqlDataReader dr = cmd.ExecuteReader())
@@ -329,8 +330,12 @@ namespace ALFINapp.Datos
                                 {
                                     IdUsuario = Convert.ToInt32(dr["id_usuario"]),
                                     Dni = dr["dni"].ToString(),
-                                    TipoDocumento = dr["tipo_doc"].ToString(),
+                                    TipoDocumento = dr["tipo_documento"].ToString(),
+                                    Apellido_Materno = dr["Apellido_Materno"].ToString(),
+                                    Apellido_Paterno = dr["Apellido_Paterno"].ToString(),
+                                    usuario = dr["usuario"].ToString(),
                                     NombresCompletos = dr["Nombres_Completos"].ToString(),
+                                    Nombres = dr["Nombres"].ToString(),
                                     Rol = dr["rol"].ToString(),
                                     Estado = dr["estado"].ToString(),
                                     IdRol = Convert.ToInt32(dr["id_rol"]),
@@ -346,6 +351,7 @@ namespace ALFINapp.Datos
                                     FechaInicio = dr.IsDBNull(dr.GetOrdinal("fecha_inicio")) ? (DateTime?)null : dr.GetDateTime(dr.GetOrdinal("fecha_inicio")),
                                     FechaCese = dr.IsDBNull(dr.GetOrdinal("fecha_cese")) ? (DateTime?)null : dr.GetDateTime(dr.GetOrdinal("fecha_cese")),
                                     IDUSUARIOSUP = dr.IsDBNull(dr.GetOrdinal("ID_USUARIO_SUP")) ? 0 : dr.GetInt32(dr.GetOrdinal("ID_USUARIO_SUP")),
+                                    contraseña = dr["Contrasenia"].ToString(),
                                 };
                             }
                         }
