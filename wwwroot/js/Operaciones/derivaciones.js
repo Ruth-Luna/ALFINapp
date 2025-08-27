@@ -437,8 +437,8 @@ App.derivaciones = (() => {
                 };
             });
 
-            enrichmentAgencies.forEach(([name, full]) => {
-                agenciaSelect.appendChild(new Option(name, full));
+            uniqueAgencies.forEach(agencia => {
+                agenciaSelect.appendChild(new Option(agencia, agencia));
             });
             uniqueAdvisors.forEach(asesor => {
                 asesorSelect.appendChild(new Option(asesor.nombre, asesor.dni));
@@ -463,8 +463,11 @@ App.derivaciones = (() => {
                 nombre: u.nombresCompletos
             }));
 
-            enrichmentAgencies.forEach(([name, full]) => agenciaSelect.appendChild(new Option(name, full)));
+            uniqueAgencies.forEach(agencia => {
+                agenciaSelect.appendChild(new Option(agencia, agencia));
+            });
             uniqueAdvisors.forEach(asesor => asesorSelect.appendChild(new Option(asesor.nombre, asesor.dni)));
+            // Luego ocultamos el select de supervisores.
             document.getElementById('supervisorDerivacionesCol').classList.add('d-none');
         } else if (rol === 3) {
             uniqueAgencies.forEach(agencia => agenciaSelect.appendChild(new Option(agencia, agencia)));
@@ -492,10 +495,26 @@ App.derivaciones = (() => {
         },
         exportXLSX: () => {
             if (!gridApi) return;
-            const csv = gridApi.getDataAsCsv();
-            const workbook = XLSX.read(csv, { type: "string" });
-            XLSX.writeFile(workbook, "derivaciones.xlsx");
+
+            const rowData = [];
+            gridApi.forEachNodeAfterFilterAndSort(node => rowData.push(node.data)); // respeta filtros y orden
+
+            const worksheet = XLSX.utils.json_to_sheet(rowData);
+
+            const colWidths = Object.keys(rowData[0]).map(key => ({
+                wch: Math.max(
+                    key.length,
+                    ...rowData.map(r => (r[key] ? r[key].toString().length : 0))
+                )
+            }));
+            worksheet['!cols'] = colWidths;
+
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Derivaciones");
+
+            XLSX.writeFile(workbook, "Derivaciones.xlsx");
         }
+
     };
 
 })();
