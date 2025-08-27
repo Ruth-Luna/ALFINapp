@@ -37,7 +37,7 @@ async function getAllDerivaciones() {
             throw new Error(data.message || 'Error al obtener las derivaciones');
         }
         const data = await response.json();
-
+        console.log(data)
         if (data.success === true) {
             return data.data || [];
         } else {
@@ -69,7 +69,7 @@ App.derivaciones = (() => {
 
     let derivacionesTableColumns = [
         {
-            headerName: "Estado de Derivacion",
+            headerName: "Estado Derivación",
             field: "estadoDerivacion",
             cellClass: "d-flex align-items-center justify-content-center",
             cellRenderer: (params) => {
@@ -107,19 +107,19 @@ App.derivaciones = (() => {
 
                 return container;
             },
-            tooltipValueGetter: (params) => {
-                const derivacionStatus = params.data.Derivacion_status !== undefined ? params.data.Derivacion_status : 0;
-                const correoStatus = params.data.Correo_status !== undefined ? params.data.Correo_status : 0;
-                const derivacionText = derivacionStatus === 1 ? 'Derivación completada' : 'Derivación pendiente';
-                const correoText = correoStatus === 1 ? 'Correo enviado' : 'Correo no enviado';
-                return `${derivacionText}. ${correoText}.`;
-            },
+            //tooltipValueGetter: (params) => {
+            //    const derivacionStatus = params.data.Derivacion_status !== undefined ? params.data.Derivacion_status : 0;
+            //    const correoStatus = params.data.Correo_status !== undefined ? params.data.Correo_status : 0;
+            //    const derivacionText = derivacionStatus === 1 ? 'Derivación completada' : 'Derivación pendiente';
+            //    const correoText = correoStatus === 1 ? 'Correo enviado' : 'Correo no enviado';
+            //    return `${derivacionText}. ${correoText}.`;
+            //},
             width: 150
         },
-        { headerName: "DNI Cliente", field: "dniCliente", width: 110 },
+        { headerName: "DNI Cliente", field: "dniCliente", width: 90 },
         { headerName: "Cliente", field: "nombreCliente", width: 150 },
-        { headerName: "Teléfono", field: "telefonoCliente", width: 100 },
-        { headerName: "DNI asesor", field: "dniAsesor", width: 100 },
+        { headerName: "Teléfono", field: "telefonoCliente", width: 90 },
+        { headerName: "DNI asesor", field: "dniAsesor", width: 90 },
         {
             headerName: "Oferta",
             field: "ofertaMax",
@@ -127,9 +127,9 @@ App.derivaciones = (() => {
                 if (params.value === 0) return 'No aplica';
                 return `S/. ${Number(params.value).toLocaleString('es-PE')}`;
             },
-            width: 100
+            width: 80
         },
-        { headerName: "Agencia", field: "nombreAgencia" },
+        { headerName: "Agencia", field: "nombreAgencia", width: 100 },
         {
             headerName: "Fecha derivación",
             field: "fechaDerivacion",
@@ -412,9 +412,10 @@ App.derivaciones = (() => {
             const supervisorSelect = document.getElementById('supervisorDerivaciones');
 
             const uniqueAgencies = [...new Set(listaDerivaciones.map(item => item.nombreAgencia))];
+
             const enrichmentAgencies = uniqueAgencies.map(a => {
-                const nameAgencia = a.split(' - ')[1];
-                return [nameAgencia, a];
+                const agencias = a.split(',').map(x => x.trim());
+                return agencias; 
             });
 
             const uniqueAdvisors = dataasesores.map(u => ({
@@ -451,10 +452,12 @@ App.derivaciones = (() => {
             const asesorSelect = document.getElementById('asesorDerivaciones');
 
             const uniqueAgencies = [...new Set(listaDerivaciones.map(item => item.nombreAgencia))];
+
             const enrichmentAgencies = uniqueAgencies.map(a => {
-                const nameAgencia = a.split(' - ')[1];
-                return [nameAgencia, a];
+                const agencias = a.split(',').map(x => x.trim());
+                return agencias;
             });
+
             const uniqueAdvisors = dataasesores.map(u => ({
                 dni: u.dni,
                 nombre: u.nombresCompletos
@@ -465,7 +468,6 @@ App.derivaciones = (() => {
             document.getElementById('supervisorDerivacionesCol').classList.add('d-none');
         } else if (rol === 3) {
             uniqueAgencies.forEach(agencia => agenciaSelect.appendChild(new Option(agencia, agencia)));
-            // Luego ocultamos los selects de asesores y supervisores.
             // Luego ocultamos los selects de asesores y supervisores.
             document.getElementById('asesorDerivacionesCol').classList.add('d-none');
             document.getElementById('supervisorDerivacionesCol').classList.add('d-none');
