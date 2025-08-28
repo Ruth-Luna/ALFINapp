@@ -44,7 +44,8 @@ App.reagendamientos = (() => {
     // Definición de las columnas para la tabla de Reagendamientos.
     const reagendamientosTableColumns = [
         {
-            headerName: "Histórico", field: "historico" ,width: 200,
+            headerName: "Histórico", 
+            field: "historico",
             cellClass: "d-flex align-items-center justify-content-center",
             cellRenderer: (params) => {
                 const container = document.createElement('div');
@@ -111,7 +112,7 @@ App.reagendamientos = (() => {
                 container.appendChild(btnReagendamiento);
                 return container;
             },
-            sortable: false, resizable: false, width: 100
+            sortable: false, resizable: false, width: 200
         },
         {
             headerName: "Estado", field: "estadoReagendamiento",
@@ -122,30 +123,30 @@ App.reagendamientos = (() => {
                     return `<span class="badge-estado badge-reag-enviado">Enviado</span>`;
                 }
                 return `<span class="badge-estado badge-reag-pendiente">Pendiente</span>`;
-            }, 
+            },
             width: 100
         },
-        { 
-            headerName: "N° Reagendamiento", 
+        {
+            headerName: "N° Reagendamiento",
             field: "numeroReagendamiento",
             width: 180
         },
-        { 
-            headerName: "DNI cliente", 
+        {
+            headerName: "DNI cliente",
             field: "dniCliente",
             width: 120
         },
         { headerName: "Cliente", field: "nombreCliente", width: 250 },
         { headerName: "Teléfono", field: "telefono", width: 120 },
         { headerName: "DNI asesor", field: "dniAsesor", width: 120 },
-        { 
-            headerName: "Oferta", 
+        {
+            headerName: "Oferta",
             field: "oferta",
             valueFormatter: params => {
                 if (params.value === 0) return 'No aplica';
                 return `S/. ${Number(params.value).toLocaleString('es-PE')}`;
             },
-            width: 120 
+            width: 120
         },
         { headerName: "Agencia", field: "agencia", width: 120 },
         // --- INICIO DE CAMBIOS ---
@@ -214,17 +215,20 @@ App.reagendamientos = (() => {
         pagination: true,
         paginationPageSize: 20,
 
+        enableBrowserTooltips: true,
         copyHeadersToClipboard: true,
         suppressClipboardPaste: true,
         enableCellTextSelection: true,
-        enableBrowserTooltips: true,
 
         initialState: { sort: { sortModel: [{ colId: 'estadoReagendamiento', sort: 'asc' }] } },
 
-        defaultColDef: { sortable: true, resizable: true, minWidth: 50 },
+        defaultColDef: { sortable: true, resizable: true, minWidth: 50, flex: 1},
         onGridReady: (params) => {
             gridApi = params.api;
-           
+            params.api.sizeColumnsToFit({ defaultMinWidth: 50 });
+        },
+        onGridSizeChanged: (params) => {
+            params.api.sizeColumnsToFit({ defaultMinWidth: 50 });
         },
 
         isExternalFilterPresent: isExternalFilterPresent,
@@ -301,9 +305,10 @@ App.reagendamientos = (() => {
         } else if (rol === 3) {
             const agenciaSelect = document.getElementById('agenciaReagendamientos');
             const uniqueAgencies = [...new Set(listaReagendamientos.map(item => item.agencia))];
+
             const enrichmentAgencies = uniqueAgencies.map(a => {
-                const nameAgencia = a.split(' - ')[1];
-                return [nameAgencia, a];
+                const agencias = a.split(',').map(x => x.trim());
+                return agencias;
             });
             enrichmentAgencies.forEach(([name, full]) => {
                 agenciaSelect.appendChild(new Option(name, full));
@@ -389,7 +394,7 @@ App.reagendamientos = (() => {
         } else if (rol === 3) {
             for (let i = reagendamientosTableColumns.length - 1; i >= 0; i--) {
                 if (reagendamientosTableColumns[i].field === 'dniAsesor') {
-                    listaReagendamientos.splice(i, 1);
+                    reagendamientosTableColumns.splice(i, 1);
                 }
             }
         }
@@ -412,6 +417,23 @@ App.reagendamientos = (() => {
                 agGrid.createGrid(gridDiv, reagendamientosGridOptions);
                 populateFilters(usuariorol, asesores, supervisores);
                 setupEventListeners(asesores, supervisores);
+            }
+        },
+        limpiarFiltros: () => {
+            document.getElementById('dniClienteReagendamientos').value = '';
+            document.getElementById('supervisorReagendamientos').value = 'Todos';
+            document.getElementById('asesorReagendamientos').value = 'Todos';
+            document.getElementById('agenciaReagendamientos').value = 'Todos';
+            document.getElementById('fechaReagendamientos').value = '';
+            document.getElementById('fechaVisitaReagendamientos').value = '';
+            externalFilterState.dniCliente = '';
+            externalFilterState.supervisor = 'Todos';
+            externalFilterState.asesor = 'Todos';
+            externalFilterState.agencia = 'Todos';
+            externalFilterState.fechaReagendamiento = '';
+            externalFilterState.fechaVisita = '';
+            if (gridApi) {
+                gridApi.onFilterChanged();
             }
         }
     };

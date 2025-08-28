@@ -1,7 +1,7 @@
 ﻿
 <div class="card border-0 shadow-sm mb-3">
     <div class="card-body">
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-3">
+        <div class="row g-3">
             <div class="col">
                 <label for="dniClienteDerivaciones" class="form-label">DNI cliente</label>
                 <input type="text" class="form-control" id="dniClienteDerivaciones" />
@@ -31,6 +31,15 @@
             <div class="col">
                 <label for="fechaVisitaDerivacion" class="form-label">Fecha de visita</label>
                 <input type="date" class="form-control" id="fechaVisitaDerivacion" />
+            </div>
+            <div class="col-1">
+                <label for="btn-clean-derivaciones-filters" class="form-label">Limpiar filtros</label>
+                <button 
+                    class="btn btn-warning w-100" 
+                    id="btn-clean-derivaciones-filters"
+                    onclick="App.derivaciones.limpiarFiltros()">
+                    <i class="bi bi-trash"></i>
+                </button>
             </div>
         </div>
     </div>

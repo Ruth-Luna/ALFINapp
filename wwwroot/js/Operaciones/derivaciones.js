@@ -341,9 +341,6 @@ App.derivaciones = (() => {
             gridApi = params.api;
             document.getElementById('totalDelMesDerivaciones').textContent = listaDerivaciones.length;
             params.api.sizeColumnsToFit({ defaultMinWidth: 50 });
-            gridApi.getColumnDefs().forEach(col => {
-                console.log(col.field, "hide:", col.hide);
-            });
         },
         onGridSizeChanged: (params) => {
             params.api.sizeColumnsToFit({ defaultMinWidth: 50 });
@@ -482,6 +479,8 @@ App.derivaciones = (() => {
             // Luego ocultamos el select de supervisores.
             document.getElementById('supervisorDerivacionesCol').classList.add('d-none');
         } else if (rol === 3) {
+            const agenciaSelect = document.getElementById('agenciaDerivaciones');
+            const uniqueAgencies = [...new Set(listaDerivaciones.map(item => item.nombreAgencia))];
             uniqueAgencies.forEach(agencia => agenciaSelect.appendChild(new Option(agencia, agencia)));
             // Luego ocultamos los selects de asesores y supervisores.
             document.getElementById('asesorDerivacionesCol').classList.add('d-none');
@@ -525,8 +524,25 @@ App.derivaciones = (() => {
             XLSX.utils.book_append_sheet(workbook, worksheet, "Derivaciones");
 
             XLSX.writeFile(workbook, "Derivaciones.xlsx");
+        },
+        limpiarFiltros: () => {
+            document.getElementById('dniClienteDerivaciones').value = '';
+            document.getElementById('agenciaDerivaciones').value = 'Todos';
+            document.getElementById('asesorDerivaciones').value = 'Todos';
+            document.getElementById('supervisorDerivaciones').value = 'Todos';
+            document.getElementById('fechaVisitaDerivacion').value = '';
+            document.getElementById('fechaDerivacion').value = '';
+
+            externalFilterState.dniCliente = '';
+            externalFilterState.agencia = 'Todos';
+            externalFilterState.asesor = 'Todos';
+            externalFilterState.supervisor = 'Todos';
+            externalFilterState.fechaVisita = '';
+            externalFilterState.fechaDerivacion = '';
+
+            if (gridApi) {
+                gridApi.onFilterChanged();
+            }
         }
-
     };
-
 })();
