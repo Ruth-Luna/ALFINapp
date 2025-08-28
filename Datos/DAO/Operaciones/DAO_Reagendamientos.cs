@@ -1,8 +1,6 @@
 using ALFINapp.Models;
-using Microsoft.Build.Framework;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace ALFINapp.Datos.DAO.Operaciones
 {

@@ -84,7 +84,6 @@ function cargarDerivacionesXAsesorSistema(DniAsesor) {
 
     // Si no hay coincidencias, podrías ocultar la tabla o mostrar un mensaje
     if (!tieneCoincidencias) {
-        console.warn("No se encontraron registros para el DNI:", DniAsesor);
     }
 }
 

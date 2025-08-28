@@ -1,5 +1,4 @@
 function cargarReagendacion(data) {
-    console.log(data);
     document.getElementById('reagendacion-de-derivacion-content').classList.remove('d-none');
     document.getElementById('dni-reagendamiento').value = data.dniCliente;
     document.getElementById('oferta-reagendamiento').value = data.ofertaMax != undefined ? data.ofertaMax : data.oferta;

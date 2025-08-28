@@ -95,9 +95,6 @@ BEGIN
     ) AS dias_habiles
     WHERE dias_habiles.rn = 3;
 
-    -- DEBUGGING WITH LOG TABLE
-    INSERT INTO debug_log (mensaje)
-    VALUES ('Fechas de reagendación: ' + CAST(@fecha_reagendacion1 AS VARCHAR(10)) + ' - ' + CAST(@fecha_reagendacion2 AS VARCHAR(10)));
 
     ;WITH CTE_REAGENDAMIENTOS AS (
     SELECT 
@@ -118,7 +115,7 @@ BEGIN
         R.oferta,
         R.fecha_visita,
         R.telefono,
-        R.agencia,
+		LTRIM(RTRIM(SUBSTRING(R.agencia, CHARINDEX('-', R.agencia) + 1, LEN(R.agencia)))) AS agencia,
         R.fecha_agendamiento,
         R.fecha_derivacion,
         R.dni_asesor,
@@ -129,12 +126,27 @@ BEGIN
         da.fecha_derivacion AS fecha_derivacion_original,
         da.doc_supervisor,
         da.nombre_cliente,
-        R.rn_asc AS numero_reagendamiento
+        R.rn_asc AS numero_reagendamiento,
+        -- MAS COLUMNAS NUEVAS
+        D.id_desembolsos,
+        CASE 
+            WHEN D.id_desembolsos IS NOT NULL THEN CAST(1 AS BIT)
+            ELSE CAST(0 AS BIT)
+        END AS fue_desembolsado,
+        D.FECHA_DESEMBOLSOS AS fecha_desembolso,
+        D.MONTO_FINANCIADO AS monto_financiado,
+        da.fue_enviado_email AS fue_enviado_email,
+        da.fue_procesado AS fue_procesado_formulario
+        -- FIN MAS COLUMNAS NUEVAS
     FROM CTE_REAGENDAMIENTOS R
     LEFT JOIN [CORE_ALFIN].[dbo].[usuarios] U ON R.dni_asesor = U.dni
     LEFT JOIN derivaciones_asesores da ON R.id_derivacion = da.id_derivacion 
         AND YEAR(da.fecha_derivacion) = YEAR(R.fecha_derivacion)
         AND MONTH(da.fecha_derivacion) = MONTH(R.fecha_derivacion)
+    LEFT JOIN desembolsos D ON R.dni_cliente = D.dni_desembolso
+        AND YEAR(D.FECHA_DESEMBOLSOS) = YEAR(R.fecha_derivacion)
+        AND MONTH(D.FECHA_DESEMBOLSOS) = MONTH(R.fecha_derivacion)
+        AND CANAL = 'A365'
     WHERE (MONTH(R.fecha_agendamiento) = @month 
         AND YEAR(R.fecha_agendamiento) = @year)
         AND R.dni_asesor IN (SELECT dni FROM @dnis_table)
@@ -148,8 +160,11 @@ GO
 EXEC SP_REAGENDAMIENTOS_GET_REAGENDAMIENTOS_VIEW
 
 
-GO 
-CREATE PROCEDURE [dbo].[SP_REAGENDAMIENTOS_GET_REAGENDAMIENTOS_HISTORICO]
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[SP_REAGENDAMIENTOS_GET_REAGENDAMIENTOS_HISTORICO]
 (
     @id_derivacion INT
 )
@@ -166,7 +181,11 @@ BEGIN
         R.fecha_derivacion,
         R.dni_asesor,
         R.dni_cliente,
-        COUNT(*) OVER (PARTITION BY R.id_derivacion) AS total_reagendamientos
+        COUNT(*) OVER (PARTITION BY R.id_derivacion) AS total_reagendamientos,
+        ROW_NUMBER() OVER (PARTITION BY R.id_derivacion ORDER BY R.fecha_agendamiento) AS numero_reagendamiento,
+        da.nombre_cliente,
+        da.estado_derivacion,
+        U.Nombres_Completos AS nombre_asesor
     FROM agendamientos_reagendamientos R
     LEFT JOIN [CORE_ALFIN].[dbo].[usuarios] U ON R.dni_asesor = U.dni
     LEFT JOIN derivaciones_asesores da ON R.id_derivacion = da.id_derivacion 
@@ -175,6 +194,7 @@ BEGIN
     WHERE R.id_derivacion = @id_derivacion
     ORDER BY R.fecha_visita DESC, R.fecha_agendamiento DESC;
 END
+GO
 
 
 SELECT * FROM debug_log
