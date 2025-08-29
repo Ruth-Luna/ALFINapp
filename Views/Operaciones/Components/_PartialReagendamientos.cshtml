@@ -1,5 +1,4 @@
-﻿
-<div class="card border-0 shadow-sm mb-3">
+﻿<div class="card border-0 shadow-sm mb-3">
     <div class="card-body">
         <div class="row g-3">
             <div class="col">
@@ -34,9 +33,7 @@
             </div>
             <div class="col-1">
                 <label for="btn-clean-reagendamientos-filters" class="form-label">Limpiar filtros</label>
-                <button 
-                    class="btn btn-warning w-100" 
-                    id="btn-clean-reagendamientos-filters"
+                <button class="btn btn-warning w-100" id="btn-clean-reagendamientos-filters"
                     onclick="App.reagendamientos.limpiarFiltros()">
                     <i class="bi bi-trash"></i>
                 </button>
@@ -44,15 +41,35 @@
         </div>
     </div>
 </div>
-<div class="card border-0 shadow-sm">
+<div class="card border-0 shadow-sm mb-3">
     <div class="card-header bg-white d-flex align-items-center">
         <div class="ms-auto">
-            <div class="dropdown">
-                <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            @* It must to be at the left from the dropdown *@
+            <div class="d-inline-flex gap-2">
+                <div class="af-badge af-badge-bg-success">
+                    <i class="ri-checkbox-circle-fill"></i>
+                    <span>Enviado</span>
+                </div>
+                <div class="af-badge af-badge-bg-warning">
+                    <i class="ri-indeterminate-circle-fill"></i>
+                    <span>Pendiente</span>
+                </div>
+                <div class="af-badge af-badge-bg-info">
+                    <i class="ri-indeterminate-circle-fill"></i>
+                    <span>Desembolsado</span>
+                </div>
+                <div class="af-badge af-badge-bg-secondary">
+                    <i class="ri-indeterminate-circle-fill"></i>
+                    <span>Sin Desembolso</span>
+                </div>
+            </div>
+            <div class="dropdown d-inline-block ms-3"> 
+                <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
                     Descargar
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Últimos reagendamientos</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="App.reagendamientos.exportarExcelReagendamientos()">Últimos reagendamientos</a></li>
                     <li><a class="dropdown-item" href="#">Históricos</a></li>
                 </ul>
             </div>

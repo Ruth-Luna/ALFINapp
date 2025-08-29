@@ -289,3 +289,18 @@ body {
     background-color: #FFF6DE;
     color: #F3A434;
 }
+
+.af-badge-bg-info {
+    background-color: #E0F7FA;
+    color: #00796B;
+}
+
+.af-badge-bg-danger {
+    background-color: #FDECEA;
+    color: #D32F2F;
+}
+
+.af-badge-bg-secondary {
+    background-color: #E0E0E0;
+    color: #646464;
+}

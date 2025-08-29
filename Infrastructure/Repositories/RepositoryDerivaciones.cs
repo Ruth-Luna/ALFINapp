@@ -272,6 +272,7 @@ namespace ALFINapp.Infrastructure.Repositories
                 return (false, "Error en la base de datos al subir la reagendacion");
             }
         }
+
         public async Task<(bool success, string message)> verDerivacion(string Dni)
         {
             try
