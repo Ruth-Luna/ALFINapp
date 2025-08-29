@@ -36,6 +36,14 @@ namespace ALFINapp.API.Models
         public string RealError { get; set; } = string.Empty;
         public bool PuedeSerReagendado { get; set; } = true;
         public DateTime? FechaEvidencia { get; set; } = null;
+        public string estadoEvidencia { get; set; } = "No Enviado";
+        public bool? HayEvidencia { get; set; } = false;
+        public bool? FueDesembolsado { get; set; } = false;
+        public DateTime? FechaDesembolsos { get; set; } = null;
+        public string DocAsesorDesembolso { get; set; } = string.Empty;
+        public string DocSupervisorDesembolso { get; set; } = string.Empty;
+        public decimal? MontoDesembolsoFinanciado { get; set; } = null;
+        public string acciones { get; set; } = string.Empty;
         public ViewDerivaciones() { }
         public ViewDerivaciones(DerivacionConsultaDerivacionesXAsesorPorDniConReagendacion model)
         {
@@ -62,6 +70,20 @@ namespace ALFINapp.API.Models
             RealError = model.RealError ?? string.Empty;
             PuedeSerReagendado = model.PuedeSerReagendado ?? true;
             FechaEvidencia = model.FechaEvidencia;
+            if (FechaEvidencia.HasValue)
+            {
+                estadoEvidencia = "Enviado";
+            }
+            else
+            {
+                estadoEvidencia = "No Enviado";
+            }
+            HayEvidencia = model.HayEvidencia ?? false;
+            FueDesembolsado = model.FueDesembolsado ?? false;
+            FechaDesembolsos = model.FechaDesembolsos;
+            DocAsesorDesembolso = model.DocAsesorDesembolso ?? string.Empty;
+            DocSupervisorDesembolso = model.DocSupervisorDesembolso ?? string.Empty;
+            MontoDesembolsoFinanciado = model.MontoDesembolsoFinanciado;
         }
     }
 }

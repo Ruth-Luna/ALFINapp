@@ -17,13 +17,12 @@ namespace ALFINapp.API.Controllers
             _dao_SubirReagendacion = dao_SubirReagendacion;
             _dao_Derivaciones = dao_Derivaciones;
         }
-        public async Task<IActionResult> Reagendar(
-            [FromBody]DtoVReagendar dtovreagendar)
+        public async Task<IActionResult> Reagendar([FromBody] DtoVReagendar dtovreagendar)
         {
             if (dtovreagendar.FechaReagendamiento == null || dtovreagendar.FechaReagendamiento == DateTime.MinValue)
-                {
-                    return Json(new { success = false, message = "La fecha de reagendamiento es obligatoria." });
-                }
+            {
+                return Json(new { success = false, message = "La fecha de reagendamiento es obligatoria." });
+            }
             if (dtovreagendar.IdDerivacion == null || dtovreagendar.IdDerivacion == 0)
             {
                 return Json(new { success = false, message = "El id de derivación es obligatorio." });
