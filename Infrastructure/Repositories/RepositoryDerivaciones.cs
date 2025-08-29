@@ -130,6 +130,38 @@ namespace ALFINapp.Infrastructure.Repositories
             }
         }
 
+        public async Task<(bool success, string message)> marcarEvidenciaDisponible(int idDerivacion, List<String> urls)
+        {
+            try
+            {
+                var urls_string = string.Join(",", urls);
+                var parametros = new[]
+                {
+                    new SqlParameter("@id_derivacion", idDerivacion) { SqlDbType = SqlDbType.Int },
+                    new SqlParameter("@urls", urls_string) { SqlDbType = SqlDbType.NVarChar, Size = 4000 }
+                };
+                
+                var resultado = await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC sp_derivacion_upload_nueva_evidencia @id_derivacion, @urls", parametros);
+
+                if (resultado == 0)
+                {
+                    return (false, "Error al marcar la evidencia como disponible");
+                }
+
+                // var checkProcesamiento = await checkProcesamientoEvidencias(idDerivacion);
+                // if (!checkProcesamiento.success)
+                // {
+                //     return (false, checkProcesamiento.message);
+                // }
+                return (true, "Evidencia marcada como disponible y procesada correctamente");
+            }
+            catch (System.Exception ex)
+            {
+                return (false, "Error al marcar la evidencia como disponible: " + ex.Message);
+            }
+        }
+
         private async Task<(bool success, string message)> checkProcesamientoEvidencias(int idDerivacion, int maxWaitingTime = 40000, int interval = 1000)
         {
             var waitingTime = 0;
@@ -240,6 +272,7 @@ namespace ALFINapp.Infrastructure.Repositories
                 return (false, "Error en la base de datos al subir la reagendacion");
             }
         }
+
         public async Task<(bool success, string message)> verDerivacion(string Dni)
         {
             try
