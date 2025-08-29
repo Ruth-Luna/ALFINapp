@@ -170,7 +170,7 @@ function mostrarConsultas(data) {
     // Botón
     if (data.idrol === 3) {
         document.getElementById("botones-consulta").innerHTML = `
-            <a class="btn btn-primary" href="javascript:void(0);" onclick="TakeThisClient('${data.dni}', '${data.traidoDe}')">
+            <a class="btn btn-success" href="javascript:void(0);" onclick="TakeThisClient('${data.dni}', '${data.traidoDe}')">
                 <i class="fas fa-check"></i> Tipifique Este Cliente
             </a>
         `;

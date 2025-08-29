@@ -16,9 +16,15 @@
 }
 
 <div class="container mt-4">
-    <h3>Bienvenido @Model.NombresCompletos</h3>
-    <div class="alert alert-info" role="alert">
-        En esta Sección podrá modificar su contraseña y otros datos.
+    <div class="text-center mb-4">
+        <span class="d-inline-block p-2 rounded">
+            <h3>
+                Bienvenido @Model.NombresCompletos
+            </h3>
+        </span>
+        <div class="alert alert-info" role="alert">
+            En esta Sección podrá modificar su contraseña y otros datos.
+        </div>
     </div>
 
     <div class="card shadow-sm">
@@ -27,14 +33,17 @@
                 <!-- Columna Izquierda -->
                 <div class="col-md-6">
                     <div class="form-group mb-2">
-                        <label for="NombresCompletosUsuario" class="form-label mb-2">Nombres Completos del Usuario</label>
-                        <input type="text" class="form-control" id="NombresCompletosUsuario" value="@Model.NombresCompletos" readonly>
+                        <label for="NombresCompletosUsuario" class="form-label mb-2">Nombres Completos del
+                            Usuario</label>
+                        <input type="text" class="form-control" id="NombresCompletosUsuario"
+                            value="@Model.NombresCompletos" readonly>
                     </div>
                     <div class="row mb-2">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="TipoDocumentoUsuario" class="form-label mb-2">Tipo de Documento</label>
-                                <input type="text" class="form-control" id="TipoDocumentoUsuario" value="@Model.TipoDocumento" readonly>
+                                <input type="text" class="form-control" id="TipoDocumentoUsuario"
+                                    value="@Model.TipoDocumento" readonly>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -54,7 +63,8 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="NombreCampaniaUsuario" class="form-label">Nombre Campaña</label>
-                                <input type="text" class="form-control" id="NombreCampaniaUsuario" value="@Model.NOMBRECAMPANIA" readonly>
+                                <input type="text" class="form-control" id="NombreCampaniaUsuario"
+                                    value="@Model.NOMBRECAMPANIA" readonly>
                             </div>
                         </div>
                     </div>
@@ -62,8 +72,10 @@
                     <div class="form-group mb-2">
                         <label for="ContrasenaUsuario" class="form-label">Contraseña</label>
                         <div class="input-group">
-                            <input type="password" class="form-control" id="ContrasenaUsuario" value="@Model.Contrasenia" readonly>
-                            <button class="btn btn-primary" onclick="updatePasswordView()" id="UpdatePasswordButtonView">Actualizar Contraseña</button>
+                            <input type="password" class="form-control" id="ContrasenaUsuario"
+                                value="@Model.Contrasenia" readonly>
+                            <button class="btn btn-primary" onclick="updatePasswordView()"
+                                id="UpdatePasswordButtonView">Actualizar Contraseña</button>
                         </div>
                     </div>
                     <div class="form-group mb-2">
@@ -73,7 +85,9 @@
                                 <input type="password" class="form-control" id="ContrasenaNueva">
                             </div>
                             <div class="col-md-12 mt-2">
-                                <button class="btn btn-success w-100 text-center" onclick="updatePasswordSubmit()" id="UpdatePasswordButtonSubmit" style="display: none;">Confirmar Nueva Contraseña</button>
+                                <button class="btn btn-success w-100 text-center" onclick="updatePasswordSubmit()"
+                                    id="UpdatePasswordButtonSubmit" style="display: none;">Confirmar Nueva
+                                    Contraseña</button>
                             </div>
                         </div>
                     </div>
@@ -84,28 +98,33 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="CorreoUsuario" class="form-label mb-2">Correo</label>
-                                <input type="email" class="form-control" id="CorreoUsuario" value="@Model.Correo" data-original="@Model.Correo">
+                                <input type="email" class="form-control" id="CorreoUsuario" value="@Model.Correo"
+                                    data-original="@Model.Correo">
 
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="TelefonoUsuario" class="form-label">Teléfono</label>
-                                <input type="text" class="form-control" id="TelefonoUsuario" value="@Model.Telefono" data-original="@Model.Telefono">
+                                <input type="text" class="form-control" id="TelefonoUsuario" value="@Model.Telefono"
+                                    data-original="@Model.Telefono">
                             </div>
                         </div>
                     </div>
                     <div class="form-group mb-2">
                         <label for="DepartamentoUsuario" class="form-label">Departamento</label>
-                        <input type="text" class="form-control" id="DepartamentoUsuario" value="@Model.Departamento" data-original="@Model.Departamento">
+                        <input type="text" class="form-control" id="DepartamentoUsuario" value="@Model.Departamento"
+                            data-original="@Model.Departamento">
                     </div>
                     <div class="form-group mb-2">
                         <label for="ProvinciaUsuario" class="form-label">Provincia</label>
-                        <input type="text" class="form-control" id="ProvinciaUsuario" value="@Model.Provincia" data-original="@Model.Provincia">
+                        <input type="text" class="form-control" id="ProvinciaUsuario" value="@Model.Provincia"
+                            data-original="@Model.Provincia">
                     </div>
                     <div class="form-group mb-2">
                         <label for="DistritoUsuario" class="form-label">Distrito</label>
-                        <input type="text" class="form-control" id="DistritoUsuario" value="@Model.Distrito" data-original="@Model.Distrito">
+                        <input type="text" class="form-control" id="DistritoUsuario" value="@Model.Distrito"
+                            data-original="@Model.Distrito">
                     </div>
 
                 </div>
@@ -113,7 +132,8 @@
             <!-- Botón Actualizar -->
             <div class="row mt-3">
                 <div class="col-md-12 text-center">
-                    <button class="btn btn-success btn-actualizar-campos" onclick="actualizarCampos()">Actualizar Campos</button>
+                    <button class="btn btn-success btn-actualizar-campos" onclick="actualizarCampos()">Actualizar
+                        Campos</button>
                 </div>
             </div>
         </div>

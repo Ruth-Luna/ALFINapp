@@ -9,29 +9,41 @@
 }
 
 <div class="container mt-4">
-    <div id="container dni-section mb-3">
-        <h3>Busqueda de Clientes</h3>
-        <div class="alert alert-info" role="alert">
-            <h5>Informacion: </h5>
-            <p class="mb-0">Un cliente para ser tipificado debe de haber sido enviado por el banco durante el
-                <strong>presente mes. Si el cliente no se encuentra durante este mes no podra ser tipificado. </strong>
-            </p>
+    <div class="p-4 bg-light border rounded-3">
+        <div class="text-center">
+            <span class="d-inline-block p-2 rounded">
+                <h3>
+                    Busqueda de Clientes
+                    <i class="bi bi-info-circle-fill text-primary" data-bs-toggle="tooltip" data-bs-placement="right"
+                        title="Un cliente para ser tipificado debe de haber sido enviado por el banco durante el presente mes. Si el cliente no se encuentra durante este mes no podrá ser tipificado.">
+                    </i>
+                </h3>
+            </span>
         </div>
-        <div class="form-group">
-            <label for="DNI"> Ingrese un DNI o Numero de Telefono</label>
-            <input type="text" id="dnicliente" class="form-control" placeholder="Ingrese DNI">
-            <br>
-            <button id="consultar-dni" class="btn btn-primary" onclick="validarDNI()"><i class="bi bi-search"></i>
-                Consultar DNI</button>
-            <a href="javascript:void(0)" id="consultar-telefono" class="btn btn-primary" onclick="validarTelefono()"><i
-                    class="bi bi-search"></i> Consultar Telefono</a>
+
+        <div class="form-group mt-3">
+            <div class="mb-3">
+                <label class="mb-1" for="DNI">Ingrese un DNI o Número de Teléfono</label>
+                <input type="text" id="dnicliente" class="form-control" placeholder="Ingrese DNI">
+            </div>
+
+            <div class="d-flex justify-content-center gap-2">
+                <button id="consultar-dni" class="btn btn-primary" onclick="validarDNI()">
+                    <i class="bi bi-search"></i> Consultar DNI
+                </button>
+                <a href="javascript:void(0)" id="consultar-telefono" class="btn btn-info"
+                    onclick="validarTelefono()">
+                    <i class="bi bi-search"></i> Consultar Teléfono
+                </a>
+            </div>
+
         </div>
     </div>
 
-    <div id="datos-cliente-existente" class="d-none">
+    <div id="datos-cliente-existente" class="d-none p-4 bg-light border rounded-3">
         <div class="container mt-4">
             <div class="row mb-3">
-                <h3 class="label-fortip">Consulta de Campañas</h3>
+                <h3>Consulta de Campañas</h3>
             </div>
 
             <div id="detalle-campana">
@@ -41,11 +53,7 @@
                 <div class="container mb-3">
                     <div class="form-group row align-items-center mb-2">
                         <label for=""></label>
-                        <input type="text" 
-                            id="nombres-completos-cliente" 
-                            class="form-control"
-                            value=""
-                            readonly>
+                        <input type="text" id="nombres-completos-cliente" class="form-control" value="" readonly>
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -61,25 +69,16 @@
                                 <div class="d-flex align-items-center">
                                     <input class="form-control ml-2"
                                         style="background-color: #ffff; width: 35px; height: 35px;"
-                                        id="color-inicial-consulta"
-                                        value=""
-                                        readonly>
-                                    <input class="form-control ml-2" 
-                                        id="color-inicial-consulta-nombre" 
-                                        type="text"
-                                        value=""
-                                        readonly>
+                                        id="color-inicial-consulta" value="" readonly>
+                                    <input class="form-control ml-2" id="color-inicial-consulta-nombre" type="text"
+                                        value="" readonly>
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <input class="form-control ml-2"
                                         style="background-color: #ffff; width: 35px; height: 35px;"
-                                        id="color-final-consulta"
-                                        readonly>
-                                    <input class="form-control ml-2" 
-                                        id="color-final-consulta-nombre" 
-                                        type="text"
-                                        value=""
-                                        readonly>
+                                        id="color-final-consulta" readonly>
+                                    <input class="form-control ml-2" id="color-final-consulta-nombre" type="text"
+                                        value="" readonly>
                                 </div>
                             </div>
                         </div>
@@ -88,8 +87,7 @@
                                 <label for="campaña">Campaña:</label>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" id="campaña" class="form-control" value=""
-                                    readonly>
+                                <input type="text" id="campaña" class="form-control" value="" readonly>
                             </div>
                         </div>
                         <div class="form-group row align-items-center mb-2">
@@ -97,8 +95,7 @@
                                 <label for="oferta_maxima">Oferta Máxima:</label>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" id="oferta_maxima" class="form-control" value=""
-                                    required readonly>
+                                <input type="text" id="oferta_maxima" class="form-control" value="" required readonly>
                             </div>
                         </div>
                         <div class="form-group row align-items-center mb-2">
@@ -106,8 +103,7 @@
                                 <label for="plazo-maximo">Plazo Máximo:</label>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" id="plazo-maximo" class="form-control" value=""
-                                    readonly>
+                                <input type="text" id="plazo-maximo" class="form-control" value="" readonly>
                             </div>
                         </div>
                         <div class="form-group row align-items-center mb-2">
@@ -115,8 +111,8 @@
                                 <label for="capacidad_de_pago">Capacidad de Pago:</label>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" id="capacidad-de-pago" class="form-control"
-                                    value="" required readonly>
+                                <input type="text" id="capacidad-de-pago" class="form-control" value="" required
+                                    readonly>
                             </div>
                         </div>
                         <div class="form-group row align-items-center mb-2">
@@ -124,8 +120,7 @@
                                 <label for="deuda-con-alfin">Deuda con ALFIN:</label>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" id="deuda-con-alfin" class="form-control"
-                                    value="" required readonly>
+                                <input type="text" id="deuda-con-alfin" class="form-control" value="" required readonly>
                             </div>
                         </div>
                         <div class="form-group row align-items-center mb-2">
@@ -133,11 +128,7 @@
                                 <label for="nuevo-en-base">Nuevo en BASE:</label>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" 
-                                    id="nuevo-en-base" 
-                                    class="form-control" 
-                                    value=""
-                                    required readonly>
+                                <input type="text" id="nuevo-en-base" class="form-control" value="" required readonly>
                             </div>
                         </div>
                         <div class="form-group row align-items-center mb-2">
@@ -145,8 +136,7 @@
                                 <label for="deuda">Deudas:</label>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" id="deuda" class="form-control" value="" required
-                                    readonly>
+                                <input type="text" id="deuda" class="form-control" value="" required readonly>
                             </div>
                         </div>
                         <div class="form-group row align-items-center mb-2">
@@ -154,8 +144,7 @@
                                 <label for="nro-entidades">Nro Entidades:</label>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" id="nro-entidades" class="form-control" value=""
-                                    required readonly>
+                                <input type="text" id="nro-entidades" class="form-control" value="" required readonly>
                             </div>
                         </div>
                         <div class="form-group row align-items-center mb-2">
@@ -163,8 +152,7 @@
                                 <label for="usuario-v3">Usuario V3:</label>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" id="usuario-v3" class="form-control" value="" required
-                                    readonly>
+                                <input type="text" id="usuario-v3" class="form-control" value="" required readonly>
                             </div>
                         </div>
                         <div class="form-group row align-items-center mb-2">
@@ -172,8 +160,7 @@
                                 <label for="perfil_ro">Perfil RO:</label>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" id="perfil_ro" class="form-control" value="" required
-                                    readonly>
+                                <input type="text" id="perfil_ro" class="form-control" value="" required readonly>
                             </div>
                         </div>
                     </div>
@@ -184,9 +171,7 @@
                                 <label for="hasta_s_3k">Hasta S/ 3k:</label>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" id="hasta_s_3k" class="form-control"
-                                    value=""
-                                    required readonly>
+                                <input type="text" id="hasta_s_3k" class="form-control" value="" required readonly>
                             </div>
                         </div>
                         <div class="form-group row align-items-center mb-2">
@@ -194,9 +179,7 @@
                                 <label for="hasta_s_6_1k">Hasta S/ 6.1k:</label>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" id="hasta_s_6_1k" class="form-control"
-                                    value=""
-                                    required readonly>
+                                <input type="text" id="hasta_s_6_1k" class="form-control" value="" required readonly>
                             </div>
                         </div>
                         <div class="form-group row align-items-center mb-2">
@@ -204,9 +187,7 @@
                                 <label for="hasta_s_8_6k">Hasta S/ 8.6k:</label>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" id="hasta_s_8_6k" class="form-control"
-                                    value=""
-                                    required readonly>
+                                <input type="text" id="hasta_s_8_6k" class="form-control" value="" required readonly>
                             </div>
                         </div>
                         <div class="form-group row align-items-center mb-2">
@@ -214,9 +195,7 @@
                                 <label for="hasta_s_12_4k">Hasta S/ 12.4k:</label>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" id="hasta_s_12_4k" class="form-control"
-                                    value=""
-                                    required readonly>
+                                <input type="text" id="hasta_s_12_4k" class="form-control" value="" required readonly>
                             </div>
                         </div>
                         <div class="form-group row align-items-center mb-2">
@@ -224,9 +203,7 @@
                                 <label for="hasta_s_15_1k">Hasta S/ 15.1k:</label>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" id="hasta_s_15_1k" class="form-control"
-                                    value=""
-                                    required readonly>
+                                <input type="text" id="hasta_s_15_1k" class="form-control" value="" required readonly>
                             </div>
                         </div>
                         <div class="form-group row align-items-center mb-2">
@@ -234,9 +211,7 @@
                                 <label for="hasta_s_24_6k">Hasta S/ 24.6k:</label>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" id="hasta_s_24_6k" class="form-control"
-                                    value=""
-                                    required readonly>
+                                <input type="text" id="hasta_s_24_6k" class="form-control" value="" required readonly>
                             </div>
                         </div>
                         <div class="form-group row align-items-center mb-2">
@@ -244,9 +219,7 @@
                                 <label for="mas_de_s_24_6k">Mas de S/ 24.6k:</label>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" id="mas_de_s_24_6k" class="form-control"
-                                    value=""
-                                    required readonly>
+                                <input type="text" id="mas_de_s_24_6k" class="form-control" value="" required readonly>
                             </div>
                         </div>
                         <div class="form-group row align-items-center mb-2">
@@ -254,8 +227,7 @@
                                 <label for="nueva_tasa">Nueva Tasa:</label>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" id="nueva_tasa" class="form-control" value=""
-                                    required readonly>
+                                <input type="text" id="nueva_tasa" class="form-control" value="" required readonly>
                             </div>
                         </div>
                         <div class="form-group row align-items-center mb-2">
@@ -263,8 +235,7 @@
                                 <label for="usuario_tipo">Usuario Tipo:</label>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" id="usuario_tipo" class="form-control" value=""
-                                    required readonly>
+                                <input type="text" id="usuario_tipo" class="form-control" value="" required readonly>
                             </div>
                         </div>
                         <div class="form-group row align-items-center mb-2">
@@ -272,8 +243,8 @@
                                 <label for="usuario_segmento">Usuario Segmento:</label>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" id="usuario_segmento" class="form-control"
-                                    value="" required readonly>
+                                <input type="text" id="usuario_segmento" class="form-control" value="" required
+                                    readonly>
                             </div>
                         </div>
                         <div class="form-group row align-items-center mb-2">
@@ -281,8 +252,8 @@
                                 <label for="flag_deuda_v_oferta">Flag Deuda Vs Oferta:</label>
                             </div>
                             <div class="col-md-6">
-                                <input type="text" id="flag_deuda_v_oferta" class="form-control"
-                                    value="" required readonly>
+                                <input type="text" id="flag_deuda_v_oferta" class="form-control" value="" required
+                                    readonly>
                             </div>
                         </div>
                     </div>

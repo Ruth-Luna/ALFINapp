@@ -1,3 +1,10 @@
+document.addEventListener("DOMContentLoaded", function () {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+});
+
 function activarEdicion(campo) {
     const BotonEnvio = document.getElementById(campo + "BotonEnvio");
     const BotonEdicion = document.getElementById(campo + "BotonEdicion");
