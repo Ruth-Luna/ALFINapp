@@ -2,7 +2,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[BASE_A365_20250623]
+CREATE TABLE [dbo].[CAMPANA202507]
 (
 	[PROPENSION_IC] [varchar](50) NULL,
 	[USER_V3] [varchar](50) NULL,
@@ -55,7 +55,7 @@ GO
 
 SELECT TOP 150
 	*
-FROM [dbo].[BASE_A365_20250623]
+FROM [dbo].[CAMPANA202507]
 
 
 INSERT INTO base_clientes
@@ -75,7 +75,7 @@ SELECT
         WHEN ISNUMERIC(Edad) = 1 THEN CAST(Edad AS INT)
         ELSE NULL
     END
-FROM [dbo].[BASE_A365_20250623] AS B
+FROM [dbo].[CAMPANA202507] AS B
 WHERE NOT EXISTS (
     SELECT 1
 FROM base_clientes AS C
@@ -136,15 +136,16 @@ SELECT
 	TRY_CAST(B.FLG_CET_6M AS int),
 	B.BLOQUE,
 	TRY_CAST(B.FRESCURA AS int)
-FROM [dbo].[BASE_A365_20250623] AS B
+FROM [dbo].[CAMPANA202507] AS B
 	JOIN base_clientes AS C ON C.DNI = B.DNI
 
 
 
 SELECT COUNT(*) AS TotalRegistros
-FROM BASE_A365_20250623
+FROM CAMPANA202507
 WHERE DNI IS NOT NULL;
 
+DROP TABLE IF EXISTS CAMPANA202507;
 
 
 
@@ -161,6 +162,10 @@ WHERE DNI IS NOT NULL;
 
 
 
+
+
+
+SELECT TOP 10 * FROM base_clientes_banco
 
 
 
@@ -194,6 +199,8 @@ INSERT INTO base_clientes_banco
 	,[AUTORIZACION_DATOS]
 	,[mgneg]
 	,[MARCA_PD]
+	,[flag_deuda_oferta]
+	,[grupo_tasa]
 	)
 SELECT
 
@@ -219,8 +226,8 @@ SELECT
 	  , GETDATE() AS [fecha_subida] -- Current date as the upload date
       , [user_v3]  AS [id_user_v3]
       , CASE 
-        WHEN deuda_entidades = 'DE' THEN 1
-        WHEN deuda_entidades = 'NO DE' THEN 0
+        WHEN  deuda_entidades = 1 THEN 1
+        WHEN  deuda_entidades = 0 THEN 0
         ELSE NULL
     END AS [deuda_entidades]
 	, [perfil_ro] AS [perfil_ro]
@@ -228,11 +235,36 @@ SELECT
 	  , [AUTORIZACION_DATOS] AS [AUTORIZACION_DATOS]
       , [Mgneg] AS [mgneg]
       , [MARCA_PD] AS [MARCA_PD]
-FROM CAMPANASJULIOFINAL
+	  , 
+	  	CASE 
+			WHEN [flag_deuda_v_oferta] = '1' THEN 'Oferta >=Deuda'
+			WHEN [flag_deuda_v_oferta] = '0' THEN 'Oferta<Deuda'
+			WHEN [flag_deuda_v_oferta] = '2' THEN 'Sin Deuda'
+			ELSE NULL
+		END AS
+		
+		
+		[flag_deuda_v_oferta]
+
+	  , CASE 
+			WHEN [grupo_tasa] = '0' THEN 'Sin información'
+			WHEN [grupo_tasa] = '1' THEN 'Menor tasa'
+			WHEN [grupo_tasa] = '2' THEN 'Mayor tasa'
+			WHEN [grupo_tasa] = '3' THEN 'Mantiene tasa'
+			ELSE NULL	  			
+		END AS [grupo_tasa]
+FROM campanasconsultaagosto
 WHERE dni IS NOT NULL
 	AND dni <> ''
 	AND oferta_max IS NOT NULL
 	AND tasa_1 IS NOT NULL
+
+
+select top 30 * from campanasconsultaagosto
+
+UPDATE base_clientes_banco
+SET DNI = RIGHT('00000000' + CAST(DNI AS VARCHAR(8)), 8)
+WHERE LEN(DNI) < 8
 
 
 DELETE FROM base_clientes_banco WHERE CAST(fecha_subida AS DATE) = CAST(GETDATE() AS DATE)

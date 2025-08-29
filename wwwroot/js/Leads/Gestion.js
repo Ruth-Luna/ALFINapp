@@ -36,12 +36,29 @@ function sortTableGestionLeads(filter, searchfield, order, orderAsc) {
     window.location.href = url;
 }
 
-function loadTipificarCliente(idBase, functionToExecute) {
-    $.ajax({
-        url: `/Vendedor/${functionToExecute}`, // Controlador y acción
-        type: 'GET',
-        data: { id_base: idBase },
-        success: function (result) {
+async function cargarDataCliente(idBase, idAsignacion, traidoDe) {
+    const baseUrl = window.location.origin;
+    const url = `${baseUrl}/Tipificaciones/ViewGeneralTipificacion?id_base=${idBase}&traido_de=${traidoDe}`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            Swal.fire({
+                title: 'Error al cargar los datos',
+                text: errorData.message || 'Hubo un error al intentar cargar los datos. Por favor, inténtalo nuevamente.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+            return;
+        } else {
+            const result = await response.json();
             if (result.success === false) {
                 Swal.fire({
                     title: 'Error al cargar los datos',
@@ -50,19 +67,62 @@ function loadTipificarCliente(idBase, functionToExecute) {
                     confirmButtonText: 'Aceptar'
                 });
                 return;
-
             }
-            $('#modalContentGeneralTemplate').html(result); // Inserta el contenido de la vista en el modal
-            $('#GeneralTemplateModal').modal('show'); // Muestra el modal
-            $('#GeneralTemplateTitleModalLabel').text("Tipificaciones al Usuario"); // Inserta el contenido de la vista en el modal
-        },
-        error: function () {
-            Swal.fire({
-                title: 'Error al cargar los datos',
-                text: 'Hubo un error al intentar cargar los datos. Por favor, inténtalo nuevamente.',
-                icon: 'error',
-                confirmButtonText: 'Aceptar'
-            });
+            mostrarDataCliente(result.data);
         }
-    });
+    } catch (error) {
+        Swal.fire({
+            title: 'Error al cargar los datos',
+            text: 'Hubo un error al intentar cargar los datos. Por favor, inténtalo nuevamente.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+    }
+}
+
+function loadTipificarCliente(idBase, traidoDe) {
+    let functionToExecute = '';
+    if (traidoDe === 'A365') {
+        functionToExecute = 'TipificarClienteView';
+    }
+    if (traidoDe === 'ALFIN') {
+        functionToExecute = 'TipificarClienteDBALFINView';
+    }
+    try {
+        $.ajax({
+            url: `/Vendedor/${functionToExecute}`, // Controlador y acción
+            type: 'GET',
+            data: { id_base: idBase },
+            success: function (result) {
+                if (result.success === false) {
+                    Swal.fire({
+                        title: 'Error al cargar los datos',
+                        text: result.message,
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                    return;
+
+                }
+                $('#modalContentGeneralTemplate').html(result); // Inserta el contenido de la vista en el modal
+                $('#GeneralTemplateModal').modal('show'); // Muestra el modal
+                $('#GeneralTemplateTitleModalLabel').text("Tipificaciones al Usuario"); // Inserta el contenido de la vista en el modal
+            },
+            error: function () {
+                Swal.fire({
+                    title: 'Error al cargar los datos',
+                    text: 'Hubo un error al intentar cargar los datos. Por favor, inténtalo nuevamente.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+        });
+    } catch (error) {
+        Swal.fire({
+            title: 'Error al cargar los datos',
+            text: 'Hubo un error al intentar cargar los datos. Por favor, inténtalo nuevamente.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+    }
 }

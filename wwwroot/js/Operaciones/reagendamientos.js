@@ -44,7 +44,7 @@ App.reagendamientos = (() => {
     // Definición de las columnas para la tabla de Reagendamientos.
     const reagendamientosTableColumns = [
         {
-            headerName: "Histórico", 
+            headerName: "Histórico y Acciones",
             field: "historico",
             cellClass: "d-flex align-items-center justify-content-center",
             cellRenderer: (params) => {
@@ -62,7 +62,6 @@ App.reagendamientos = (() => {
                         modal.show();
                         const histGridDiv = document.getElementById('gridHistóricoReagendamientos');
                         var historicoData = await getHistorico(params.data.idDerivacion);
-                        console.log('Datos de histórico obtenidos:', historicoData); // --- IGNORE ---
                         App.historico.init(
                             historicoData,
                             usuariorol,
@@ -112,19 +111,65 @@ App.reagendamientos = (() => {
                 container.appendChild(btnReagendamiento);
                 return container;
             },
-            sortable: false, resizable: false, width: 200
+            sortable: false, resizable: false, width: 120
         },
         {
-            headerName: "Estado", field: "estadoReagendamiento",
+            headerName: "Estado Reagendacion",
+            field: "estadoReagendacion",
             cellClass: "d-flex align-items-center justify-content-center",
             cellRenderer: (params) => {
-                console.log(params.value)
-                if (params.value === "REAGENDACION EXITOSA") {
-                    return `<span class="badge-estado badge-reag-enviado">Enviado</span>`;
-                }
-                return `<span class="badge-estado badge-reag-pendiente">Pendiente</span>`;
+                const container = document.createElement('div');
+                container.className = 'd-inline-flex gap-2';
+                // Badge para Derivacion_status (D)
+                const badgeD = document.createElement('div');
+                badgeD.className = `af-badge ${(params.data.fueProcesadoFormulario && params.data.fueEnviadoEmail) ? 'af-badge-bg-success' : 'af-badge-bg-warning'}`;
+                badgeD.title = (params.data.fueProcesadoFormulario && params.data.fueEnviadoEmail) ? 'Derivación' : 'Derivación';
+                badgeD.innerHTML = `
+                  <i class="${(params.data.fueProcesadoFormulario && params.data.fueEnviadoEmail) ? 'ri-checkbox-circle-fill' : 'ri-indeterminate-circle-fill'}"></i>
+                  <span>D</span>
+                `;
+
+                // Badge para Correo_status (C)
+                const badgeC = document.createElement('div');
+                badgeC.className = `af-badge ${params.data.fueEnviadoEmail ? 'af-badge-bg-success' : 'af-badge-bg-warning'}`;
+                badgeC.title = params.data.fueEnviadoEmail ? 'Correo electrónico' : 'Correo electrónico';
+                badgeC.innerHTML = `
+                    <i class="${params.data.fueEnviadoEmail ? 'ri-checkbox-circle-fill' : 'ri-indeterminate-circle-fill'}"></i>
+                    <span>C</span>
+                `;
+
+                // Badge para Correo_status (F)
+                const badgeF = document.createElement('div');
+                badgeF.className = `af-badge ${params.data.fueProcesadoFormulario ? 'af-badge-bg-success' : 'af-badge-bg-warning'}`;
+                badgeF.title = params.data.fueProcesadoFormulario ? 'Formulario' : 'Formulario';
+                badgeF.innerHTML = `
+                    <i class="${params.data.fueProcesadoFormulario ? 'ri-checkbox-circle-fill' : 'ri-indeterminate-circle-fill'}"></i>
+                    <span>F</span>
+                `;
+
+                const badgeDesembolsado = document.createElement('div');
+                badgeDesembolsado.className = `af-badge ${params.data.fueDesembolsado ? 'af-badge-bg-info' : 'af-badge-bg-secondary'}`;
+                badgeDesembolsado.title = params.data.fueDesembolsado ? 'Desembolsado' : 'Sin desembolso';
+                badgeDesembolsado.innerHTML = `
+                    <i class="${params.data.fueDesembolsado ? 'ri-checkbox-circle-fill' : 'ri-indeterminate-circle-fill'}"></i>
+                    <span>${params.data.fueDesembolsado ? '⭐' : 'SD'}</span>
+                `;
+
+                container.appendChild(badgeD);
+                container.appendChild(badgeC);
+                container.appendChild(badgeF);
+                container.appendChild(badgeDesembolsado);
+
+                return container;
             },
-            width: 100
+            //tooltipValueGetter: (params) => {
+            //    const derivacionStatus = params.data.Derivacion_status !== undefined ? params.data.Derivacion_status : 0;
+            //    const correoStatus = params.data.Correo_status !== undefined ? params.data.Correo_status : 0;
+            //    const derivacionText = derivacionStatus === 1 ? 'Derivación completada' : 'Derivación pendiente';
+            //    const correoText = correoStatus === 1 ? 'Correo enviado' : 'Correo no enviado';
+            //    return `${derivacionText}. ${correoText}.`;
+            //},
+            width: 180
         },
         {
             headerName: "N° Reagendamiento",
@@ -222,7 +267,7 @@ App.reagendamientos = (() => {
 
         initialState: { sort: { sortModel: [{ colId: 'estadoReagendamiento', sort: 'asc' }] } },
 
-        defaultColDef: { sortable: true, resizable: true, minWidth: 50, flex: 1},
+        defaultColDef: { sortable: true, resizable: true, minWidth: 50, flex: 1 },
         onGridReady: (params) => {
             gridApi = params.api;
             params.api.sizeColumnsToFit({ defaultMinWidth: 50 });
@@ -400,10 +445,8 @@ App.reagendamientos = (() => {
         }
     }
 
-    // --- INTERFAZ PÚBLICA DEL MÓDULO ---
     return {
         init: async (reagendamientos, rol, asesores, supervisores) => {
-            // 3. Renderizado de la tabla en el div especificado.
             const gridDiv = document.querySelector('#gridReagendamientos');
             if (gridDiv) {
                 usuariorol = rol || 0;
@@ -413,7 +456,6 @@ App.reagendamientos = (() => {
                 await updateTableData(usuariorol);
 
                 reagendamientosGridOptions.rowData = listaReagendamientos;
-                console.log('Datos de reagendamientos cargados:', listaReagendamientos); // --- IGNORE ---
                 agGrid.createGrid(gridDiv, reagendamientosGridOptions);
                 populateFilters(usuariorol, asesores, supervisores);
                 setupEventListeners(asesores, supervisores);
@@ -435,6 +477,79 @@ App.reagendamientos = (() => {
             if (gridApi) {
                 gridApi.onFilterChanged();
             }
+        },
+        exportarExcelReagendamientos: () => {
+            if (!gridApi) return;
+
+            const rowData = [];
+            gridApi.forEachNodeAfterFilterAndSort(node => rowData.push(node.data));
+
+            // Diccionario para renombrar columnas
+            const columnMap = {
+                dniCliente: "DNI Cliente",
+                nombreCliente: "Nombre Cliente",
+                fechaDerivacionOriginal: "Fecha Derivación Original",
+                fechaAgendamiento: "Fecha Reagendamiento",
+                fechaVisita: "Fecha Visita",
+                telefono: "Teléfono",
+                agencia: "Agencia",
+                fechaDerivacion: "Fecha Derivación",
+                dniAsesor: "DNI Asesor",
+                oferta: "Oferta",
+                puedeSerReagendado: "Puede Ser Reagendado",
+                nombreAsesor: "Nombre Asesor",
+                estadoReagendamiento: "Estado Reagendamiento",
+                docSupervisor: "Documento Supervisor",
+                numeroReagendamiento: "Número Reagendamiento",
+                totalReagendamientos: "Total Reagendamientos",
+                fueEnviadoEmail: "Fue Enviado el Email",
+                fueProcesadoFormulario: "Fue Procesado el Formulario",
+                fueDesembolsado: "Fue Desembolsado",
+                fechaDesembolso: "Fecha Desembolso",
+                montoFinanciado: "Monto Financiado"
+            };
+
+            const idsToDelete = ["idDerivacion", "idAgendamientosRe", "idDesembolsos"];
+
+            const formattedData = rowData
+                .filter(row => !row.debe_ser_eliminado)
+                .map(row => {
+                    const newRow = {};
+
+                    Object.keys(row).forEach(key => {
+                        if (idsToDelete.includes(key)) {
+                            return;
+                        }
+
+                        let value = row[key];
+                        if (value === true) value = "SI";
+                        if (value === false) value = "NO";
+
+                        const newKey = columnMap[key] || key;
+
+                        if (key.toLowerCase().includes("fecha") && value) {
+                            value = formatDateTime(value, "dd/mm/yyyy hh:mm");
+                        }
+
+                        newRow[newKey] = value;
+                    });
+
+                    return newRow;
+                });
+
+            const worksheet = XLSX.utils.json_to_sheet(formattedData);
+
+            const colWidths = Object.keys(formattedData[0]).map(key => ({
+                wch: Math.max(
+                    key.length,
+                    ...formattedData.map(r => (r[key] ? r[key].toString().length : 0))
+                )
+            }));
+            worksheet["!cols"] = colWidths;
+
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Reagendamientos");
+            XLSX.writeFile(workbook, "Reagendamientos.xlsx");
         }
     };
 })();

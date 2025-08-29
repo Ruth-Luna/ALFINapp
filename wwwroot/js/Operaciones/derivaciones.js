@@ -37,7 +37,6 @@ async function getAllDerivaciones() {
             throw new Error(data.message || 'Error al obtener las derivaciones');
         }
         const data = await response.json();
-        console.log(data)
         if (data.success === true) {
             return data.data || [];
         } else {
@@ -62,7 +61,6 @@ async function getAllDerivaciones() {
 var App = App || {};
 
 App.derivaciones = (() => {
-    console.log(App)
     let gridApi;
 
     let listaDerivaciones = [];
@@ -77,10 +75,10 @@ App.derivaciones = (() => {
                 container.className = 'd-inline-flex gap-2';
                 // Badge para Derivacion_status (D)
                 const badgeD = document.createElement('div');
-                badgeD.className = `af-badge ${params.data.fueProcesado ? 'af-badge-bg-success' : 'af-badge-bg-warning'}`;
-                badgeD.title = params.data.fueProcesado ? 'Derivación' : 'Derivación';
+                badgeD.className = `af-badge ${(params.data.fueProcesado && params.data.fueEnviadoEmail) ? 'af-badge-bg-success' : 'af-badge-bg-warning'}`;
+                badgeD.title = (params.data.fueProcesado && params.data.fueEnviadoEmail) ? 'Derivación' : 'Derivación';
                 badgeD.innerHTML = `
-                  <i class="${params.data.fueProcesado ? 'ri-checkbox-circle-fill' : 'ri-indeterminate-circle-fill'}"></i>
+                  <i class="${(params.data.fueProcesado && params.data.fueEnviadoEmail) ? 'ri-checkbox-circle-fill' : 'ri-indeterminate-circle-fill'}"></i>
                   <span>D</span>
                 `;
 
@@ -102,10 +100,18 @@ App.derivaciones = (() => {
                     <span>F</span>
                 `;
 
+                const badgeDesembolsado = document.createElement('div');
+                badgeDesembolsado.className = `af-badge ${params.data.fueDesembolsado ? 'af-badge-bg-info' : 'af-badge-bg-secondary'}`;
+                badgeDesembolsado.title = params.data.fueDesembolsado ? 'Desembolsado' : 'Sin desembolso';
+                badgeDesembolsado.innerHTML = `
+                    <i class="${params.data.fueDesembolsado ? 'ri-checkbox-circle-fill' : 'ri-indeterminate-circle-fill'}"></i>
+                    <span>${params.data.fueDesembolsado ? '⭐' : 'SD'}</span>
+                `;
 
                 container.appendChild(badgeD);
                 container.appendChild(badgeC);
                 container.appendChild(badgeF);
+                // container.appendChild(badgeDesembolsado);
 
                 return container;
             },
@@ -116,7 +122,7 @@ App.derivaciones = (() => {
             //    const correoText = correoStatus === 1 ? 'Correo enviado' : 'Correo no enviado';
             //    return `${derivacionText}. ${correoText}.`;
             //},
-            width: 150
+            width: 180
         },
         {
             headerName: "DNI Cliente",
@@ -291,7 +297,6 @@ App.derivaciones = (() => {
                 fechaFormattedObj.getMonth() !== fechaVisitaData.getMonth() ||
                 fechaFormattedObj.getDate() !== fechaVisitaData.getDate()
             ) {
-                console.log(`No coincide la fecha de visita: ${fechaFormattedObj} !== ${fechaVisitaData}`);
                 return false;
             }
         }
@@ -304,7 +309,6 @@ App.derivaciones = (() => {
                 fechaDerivacionFormatted.getMonth() !== fechaDerivacionData.getMonth() ||
                 fechaDerivacionFormatted.getDate() !== fechaDerivacionData.getDate()
             ) {
-                console.log(`No coincide la fecha de derivación: ${fechaDerivacionFormatted} !== ${fechaDerivacionData}`);
                 return false;
             }
         }
@@ -424,7 +428,7 @@ App.derivaciones = (() => {
 
             const enrichmentAgencies = uniqueAgencies.map(a => {
                 const agencias = a.split(',').map(x => x.trim());
-                return agencias; 
+                return agencias;
             });
 
             const uniqueAdvisors = dataasesores.map(u => ({
@@ -486,7 +490,6 @@ App.derivaciones = (() => {
             document.getElementById('asesorDerivacionesCol').classList.add('d-none');
             document.getElementById('supervisorDerivacionesCol').classList.add('d-none');
         } else {
-            console.warn('Rol no reconocido. No se poblarán los filtros.');
         }
     }
 
@@ -508,17 +511,91 @@ App.derivaciones = (() => {
             if (!gridApi) return;
 
             const rowData = [];
-            gridApi.forEachNodeAfterFilterAndSort(node => rowData.push(node.data)); // respeta filtros y orden
+            gridApi.forEachNodeAfterFilterAndSort(node => rowData.push(node.data));
 
-            const worksheet = XLSX.utils.json_to_sheet(rowData);
+            // Diccionario de nombres de columnas
+            const columnMap = {
+                fechaDerivacion: "Fecha Derivación",
+                dniAsesor: "DNI Asesor",
+                dniCliente: "DNI Cliente",
+                nombreCliente: "Nombre Cliente",
+                telefonoCliente: "Teléfono Cliente",
+                nombreAgencia: "Nombre Agencia",
+                fechaVisita: "Fecha Visita",
+                estadoDerivacion: "Estado Derivación",
+                docSupervisor: "Documento Supervisor",
+                ofertaMax: "Oferta Máxima",
+                supervisor: "Supervisor",
+                montoDesembolso: "Monto Desembolso",
+                fechaEvidencia: "Fecha Evidencia",
+                estadoEvidencia: "Estado Evidencia",
+                fechaDesembolsos: "Fecha Desembolsos",
+                docAsesorDesembolso: "Documento Asesor Desembolso",
+                docSupervisorDesembolso: "Documento Supervisor Desembolso",
+                montoDesembolsoFinanciado: "Monto Desembolso Financiado",
+                fueProcesado: "Fue Procesado el Formulario",
+                fueEnviadoEmail: "Fue Enviado el Email",
+                fueDesembolsado: "Fue Desembolsado"
+            };
 
-            const colWidths = Object.keys(rowData[0]).map(key => ({
+            // Columnas que deben eliminarse
+            const idsToDelete = [
+                "idDerivacion",
+                "idCliente",
+                "numAgencia",
+                "idAsignacion",
+                "idDesembolso",
+                "realError",
+                "acciones",
+                "hayEvidencia",
+                "puedeSerReagendado",
+                "fueDesembolsado",
+                "observacionDerivacion"
+            ];
+
+            const formattedData = rowData.map(row => {
+                const newRow = {};
+
+                Object.keys(row).forEach(key => {
+                    if (idsToDelete.includes(key)) {
+                        return; // eliminamos columnas innecesarias
+                    }
+
+                    // booleanos -> SI/NO
+                    let value = row[key];
+                    if (value === true) value = "SI";
+                    if (value === false) value = "NO";
+
+                    // aplicar mapeo de nombre de columna
+                    const newKey = columnMap[key] || key;
+
+                    // formatear fechas
+                    if (key.toLowerCase().includes("fecha") && value) {
+                        // decidir formato según columna
+                        if (["fechaVisita", "fechaDesembolsos"].includes(key)) {
+                            value = formatDateTime(value, "dd/mm/yyyy");
+                        } else {
+                            value = formatDateTime(value, "dd/mm/yyyy hh:mm");
+                        }
+                    }
+
+                    newRow[newKey] = value;
+                });
+
+                return newRow;
+            });
+
+            // Crear hoja Excel
+            const worksheet = XLSX.utils.json_to_sheet(formattedData);
+
+            // Ajustar anchos de columnas
+            const colWidths = Object.keys(formattedData[0]).map(key => ({
                 wch: Math.max(
                     key.length,
-                    ...rowData.map(r => (r[key] ? r[key].toString().length : 0))
+                    ...formattedData.map(r => (r[key] ? r[key].toString().length : 0))
                 )
             }));
-            worksheet['!cols'] = colWidths;
+            worksheet["!cols"] = colWidths;
 
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Derivaciones");

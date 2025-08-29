@@ -7,8 +7,6 @@ var activeId = null;
 
 async function enviarEvidencia(data) {
     activeId = data.idDerivacion; // Asegúrate de que 'idDerivacion' es el campo correcto
-    console.log(data);
-    console.log("ID de derivación activo:", activeId);
 }
 
 async function modal_id_derivacion_to_be_uploaded(id) {

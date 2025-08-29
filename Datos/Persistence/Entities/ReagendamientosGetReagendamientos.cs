@@ -53,6 +53,19 @@ namespace ALFINapp.Datos.Persistence.Entities
 
         [Column("numero_reagendamiento")]
         public long? NumeroReagendamiento { get; set; }
+        // NUEVAS COLUMNAS
+        [Column("id_desembolsos")]
+        public int? IdDesembolsos { get; set; }
+        [Column("fue_desembolsado")]
+        public bool FueDesembolsado { get; set; }
+        [Column("fecha_desembolso")]
+        public DateTime? FechaDesembolso { get; set; }
+        [Column("monto_financiado")]
+        public decimal? MontoFinanciado { get; set; }
+        [Column("fue_enviado_email")]
+        public bool FueEnviadoEmail { get; set; }
+        [Column("fue_procesado_formulario")]
+        public bool FueProcesadoFormulario { get; set; }
     }
 
     public class ReagendamientosGetReagendamientosHistorico
@@ -96,5 +109,6 @@ namespace ALFINapp.Datos.Persistence.Entities
         public string? EstadoDerivacion { get; set; }
         [Column("nombre_asesor")]
         public string? NombreAsesor { get; set; }
+        
     }
 }
