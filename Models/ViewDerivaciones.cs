@@ -80,12 +80,6 @@ namespace ALFINapp.API.Models
                 estadoEvidencia = "No Enviado";
             }
             HayEvidencia = model.HayEvidencia ?? false;
-            FueDesembolsado = model.FueDesembolsado ?? false;
-            FechaDesembolsos = model.FechaDesembolsos;
-            DocAsesorDesembolso = model.DocAsesorDesembolso ?? string.Empty;
-            DocSupervisorDesembolso = model.DocSupervisorDesembolso ?? string.Empty;
-            MontoDesembolsoFinanciado = model.MontoDesembolsoFinanciado;
-            NombreAsesor = model.NombreAsesor ?? string.Empty;
         }
     }
 }
