@@ -1,5 +1,9 @@
 // Document ready
 $(document).ready(function () {
+    // Validar inputs
+    $('.solo-numeros').on('input', function () {
+        this.value = this.value.replace(/\D/g, '');
+    });
     // carga inicial de datos
     cargarDatosUsuario();
 });

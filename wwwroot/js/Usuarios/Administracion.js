@@ -24,6 +24,9 @@ $(document).ready(function () {
             }
         });
     });
+
+    // Precargar filtro de estado
+    $('#txtFiltrarEstado').val('ACTIVO').trigger('change');
 });
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -98,6 +101,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     .catch(err => console.error('Error al copiar:', err));
             }
         },
+        onGridReady: params => {
+            configurarFiltros();
+            // precargar filtro estado
+           $('#txtFiltrarEstado').val('ACTIVO').trigger('change');
+        },
         suppressHorizontalScroll: false,
         localeText: window.localeTextEs
     };
@@ -128,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    $('#txtDNI_AR').on('input', function () {
+    $('.solo-numeros').on('input', function () {
         this.value = this.value.replace(/\D/g, '');
     });
 });
@@ -149,6 +157,13 @@ $('#btnGuardarCambios').on('click', function () {
     } else {
         AgregarActualizarCliente(false); 
     }
+});
+
+$('#btnLimpiarFiltros').on('click', function () {
+    $('#filtroDni').val('').trigger('input');
+    $('#filtroUsuario').val('').trigger('input');
+    $('#txtFiltrarRol').val('').trigger('change');
+    $('#txtFiltrarEstado').val('ACTIVO').trigger('change');
 });
 
 $('#modalARGerente').on('hide.bs.modal', function () {
@@ -469,64 +484,67 @@ function FechaFormat(fechaString) {
     return `${dia}/${mes}/${anio}`;
 }
 
-// Filtro por DNI
-document.getElementById('filtroDni').addEventListener('input', function () {
-    const v = this.value;
-    const model = window.gridApi.getFilterModel() || {};
-    if (!v) {
-        delete model.dni; // 'dni' debe coincidir con el field en columnDefs
-    } else {
-        model.dni = { filterType: 'text', type: 'contains', filter: v };
-    }
-    window.gridApi.setFilterModel(model);
-});
 
-// Filtro por Usuario
-document.getElementById('filtroUsuario').addEventListener('input', function () {
-    const v = this.value;
-    const model = window.gridApi.getFilterModel() || {};
-    if (!v) {
-        delete model.usuarioNombre; 
-    } else {
-        model.usuarioNombre = { filterType: 'text', type: 'contains', filter: v };
-    }
-    window.gridApi.setFilterModel(model);
-});
+function configurarFiltros() {
+    // Filtro por DNI
+    $('#filtroDni').on('input', function () {
+        const v = this.value;
+        const model = window.gridApi.getFilterModel() || {};
+        if (!v) {
+            delete model.dni; // 'dni' debe coincidir con el field en columnDefs
+        } else {
+            model.dni = { filterType: 'text', type: 'contains', filter: v };
+        }
+        window.gridApi.setFilterModel(model);
+    });
+    // Filtro por Usuario
+    $('#filtroUsuario').on('input', function () {
+        const v = this.value;
+        const model = window.gridApi.getFilterModel() || {};
+        if (!v) {
+            delete model.usuarioNombre; 
+        } else {
+            model.usuarioNombre = { filterType: 'text', type: 'contains', filter: v };
+        }
+        window.gridApi.setFilterModel(model);
+    });
 
-    const rolesMap = {
+    $('#txtFiltrarRol').on('change', function () {
+        const v = this.value;
+        const model = window.gridApi.getFilterModel() || {};
+
+        if (!v) {
+            delete model.rol; 
+        } else {
+            model.rol = {
+                filterType: 'text',
+                type: 'equals',
+                filter: rolesMap[v] || ''
+            };
+        }
+
+        window.gridApi.setFilterModel(model);
+    });
+
+    $('#txtFiltrarEstado').on('change', function () {
+        const v = this.value;
+        const model = window.gridApi.getFilterModel() || {};
+        if (!v) {
+            delete model.estado;
+        } else {
+            model.estado = { filterType: 'text', type: 'equals', filter: v };
+        }
+        window.gridApi.setFilterModel(model);
+    });
+}
+
+const rolesMap = {
     1: 'ADMINISTRADOR',
     2: 'SUPERVISOR',
     3: 'ASESOR',
     4: 'GERENTE ZONAL'
 };
 
-document.getElementById('txtFiltrarRol').addEventListener('change', function () {
-    const v = this.value;
-    const model = window.gridApi.getFilterModel() || {};
-
-    if (!v) {
-        delete model.rol; 
-    } else {
-        model.rol = {
-            filterType: 'text',
-            type: 'equals',
-            filter: rolesMap[v] || ''
-        };
-    }
-
-    window.gridApi.setFilterModel(model);
-});
-
-document.getElementById('txtFiltrarEstado').addEventListener('change', function () {
-    const v = this.value;
-    const model = window.gridApi.getFilterModel() || {};
-    if (!v) {
-        delete model.estado;
-    } else {
-        model.estado = { filterType: 'text', type: 'equals', filter: v };
-    }
-    window.gridApi.setFilterModel(model);
-});
 function DescargarResumenExcel() {
 
     let dni = $('#filtroDni').val();
