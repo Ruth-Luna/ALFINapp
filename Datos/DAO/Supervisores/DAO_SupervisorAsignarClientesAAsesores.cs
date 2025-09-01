@@ -1,6 +1,5 @@
 using System.Data;
 using ALFINapp.API.DTOs;
-using ALFINapp.Application.DTOs;
 using ALFINapp.Datos.DAO.Miscelaneos;
 using ALFINapp.Infrastructure.Persistence.Models;
 using Microsoft.Data.SqlClient;
