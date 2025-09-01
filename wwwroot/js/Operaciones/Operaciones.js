@@ -897,10 +897,26 @@ App.derivaciones = (() => {
             },
             width: 150
         },
-        { headerName: "DNI Cliente", field: "dniCliente", width: 90 },
+        { 
+            headerName: "DNI cliente", 
+            width: 120,
+            cellRenderer: (params) => {
+                const $container = $('<div>', { class: 'd-flex gap-2' });
+
+                if (params.data.fueDesembolsado == true) {
+                    $container.append($('<i>', {
+                        class: 'bi-cash-stack text-success'
+                    }));
+                }
+                $container.append($('<div>').text(params.data.dniCliente));
+                
+                return $container[0];
+            }
+        },
         { headerName: "Cliente", field: "nombreCliente", width: 150 },
         { headerName: "Teléfono", field: "telefonoCliente", width: 90 },
-        { headerName: "DNI asesor", field: "dniAsesor", width: 90 },
+        //{ headerName: "DNI asesor", field: "dniAsesor", width: 90 },
+        { headerName: "Nombre asesor", field: "nombreAsesor", width: 150 },
         {
             headerName: "Oferta",
             field: "ofertaMax",
@@ -928,13 +944,23 @@ App.derivaciones = (() => {
             field: "estadoEvidencia",
             cellClass: "d-flex align-items-center justify-content-center",
             cellRenderer: (params) => {
-                if (params.value === "Enviado") {
-                    return `<span class="badge-estado badge-enviado">Enviado</span>`;
-                }
-                return `<span class="badge-estado badge-no-enviado">No enviado</span>`;
+                const $container = $('<div>', { class: 'd-inline-flex gap-1' });
+
+                // Badge para evidencia (E)
+                const $badgeE = $('<div>', {
+                    class: `af-badge ${params.value !== "Enviado" ? 'af-badge-bg-success' : 'af-badge-bg-danger'}`,
+                    html: `
+                        <i class="${params.value === "Enviado" ? 'ri-checkbox-circle-fill' : 'ri-close-circle-fill'}"></i>
+                        <span>E</span>
+                    `,
+                    title: params.value === "Enviado" ? 'Evidencia enviada' : 'Evidencia no enviada'
+                });
+
+                $container.append($badgeE);
+                return $container[0];
             },
             comparator: (valueA, valueB) => (valueA === valueB ? 0 : valueA === 'No enviado' ? -1 : 1),
-            width: 100
+            width: 60
         },
         {
             headerName: "Fecha evidencia",
@@ -951,7 +977,9 @@ App.derivaciones = (() => {
                 container.className = 'd-flex gap-2';
 
                 let btnReagendamiento = document.createElement('button');
+                var mostrarBtnReagendamiento = true;
                 let btnEnviarEvidencia = document.createElement('button');
+                var mostrarBtnEnviarEvidencia = true;
                 if (!params.data.puedeSerReagendado) {
                     btnReagendamiento.className = 'btn btn-sm btn-secondary disabled';
                     btnReagendamiento.title = 'Reagendamiento';
@@ -1006,13 +1034,21 @@ App.derivaciones = (() => {
                         }
                     });
 
+                    mostrarBtnReagendamiento = true;
+
                     btnEnviarEvidencia.className = 'btn btn-sm btn-secondary disabled';
                     btnEnviarEvidencia.title = 'Enviar evidencia';
                     btnEnviarEvidencia.innerHTML = '<i class="ri-file-add-line"></i>';
+
+                    mostrarBtnEnviarEvidencia = false;
                 }
 
-                container.appendChild(btnReagendamiento);
-                container.appendChild(btnEnviarEvidencia);
+                if (mostrarBtnReagendamiento) {
+                    container.appendChild(btnReagendamiento);
+                }
+                if (mostrarBtnEnviarEvidencia) {
+                    container.appendChild(btnEnviarEvidencia);
+                }
 
                 return container;
             },
@@ -1033,6 +1069,12 @@ App.derivaciones = (() => {
         suppressClipboardPaste: true,
         enableCellTextSelection: true,
         initialState: { sort: { sortModel: [{ colId: 'estadoEvidencia', sort: 'asc' }] } },
+        getRowClass: (params) => {
+            if (params.data.puedeSerReagendado === true) {
+                return ['ag-row-reagendable'];
+            }
+            return [];
+        },
         // AGREGAR ESTAS LÍNEAS:
         isExternalFilterPresent: isExternalFilterPresent,
         doesExternalFilterPass: doesExternalFilterPass,
@@ -1045,12 +1087,10 @@ App.derivaciones = (() => {
         }
     };
 
-    // Agregar después de let listaDerivaciones = [];
     const externalFilterState = {
         dniCliente: ''
     };
 
-    // Agregar después de externalFilterState
     function isExternalFilterPresent() {
         return externalFilterState.dniCliente !== '';
     }
@@ -1066,7 +1106,6 @@ App.derivaciones = (() => {
         return true;
     }
 
-    // Agregar después de updateTableData
     function setupDNIFilter() {
         const dniInput = document.getElementById('dniClienteDerivaciones');
         if (dniInput) {
@@ -1090,7 +1129,7 @@ App.derivaciones = (() => {
             }
         } else if (rol === 3) {
             for (let i = derivacionesTableColumns.length - 1; i >= 0; i--) {
-                if (derivacionesTableColumns[i].field === 'dniAsesor' || derivacionesTableColumns[i].field === 'docSupervisor') {
+                if (derivacionesTableColumns[i].field === 'nombreAsesor' || derivacionesTableColumns[i].field === 'docSupervisor') {
                     derivacionesTableColumns.splice(i, 1);
                 }
             }
@@ -1240,26 +1279,71 @@ App.reagendamientos = (() => {
             field: "estadoReagendamiento",
             cellClass: "d-flex align-items-center justify-content-center",
             cellRenderer: (params) => {
+                // Crear el contenedor principal
+                const $container = $('<div>', { class: 'd-flex align-items-center gap-2' });
+
+                // Badge de estado
+                let badgeClass, badgeText;
                 if (params.value === "REAGENDACION EXITOSA") {
-                    return `<span class="badge-estado badge-reag-enviado">Enviado</span>`;
+                    badgeClass = 'badge-estado badge-reag-enviado';
+                    badgeText = 'Enviado';
+                } else {
+                    badgeClass = 'badge-estado badge-reag-pendiente';
+                    badgeText = 'Pendiente';
                 }
-                return `<span class="badge-estado badge-reag-pendiente">Pendiente</span>`;
-            }, 
-            width: 100
+                const $badge = $('<span>', {
+                    class: badgeClass,
+                    text: badgeText,
+                    css: {
+                        lineHeight: '1.8',
+                    }
+                });
+
+                // Icono de correo
+                const fueEnviado = params.data.fueEnviadoEmail === true;
+                const mailIconClass = fueEnviado
+                    ? 'ri-mail-send-line text-success'
+                    : 'ri-mail-send-line text-danger';
+                const mailTitle = fueEnviado
+                    ? 'Correo enviado'
+                    : 'Correo no enviado';
+                const $mailIcon = $('<i>', {
+                    class: mailIconClass,
+                    title: mailTitle,
+                });
+
+                $container.append($badge, $mailIcon);
+
+                return $container[0];
+            },
+            width: 120
         },
         { 
             headerName: "N° Reagendamiento", 
-            field: "numeroReagendamiento",
+            //field: "numeroReagendamiento",
+            field: "numeroReagendamientoFormateado",
             width: 180
         },
         { 
             headerName: "DNI cliente", 
-            field: "dniCliente",
-            width: 120
+            width: 120,
+            cellRenderer: (params) => {
+                const $container = $('<div>', { class: 'd-flex gap-2' });
+
+                if (params.data.fueDesembolsadoGeneral === true) {
+                    $container.append($('<i>', {
+                        class: 'bi-cash-stack text-success'
+                    }));
+                }
+                $container.append($('<div>').text(params.data.dniCliente));
+                
+                return $container[0];
+            }
         },
         { headerName: "Cliente", field: "nombreCliente", width: 250 },
         { headerName: "Teléfono", field: "telefono", width: 120 },
-        { headerName: "DNI asesor", field: "dniAsesor", width: 120 },
+    //{ headerName: "DNI asesor", field: "dniAsesor", width: 120 },
+        { headerName: "Asesor", field: "nombreAsesor", width: 120 },
         { 
             headerName: "Oferta", 
             field: "oferta",
@@ -1270,6 +1354,13 @@ App.reagendamientos = (() => {
             width: 120 
         },
         { headerName: "Agencia", field: "agencia", width: 120 },
+        {
+            headerName: "Fecha Derivación",
+            field: "fechaDerivacion",
+            width: 150,
+            sortable: true,
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm')
+        },
         {
             headerName: "Fecha visita",
             field: "fechaVisita",
@@ -1296,6 +1387,12 @@ App.reagendamientos = (() => {
         defaultColDef: { sortable: true, resizable: true, minWidth: 50, flex: 1 },
         isExternalFilterPresent: isExternalFilterPresent,
         doesExternalFilterPass: doesExternalFilterPass,
+        getRowClass: (params) => {
+            if (params.data.puedeSerReagendado === true) {
+                return ['ag-row-reagendable'];
+            }
+            return [];
+        },
         onGridReady: (params) => {
             gridApi = params.api;
             params.api.sizeColumnsToFit({ defaultMinWidth: 50 });
@@ -1393,6 +1490,7 @@ App.historico = (function () {
 
 
     let derivacionesTableColumns = [
+        /*
         {
             headerName: 'Estado Reagendamiento',
             field: 'estadoReagendamiento',
@@ -1407,7 +1505,8 @@ App.historico = (function () {
                 }
             },
         },
-        { headerName: 'N°', field: 'numeroReagendamiento', width: 60, sortable: true },
+        */
+        { headerName: 'N°', field: 'numeroReagendamientoFormateado', width: 70, sortable: true },
         {
             headerName: 'Cliente',
             field: 'dniCliente',
@@ -1447,6 +1546,13 @@ App.historico = (function () {
             field: 'agencia',
             width: 220,
             sortable: true
+        },
+        {
+            headerName: 'Fecha Derivación',
+            field: 'fechaDerivacion',
+            width: 150,
+            sortable: true,
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy')
         },
         {
             headerName: 'Fecha Visita',

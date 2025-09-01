@@ -44,6 +44,7 @@ namespace ALFINapp.API.Models
         public string DocSupervisorDesembolso { get; set; } = string.Empty;
         public decimal? MontoDesembolsoFinanciado { get; set; } = null;
         public string acciones { get; set; } = string.Empty;
+        public string NombreAsesor { get; set; } = string.Empty;
         public ViewDerivaciones() { }
         public ViewDerivaciones(DerivacionConsultaDerivacionesXAsesorPorDniConReagendacion model)
         {
@@ -84,6 +85,7 @@ namespace ALFINapp.API.Models
             DocAsesorDesembolso = model.DocAsesorDesembolso ?? string.Empty;
             DocSupervisorDesembolso = model.DocSupervisorDesembolso ?? string.Empty;
             MontoDesembolsoFinanciado = model.MontoDesembolsoFinanciado;
+            NombreAsesor = model.NombreAsesor ?? string.Empty;
         }
     }
 }

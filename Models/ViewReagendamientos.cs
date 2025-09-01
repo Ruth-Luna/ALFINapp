@@ -20,6 +20,9 @@ namespace ALFINapp.Models
         public DateTime? FechaDerivacionOriginal { get; set; } = null;
         public string? DocSupervisor { get; set; } = string.Empty;
         public int NumeroReagendamiento { get; set; } = 0;
+        public string? NumeroReagendamientoFormateado { get; set; } = string.Empty;
         public int TotalReagendamientos { get; set; } = 0;
+        public bool FueDesembolsadoGeneral { get; set; } = false;
+        public bool FueEnviadoEmail { get; set; } = false;
     }
 }

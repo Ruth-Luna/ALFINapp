@@ -20,7 +20,7 @@ namespace ALFINapp.Datos.DAO.Operaciones
                     using (SqlCommand command = new SqlCommand("[SP_REAGENDAMIENTOS_GET_REAGENDAMIENTOS_VIEW_2]", connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@month", DateTime.Now.Month);
+                        command.Parameters.AddWithValue("@month", DateTime.Now.Month - 1);
                         command.Parameters.AddWithValue("@year", DateTime.Now.Year);
                         command.Parameters.AddWithValue("@id_asesor", idAsesor);
                         command.Parameters.AddWithValue("@id_supervisor", idSupervisor);
@@ -53,6 +53,9 @@ namespace ALFINapp.Datos.DAO.Operaciones
                                     FechaDerivacionOriginal = reader["fecha_derivacion_original"] != DBNull.Value ? Convert.ToDateTime(reader["fecha_derivacion_original"]) : null,
                                     DocSupervisor = reader["doc_supervisor"] != DBNull.Value ? Convert.ToString(reader["doc_supervisor"]) : string.Empty,
                                     NumeroReagendamiento = reader["numero_reagendamiento"] != DBNull.Value ? Convert.ToInt32(reader["numero_reagendamiento"]) : 0,
+                                    NumeroReagendamientoFormateado = reader["numero_reagendamiento_formateado"] != DBNull.Value ? Convert.ToString(reader["numero_reagendamiento_formateado"]) : string.Empty,
+                                    FueDesembolsadoGeneral = reader["fue_desembolsado_general"] != DBNull.Value ? Convert.ToBoolean(reader["fue_desembolsado_general"]) : false,
+                                    FueEnviadoEmail = reader["fue_enviado_email"] != DBNull.Value ? Convert.ToBoolean(reader["fue_enviado_email"]) : false,
                                     //TotalReagendamientos = reader["total_reagendamientos"] != DBNull.Value ? Convert.ToInt32(reader["total_reagendamientos"]) : 0
                                 };
                                 reagendamientos.Add(reagendamiento);
@@ -93,11 +96,12 @@ namespace ALFINapp.Datos.DAO.Operaciones
                             var derivaciones = new List<ViewDerivaciones>();
                             while (await reader.ReadAsync())
                             {
-                                var derivacion = new DerivacionConsultaDerivacionesXAsesorPorDniConReagendacion
+                                var derivacion = new ViewDerivaciones
                                 {
                                     IdDerivacion = reader["id_derivacion"] != DBNull.Value ? Convert.ToInt32(reader["id_derivacion"]) : 0,
                                     FechaDerivacion = Convert.ToDateTime(reader["fecha_derivacion"]),
                                     DniAsesor = reader["dni_asesor"]?.ToString() ?? string.Empty,
+                                    NombreAsesor = reader["nombre_asesor"]?.ToString() ?? string.Empty,
                                     DniCliente = reader["dni_cliente"]?.ToString() ?? string.Empty,
                                     IdCliente = reader["id_cliente"] != DBNull.Value ? Convert.ToInt32(reader["id_cliente"]) : 0,
                                     NombreCliente = reader["nombre_cliente"]?.ToString() ?? string.Empty,
@@ -120,6 +124,7 @@ namespace ALFINapp.Datos.DAO.Operaciones
                                     //FueReprocesado = reader["fue_reprocesado"] != DBNull.Value ? Convert.ToBoolean(reader["fue_reprocesado"]) : false,
                                     PuedeSerReagendado = reader["PuedeSerReagendado"] != DBNull.Value ? Convert.ToBoolean(reader["PuedeSerReagendado"]) : false,
                                     FechaEvidencia = reader["fecha_evidencia"] != DBNull.Value ? Convert.ToDateTime(reader["fecha_evidencia"]) : (DateTime?)null,
+                                    estadoEvidencia = reader["estado_evidencia"]?.ToString() ?? string.Empty,
                                     HayEvidencia = reader["hay_evidencias"] != DBNull.Value ? Convert.ToBoolean(reader["hay_evidencias"]) : false,
                                     FueDesembolsado = reader["fue_desembolsado"] != DBNull.Value ? Convert.ToBoolean(reader["fue_desembolsado"]) : false,
                                     FechaDesembolsos = reader["fecha_desembolsos"] != DBNull.Value ? Convert.ToDateTime(reader["fecha_desembolsos"]) : (DateTime?)null,
@@ -128,7 +133,7 @@ namespace ALFINapp.Datos.DAO.Operaciones
                                     MontoDesembolsoFinanciado = reader["monto_desembolso_financiado"] != DBNull.Value ? Convert.ToDecimal(reader["monto_desembolso_financiado"]) : (decimal?)null
 
                                 };
-                                derivaciones.Add(new ViewDerivaciones(derivacion));
+                                derivaciones.Add(derivacion);
                             }
                             return (true, derivaciones);
                         }
@@ -207,8 +212,11 @@ namespace ALFINapp.Datos.DAO.Operaciones
                                     FechaDerivacion = reader["fecha_derivacion"] != DBNull.Value ? Convert.ToDateTime(reader["fecha_derivacion"]) : null,
                                     DniAsesor = reader["dni_asesor"] != DBNull.Value ? Convert.ToString(reader["dni_asesor"]) : string.Empty,
                                     DniCliente = reader["dni_cliente"] != DBNull.Value ? Convert.ToString(reader["dni_cliente"]) : string.Empty,
-                                    NumeroReagendamiento = reader["numero_reagendamiento"] != DBNull.Value ? Convert.ToInt32(reader["numero_reagendamiento"]) : 0,
-                                    EstadoReagendamiento = reader["estado_derivacion"] != DBNull.Value ? Convert.ToString(reader["estado_derivacion"]) : string.Empty
+                                    //NumeroReagendamiento = reader["numero_reagendamiento"] != DBNull.Value ? Convert.ToInt32(reader["numero_reagendamiento"]) : 0,
+                                    NumeroReagendamientoFormateado = reader["numero_reagendamiento_formateado"] != DBNull.Value ? Convert.ToString(reader["numero_reagendamiento_formateado"]) : string.Empty,
+                                    EstadoReagendamiento = reader["estado_derivacion"] != DBNull.Value ? Convert.ToString(reader["estado_derivacion"]) : string.Empty,
+                                    NombreCliente = reader["nombre_cliente"] != DBNull.Value ? Convert.ToString(reader["nombre_cliente"]) : string.Empty,
+                                    NombreAsesor = reader["nombre_asesor"] != DBNull.Value ? Convert.ToString(reader["nombre_asesor"]) : string.Empty,
 
                                 };
                                 derivaciones.Add(derivacion);

@@ -65,5 +65,6 @@ namespace ALFINapp.Infrastructure.Persistence.Procedures
         public string? DocSupervisorDesembolso { get; set; } = null;
         [Column("monto_desembolso_financiado")]
         public decimal? MontoDesembolsoFinanciado { get; set; } = null;
+        public string? NombreAsesor { get; set; } = string.Empty;
     }
 }
