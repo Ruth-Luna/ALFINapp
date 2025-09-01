@@ -1,0 +1,436 @@
+@section Styles {
+    <style>
+        .badge-estado {
+            padding: 2px 14px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .badge-enviado,
+        .badge-reag-enviado {
+            background: #80E2A5;
+            color: #0B4300;
+        }
+
+        .badge-no-enviado {
+            background: #FF9292;
+            color: #450202;
+        }
+
+        .badge-reag-pendiente {
+            background-color: #ffe69c;
+            color: #664d03;
+        }
+
+        .modal-dialog.modal-xxl {
+            max-width: 80% !important;
+        }
+
+        .af-badge {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.2rem;
+            border-radius: 1rem;
+            padding: 2px 6px;
+            font-size: 14px;
+            height: 20px;
+        }
+
+            .af-badge > i {
+                font-size: 12px;
+                margin: 0px;
+            }
+
+            .af-badge > span {
+                font-weight: bold;
+            }
+
+        .af-badge-bg-success {
+            background-color: #E5F9EE;
+            color: #1CB256;
+        }
+
+        .af-badge-bg-danger {
+            background-color: #FFE5E5;
+            color: #D50000;
+        }
+
+        .af-badge-bg-warning {
+            background-color: #FFF6DE;
+            color: #F3A434;
+        }
+
+        .ag-row-reagendable {
+            background-color: #e8f5e8 !important; /* Verde claro */
+        }
+    </style>
+}
+
+@{
+    // Recuperar el idrol
+    int? idRol = Context.Session.GetInt32("RolUser");
+}
+
+<div class="">
+    <!-- Inputs escondidos -->
+    <input type="hidden" id="idRol" value="@idRol" />
+    <h3 class="mb-3">Operaciones</h3>
+
+    <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body">
+            <ul class="nav nav-tabs" id="operacionesTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="derivaciones-tab" data-bs-toggle="tab"
+                        data-bs-target="#derivaciones-pane" type="button" role="tab" aria-controls="derivaciones-pane"
+                        aria-selected="true">Derivaciones</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="reagendamientos-tab" data-bs-toggle="tab"
+                        data-bs-target="#reagendamientos-pane" type="button" role="tab"
+                        aria-controls="reagendamientos-pane" aria-selected="false">Reagendamientos</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="tab-content" id="operacionesTabContent">
+        <div class="tab-pane fade show active" id="derivaciones-pane" role="tabpanel" aria-labelledby="derivaciones-tab"
+            tabindex="0">
+            <!--INICIO DE <partial name="Components/_PartialDerivaciones" /> -->
+            
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-3">
+                        <div class="col">
+                            <label for="dniClienteDerivaciones" class="form-label">DNI cliente</label>
+                            <input type="text" autocomplete="off" class="form-control" id="dniClienteDerivaciones" />
+                        </div>
+                        <div class="col filtro-supervisor-col" id="supervisorDerivacionesCol">
+                            <label for="supervisorDerivaciones" class="form-label">Supervisor</label>
+                            <select class="form-select filtro-supervisor" id="supervisorDerivaciones">
+                                <option selected value="">Todos</option>
+                            </select>
+                        </div>
+                        <div class="col filtro-asesor-col" id="asesorDerivacionesCol">
+                            <label for="asesorDerivaciones" class="form-label">Asesor</label>
+                            <select class="form-select filtro-asesor" id="asesorDerivaciones">
+                                <option selected value="">Todos</option>
+                            </select>
+                        </div>
+                        <div class="col filtro-agencia-col" id="agenciaDerivacionesCol">
+                            <label for="agenciaDerivaciones" class="form-label">Agencia</label>
+                            <select class="form-select filtro-agencia" id="agenciaDerivaciones">
+                                <option selected value="">Todos</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="fechaDerivacion" class="form-label">Fecha derivación</label>
+                            <input type="date" class="form-control" id="fechaDerivacion" />
+                        </div>
+                        <div class="col">
+                            <label for="fechaVisitaDerivacion" class="form-label">Fecha de visita</label>
+                            <input type="date" class="form-control" id="fechaVisitaDerivacion" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-white d-flex align-items-center">
+                    <div class="px-3 py-1 rounded-3 border-radius me-2 text-white" style="background-color: #15AFC0;">
+                        Total del mes: <span id="totalDelMesDerivaciones">0</span>
+                    </div>
+                    <div id="resultadoDerivacionesContenedor" class="px-3 py-1 rounded-3 border-radius me-2 text-white d-none" style="background-color: #15C0B8;">
+                        Resultado: <span id="resultadoDerivaciones">0</span>
+                    </div>
+                    <div class="ms-auto">
+                        <!-- al lado derecho del card -->
+                        <div class="me-2 d-inline-flex gap-2">
+                            <div class="af-badge af-badge-bg-success">
+                                <i class="ri-checkbox-circle-fill"></i>
+                                <span>Enviado</span>
+                            </div>
+                            <div class="af-badge af-badge-bg-warning">
+                                <i class="ri-indeterminate-circle-fill"></i>
+                                <span>Pendiente</span>
+                            </div>
+                        </div>
+                        <button 
+                            class="btn btn-success" 
+                            id="btnDescargarDerivaciones"
+                            onclick="App.derivaciones.exportXLSX()">
+                            <span class="d-flex justify-content-center align-items-center gap-2">
+                                <i class="ri-file-download-line"></i>
+                                Descargar
+                            </span>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="gridDerivaciones" class="ag-theme-alpine" style="width: 100%; height: 500px;"></div>
+                </div>
+            </div>
+
+            <!--FIN DE <partial name="Components/_PartialDerivaciones" /> -->
+        </div>
+
+        <div class="tab-pane fade" id="reagendamientos-pane" role="tabpanel" aria-labelledby="reagendamientos-tab"
+            tabindex="0">
+            <!--INICIO DE <partial name="Components/_PartialReagendamientos" /> -->
+            
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-3">
+                        <div class="col">
+                            <label for="dniClienteReagendamientos" class="form-label">DNI cliente</label>
+                            <input type="text" autocomplete="off" class="form-control" id="dniClienteReagendamientos" />
+                        </div>
+                        <div class="col filtro-supervisor-col" id="supervisorReagendamientosCol">
+                            <label for="supervisorReagendamientos" class="form-label">Supervisor</label>
+                            <select class="form-select filtro-supervisor" id="supervisorReagendamientos">
+                                <option selected value="">Todos</option>
+                            </select>
+                        </div>
+                        <div class="col filtro-asesor-col" id="asesorReagendamientosCol">
+                            <label for="asesorReagendamientos" class="form-label">Asesor</label>
+                            <select class="form-select filtro-asesor" id="asesorReagendamientos">
+                                <option selected value="">Todos</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="agenciaReagendamientos filtro-agencia-col" class="form-label">Agencia</label>
+                            <select class="form-select filtro-agencia" id="agenciaReagendamientos">
+                                <option selected value="">Todos</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="fechaReagendamientos" class="form-label">Fecha de reagendamiento</label>
+                            <input type="date" class="form-control" id="fechaReagendamientos" />
+                        </div>
+                        <div class="col">
+                            <label for="fechaVisitaReagendamientos" class="form-label">Fecha de visita</label>
+                            <input type="date" class="form-control" id="fechaVisitaReagendamientos" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex align-items-center">
+                    <div class="ms-auto">
+                        <div class="dropdown">
+                            <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Descargar
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Últimos reagendamientos</a></li>
+                                <li><a class="dropdown-item" href="#">Históricos</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="gridReagendamientos" class="ag-theme-alpine" style="width: 100%; height: 500px;"></div>
+                </div>
+            </div>
+
+            <!--FIN DE <partial name="Components/_PartialReagendamientos" /> -->
+        </div>
+    </div>
+</div>
+
+
+<!-- MODALS -->
+<!--partial name="Modals/_ModalEvidenciasDerivacionesReagendamientos" /-->
+
+<div class="modal fade" id="modalEvidenciasDerivaciones" tabindex="-1" aria-labelledby="labelModalEvidenciasDerivaciones" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="labelModalEvidenciasDerivaciones">Evidencia para la derivación</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row row-cols-4 g-3 mb-3 d-none" id="reagendacion-de-derivacion-content">
+                    <div class="col">
+                        <label for="dni-reagendamiento" class="form-label">DNI cliente</label>
+                        <input type="text" class="form-control" id="dni-reagendamiento" name="dni-reagendamiento"
+                               @* value="@Model.Dni" *@ readonly>
+                    </div>
+                    <div class="col">
+                        <label for="oferta-reagendamiento" class="form-label">Oferta a enviar</label>
+                        <input type="text" class="form-control" id="oferta-reagendamiento" name="oferta-reagendamiento"
+                               @* value="@Model.OfertaMax" *@ readonly>
+                    </div>
+                    <div class="col-6">
+                        <label for="nombre-reagendamiento" class="form-label">Nombre cliente</label>
+                        <input type="text" class="form-control" id="nombre-reagendamiento" name="nombre-reagendamiento"
+                               @* value="@Model.NombresCompletos" *@ readonly>
+                    </div>
+                    <div class="col">
+                        <label for="agencia-reagendamiento" class="form-label">Agencia asignada</label>
+                        <input type="text" class="form-control" id="agencia-reagendamiento" name="agencia-reagendamiento"
+                               @* value="@Model.AgenciaAsignada" *@ readonly>
+                    </div>
+                    <div class="col">
+                        <label for="telefono-reagendamiento" class="form-label">Teléfono cliente</label>
+                        <input type="text" class="form-control" id="telefono-reagendamiento" name="telefono-reagendamiento"
+                               @* value="@Model.Telefono" *@ readonly>
+                    </div>
+                    <div class="col">
+                        <label for="fecha-reagendamiento-previo" class="form-label text-truncate d-block" style="max-width: 100%;"
+                               title="Fecha previa agendamiento">Fecha previa agendamiento</label>
+                        <input type="text" class="form-control" id="fecha-reagendamiento-previo" name="fecha-reagendamiento-previo"
+                               @* value="@Model.FechaVisitaPrevia" *@ readonly>
+                    </div>
+                    <div class="col">
+                        <label for="fecha-reagendamiento-nueva" class="form-label">Nueva fecha de visita</label>
+                        <input type="date" class="form-control" id="fecha-reagendamiento-nueva" name="fecha-reagendamiento-nueva">
+                    </div>
+                </div>
+                <label class="form-label w-100">
+                    <div id="drop-area" class="border border-3 border-light bg-light text-center rounded-3 p-5"
+                            style="cursor: pointer;">
+                        <p class="mb-2 fs-5">Haz clic o arrastra archivos aquí</p>
+                        <p class="text-muted">También puedes pegar (Ctrl + V) un archivo</p>
+                    </div>
+                </label>
+                <input type="file" id="evidencia-derivacion-id-input" class="form-control d-none" />
+                
+                <!-- Vista previa de archivos -->
+                <div id="file-preview" class="mb-3 d-none">
+                    <h6>Archivos seleccionados:</h6>
+                    <ul class="list-group" id="file-list"></ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="enviar-evidencia-o-reagendacion">Enviar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--partial name="Modals/_ModalEvidenciasDerivaciones" /-->
+
+<div class="modal fade" id="modalEvidenciasDerivaciones" tabindex="-1" aria-labelledby="labelModalEvidenciasDerivaciones" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="labelModalEvidenciasDerivaciones">Evidencia para la derivación</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <label class="form-label w-100">
+                    <div id="drop-area" class="border border-3 border-light bg-light text-center rounded-3 p-5"
+                            style="cursor: pointer;">
+                        <p class="mb-2 fs-5">Haz clic o arrastra archivos aquí</p>
+                        <p class="text-muted">También puedes pegar (Ctrl + V) un archivo</p>
+                    </div>
+                </label>
+                <input type="file" id="evidencia-derivacion-id-input" class="form-control d-none" />
+                
+                <!-- Vista previa de archivos -->
+                <div id="file-preview" class="mb-3 d-none">
+                    <h6>Archivos seleccionados:</h6>
+                    <ul class="list-group" id="file-list"></ul>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success">Enviar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- partial name="Modals/_ModalReagendamiento" /-->
+
+<div class="modal fade" id="modalReagendamiento" tabindex="-1" aria-labelledby="labelModalReagendamiento" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="labelModalReagendamiento">Reagendamiento de cita para:</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row row-cols-4 g-3 mb-3">
+                    <div class="col">
+                        <label for="dni-reagendamiento" class="form-label">DNI cliente</label>
+                        <input type="text" class="form-control" id="dni-reagendamiento" name="dni-reagendamiento"
+                               @* value="@Model.Dni" *@ readonly>
+                    </div>
+                    <div class="col">
+                        <label for="oferta-reagendamiento" class="form-label">Oferta a enviar</label>
+                        <input type="text" class="form-control" id="oferta-reagendamiento" name="oferta-reagendamiento"
+                               @* value="@Model.OfertaMax" *@ readonly>
+                    </div>
+                    <div class="col-6">
+                        <label for="nombre-reagendamiento" class="form-label">Nombre cliente</label>
+                        <input type="text" class="form-control" id="nombre-reagendamiento" name="nombre-reagendamiento"
+                               @* value="@Model.NombresCompletos" *@ readonly>
+                    </div>
+                    <div class="col">
+                        <label for="agencia-reagendamiento" class="form-label">Agencia asignada</label>
+                        <input type="text" class="form-control" id="agencia-reagendamiento" name="agencia-reagendamiento"
+                               @* value="@Model.AgenciaAsignada" *@ readonly>
+                    </div>
+                    <div class="col">
+                        <label for="telefono-reagendamiento" class="form-label">Teléfono cliente</label>
+                        <input type="text" class="form-control" id="telefono-reagendamiento" name="telefono-reagendamiento"
+                               @* value="@Model.Telefono" *@ readonly>
+                    </div>
+                    <div class="col">
+                        <label for="fecha-reagendamiento-previo" class="form-label text-truncate d-block" style="max-width: 100%;"
+                               title="Fecha previa agendamiento">Fecha previa agendamiento</label>
+                        <input type="text" class="form-control" id="fecha-reagendamiento-previo" name="fecha-reagendamiento-previo"
+                               @* value="@Model.FechaVisitaPrevia" *@ readonly>
+                    </div>
+                    <div class="col">
+                        <label for="fecha-reagendamiento-nueva" class="form-label">Nueva fecha de visita</label>
+                        <input type="date" class="form-control" id="fecha-reagendamiento-nueva" name="fecha-reagendamiento-nueva">
+                    </div>
+                    <div class="col-12">
+                        <label for="evidencia-derivacion-id-input" class="form-label w-100">
+                            <div id="drop-area" class="border border-3 border-light bg-light text-center rounded-3 p-5"
+                                 style="cursor: pointer;">
+                                <p class="mb-2 fs-5">Haz clic o arrastra archivos aquí</p>
+                                <p class="text-muted">También puedes pegar (Ctrl + V) un archivo</p>
+                            </div>
+                        </label>
+                        <input type="file" id="evidencia-derivacion-id-input" class="form-control d-none" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-success">Enviar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--partial name="Modals/_ModalHistoricoReagendamiento" /-->
+
+<div class="modal fade" id="modalHistoricoReagendamiento" tabindex="-1" aria-labelledby="labelmodalHistoricoReagendamiento" aria-hidden="true">
+    <div class="modal-dialog modal-xxl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="labelmodalHistoricoReagendamiento">Histórico</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="gridHistóricoReagendamientos" class="ag-theme-alpine" style="height: 400px; width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script src="~/js/Operaciones/Operaciones.js" asp-append-version="true"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+}

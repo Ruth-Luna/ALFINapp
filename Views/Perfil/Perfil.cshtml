@@ -1,7 +1,3 @@
-@model ALFINapp.API.Models.ViewUsuario
-@{
-}
-
 @section Styles {
     <link rel="stylesheet" href="~/css/main_page.css">
     <style>
@@ -33,23 +29,20 @@
                 <!-- Columna Izquierda -->
                 <div class="col-md-6">
                     <div class="form-group mb-2">
-                        <label for="NombresCompletosUsuario" class="form-label mb-2">Nombres Completos del
-                            Usuario</label>
-                        <input type="text" class="form-control" id="NombresCompletosUsuario"
-                            value="@Model.NombresCompletos" readonly>
+                        <label for="NombresCompletosUsuario" class="form-label mb-2">Nombres Completo</label>
+                        <input type="text" class="form-control" id="NombresCompletosUsuario" readonly>
                     </div>
                     <div class="row mb-2">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="TipoDocumentoUsuario" class="form-label mb-2">Tipo de Documento</label>
-                                <input type="text" class="form-control" id="TipoDocumentoUsuario"
-                                    value="@Model.TipoDocumento" readonly>
+                                <input type="text" class="form-control" id="TipoDocumentoUsuario" readonly>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="DniUsuario" class="form-label mb-2">DNI del Usuario</label>
-                                <input type="text" class="form-control" id="DniUsuario" value="@Model.Dni" readonly>
+                                <label for="DniUsuario" class="form-label mb-2">DNI</label>
+                                <input type="text" class="form-control" id="DniUsuario" readonly>
                             </div>
                         </div>
                     </div>
@@ -57,14 +50,13 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="RolUsuario" class="form-label mb-2">Rol</label>
-                                <input type="text" class="form-control" id="RolUsuario" value="@Model.Rol" readonly>
+                                <input type="text" class="form-control" id="RolUsuario" readonly>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="NombreCampaniaUsuario" class="form-label">Nombre Campaña</label>
-                                <input type="text" class="form-control" id="NombreCampaniaUsuario"
-                                    value="@Model.NOMBRECAMPANIA" readonly>
+                                <input type="text" class="form-control" id="NombreCampaniaUsuario" readonly>
                             </div>
                         </div>
                     </div>
@@ -72,10 +64,8 @@
                     <div class="form-group mb-2">
                         <label for="ContrasenaUsuario" class="form-label">Contraseña</label>
                         <div class="input-group">
-                            <input type="password" class="form-control" id="ContrasenaUsuario"
-                                value="@Model.Contrasenia" readonly>
-                            <button class="btn btn-primary" onclick="updatePasswordView()"
-                                id="UpdatePasswordButtonView">Actualizar Contraseña</button>
+                            <input type="password" class="form-control" id="ContrasenaUsuario" readonly>
+                            <button class="btn btn-primary" onclick="updatePasswordView()" id="UpdatePasswordButtonView">Actualizar Contraseña</button>
                         </div>
                     </div>
                     <div class="form-group mb-2">
@@ -98,34 +88,49 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="CorreoUsuario" class="form-label mb-2">Correo</label>
-                                <input type="email" class="form-control" id="CorreoUsuario" value="@Model.Correo"
-                                    data-original="@Model.Correo">
+                                <input type="email" class="form-control" id="CorreoUsuario">
 
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="TelefonoUsuario" class="form-label">Teléfono</label>
-                                <input type="text" class="form-control" id="TelefonoUsuario" value="@Model.Telefono"
-                                    data-original="@Model.Telefono">
+                                <input type="text" class="form-control" id="TelefonoUsuario">
                             </div>
                         </div>
                     </div>
-                    <div class="form-group mb-2">
-                        <label for="DepartamentoUsuario" class="form-label">Departamento</label>
-                        <input type="text" class="form-control" id="DepartamentoUsuario" value="@Model.Departamento"
-                            data-original="@Model.Departamento">
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="DepartamentoUsuario" class="form-label">Departamento</label>
+                                <input type="text" class="form-control" id="DepartamentoUsuario">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="RegionUsuario" class="form-label">Región</label>
+                                <input type="text" class="form-control" id="RegionUsuario">
+                            </div>
+                        </div>
                     </div>
+
                     <div class="form-group mb-2">
                         <label for="ProvinciaUsuario" class="form-label">Provincia</label>
-                        <input type="text" class="form-control" id="ProvinciaUsuario" value="@Model.Provincia"
-                            data-original="@Model.Provincia">
+                        <input type="text" class="form-control" id="ProvinciaUsuario">
                     </div>
                     <div class="form-group mb-2">
                         <label for="DistritoUsuario" class="form-label">Distrito</label>
-                        <input type="text" class="form-control" id="DistritoUsuario" value="@Model.Distrito"
-                            data-original="@Model.Distrito">
+                        <input type="text" class="form-control" id="DistritoUsuario">
                     </div>
+                    
+                    <input type="hidden" id="IdUsuarioUsuario">
+                    <input type="hidden" id="ApellidoPaternoUsuario">
+                    <input type="hidden" id="ApellidoMaternoUsuario">
+                    <input type="hidden" id="NombresUsuario">
+                    <input type="hidden" id="UsuarioUsuario">
+                    <input type="hidden" id="IdRolUsuario">
+                    <input type="hidden" id="IdSupervisorUsuario">
+                    <input type="hidden" id="ResponsableSupervisorUsuario">
 
                 </div>
             </div>

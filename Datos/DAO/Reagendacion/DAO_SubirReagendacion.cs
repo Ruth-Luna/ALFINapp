@@ -11,8 +11,7 @@ namespace ALFINapp.Datos.DAO.Reagendacion
         {
             _context = context;
         }
-        public async Task<(bool success, string message)> reagendarCliente(
-            int idDerivacion, DateTime fechaReagendamiento, List<string>? urls = null)
+        public async Task<(bool success, string message)> reagendarCliente(int idDerivacion, DateTime fechaReagendamiento, List<string>? urls = null)
         {
             try
             {
@@ -34,36 +33,43 @@ namespace ALFINapp.Datos.DAO.Reagendacion
                 return (false, ex.Message);
             }
         }
-        public async Task<(bool success, string message)> checkDisReagendacion(
-            int idDerivacion, DateTime fechaReagendamiento)
+        public async Task<(bool success, string message)> checkDisReagendacion(int idDerivacion, DateTime fechaReagendamiento)
         {
             try
             {
-                var parameters = new[]
+                var cn = new Conexion();
+
+                using (SqlConnection connection = new SqlConnection(cn.getCadenaSQL()))
                 {
-                    new SqlParameter("@IdDerivacion", idDerivacion),
-                    new SqlParameter("@FechaDerivacion", fechaReagendamiento)
-                };
-                var check = await _context.resultado_verificacion
-                    .FromSqlRaw("exec sp_reagendamiento_verificar_disponibilidad_para_reagendamiento_derivacion @IdDerivacion, @FechaDerivacion", parameters)
-                    .AsNoTracking()
-                    .ToListAsync();
-                if (check.Count == 0)
-                {
-                    return (false, "No se ha encontrado la derivación.");
-                }
-                var result = check.FirstOrDefault();
-                if (result == null)
-                {
-                    return (false, "No se ha encontrado la derivación.");
-                }
-                if (result.Resultado == 1)
-                {
-                    return (false, result.Mensaje);
-                }
-                else
-                {
-                    return (true, result.Mensaje);
+                    using (SqlCommand command = new SqlCommand("[SP_reagendamiento_verificar_disponibilidad_para_reagendamiento_derivacion]", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@IdDerivacion", idDerivacion);
+                        command.Parameters.AddWithValue("@FechaDerivacion", fechaReagendamiento);
+                        
+                        connection.Open();
+                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                string mensaje = reader["mensaje"]?.ToString() ?? "Error desconocido";
+                                int resultado = reader["resultado"] != DBNull.Value ? Convert.ToInt32(reader["resultado"]) : 1;
+
+                                if (resultado == 1)
+                                {
+                                    return (false, mensaje);
+                                }
+                                else
+                                {
+                                    return (true, mensaje);
+                                }
+                            }
+                            else
+                            {
+                                return (false, "No se ha encontrado la derivación.");
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -72,32 +78,39 @@ namespace ALFINapp.Datos.DAO.Reagendacion
                 return (false, "Ha ocurrido un error en su red, o en la Base de Datos.");
             }
         }
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task<(bool success, string message)> uploadReagendacion(
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-            int idDer, DateTime fechaReagendamiento, string urls)
+        public async Task<(bool success, string message)> uploadReagendacion(int idDer, DateTime fechaReagendamiento, string urls)
         {
             try
             {
-                var parametros = new[]
+                var cn = new Conexion();
+
+                using (SqlConnection connection = new SqlConnection(cn.getCadenaSQL()))
                 {
-                    new SqlParameter("@nueva_fecha_visita", fechaReagendamiento) { SqlDbType = SqlDbType.DateTime },
-                    new SqlParameter("@id_derivacion", idDer) { SqlDbType = SqlDbType.Int },
-                    new SqlParameter("@urls", urls ?? string.Empty)
-                };
-                var generarReagendacion = _context.Database.ExecuteSqlRaw(
-                    "EXEC sp_reagendamiento_upload_nueva_reagendacion_refac @nueva_fecha_visita, @id_derivacion, @urls;",
-                    parametros);
-                if (generarReagendacion == 0)
-                {
-                    return (false, "Error al subir la reagendacion");
+                    using (SqlCommand command = new SqlCommand("[sp_reagendamiento_upload_nueva_reagendacion_refac]", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.Add(new SqlParameter("@nueva_fecha_visita", SqlDbType.DateTime) { Value = fechaReagendamiento });
+                        command.Parameters.Add(new SqlParameter("@id_derivacion", SqlDbType.Int) { Value = idDer });
+                        command.Parameters.Add(new SqlParameter("@urls", SqlDbType.NVarChar) { Value = urls ?? string.Empty });
+
+                        connection.Open();
+                        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                        if (rowsAffected > 0)
+                        {
+                            return (true, "Reagendacion subida correctamente");
+                        }
+                        else
+                        {
+                            return (false, "No se encontró la derivación para actualizar");
+                        }
+                    }
                 }
-                return (true, "Reagendacion subida correctamente");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                return (false, ex.Message);
+                return (false, "Ha ocurrido un error en su red, o en la Base de Datos.");
             }
         }
     }

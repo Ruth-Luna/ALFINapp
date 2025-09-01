@@ -22,25 +22,35 @@ namespace ALFINapp.Datos.DAO.Evidencias
                 {
                     return (false, "Error al verificar las evidencias procesadas. Por favor, vuelva a subir las imágenes de evidencia.");
                 }
+
                 var urls_string = string.Join(",", evidencias.urlEvidencias);
-                var parametros = new[]
-                {
-                    new SqlParameter("@id_derivacion", evidencias.idDerivacion) { SqlDbType = SqlDbType.Int },
-                    new SqlParameter("@urls", urls_string) { SqlDbType = SqlDbType.NVarChar, Size = 4000 }
-                };
+                var cn = new Conexion();
 
-                var resultado = await _context.Database.ExecuteSqlRawAsync(
-                    "EXEC sp_derivacion_upload_nueva_evidencia @id_derivacion, @urls", parametros);
-
-                if (resultado == 0)
+                using (SqlConnection connection = new SqlConnection(cn.getCadenaSQL()))
                 {
-                    return (false, "Error al marcar la evidencia como disponible");
+                    using (SqlCommand command = new SqlCommand("[sp_derivacion_upload_nueva_evidencia]", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.Add(new SqlParameter("@id_derivacion", SqlDbType.Int) { Value = evidencias.idDerivacion });
+                        command.Parameters.Add(new SqlParameter("@urls", SqlDbType.NVarChar, 4000) { Value = urls_string });
+
+                        connection.Open();
+                        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                        if (rowsAffected > 0)
+                        {
+                            return (true, "Evidencia marcada como disponible y procesada correctamente");
+                        }
+                        else
+                        {
+                            return (false, "No se encontró la derivación para actualizar");
+                        }
+                    }
                 }
-
-                return (true, "Evidencia marcada como disponible y procesada correctamente");
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 return (false, ex.Message);
             }
         }
