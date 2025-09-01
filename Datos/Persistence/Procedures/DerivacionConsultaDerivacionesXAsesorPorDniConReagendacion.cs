@@ -55,16 +55,5 @@ namespace ALFINapp.Infrastructure.Persistence.Procedures
         public DateTime? FechaEvidencia { get; set; } = null;
         [Column("hay_evidencias")]
         public bool? HayEvidencia { get; set; } = false;
-        [Column("fue_desembolsado")]
-        public bool? FueDesembolsado { get; set; } = false;
-        [Column("fecha_desembolsos")]
-        public DateTime? FechaDesembolsos { get; set; } = null;
-        [Column("doc_asesor_desembolso")]
-        public string? DocAsesorDesembolso { get; set; } = null;
-        [Column("doc_supervisor_desembolso")]
-        public string? DocSupervisorDesembolso { get; set; } = null;
-        [Column("monto_desembolso_financiado")]
-        public decimal? MontoDesembolsoFinanciado { get; set; } = null;
-        public string? NombreAsesor { get; set; } = string.Empty;
     }
 }
