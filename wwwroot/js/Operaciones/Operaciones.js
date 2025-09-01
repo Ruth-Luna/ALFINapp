@@ -948,7 +948,7 @@ App.derivaciones = (() => {
 
                 // Badge para evidencia (E)
                 const $badgeE = $('<div>', {
-                    class: `af-badge ${params.value !== "Enviado" ? 'af-badge-bg-success' : 'af-badge-bg-danger'}`,
+                    class: `af-badge ${params.value === "Enviado" ? 'af-badge-bg-success' : 'af-badge-bg-danger'}`,
                     html: `
                         <i class="${params.value === "Enviado" ? 'ri-checkbox-circle-fill' : 'ri-close-circle-fill'}"></i>
                         <span>E</span>
