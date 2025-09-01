@@ -173,8 +173,10 @@ async function mostrarTelefonosManuales(data) {
                         <textarea 
                             class="form-control" 
                             id="${id_textarea}" 
-                            data-telefono="${telefono}" 
-                            data-id-cliente="${data.id_cliente}">${comentario}</textarea>
+                            data-id-cliente="${data.id_cliente}"
+                            name="tipificaciones[${i}].Comentario">
+                            ${comentario}
+                        </textarea>
                     </div>
 
                     <div class="mt-2">
@@ -301,14 +303,6 @@ async function mostrarTelefonosBD(data) {
             const telefono = telefonoObj.telefono?.trim() || '';
             if (!telefono || telefono === '' || telefono === 'NULL' || telefono === '0' || telefono <= 0) {
                 telefonosContainer.innerHTML += `
-                    <div class="form-group row align-items-center mb-4">
-                        <div class="col">
-                            <div class="alert alert-warning">
-                                Este número es inexistente y no se le pueden asignar Tipificaciones
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
                 `;
                 continue;
             }
@@ -349,7 +343,8 @@ async function mostrarTelefonosBD(data) {
             if (fechaTip) {
                 const [año, mes] = fechaTip.split('-').map(Number);
                 if (año !== añoActual || mes !== mesActual) {
-                    tipInfo = `<div class="col-auto">
+                    tipInfo = `
+                    <div class="col-auto">
                         <span class="tooltip-symbol" title="Esta tipificación fue extraída del anterior mes">
                             <i class="fa fa-info-circle" aria-hidden="true"></i>
                         </span>
@@ -376,7 +371,13 @@ async function mostrarTelefonosBD(data) {
                     <input class="form-control" name="tipificaciones[${i}].Telefono" id="${id_telefono_input}" type="text"
                         value="${telefono}" readonly>
                     <div class="mt-2">
-                        <textarea class="form-control" id="${id_textarea}" data-telefono="${telefono}" data-id-cliente="${data.id_cliente}">${comentario}</textarea>
+                        <textarea 
+                            class="form-control" 
+                            id="${id_textarea}" 
+                            data-id-cliente="${data.id_cliente}"
+                            name="tipificaciones[${i}].Comentario">
+                            ${comentario}
+                        </textarea>
                     </div>
                     <div class="mt-2">
                         <a href="javascript:void(0);" class="btn btn-primary" onclick="enviarComentarioTelefonoDB(

@@ -51,8 +51,8 @@ namespace ALFINapp.API.Controllers
 
         [HttpPost]
         public async Task<IActionResult> TipificarMotivo(
-            List<DtoVTipificarCliente> tipificaciones
-            , int IdAsignacion)
+            List<DtoVTipificarCliente> tipificaciones,
+            int IdAsignacion)
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             if (usuarioId == null)

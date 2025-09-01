@@ -1,5 +1,6 @@
 using System.Data;
 using ALFINapp.API.DTOs;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,10 +9,14 @@ namespace ALFINapp.Datos.DAO.Tipificaciones
     public class DAO_SubirTipificaciones
     {
         private readonly MDbContext _context;
+        private readonly DAO_ActualizarComentarios _dao_ActualizarComentarios;
 
-        public DAO_SubirTipificaciones(MDbContext context)
+        public DAO_SubirTipificaciones(
+            MDbContext context,
+            DAO_ActualizarComentarios dAO_ActualizarComentarios)
         {
             _context = context;
+            _dao_ActualizarComentarios = dAO_ActualizarComentarios;
         }
 
         public async Task<(bool success, string message)> SubirTipificacionesAsync(
@@ -56,7 +61,22 @@ namespace ALFINapp.Datos.DAO.Tipificaciones
                 {
                     return (false, estadoActualizado.message);
                 }
-                // Si todo sale bien, retornamos el mensaje de éxito
+                foreach (var tipificacion in tipificacionesListas)
+                {
+                    if (!string.IsNullOrEmpty(tipificacion.Comentario))
+                    {
+                        var comentarioActualizado = await _dao_ActualizarComentarios.ActualizarComentarioAsync(
+                            tipificacion.Telefono,
+                            id_asignacion,
+                            tipificacion.Comentario);
+                            
+                        if (!comentarioActualizado.success)
+                        {
+                            return (false, comentarioActualizado.message);
+                        }
+                    }
+                }
+
                 return (true, "Tipificaciones subidas y estado del cliente actualizado correctamente. " +
                                $"Se han procesado {result_tipificaciones.tipificaciones.Count} tipificaciones. " +
                                $"{mappedTipificaciones.message}");
@@ -90,7 +110,7 @@ namespace ALFINapp.Datos.DAO.Tipificaciones
                     }
                     if (tipificacion.TipificacionId == 2 && tipificacion.idderivacion == null)
                     {
-                        return (false, "La tipificación DE DERIVACION requiere un ID de derivación.", new List<DtoVTipificarCliente>());
+                        return (false, "La tipificación DE DERIVACIÓN requiere un ID de derivación.", new List<DtoVTipificarCliente>());
                     }
                     if (tipificacion.TipificacionId == 2)
                     {
@@ -120,6 +140,7 @@ namespace ALFINapp.Datos.DAO.Tipificaciones
                         message = "Tipificación de derivación verificada correctamente.";
                     }
                     tipificacion.Telefono = tipificacion.Telefono.Trim();
+                    tipificacion.Comentario = tipificacion.Comentario?.Trim() ?? string.Empty;
                     mappedTipificaciones.Add(tipificacion);
                 }
 
