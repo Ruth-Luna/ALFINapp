@@ -47,8 +47,8 @@ namespace ALFINapp.API.Controllers
                 }
                 var asesorv = new ViewUsuario(asesor);
                 asesorv.Estado = "ACTIVO";
-                var estadoActivacion = _da_usuario.ActualizarUsuario(asesorv);
-                if (!estadoActivacion)
+                var estadoActivacion = await _da_usuario.ActualizarUsuario(asesorv);
+                if (!estadoActivacion.IsSuccess)
                 {
                     return Json(new { success = false, message = "No se pudo activar el asesor" });
                 }
@@ -95,8 +95,8 @@ namespace ALFINapp.API.Controllers
                 }
                 var asesorD = new ViewUsuario(asesor);
                 asesorD.Estado = "INACTIVO";
-                var estado = _da_usuario.ActualizarUsuario(asesorD);
-                if (!estado)
+                var estado = await _da_usuario.ActualizarUsuario(asesorD);
+                if (!estado.IsSuccess)
                 {
                     return Json(new { success = false, message = "No se pudo desactivar el asesor" });
                 }

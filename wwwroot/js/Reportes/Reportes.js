@@ -7,6 +7,18 @@ document.addEventListener('DOMContentLoaded', function () {
     reportesData = JSON.parse(reportesElement.getAttribute("data-json"));
 
     var fechafil = document.getElementById("filtro-por-fecha").getAttribute("data");
+    // Recoger fecha de la url
+
+    // Obtener parámetros de la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    var year = urlParams.get('anio') || null;
+    var month = urlParams.get('mes') || null;
+
+    if (year && month) {
+        month = month.padStart(2, '0');
+        $('#mes-selector').val(`${year}-${month}`);
+    }
+
     if (idrol === 1 || idrol === 4 || idrol === 2) {
         cargarDerivacionesGenerales();
         cargarProgresoAsignacion();

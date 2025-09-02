@@ -18,7 +18,7 @@
             <div class="bg-white rounded shadow-sm px-4 py-3 mb-3 w-100">
                 <div class="row g-4 align-items-end">
 
-                    <div class="col-12 col-md-3">
+                    <div class="col-10 col-md-2">
                         <label for="filtroDni" class="form-label fw-semibold">DNI</label>
                         <input type="text" id="filtroDni" class="form-control form-control-sm" placeholder="Ingrese DNI">
                     </div>
@@ -39,8 +39,8 @@
                         <div class="flex-grow-1">
                             <label for="txtFiltrarEstado" class="form-label fw-semibold">Estado</label>
                             <select id="txtFiltrarEstado" class="form-select form-select-sm">
-                                <option value="" selected disaled>--Seleccione--</option>
-                                <option value="ACTIVO">ACTIVO</option>
+                                <option value="">--Seleccione--</option>
+                                <option value="ACTIVO" selected>ACTIVO</option>
                                 <option value="INACTIVO">INACTIVO</option>
                             </select>
                         </div>
@@ -49,6 +49,12 @@
                         <button id="btnAgregarUsuario" class="btn btn-sm btn-outline-success w-100" title="Agregar Usuario">
                             <i class="bi bi-person-plus-fill fs-5"></i>
                             <span class="d-none d-sm-inline ms-2">Agregar Usuario</span>
+                        </button>
+                    </div>
+
+                    <div class="col-md-1 d-flex flex-column justify-content-end">
+                        <button id="btnLimpiarFiltros" class="btn btn-sm btn-outline-secondary w-100" title="Limpiar Filtros">
+                            <i class="bi bi-eraser fs-5"></i>
                         </button>
                     </div>
 
@@ -113,7 +119,7 @@
 
                         <div class="mb-3 col-md-3">
                             <label for="txtDNI_AR" class="form-label">Documento</label>
-                            <input type="text" class="form-control" id="txtDNI_AR" />
+                            <input type="text" class="form-control solo-numeros" id="txtDNI_AR" />
                         </div>
 
                         <div class="mb-3 col-md-6">
@@ -158,7 +164,7 @@
                         </div>
                         <div class="mb-3 col-md-3">
                             <label for="txtTelefono_AR" class="form-label">Telefono</label>
-                            <input type="text" class="form-control" id="txtTelefono_AR" />
+                            <input type="text" class="form-control solo-numeros" id="txtTelefono_AR" maxlength="9" />
                         </div>
                         <div class="mb-3 col-md-3">
                             <label for="sltEstado_AR" class="form-label">Estado</label>
