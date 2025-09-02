@@ -22,24 +22,24 @@ namespace ALFINapp.Datos
                     {
                         command.CommandType = CommandType.StoredProcedure;
 
-                        command.Parameters.AddWithValue("@Dni", usuario.Dni);
-                        command.Parameters.AddWithValue("@Paterno", usuario.Apellido_Paterno);
-                        command.Parameters.AddWithValue("@Materno", usuario.Apellido_Materno);
-                        command.Parameters.AddWithValue("@Nombres", usuario.Nombres);
-                        command.Parameters.AddWithValue("@Departamento", (object?)usuario.Departamento ?? DBNull.Value);
-                        command.Parameters.AddWithValue("@Provincia", (object?)usuario.Provincia ?? DBNull.Value);
-                        command.Parameters.AddWithValue("@Distrito", (object?)usuario.Distrito ?? DBNull.Value);
-                        command.Parameters.AddWithValue("@Telefono", (object?)usuario.Telefono ?? DBNull.Value);
-                        command.Parameters.AddWithValue("@Estado", (object?)usuario.Estado ?? "ACTIVO");
-                        command.Parameters.AddWithValue("@IDUSUARIOSUP", usuario.IDUSUARIOSUP == 0 ? DBNull.Value : (object?)usuario.IDUSUARIOSUP);
-                        command.Parameters.AddWithValue("@RESPONSABLESUP", string.IsNullOrWhiteSpace(usuario.RESPONSABLESUP) ? DBNull.Value : (object?)usuario.RESPONSABLESUP);
-                        command.Parameters.AddWithValue("@REGION", (object?)usuario.REGION ?? DBNull.Value);
-                        command.Parameters.AddWithValue("@NOMBRECAMPAÑA", (object?)usuario.NOMBRECAMPANIA ?? DBNull.Value);
+                        command.Parameters.AddWithValue("@Dni", string.IsNullOrWhiteSpace(usuario.Dni) ? DBNull.Value : usuario.Dni);
+                        command.Parameters.AddWithValue("@Paterno", string.IsNullOrWhiteSpace(usuario.Apellido_Paterno) ? DBNull.Value : usuario.Apellido_Paterno);
+                        command.Parameters.AddWithValue("@Materno", string.IsNullOrWhiteSpace(usuario.Apellido_Materno) ? DBNull.Value : usuario.Apellido_Materno);
+                        command.Parameters.AddWithValue("@Nombres", string.IsNullOrWhiteSpace(usuario.Nombres) ? DBNull.Value : usuario.Nombres);
+                        command.Parameters.AddWithValue("@Departamento", string.IsNullOrWhiteSpace(usuario.Departamento) ? DBNull.Value : usuario.Departamento);
+                        command.Parameters.AddWithValue("@Provincia", string.IsNullOrWhiteSpace(usuario.Provincia) ? DBNull.Value : usuario.Provincia);
+                        command.Parameters.AddWithValue("@Distrito", string.IsNullOrWhiteSpace(usuario.Distrito) ? DBNull.Value : usuario.Distrito);
+                        command.Parameters.AddWithValue("@Telefono", string.IsNullOrWhiteSpace(usuario.Telefono) ? DBNull.Value : usuario.Telefono);
+                        command.Parameters.AddWithValue("@Estado", string.IsNullOrWhiteSpace(usuario.Estado) ? "ACTIVO" : usuario.Estado);
+                        command.Parameters.AddWithValue("@IDUSUARIOSUP", usuario.IDUSUARIOSUP == 0 ? DBNull.Value : usuario.IDUSUARIOSUP);
+                        command.Parameters.AddWithValue("@RESPONSABLESUP", string.IsNullOrWhiteSpace(usuario.RESPONSABLESUP) ? DBNull.Value : usuario.RESPONSABLESUP);
+                        command.Parameters.AddWithValue("@REGION", string.IsNullOrWhiteSpace(usuario.REGION) ? DBNull.Value : usuario.REGION);
+                        command.Parameters.AddWithValue("@NOMBRECAMPAÑA", string.IsNullOrWhiteSpace(usuario.NOMBRECAMPANIA) ? DBNull.Value : usuario.NOMBRECAMPANIA);
                         command.Parameters.AddWithValue("@IdRol", usuario.IdRol);
-                        command.Parameters.AddWithValue("@Usuario", usuario.Usuario);
+                        command.Parameters.AddWithValue("@Usuario", string.IsNullOrWhiteSpace(usuario.Usuario) ? DBNull.Value : usuario.Usuario);
                         command.Parameters.AddWithValue("@id_usuario_accion", idUsuarioAccion);
-                        command.Parameters.AddWithValue("@Correo", (object?)usuario.Correo ?? DBNull.Value);
-                        command.Parameters.AddWithValue("@TipoDocumento", (object?)usuario.TipoDocumento ?? DBNull.Value);
+                        command.Parameters.AddWithValue("@Correo", string.IsNullOrWhiteSpace(usuario.Correo) ? DBNull.Value : usuario.Correo);
+                        command.Parameters.AddWithValue("@TipoDocumento", string.IsNullOrWhiteSpace(usuario.TipoDocumento) ? DBNull.Value : usuario.TipoDocumento);
 
                         await connection.OpenAsync();
                         await command.ExecuteNonQueryAsync();
@@ -118,8 +118,11 @@ namespace ALFINapp.Datos
             return lista;
         }
 
-        public bool ActualizarUsuario(ViewUsuario usuario)
+        public async Task<(bool IsSuccess, string Message)> ActualizarUsuario(ViewUsuario usuario)
         {
+            bool isSuccess = false;
+            string message = string.Empty;
+
             try
             {
                 var cn = new Conexion();
@@ -154,17 +157,24 @@ namespace ALFINapp.Datos
                         cmd.Parameters.AddWithValue("@IDUSUARIOSUP", usuario.IDUSUARIOSUP == 0 ? DBNull.Value : usuario.IDUSUARIOSUP);
                         cmd.Parameters.AddWithValue("@RESPONSABLESUP", string.IsNullOrWhiteSpace(usuario.RESPONSABLESUP) ? DBNull.Value : usuario.RESPONSABLESUP);
 
-                        connection.Open();
-                        int filasAfectadas = cmd.ExecuteNonQuery();
-
-                        return filasAfectadas > 0;
+                        await connection.OpenAsync();
+                        // Recoger resultado y mensaje
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                isSuccess = reader.GetBoolean(reader.GetOrdinal("resultado"));
+                                message = reader.GetString(reader.GetOrdinal("mensaje"));
+                            }
+                            return (isSuccess, message);
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error en ActualizarUsuario: " + ex.Message);
-                throw;
+                return (false, "Error al procesar la solicitud");
             }
         }
         public bool ActualizarEstado(int idUsuario, string estado)

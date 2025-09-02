@@ -20,7 +20,7 @@ namespace ALFINapp.Datos.DAO.Operaciones
                     using (SqlCommand command = new SqlCommand("[SP_REAGENDAMIENTOS_GET_REAGENDAMIENTOS_VIEW_2]", connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@month", DateTime.Now.Month - 1);
+                        command.Parameters.AddWithValue("@month", DateTime.Now.Month);
                         command.Parameters.AddWithValue("@year", DateTime.Now.Year);
                         command.Parameters.AddWithValue("@id_asesor", idAsesor);
                         command.Parameters.AddWithValue("@id_supervisor", idSupervisor);

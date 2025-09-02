@@ -60,7 +60,7 @@ namespace ALFINapp.API.Controllers
         }
 
         [HttpPost]
-        public IActionResult SubmitNewPassword(string newPassword)
+        public async Task<IActionResult> SubmitNewPassword(string newPassword)
         {
             try
             {
@@ -84,8 +84,8 @@ namespace ALFINapp.API.Controllers
                 }
                 var userv = new ViewUsuario(user);
                 userv.Contrasenia = newPassword;
-                var changePassword = _da_usuario.ActualizarUsuario(userv);
-                if (changePassword == false)
+                var changePassword = await _da_usuario.ActualizarUsuario(userv);
+                if (changePassword.IsSuccess == false)
                 {
                     return Json(new { success = false, message = "Error al cambiar la contraseña" });
                 }
