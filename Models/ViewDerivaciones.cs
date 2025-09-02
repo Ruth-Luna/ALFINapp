@@ -25,6 +25,8 @@ namespace ALFINapp.API.Models
         public bool FueProcesado { get; set; } = false;
         public DateTime FechaVisita { get; set; } = DateTime.Now;
         public string EstadoDerivacion { get; set; } = string.Empty;
+        public string EstadoFormulario { get; set; } = string.Empty;
+        public string EstadoCorreo { get; set; } = string.Empty;
         public int IdAsignacion { get; set; } = 0;
         public string ObservacionDerivacion { get; set; } = string.Empty;
         public bool FueEnviadoEmail { get; set; } = false;
