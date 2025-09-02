@@ -4,6 +4,7 @@ using ALFINapp.Datos;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml.Style;
 using OfficeOpenXml;
+using System.Threading.Tasks;
 
 namespace ALFINapp.API.Controllers
 {
@@ -61,15 +62,12 @@ namespace ALFINapp.API.Controllers
             }
         }
 
-        public IActionResult ActualizarUsuario([FromBody] ViewUsuario usuario)
+        public async Task<IActionResult> ActualizarUsuario([FromBody] ViewUsuario usuario)
         {
             try
             {
-                bool actualizado = _daUsuario.ActualizarUsuario(usuario);
-                if (actualizado)
-                    return Ok(new { success = true, mensaje = "Usuario actualizado correctamente." });
-                else
-                    return StatusCode(500, new { success = false, mensaje = "No se pudo actualizar el usuario. No se afectaron filas." });
+                (bool success, string message) = await _daUsuario.ActualizarUsuario(usuario);
+                return Json(new { success, message });
             }
             catch (Exception ex)
             {
