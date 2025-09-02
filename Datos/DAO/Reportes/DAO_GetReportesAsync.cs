@@ -1,5 +1,4 @@
 using ALFINapp.API.Models;
-using ALFINapp.Application.DTOs;
 using ALFINapp.Infrastructure.Persistence.Procedures;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;

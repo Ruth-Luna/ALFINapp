@@ -12,9 +12,15 @@
 }
 
 <div class="container mt-4">
-    <h3>Bienvenido</h3>
-    <div class="alert alert-info" role="alert">
-        En esta Sección podrá modificar su contraseña y otros datos.
+    <div class="text-center mb-4">
+        <span class="d-inline-block p-2 rounded">
+            <h3>
+                Bienvenido @Model.NombresCompletos
+            </h3>
+        </span>
+        <div class="alert alert-info" role="alert">
+            En esta Sección podrá modificar su contraseña y otros datos.
+        </div>
     </div>
 
     <div class="card shadow-sm">
@@ -69,7 +75,9 @@
                                 <input type="password" class="form-control" id="ContrasenaNueva">
                             </div>
                             <div class="col-md-12 mt-2">
-                                <button class="btn btn-success w-100 text-center" onclick="updatePasswordSubmit()" id="UpdatePasswordButtonSubmit" style="display: none;">Confirmar Nueva Contraseña</button>
+                                <button class="btn btn-success w-100 text-center" onclick="updatePasswordSubmit()"
+                                    id="UpdatePasswordButtonSubmit" style="display: none;">Confirmar Nueva
+                                    Contraseña</button>
                             </div>
                         </div>
                     </div>
@@ -129,7 +137,8 @@
             <!-- Botón Actualizar -->
             <div class="row mt-3">
                 <div class="col-md-12 text-center">
-                    <button class="btn btn-success btn-actualizar-campos" onclick="actualizarCampos()">Actualizar Campos</button>
+                    <button class="btn btn-success btn-actualizar-campos" onclick="actualizarCampos()">Actualizar
+                        Campos</button>
                 </div>
             </div>
         </div>

@@ -84,6 +84,9 @@ JOIN detalle_base db ON db.id_base = bc.id_base
 ORDER BY db.fecha_carga DESC;
 
 
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 ALTER PROCEDURE [dbo].[SP_tipificaciones_actualizar_estado_tipificacion]
 (
@@ -201,8 +204,22 @@ BEGIN
             fecha_tipificacion_mayor_peso = GETDATE()
         WHERE id_asignacion = @id_asignacion;
     END
+    -- Si la actual tipificacion tiene un peso mayor o igual a 99 entonces si se vuelve a 
+    -- enviar una tipitificacion se actualizaran lo pesos
+    -- OJO: SOLO ES EN ESTE CASO
+    ELSE IF ISNULL(@peso_actual, 0) >= 99
+    BEGIN
+        UPDATE clientes_asignados
+        SET
+            tipificacion_mayor_peso = @descripcion_tipificacion,
+            peso_tipificacion_mayor = @peso,
+            fecha_tipificacion_mayor_peso = GETDATE()
+        WHERE id_asignacion = @id_asignacion;
+    END
 END;
 GO
+
+
 
 EXEC SP_tipificaciones_actualizar_estado_tipificacion 
     @telefono = '985262345',

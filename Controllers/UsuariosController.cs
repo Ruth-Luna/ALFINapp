@@ -1,12 +1,9 @@
 ﻿using ALFINapp.API.Filters;
 using ALFINapp.API.Models;
 using ALFINapp.Datos;
-using ALFINapp.Infrastructure.Persistence.Models;
-using ALFINapp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml.Style;
 using OfficeOpenXml;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ALFINapp.API.Controllers
 {
@@ -25,25 +22,13 @@ namespace ALFINapp.API.Controllers
         }
 
         [HttpGet]
-        [PermissionAuthorization("Usuarios", "GestionAsesores")]
-        public IActionResult GestionAsesores()
-        {
-            return View("Administracion");
-        }
-
-
-
-        [HttpGet]
         public JsonResult ListarUsuarioAdministrador(int? idUsuario)
         {
-            // Recuperar el rol del usuario
             var rolUser = HttpContext.Session.GetInt32("RolUser");
             var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
             
-            // Valores opcionales
             int? idSupervisor = null;
 
-            // Validaciones para rol SUPEREVISOR (2)
             if (rolUser == 2)
             {
                 // Si es supervisor, usar su ID como filtro
