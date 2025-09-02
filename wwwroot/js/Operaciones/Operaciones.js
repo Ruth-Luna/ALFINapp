@@ -1,4 +1,3 @@
-// DOCUMENT READY
 $(document).ready(function () {
     // Logica segun el rol
     idRol = parseInt($('#idRol').val());
@@ -101,15 +100,6 @@ $(document).ready(function () {
 
 });
 
-// VARIABLES GLOBALES
-const dropArea = document.getElementById('drop-area');
-const fileInput = document.getElementById('evidencia-derivacion-id-input');
-const modalGeneral = document.getElementById('modalEvidenciasDerivaciones');
-
-let files = [];
-var activeId = null;
-
-// Funcion para cargar los asesores relacionados
 function ListarAsesores() {
     $.ajax({
         url: '/Operaciones/ObtenerAsesoresRelacionados',

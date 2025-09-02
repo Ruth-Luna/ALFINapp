@@ -36,6 +36,12 @@
                                         <label for="lista-mes" class="form-label">Filtro por Mes</label>
                                         <input id="mes-selector" class="custom-month-picker form-control"
                                             onchange="cargarReportePorMeses(this.value)">
+                                        @if (Model.fecha_filtro != null && Model.fecha_filtro.anio != null && Model.fecha_filtro.mes != null)
+                                        {
+                                            <span class="text-muted">Mostrando datos de:
+                                                <strong>@Model.fecha_filtro.anio - @Model.fecha_filtro.mes</strong>
+                                            </span>
+                                        }
                                     </div>
                                 </div>
                             </div>

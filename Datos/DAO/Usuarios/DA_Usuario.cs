@@ -118,8 +118,11 @@ namespace ALFINapp.Datos
             return lista;
         }
 
-        public bool ActualizarUsuario(ViewUsuario usuario)
+        public async Task<(bool IsSuccess, string Message)> ActualizarUsuario(ViewUsuario usuario)
         {
+            bool isSuccess = false;
+            string message = string.Empty;
+
             try
             {
                 var cn = new Conexion();
@@ -154,17 +157,24 @@ namespace ALFINapp.Datos
                         cmd.Parameters.AddWithValue("@IDUSUARIOSUP", usuario.IDUSUARIOSUP == 0 ? DBNull.Value : usuario.IDUSUARIOSUP);
                         cmd.Parameters.AddWithValue("@RESPONSABLESUP", string.IsNullOrWhiteSpace(usuario.RESPONSABLESUP) ? DBNull.Value : usuario.RESPONSABLESUP);
 
-                        connection.Open();
-                        int filasAfectadas = cmd.ExecuteNonQuery();
-
-                        return filasAfectadas > 0;
+                        await connection.OpenAsync();
+                        // Recoger resultado y mensaje
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                isSuccess = reader.GetBoolean(reader.GetOrdinal("resultado"));
+                                message = reader.GetString(reader.GetOrdinal("mensaje"));
+                            }
+                            return (isSuccess, message);
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error en ActualizarUsuario: " + ex.Message);
-                throw;
+                return (false, "Error al procesar la solicitud");
             }
         }
         public bool ActualizarEstado(int idUsuario, string estado)
