@@ -107,6 +107,23 @@ $(document).ready(function () {
         });
     });
 
+    $('#btnDescargarReagendamientos').on('click', function () {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Se descargará el archivo Excel con el resumen de reagendamientos.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, descargar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                DescargarResumenExcelReagendamientos();
+            }
+        });
+    });
+
 });
 
 function ListarAsesores() {
@@ -1549,7 +1566,6 @@ App.historico = (function () {
 })();
 
 function DescargarResumenExcelDerivaciones() {
-    console.log("click")
     let dni = $('#dniClienteDerivaciones').val() || null;
     let supervisor = $('#supervisorDerivaciones').val() || null;
     let asesor = $('#asesorDerivaciones').val() || null;
@@ -1614,6 +1630,74 @@ function DescargarResumenExcelDerivaciones() {
         }
     });
 }
+
+function DescargarResumenExcelReagendamientos(){
+    let dni = $('#dniClienteReagendamientos').val() || null;
+    let supervisor = $('#supervisorReagendamientos').val() || null;
+    let asesor = $('#asesorReagendamientos').val() || null;
+    let agencia = $('#agenciaReagendamientos').val() || null;
+    let fechaReagendamiento = $('#fechaReagendamiento').val() || null;
+    let fechaVisita = $('#fechaVisitaReagendamientos').val() || null;
+
+    const now = new Date();
+
+    const Fecha = now.getFullYear() + "-" +
+        String(now.getMonth() + 1).padStart(2, '0') + "-" +
+        String(now.getDate()).padStart(2, '0') + "_" +
+        String(now.getHours()).padStart(2, '0') + "-" +
+        String(now.getMinutes()).padStart(2, '0') + "-" +
+        String(now.getSeconds()).padStart(2, '0');
+
+    Swal.fire({
+        title: 'Cargando...',
+        timerProgressBar: true,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    $.ajax({
+        url: '/Operaciones/ExportarReagendamientosExcel',
+        type: 'GET',
+        data: {
+            dni : dni,
+            idAsesor: asesor,
+            idSupervisor: supervisor,
+            agencia: agencia,
+            fecha_reagendamiento: fechaReagendamiento,
+            fecha_visita: fechaVisita
+        },
+        xhrFields: {
+            responseType: 'blob'
+        },
+        success: function (data) {
+            console.log(data)
+            var a = document.createElement('a');
+            a.href = window.URL.createObjectURL(data);
+
+
+            a.download = 'ReporteResumenReagendamiento_' + Fecha + '.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            Swal.close();
+        },
+        error: function () {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error en la operación',
+                text: 'Hubo un problema al generar el archivo Excel',
+                confirmButtonText: 'Ok',
+            });
+            Swal.close();
+        }
+    });
+}
+
 ///---------------FUNCIONES AUXILIARES -------------///
 
 // Función auxiliar para formatear fechas
