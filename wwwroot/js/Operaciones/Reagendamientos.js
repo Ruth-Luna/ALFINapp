@@ -6,14 +6,14 @@ App.reagendamientos = (() => {
     // Definición de las columnas para la tabla de Reagendamientos.
     const reagendamientosTableColumns = [
         {
-            headerName: "Histórico", 
+            headerName: "Histórico",
             field: "historico",
             width: 200,
             cellClass: "d-flex align-items-center justify-content-center",
             cellRenderer: (params) => {
                 const container = document.createElement('div');
                 container.className = 'd-flex gap-2';
-                
+
                 let btnHistorico = document.createElement('button');
                 btnHistorico.className = 'btn btn-sm btn-primary';
                 btnHistorico.title = 'Ver Histórico';
@@ -31,7 +31,7 @@ App.reagendamientos = (() => {
                         console.error('Modal con ID #modalHistoricoReagendamiento no encontrado.');
                     }
                 });
-                
+
                 let btnReagendamiento = document.createElement('button');
                 if (params.data.puedeSerReagendado === true) {
                     btnReagendamiento.className = 'btn btn-sm btn-primary';
@@ -68,12 +68,12 @@ App.reagendamientos = (() => {
                 container.appendChild(btnReagendamiento);
                 return container;
             },
-            sortable: false, 
-            resizable: false, 
+            sortable: false,
+            resizable: false,
             width: 100
         },
         {
-            headerName: "Estado", 
+            headerName: "Estado",
             field: "estadoReagendamiento",
             cellClass: "d-flex align-items-center justify-content-center",
             cellRenderer: (params) => {
@@ -116,14 +116,14 @@ App.reagendamientos = (() => {
             },
             width: 120
         },
-        { 
-            headerName: "N° Reagendamiento", 
+        {
+            headerName: "N° Reagendamiento",
             //field: "numeroReagendamiento",
             field: "numeroReagendamientoFormateado",
             width: 180
         },
-        { 
-            headerName: "DNI cliente", 
+        {
+            headerName: "DNI cliente",
             width: 120,
             cellRenderer: (params) => {
                 const $container = $('<div>', { class: 'd-flex gap-2' });
@@ -134,22 +134,22 @@ App.reagendamientos = (() => {
                     }));
                 }
                 $container.append($('<div>').text(params.data.dniCliente));
-                
+
                 return $container[0];
             }
         },
         { headerName: "Cliente", field: "nombreCliente", width: 250 },
         { headerName: "Teléfono", field: "telefono", width: 120 },
-    //{ headerName: "DNI asesor", field: "dniAsesor", width: 120 },
+        //{ headerName: "DNI asesor", field: "dniAsesor", width: 120 },
         { headerName: "Asesor", field: "nombreAsesor", width: 120 },
-        { 
-            headerName: "Oferta", 
+        {
+            headerName: "Oferta",
             field: "oferta",
             valueFormatter: params => {
                 if (params.value === 0) return 'No aplica';
                 return `S/. ${Number(params.value).toLocaleString('es-PE')}`;
             },
-            width: 120 
+            width: 120
         },
         { headerName: "Agencia", field: "agencia", width: 120 },
         {
@@ -199,7 +199,7 @@ App.reagendamientos = (() => {
             params.api.sizeColumnsToFit({ defaultMinWidth: 50 });
         }
     };
-    
+
     // Agregar después de let listaDerivaciones = [];
     const externalFilterState = {
         dniCliente: ''
@@ -213,11 +213,11 @@ App.reagendamientos = (() => {
     function doesExternalFilterPass(node) {
         const { data } = node;
         const { dniCliente } = externalFilterState;
-        
+
         if (dniCliente && !String(data.dniCliente).includes(dniCliente)) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -225,7 +225,7 @@ App.reagendamientos = (() => {
     function setupDNIFilter() {
         const dniInput = document.getElementById('dniClienteReagendamientos');
         if (dniInput) {
-            dniInput.addEventListener('input', function() {
+            dniInput.addEventListener('input', function () {
                 externalFilterState.dniCliente = this.value.trim();
                 if (gridApi) {
                     gridApi.onFilterChanged();
@@ -252,10 +252,10 @@ App.reagendamientos = (() => {
             // Obtener el rol del elemento #idRol
             const idRolElement = document.getElementById('idRol');
             const rol = idRolElement ? parseInt(idRolElement.value) || 0 : 0;
-            
+
             // Modificar columnas según el rol
             createTable(rol);
-            
+
             // Inicializar tabla vacía
             reagendamientosGridOptions.rowData = [];
             gridApi = agGrid.createGrid(gridDiv, reagendamientosGridOptions);
@@ -272,9 +272,84 @@ App.reagendamientos = (() => {
         }
     }
 
+    function exportarReagendamientos() {
+        if (!gridApi) return;
+
+        const rowData = [];
+        gridApi.forEachNodeAfterFilterAndSort(node => rowData.push(node.data));
+
+        // Diccionario para renombrar columnas
+        const columnMap = {
+            dniCliente: "DNI Cliente",
+            nombreCliente: "Nombre Cliente",
+            fechaDerivacionOriginal: "Fecha Derivación Original",
+            fechaAgendamiento: "Fecha Reagendamiento",
+            fechaVisita: "Fecha Visita",
+            telefono: "Teléfono",
+            agencia: "Agencia",
+            fechaDerivacion: "Fecha Derivación",
+            dniAsesor: "DNI Asesor",
+            oferta: "Oferta",
+            puedeSerReagendado: "Puede Ser Reagendado",
+            nombreAsesor: "Nombre Asesor",
+            estadoReagendamiento: "Estado Reagendamiento",
+            docSupervisor: "Documento Supervisor",
+            numeroReagendamiento: "Número Reagendamiento",
+            totalReagendamientos: "Total Reagendamientos",
+            fueEnviadoEmail: "Fue Enviado el Email",
+            fueProcesadoFormulario: "Fue Procesado el Formulario",
+            fueDesembolsado: "Fue Desembolsado",
+            fechaDesembolso: "Fecha Desembolso",
+            montoFinanciado: "Monto Financiado"
+        };
+
+        const idsToDelete = ["idDerivacion", "idAgendamientosRe", "idDesembolsos"];
+
+        const formattedData = rowData
+            .filter(row => !row.debe_ser_eliminado)
+            .map(row => {
+                const newRow = {};
+
+                Object.keys(row).forEach(key => {
+                    if (idsToDelete.includes(key)) {
+                        return;
+                    }
+
+                    let value = row[key];
+                    if (value === true) value = "SI";
+                    if (value === false) value = "NO";
+
+                    const newKey = columnMap[key] || key;
+
+                    if (key.toLowerCase().includes("fecha") && value) {
+                        value = formatDateTime(value, "dd/mm/yyyy hh:mm");
+                    }
+
+                    newRow[newKey] = value;
+                });
+
+                return newRow;
+            });
+
+        const worksheet = XLSX.utils.json_to_sheet(formattedData);
+
+        const colWidths = Object.keys(formattedData[0]).map(key => ({
+            wch: Math.max(
+                key.length,
+                ...formattedData.map(r => (r[key] ? r[key].toString().length : 0))
+            )
+        }));
+        worksheet["!cols"] = colWidths;
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Reagendamientos");
+        XLSX.writeFile(workbook, "Reagendamientos.xlsx");
+    }
+
     return {
         init,
         updateTableData,
-        gridApi: () => gridApi
+        gridApi: () => gridApi,
+        exportarReagendamientos
     };
 })();
