@@ -106,6 +106,7 @@ namespace ALFINapp.Controllers
             return Json(new { success, data });
         }
 
+        [HttpPost]
         public async Task<IActionResult> Reagendar(
             [FromBody] DtoVReagendar dtovreagendar)
         {
@@ -128,14 +129,16 @@ namespace ALFINapp.Controllers
                         return Json(new { success = true, message = exec.Message }); */
             throw new NotImplementedException();
         }
-        public async Task<IActionResult> GetHistoricoReagendamientos(int idDerivacion)
+
+        [HttpPost]
+        public async Task<IActionResult> GetHistoricoReagendamientos([FromBody] List<int> idsDerivacion)
         {
-            if (idDerivacion <= 0)
+            if (idsDerivacion == null || idsDerivacion.Count == 0)
             {
                 return Json(new { success = false, message = "El id de derivación es obligatorio." });
             }
 
-            (bool success, List<ViewReagendamientos>? data) = await _dao_Operaciones.GetHistoricoReagendamientos(idDerivacion);
+            (bool success, List<ViewReagendamientos>? data) = await _dao_Operaciones.GetHistosricoReagendamientos(idsDerivacion);
 
             return Json(new { success, data });
 
@@ -320,6 +323,80 @@ namespace ALFINapp.Controllers
 
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ExportarHistoricosExcel([FromBody] List<int> idsDerivacion)
+        {
+
+            (bool success, List<ViewReagendamientos>? historicos) = await _dao_Operaciones.GetHistosricoReagendamientos(idsDerivacion);
+
+            if (!success || historicos == null || historicos.Count == 0)
+            {
+                historicos = new List<ViewReagendamientos>();
+            }
+
+            using (var package = new ExcelPackage())
+            {
+                var ws = package.Workbook.Worksheets.Add("Historicos");
+
+                string[] headers = {
+                    "N° reagendamiento",
+                    "Cliente",
+                    "Telefono",
+                    "Asesor",
+                    "Oferta",
+                    "Agencia",
+                    "Fecha derivacion",
+                    "Fecha visita",
+                    "Fecha reagendamiento"
+                };
+
+                ws.Row(1).Height = 22;
+                for (int i = 0; i < headers.Length; i++)
+                {
+                    var cell = ws.Cells[1, i + 1];
+                    cell.Value = headers[i];
+                    cell.Style.Font.Bold = true;
+                    cell.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    cell.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Orange);
+                    cell.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    cell.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                    cell.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                }
+
+                int row = 2;
+                foreach (var hstrc in historicos)
+                {
+                    ws.Cells[row, 1].Value = hstrc.NumeroReagendamientoFormateado;
+                    ws.Cells[row, 2].Value = $"{hstrc.DniCliente ?? ""} - {hstrc.NombreCliente ?? ""}";
+                    ws.Cells[row, 3].Value = hstrc.Telefono;
+                    ws.Cells[row, 4].Value = $"{hstrc.DniAsesor ?? ""} - {hstrc.NombreAsesor ?? ""}";
+                    ws.Cells[row, 5].Value = hstrc.Oferta;
+                    ws.Cells[row, 5].Style.Numberformat.Format = "#,##0.00";
+                    ws.Cells[row, 6].Value = hstrc.Agencia;
+                    ws.Cells[row, 7].Value = hstrc.FechaDerivacion.HasValue ? hstrc.FechaDerivacion : "";
+                    ws.Cells[row, 7].Style.Numberformat.Format = "dd/MM/yyyy hh:mm";
+                    ws.Cells[row, 8].Value = hstrc.FechaVisita.HasValue ? hstrc.FechaVisita : "";
+                    ws.Cells[row, 8].Style.Numberformat.Format = "dd/MM/yyyy";
+                    ws.Cells[row, 9].Value = hstrc.FechaAgendamiento.HasValue ? hstrc.FechaAgendamiento : "";
+                    ws.Cells[row, 9].Style.Numberformat.Format = "dd/MM/yyyy hh:mm";
+
+                    row++;
+                }
+
+                ws.Cells[ws.Dimension.Address].AutoFitColumns();
+                ws.View.FreezePanes(2, 1);
+
+                var stream = new MemoryStream();
+                package.SaveAs(stream);
+                stream.Position = 0;
+
+                var nombreArchivo = $"Usuarios_{DateTime.Now:yyyyMMdd_HHmm}.xlsx";
+                return File(stream,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    nombreArchivo);
+            }
+
+        }
 
         // FUNCION AXILIAR
         private (int? idAsesor, int? idSupervisor) ResolverIdsPorRol(int? idAsesor, int? idSupervisor)

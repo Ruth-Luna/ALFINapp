@@ -124,6 +124,22 @@ $(document).ready(function () {
         });
     });
 
+    $('#btnDescargarHistoricos').on('click', function () {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Se descargará el archivo Excel con el resumen de históricos.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, descargar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                DescargarResumenExcelHistoricos();
+            }
+        });
+    });
 });
 
 function ListarAsesores() {
@@ -277,8 +293,9 @@ async function getHistorico(idDerivacion) {
 
     await $.ajax({
         url: '/Operaciones/GetHistoricoReagendamientos',
-        type: 'GET',
-        data: { idDerivacion: idDerivacion },
+        type: 'POST',
+        data: JSON.stringify([idDerivacion]),
+        contentType: 'application/json',
         dataType: 'json',
         success: function(data) {
             if (data.success === true) {
@@ -1435,10 +1452,18 @@ App.reagendamientos = (() => {
         }
     }
 
+    /**
+     * Devuelve una lista de los IDs de derivación (números) de los reagendamientos.
+     * @returns {int[]}
+     */
+    function obtenerListaIdsDerivacion() {
+        return listaReagendamientos.map(item => item.idDerivacion);
+    }
 
     return {
         init,
         updateTableData,
+        obtenerListaIdsDerivacion,
         gridApi: () => gridApi
     };
 })();
@@ -1573,14 +1598,7 @@ function DescargarResumenExcelDerivaciones() {
     let fechaDerivacion = $('#fechaDerivacion').val() || null;
     let fechaVisita = $('#fechaVisitaDerivacion').val() || null;
 
-    const now = new Date();
-
-    const Fecha = now.getFullYear() + "-" +
-        String(now.getMonth() + 1).padStart(2, '0') + "-" +
-        String(now.getDate()).padStart(2, '0') + "_" +
-        String(now.getHours()).padStart(2, '0') + "-" +
-        String(now.getMinutes()).padStart(2, '0') + "-" +
-        String(now.getSeconds()).padStart(2, '0');
+    const Fecha = obtenerFechaActual();
 
     Swal.fire({
         title: 'Cargando...',
@@ -1639,14 +1657,7 @@ function DescargarResumenExcelReagendamientos(){
     let fechaReagendamiento = $('#fechaReagendamiento').val() || null;
     let fechaVisita = $('#fechaVisitaReagendamientos').val() || null;
 
-    const now = new Date();
-
-    const Fecha = now.getFullYear() + "-" +
-        String(now.getMonth() + 1).padStart(2, '0') + "-" +
-        String(now.getDate()).padStart(2, '0') + "_" +
-        String(now.getHours()).padStart(2, '0') + "-" +
-        String(now.getMinutes()).padStart(2, '0') + "-" +
-        String(now.getSeconds()).padStart(2, '0');
+    const Fecha = obtenerFechaActual();
 
     Swal.fire({
         title: 'Cargando...',
@@ -1684,7 +1695,6 @@ function DescargarResumenExcelReagendamientos(){
             a.click();
             document.body.removeChild(a);
 
-            Swal.close();
         },
         error: function () {
             Swal.fire({
@@ -1693,6 +1703,60 @@ function DescargarResumenExcelReagendamientos(){
                 text: 'Hubo un problema al generar el archivo Excel',
                 confirmButtonText: 'Ok',
             });
+        },
+        complete: function () {
+            Swal.close();
+        }
+    });
+}
+
+function DescargarResumenExcelHistoricos(){
+
+    Swal.fire({
+        title: 'Cargando...',
+        timerProgressBar: true,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    const Fecha = obtenerFechaActual();
+
+    ListaIDsDerivacion = App.reagendamientos.obtenerListaIdsDerivacion();
+
+    $.ajax({
+        url: '/Operaciones/ExportarHistoricosExcel',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(
+            ListaIDsDerivacion
+        ),
+        xhrFields: {
+            responseType: 'blob'
+        },
+        success: function (data) {
+            console.log(data)
+            var a = document.createElement('a');
+            a.href = window.URL.createObjectURL(data);
+
+
+            a.download = 'ReporteResumenHistorico_' + Fecha + '.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        },
+        error: function () {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error en la operación',
+                text: 'Hubo un problema al generar el archivo Excel',
+                confirmButtonText: 'Ok',
+            });
+        },
+        complete: function () {
             Swal.close();
         }
     });
@@ -1724,4 +1788,14 @@ function formatDateTime(dateString, format = 'dd/mm/yyyy') {
         return `${day}/${month}/${year} ${hours}:${minutes}`;
     }
     return `${day}/${month}/${year}`;
+}
+
+function obtenerFechaActual() {
+    const now = new Date();
+    return now.getFullYear() + "-" +
+        String(now.getMonth() + 1).padStart(2, '0') + "-" +
+        String(now.getDate()).padStart(2, '0') + " " +
+        String(now.getHours()).padStart(2, '0') + ":" +
+        String(now.getMinutes()).padStart(2, '0') + ":" +
+        String(now.getSeconds()).padStart(2, '0');
 }

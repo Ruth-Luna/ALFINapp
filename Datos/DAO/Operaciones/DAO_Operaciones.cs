@@ -22,7 +22,7 @@ namespace ALFINapp.Datos.DAO.Operaciones
                     using (SqlCommand command = new SqlCommand("[SP_REAGENDAMIENTOS_GET_REAGENDAMIENTOS_VIEW_2]", connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@month", DateTime.Now.Month);
+                        command.Parameters.AddWithValue("@month", DateTime.Now.Month - 1);
                         command.Parameters.AddWithValue("@year", DateTime.Now.Year);
                         command.Parameters.AddWithValue("@id_asesor", idAsesor.HasValue ? idAsesor.Value : DBNull.Value);
                         command.Parameters.AddWithValue("@id_supervisor", idSupervisor.HasValue ? idSupervisor.Value : DBNull.Value);
@@ -235,7 +235,7 @@ namespace ALFINapp.Datos.DAO.Operaciones
             }
         }
 
-        public async Task<(bool success, List<ViewReagendamientos>? data)> GetHistoricoReagendamientos(int idDerivacion)
+        public async Task<(bool success, List<ViewReagendamientos>? data)> GetHistosricoReagendamientos(List<int> idsDerivacion)
         {
             try
             {
@@ -246,8 +246,14 @@ namespace ALFINapp.Datos.DAO.Operaciones
                     using (SqlCommand command = new SqlCommand("[SP_REAGENDAMIENTOS_GET_REAGENDAMIENTOS_HISTORICO]", connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@id_derivacion", idDerivacion);
-                        connection.Open();
+                        // Transformar lista a XML usando LINQ
+                        var xml = new System.Xml.Linq.XElement("Ids",
+                            idsDerivacion.Select(id => new System.Xml.Linq.XElement("Id", id))
+                        ).ToString();
+
+                        command.Parameters.Add(new SqlParameter("@ids_derivacionXML", SqlDbType.Xml) { Value = xml });
+                        await connection.OpenAsync();
+
                         using (SqlDataReader reader = await command.ExecuteReaderAsync())
                         {
                             var derivaciones = new List<ViewReagendamientos>();
