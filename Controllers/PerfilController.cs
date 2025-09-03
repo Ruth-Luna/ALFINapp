@@ -60,7 +60,7 @@ namespace ALFINapp.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubmitNewPasswordAsync(string newPassword)
+        public async Task<IActionResult> SubmitNewPassword(string newPassword)
         {
             try
             {
