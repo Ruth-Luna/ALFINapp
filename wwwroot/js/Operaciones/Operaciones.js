@@ -51,6 +51,15 @@ $(document).ready(function () {
         getAllReagendamientos();
     });
 
+    // Evento para el campo DNI
+    $('#dniClienteDerivaciones').on('input', function () {
+        getAllDerivaciones();
+    });
+
+    $('#dniClienteReagendamientos').on('input', function () {
+        getAllReagendamientos();
+    });
+
     function actualizarSelects($this) {
         // Mostrar solo los asesores del supervisor seleccionado
         var idSupervisor = $this.val();
@@ -178,7 +187,8 @@ function getAllDerivaciones() {
             idSupervisor : $('#supervisorDerivaciones').val() || null,
             agencia : $('#agenciaDerivaciones').val() || null,
             fecha_derivacion : $('#fechaDerivacion').val() || null,
-            fecha_visita : $('#fechaVisitaDerivacion').val() || null
+            fecha_visita : $('#fechaVisitaDerivacion').val() || null,
+            dni : $('#dniClienteDerivaciones').val() || null
         },
         contentType: 'application/json',
         success: function (data) {
@@ -217,7 +227,8 @@ function getAllReagendamientos() {
             idSupervisor : $('#supervisorReagendamientos').val() || null,
             fecha_reagendamiento : $('#fechaReagendamientos').val() || null,
             fecha_visita : $('#fechaVisitaReagendamientos').val() || null,
-            agencia : $('#agenciaReagendamientos').val() || null
+            agencia : $('#agenciaReagendamientos').val() || null,
+            dni : $('#dniClienteReagendamientos').val() || null
         },
         success: function (data) {
             if (data && data.success) {
@@ -1082,9 +1093,6 @@ App.derivaciones = (() => {
             }
             return [];
         },
-        // AGREGAR ESTAS LÍNEAS:
-        isExternalFilterPresent: isExternalFilterPresent,
-        doesExternalFilterPass: doesExternalFilterPass,
         onGridReady: (params) => {
             gridApi = params.api;
             params.api.sizeColumnsToFit({ defaultMinWidth: 50 });
@@ -1093,37 +1101,6 @@ App.derivaciones = (() => {
             params.api.sizeColumnsToFit({ defaultMinWidth: 50 });
         }
     };
-
-    const externalFilterState = {
-        dniCliente: ''
-    };
-
-    function isExternalFilterPresent() {
-        return externalFilterState.dniCliente !== '';
-    }
-
-    function doesExternalFilterPass(node) {
-        const { data } = node;
-        const { dniCliente } = externalFilterState;
-        
-        if (dniCliente && !String(data.dniCliente).includes(dniCliente)) {
-            return false;
-        }
-        
-        return true;
-    }
-
-    function setupDNIFilter() {
-        const dniInput = document.getElementById('dniClienteDerivaciones');
-        if (dniInput) {
-            dniInput.addEventListener('input', function() {
-                externalFilterState.dniCliente = this.value.trim();
-                if (gridApi) {
-                    gridApi.onFilterChanged();
-                }
-            });
-        }
-    }
 
     function createTable(rol) {
         if (rol === 1 || rol === 4) {
@@ -1157,8 +1134,6 @@ App.derivaciones = (() => {
             derivacionesGridOptions.rowData = [];
             gridApi = agGrid.createGrid(gridDiv, derivacionesGridOptions);
 
-            // Configurar filtro por DNI
-            setupDNIFilter();
         }
     }
 
@@ -1392,8 +1367,6 @@ App.reagendamientos = (() => {
         enableBrowserTooltips: true,
         initialState: { sort: { sortModel: [{ colId: 'estadoReagendamiento', sort: 'asc' }] } },
         defaultColDef: { sortable: true, resizable: true, minWidth: 50, flex: 1 },
-        isExternalFilterPresent: isExternalFilterPresent,
-        doesExternalFilterPass: doesExternalFilterPass,
         getRowClass: (params) => {
             if (params.data.puedeSerReagendado === true) {
                 return ['ag-row-reagendable'];
@@ -1409,39 +1382,6 @@ App.reagendamientos = (() => {
         }
     };
     
-    // Agregar después de let listaDerivaciones = [];
-    const externalFilterState = {
-        dniCliente: ''
-    };
-
-    // Agregar después de externalFilterState
-    function isExternalFilterPresent() {
-        return externalFilterState.dniCliente !== '';
-    }
-
-    function doesExternalFilterPass(node) {
-        const { data } = node;
-        const { dniCliente } = externalFilterState;
-        
-        if (dniCliente && !String(data.dniCliente).includes(dniCliente)) {
-            return false;
-        }
-        
-        return true;
-    }
-
-    // Agregar después de updateTableData
-    function setupDNIFilter() {
-        const dniInput = document.getElementById('dniClienteReagendamientos');
-        if (dniInput) {
-            dniInput.addEventListener('input', function() {
-                externalFilterState.dniCliente = this.value.trim();
-                if (gridApi) {
-                    gridApi.onFilterChanged();
-                }
-            });
-        }
-    }
 
     function createTable(rol) {
         if (rol === 1 || rol === 4 || rol === 2) {
@@ -1468,9 +1408,6 @@ App.reagendamientos = (() => {
             // Inicializar tabla vacía
             reagendamientosGridOptions.rowData = [];
             gridApi = agGrid.createGrid(gridDiv, reagendamientosGridOptions);
-
-            // Configurar filtro por DNI
-            setupDNIFilter();
         }
     }
 

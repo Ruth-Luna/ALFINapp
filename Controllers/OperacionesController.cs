@@ -25,7 +25,7 @@ namespace ALFINapp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllDerivaciones(int? idAsesor = null, int? idSupervisor = null, string? agencia = null, DateTime? fecha_derivacion = null, DateTime? fecha_visita = null)
+        public async Task<IActionResult> GetAllDerivaciones(int? idAsesor = null, int? idSupervisor = null, string? agencia = null, DateTime? fecha_derivacion = null, DateTime? fecha_visita = null, string? dni = null)
         {
             // Recuperar el ID USUSARIO
             int? idUsuario = HttpContext.Session.GetInt32("UsuarioId");
@@ -50,14 +50,14 @@ namespace ALFINapp.Controllers
                 idAsesor = idUsuario;
             }
 
-            (bool success, List<ViewDerivaciones>? data) = await _dao_Operaciones.GetAllDerivaciones(idAsesor, idSupervisor, agencia, fecha_derivacion, fecha_visita);
+            (bool success, List<ViewDerivaciones>? data) = await _dao_Operaciones.GetAllDerivaciones(idAsesor, idSupervisor, agencia, fecha_derivacion, fecha_visita, dni);
 
             return Json(new { success, data });
 
         }
         
         [HttpGet]
-        public async Task<IActionResult> GetAllReagendamientos(int? idAsesor = null, int? idSupervisor = null, DateTime? fecha_reagendamiento = null, DateTime? fecha_visita = null, string? agencia = null)
+        public async Task<IActionResult> GetAllReagendamientos(int? idAsesor = null, int? idSupervisor = null, DateTime? fecha_reagendamiento = null, DateTime? fecha_visita = null, string? agencia = null, string? dni = null)
         {
             // Recuperar el ID USUSARIO
             int? idUsuario = HttpContext.Session.GetInt32("UsuarioId");
@@ -82,7 +82,7 @@ namespace ALFINapp.Controllers
                 idAsesor = idUsuario;
             }
 
-            (bool success, List<ViewReagendamientos>? data) = await _dao_Operaciones.GetAllReagendamientos(idAsesor, idSupervisor, fecha_reagendamiento, fecha_visita, agencia);
+            (bool success, List<ViewReagendamientos>? data) = await _dao_Operaciones.GetAllReagendamientos(idAsesor, idSupervisor, fecha_reagendamiento, fecha_visita, agencia, dni);
 
             return Json(new { success, data });
         }
