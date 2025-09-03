@@ -22,7 +22,7 @@ namespace ALFINapp.Datos.DAO.Operaciones
                     using (SqlCommand command = new SqlCommand("[SP_REAGENDAMIENTOS_GET_REAGENDAMIENTOS_VIEW_2]", connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@month", DateTime.Now.Month - 1);
+                        command.Parameters.AddWithValue("@month", DateTime.Now.Month);
                         command.Parameters.AddWithValue("@year", DateTime.Now.Year);
                         command.Parameters.AddWithValue("@id_asesor", idAsesor.HasValue ? idAsesor.Value : DBNull.Value);
                         command.Parameters.AddWithValue("@id_supervisor", idSupervisor.HasValue ? idSupervisor.Value : DBNull.Value);
@@ -87,6 +87,8 @@ namespace ALFINapp.Datos.DAO.Operaciones
                     using (SqlCommand command = new SqlCommand("[sp_Derivacion_consulta_derivaciones_x_asesor_por_dni_con_reagendacion_2]", connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@month", DateTime.Now.Month);
+                        command.Parameters.AddWithValue("@year", DateTime.Now.Year);
                         command.Parameters.AddWithValue("@id_asesor", idAsesor.HasValue ? idAsesor.Value : DBNull.Value);
                         command.Parameters.AddWithValue("@id_supervisor", idSupervisor.HasValue ? idSupervisor.Value : DBNull.Value);
                         command.Parameters.AddWithValue("@agencia", agencia ?? (object)DBNull.Value);
