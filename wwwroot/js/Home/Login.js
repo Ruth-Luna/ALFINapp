@@ -168,9 +168,7 @@ async function EnviarCodigoRecuperacionPassword() {
         Swal.fire('Error', 'No se pudo obtener la dirección IP.', 'error');
         return;
     }
-    console.log(usuario)
-    console.log(correo)
-    console.log(ip)
+
     return $.ajax({
         url: '/Home/InsertarSolicitudRecuperacionContrasenia',
         type: 'POST',

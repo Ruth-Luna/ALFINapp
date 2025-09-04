@@ -51,6 +51,33 @@ $(document).ready(function () {
         getAllReagendamientos();
     });
 
+    // Evento para el campo DNI
+    $('#dniClienteDerivaciones').on('input', function () {
+        getAllDerivaciones();
+    });
+
+    $('#dniClienteReagendamientos').on('input', function () {
+        getAllReagendamientos();
+    });
+
+    $('#btnLimpiarFiltrosOperaciones').on('click', function () {
+        $('#dniClienteDerivaciones').val('').trigger('input');
+        $('#supervisorDerivaciones').val('').trigger('change');
+        $('#asesorDerivaciones').val('').trigger('change');
+        $('#agenciaDerivaciones').val('').trigger('change');
+        $('#fechaDerivacion').val('').trigger('change');
+        $('#fechaVisitaDerivacion').val('').trigger('change');
+    });
+
+    $('#btnLimpiarFiltrosReagendamiento').on('click', function () {
+        $('#dniClienteReagendamientos').val('').trigger('input');
+        $('#supervisorReagendamientos').val('').trigger('change');
+        $('#asesorReagendamientosCol').val('').trigger('change');
+        $('#agenciaReagendamientos').val('').trigger('change');
+        $('#fechaReagendamientos').val('').trigger('change');
+        $('#fechaVisitaReagendamientos').val('').trigger('change');
+    });
+
     function actualizarSelects($this) {
         // Mostrar solo los asesores del supervisor seleccionado
         var idSupervisor = $this.val();
@@ -98,6 +125,39 @@ $(document).ready(function () {
         });
     });
 
+    $('#btnDescargarReagendamientos').on('click', function () {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Se descargará el archivo Excel con el resumen de reagendamientos.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, descargar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                DescargarResumenExcelReagendamientos();
+            }
+        });
+    });
+
+    $('#btnDescargarHistoricos').on('click', function () {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Se descargará el archivo Excel con el resumen de históricos.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, descargar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                DescargarResumenExcelHistoricos();
+            }
+        });
+    });
 });
 
 function ListarAsesores() {
@@ -178,7 +238,8 @@ function getAllDerivaciones() {
             idSupervisor : $('#supervisorDerivaciones').val() || null,
             agencia : $('#agenciaDerivaciones').val() || null,
             fecha_derivacion : $('#fechaDerivacion').val() || null,
-            fecha_visita : $('#fechaVisitaDerivacion').val() || null
+            fecha_visita : $('#fechaVisitaDerivacion').val() || null,
+            dni : $('#dniClienteDerivaciones').val() || null
         },
         contentType: 'application/json',
         success: function (data) {
@@ -188,12 +249,6 @@ function getAllDerivaciones() {
                     // Actualizar contador
                     $('#totalDelMesDerivaciones').html(data.data.length);
                 }
-            } else {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Atención',
-                    text: (data && data.message) || 'No se encontraron derivaciones.'
-                });
             }
         },
         error: function () {
@@ -217,7 +272,8 @@ function getAllReagendamientos() {
             idSupervisor : $('#supervisorReagendamientos').val() || null,
             fecha_reagendamiento : $('#fechaReagendamientos').val() || null,
             fecha_visita : $('#fechaVisitaReagendamientos').val() || null,
-            agencia : $('#agenciaReagendamientos').val() || null
+            agencia : $('#agenciaReagendamientos').val() || null,
+            dni : $('#dniClienteReagendamientos').val() || null
         },
         success: function (data) {
             if (data && data.success) {
@@ -249,12 +305,14 @@ async function getHistorico(idDerivacion) {
 
     await $.ajax({
         url: '/Operaciones/GetHistoricoReagendamientos',
-        type: 'GET',
-        data: { idDerivacion: idDerivacion },
+        type: 'POST',
+        data: JSON.stringify([idDerivacion]),
+        contentType: 'application/json',
         dataType: 'json',
         success: function(data) {
             if (data.success === true) {
                 response = data.data;
+                console.log(response)
             } else {
                 Swal.fire({
                     icon: 'error',
@@ -1082,9 +1140,6 @@ App.derivaciones = (() => {
             }
             return [];
         },
-        // AGREGAR ESTAS LÍNEAS:
-        isExternalFilterPresent: isExternalFilterPresent,
-        doesExternalFilterPass: doesExternalFilterPass,
         onGridReady: (params) => {
             gridApi = params.api;
             params.api.sizeColumnsToFit({ defaultMinWidth: 50 });
@@ -1093,37 +1148,6 @@ App.derivaciones = (() => {
             params.api.sizeColumnsToFit({ defaultMinWidth: 50 });
         }
     };
-
-    const externalFilterState = {
-        dniCliente: ''
-    };
-
-    function isExternalFilterPresent() {
-        return externalFilterState.dniCliente !== '';
-    }
-
-    function doesExternalFilterPass(node) {
-        const { data } = node;
-        const { dniCliente } = externalFilterState;
-        
-        if (dniCliente && !String(data.dniCliente).includes(dniCliente)) {
-            return false;
-        }
-        
-        return true;
-    }
-
-    function setupDNIFilter() {
-        const dniInput = document.getElementById('dniClienteDerivaciones');
-        if (dniInput) {
-            dniInput.addEventListener('input', function() {
-                externalFilterState.dniCliente = this.value.trim();
-                if (gridApi) {
-                    gridApi.onFilterChanged();
-                }
-            });
-        }
-    }
 
     function createTable(rol) {
         if (rol === 1 || rol === 4) {
@@ -1157,8 +1181,6 @@ App.derivaciones = (() => {
             derivacionesGridOptions.rowData = [];
             gridApi = agGrid.createGrid(gridDiv, derivacionesGridOptions);
 
-            // Configurar filtro por DNI
-            setupDNIFilter();
         }
     }
 
@@ -1392,8 +1414,6 @@ App.reagendamientos = (() => {
         enableBrowserTooltips: true,
         initialState: { sort: { sortModel: [{ colId: 'estadoReagendamiento', sort: 'asc' }] } },
         defaultColDef: { sortable: true, resizable: true, minWidth: 50, flex: 1 },
-        isExternalFilterPresent: isExternalFilterPresent,
-        doesExternalFilterPass: doesExternalFilterPass,
         getRowClass: (params) => {
             if (params.data.puedeSerReagendado === true) {
                 return ['ag-row-reagendable'];
@@ -1409,39 +1429,6 @@ App.reagendamientos = (() => {
         }
     };
     
-    // Agregar después de let listaDerivaciones = [];
-    const externalFilterState = {
-        dniCliente: ''
-    };
-
-    // Agregar después de externalFilterState
-    function isExternalFilterPresent() {
-        return externalFilterState.dniCliente !== '';
-    }
-
-    function doesExternalFilterPass(node) {
-        const { data } = node;
-        const { dniCliente } = externalFilterState;
-        
-        if (dniCliente && !String(data.dniCliente).includes(dniCliente)) {
-            return false;
-        }
-        
-        return true;
-    }
-
-    // Agregar después de updateTableData
-    function setupDNIFilter() {
-        const dniInput = document.getElementById('dniClienteReagendamientos');
-        if (dniInput) {
-            dniInput.addEventListener('input', function() {
-                externalFilterState.dniCliente = this.value.trim();
-                if (gridApi) {
-                    gridApi.onFilterChanged();
-                }
-            });
-        }
-    }
 
     function createTable(rol) {
         if (rol === 1 || rol === 4 || rol === 2) {
@@ -1468,9 +1455,6 @@ App.reagendamientos = (() => {
             // Inicializar tabla vacía
             reagendamientosGridOptions.rowData = [];
             gridApi = agGrid.createGrid(gridDiv, reagendamientosGridOptions);
-
-            // Configurar filtro por DNI
-            setupDNIFilter();
         }
     }
 
@@ -1481,10 +1465,18 @@ App.reagendamientos = (() => {
         }
     }
 
+    /**
+     * Devuelve una lista de los IDs de derivación (números) de los reagendamientos.
+     * @returns {int[]}
+     */
+    function obtenerListaIdsDerivacion() {
+        return listaReagendamientos.map(item => item.idDerivacion);
+    }
 
     return {
         init,
         updateTableData,
+        obtenerListaIdsDerivacion,
         gridApi: () => gridApi
     };
 })();
@@ -1559,7 +1551,7 @@ App.historico = (function () {
             field: 'fechaDerivacion',
             width: 150,
             sortable: true,
-            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy')
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm')
         },
         {
             headerName: 'Fecha Visita',
@@ -1595,7 +1587,7 @@ App.historico = (function () {
     function init(historicoData) {
         historico = historicoData || [];
 
-        const gridDiv = document.getElementById('gridHistóricoReagendamientos');
+        const gridDiv = document.getElementById('gridHistoricoReagendamientos');
         if (!gridDiv) {
             return;
         }
@@ -1612,7 +1604,6 @@ App.historico = (function () {
 })();
 
 function DescargarResumenExcelDerivaciones() {
-    console.log("click")
     let dni = $('#dniClienteDerivaciones').val() || null;
     let supervisor = $('#supervisorDerivaciones').val() || null;
     let asesor = $('#asesorDerivaciones').val() || null;
@@ -1620,14 +1611,7 @@ function DescargarResumenExcelDerivaciones() {
     let fechaDerivacion = $('#fechaDerivacion').val() || null;
     let fechaVisita = $('#fechaVisitaDerivacion').val() || null;
 
-    const now = new Date();
-
-    const Fecha = now.getFullYear() + "-" +
-        String(now.getMonth() + 1).padStart(2, '0') + "-" +
-        String(now.getDate()).padStart(2, '0') + "_" +
-        String(now.getHours()).padStart(2, '0') + "-" +
-        String(now.getMinutes()).padStart(2, '0') + "-" +
-        String(now.getSeconds()).padStart(2, '0');
+    const Fecha = obtenerFechaActual();
 
     Swal.fire({
         title: 'Cargando...',
@@ -1677,6 +1661,120 @@ function DescargarResumenExcelDerivaciones() {
         }
     });
 }
+
+function DescargarResumenExcelReagendamientos(){
+    let dni = $('#dniClienteReagendamientos').val() || null;
+    let supervisor = $('#supervisorReagendamientos').val() || null;
+    let asesor = $('#asesorReagendamientos').val() || null;
+    let agencia = $('#agenciaReagendamientos').val() || null;
+    let fechaReagendamiento = $('#fechaReagendamiento').val() || null;
+    let fechaVisita = $('#fechaVisitaReagendamientos').val() || null;
+
+    const Fecha = obtenerFechaActual();
+
+    Swal.fire({
+        title: 'Cargando...',
+        timerProgressBar: true,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    $.ajax({
+        url: '/Operaciones/ExportarReagendamientosExcel',
+        type: 'GET',
+        data: {
+            dni : dni,
+            idAsesor: asesor,
+            idSupervisor: supervisor,
+            agencia: agencia,
+            fecha_reagendamiento: fechaReagendamiento,
+            fecha_visita: fechaVisita
+        },
+        xhrFields: {
+            responseType: 'blob'
+        },
+        success: function (data) {
+            console.log(data)
+            var a = document.createElement('a');
+            a.href = window.URL.createObjectURL(data);
+
+
+            a.download = 'ReporteResumenReagendamiento_' + Fecha + '.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+        },
+        error: function () {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error en la operación',
+                text: 'Hubo un problema al generar el archivo Excel',
+                confirmButtonText: 'Ok',
+            });
+        },
+        complete: function () {
+            Swal.close();
+        }
+    });
+}
+
+function DescargarResumenExcelHistoricos(){
+
+    Swal.fire({
+        title: 'Cargando...',
+        timerProgressBar: true,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    const Fecha = obtenerFechaActual();
+
+    ListaIDsDerivacion = App.reagendamientos.obtenerListaIdsDerivacion();
+
+    $.ajax({
+        url: '/Operaciones/ExportarHistoricosExcel',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(
+            ListaIDsDerivacion
+        ),
+        xhrFields: {
+            responseType: 'blob'
+        },
+        success: function (data) {
+            console.log(data)
+            var a = document.createElement('a');
+            a.href = window.URL.createObjectURL(data);
+
+
+            a.download = 'ReporteResumenHistorico_' + Fecha + '.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        },
+        error: function () {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error en la operación',
+                text: 'Hubo un problema al generar el archivo Excel',
+                confirmButtonText: 'Ok',
+            });
+        },
+        complete: function () {
+            Swal.close();
+        }
+    });
+}
+
 ///---------------FUNCIONES AUXILIARES -------------///
 
 // Función auxiliar para formatear fechas
@@ -1703,4 +1801,14 @@ function formatDateTime(dateString, format = 'dd/mm/yyyy') {
         return `${day}/${month}/${year} ${hours}:${minutes}`;
     }
     return `${day}/${month}/${year}`;
+}
+
+function obtenerFechaActual() {
+    const now = new Date();
+    return now.getFullYear() + "-" +
+        String(now.getMonth() + 1).padStart(2, '0') + "-" +
+        String(now.getDate()).padStart(2, '0') + " " +
+        String(now.getHours()).padStart(2, '0') + ":" +
+        String(now.getMinutes()).padStart(2, '0') + ":" +
+        String(now.getSeconds()).padStart(2, '0');
 }

@@ -50,3 +50,4 @@ appsettings.Development.json
 # Tests Units
 /Tests/
 Tests/Units/UseCases/TestAsignarClienteManual.cs
+/wwwroot/temp-images

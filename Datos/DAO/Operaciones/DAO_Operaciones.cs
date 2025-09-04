@@ -11,7 +11,7 @@ namespace ALFINapp.Datos.DAO.Operaciones
 {
     public class DAO_Operaciones
     {
-        public async Task<(bool issuccess, List<ViewReagendamientos>? data)> GetAllReagendamientos(int? idAsesor = null, int? idSupervisor = null, DateTime? fecha_reagendamiento = null, DateTime? fecha_visita = null, string? agencia = null)
+        public async Task<(bool issuccess, List<ViewReagendamientos>? data)> GetAllReagendamientos(int? idAsesor = null, int? idSupervisor = null, DateTime? fecha_reagendamiento = null, DateTime? fecha_visita = null, string? agencia = null, string? dni = null)
         {
             try
             {
@@ -24,11 +24,12 @@ namespace ALFINapp.Datos.DAO.Operaciones
                         command.CommandType = CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@month", DateTime.Now.Month);
                         command.Parameters.AddWithValue("@year", DateTime.Now.Year);
-                        command.Parameters.AddWithValue("@id_asesor", idAsesor);
-                        command.Parameters.AddWithValue("@id_supervisor", idSupervisor);
-                        command.Parameters.AddWithValue("@fecha_reagendamiento", fecha_reagendamiento);
-                        command.Parameters.AddWithValue("@fecha_visita", fecha_visita);
-                        command.Parameters.AddWithValue("@agencia", agencia);
+                        command.Parameters.AddWithValue("@id_asesor", idAsesor.HasValue ? idAsesor.Value : DBNull.Value);
+                        command.Parameters.AddWithValue("@id_supervisor", idSupervisor.HasValue ? idSupervisor.Value : DBNull.Value);
+                        command.Parameters.AddWithValue("@fecha_reagendamiento", fecha_reagendamiento.HasValue ? fecha_reagendamiento.Value : DBNull.Value);
+                        command.Parameters.AddWithValue("@fecha_visita", fecha_visita.HasValue ? fecha_visita.Value : DBNull.Value);
+                        command.Parameters.AddWithValue("@agencia", agencia ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@dni", dni ?? (object)DBNull.Value);
 
                         connection.Open();
                         using (SqlDataReader reader = await command.ExecuteReaderAsync())
@@ -75,7 +76,7 @@ namespace ALFINapp.Datos.DAO.Operaciones
         }
 
 
-        public async Task<(bool success, List<ViewDerivaciones>? data)> GetAllDerivaciones(int? idAsesor, int? idSupervisor, string? agencia = null, DateTime? fecha_derivacion = null, DateTime? fecha_visita = null)
+        public async Task<(bool success, List<ViewDerivaciones>? data)> GetAllDerivaciones(int? idAsesor, int? idSupervisor, string? agencia = null, DateTime? fecha_derivacion = null, DateTime? fecha_visita = null, string? dni = null)
         {
             try
             {
@@ -86,11 +87,14 @@ namespace ALFINapp.Datos.DAO.Operaciones
                     using (SqlCommand command = new SqlCommand("[sp_Derivacion_consulta_derivaciones_x_asesor_por_dni_con_reagendacion_2]", connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@id_asesor", idAsesor.HasValue ? (object)idAsesor.Value : DBNull.Value);
-                        command.Parameters.AddWithValue("@id_supervisor", idSupervisor.HasValue ? (object)idSupervisor.Value : DBNull.Value);
+                        command.Parameters.AddWithValue("@month", DateTime.Now.Month);
+                        command.Parameters.AddWithValue("@year", DateTime.Now.Year);
+                        command.Parameters.AddWithValue("@id_asesor", idAsesor.HasValue ? idAsesor.Value : DBNull.Value);
+                        command.Parameters.AddWithValue("@id_supervisor", idSupervisor.HasValue ? idSupervisor.Value : DBNull.Value);
                         command.Parameters.AddWithValue("@agencia", agencia ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@fecha_derivacion", fecha_derivacion ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@fecha_visita", fecha_visita ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@dni", dni ?? (object)DBNull.Value);
 
                         connection.Open();
                         using (SqlDataReader reader = await command.ExecuteReaderAsync())
@@ -233,7 +237,7 @@ namespace ALFINapp.Datos.DAO.Operaciones
             }
         }
 
-        public async Task<(bool success, List<ViewReagendamientos>? data)> GetHistoricoReagendamientos(int idDerivacion)
+        public async Task<(bool success, List<ViewReagendamientos>? data)> GetHistosricoReagendamientos(List<int> idsDerivacion)
         {
             try
             {
@@ -244,8 +248,14 @@ namespace ALFINapp.Datos.DAO.Operaciones
                     using (SqlCommand command = new SqlCommand("[SP_REAGENDAMIENTOS_GET_REAGENDAMIENTOS_HISTORICO]", connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@id_derivacion", idDerivacion);
-                        connection.Open();
+                        // Transformar lista a XML usando LINQ
+                        var xml = new System.Xml.Linq.XElement("Ids",
+                            idsDerivacion.Select(id => new System.Xml.Linq.XElement("Id", id))
+                        ).ToString();
+
+                        command.Parameters.Add(new SqlParameter("@ids_derivacionXML", SqlDbType.Xml) { Value = xml });
+                        await connection.OpenAsync();
+
                         using (SqlDataReader reader = await command.ExecuteReaderAsync())
                         {
                             var derivaciones = new List<ViewReagendamientos>();
