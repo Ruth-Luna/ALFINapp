@@ -202,10 +202,10 @@ namespace ALFINapp.Controllers
                     if (d?.FechaDerivacion != null)
                     {
                         ws.Cells[row, 10].Value = (DateTime?)d.FechaDerivacion;
-                        ws.Cells[row, 10].Style.Numberformat.Format = "dd/MM/yyyy";
+                        ws.Cells[row, 10].Style.Numberformat.Format = "dd/MM/yyyy HH:mm";
                     };
 
-                    if (d?.FechaDerivacion != null)
+                    if (d?.FechaVisita != null)
                     {
                         ws.Cells[row, 11].Value = (DateTime?)d.FechaVisita;
                         ws.Cells[row, 11].Style.Numberformat.Format = "dd/MM/yyyy";
@@ -213,12 +213,11 @@ namespace ALFINapp.Controllers
 
 
                     ws.Cells[row, 12].Value = d.estadoEvidencia;
-                    if (d?.FechaDerivacion != null)
+                    if (d?.estadoEvidencia != null)
                     {
                         ws.Cells[row, 13].Value = (DateTime?)d.FechaEvidencia;
                         ws.Cells[row, 13].Style.Numberformat.Format = "dd/MM/yyyy";
-                    }
-                    ;
+                    };
 
                     row++;
                 }

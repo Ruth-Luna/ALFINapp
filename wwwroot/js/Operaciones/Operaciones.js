@@ -60,6 +60,15 @@ $(document).ready(function () {
         getAllReagendamientos();
     });
 
+    $('#btnLimpiarFiltrosOperaciones').on('click', function () {
+        $('#dniClienteDerivaciones').val('').trigger('input');
+        $('#supervisorDerivaciones').val('').trigger('change');
+        $('#asesorDerivaciones').val('').trigger('change');
+        $('#agenciaDerivaciones').val('').trigger('change');
+        $('#fechaDerivacion').val('').trigger('change');
+        $('#fechaVisitaDerivacion').val('').trigger('change');
+    });
+
     function actualizarSelects($this) {
         // Mostrar solo los asesores del supervisor seleccionado
         var idSupervisor = $this.val();
@@ -231,12 +240,6 @@ function getAllDerivaciones() {
                     // Actualizar contador
                     $('#totalDelMesDerivaciones').html(data.data.length);
                 }
-            } else {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Atención',
-                    text: (data && data.message) || 'No se encontraron derivaciones.'
-                });
             }
         },
         error: function () {
