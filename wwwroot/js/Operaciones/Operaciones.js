@@ -69,6 +69,15 @@ $(document).ready(function () {
         $('#fechaVisitaDerivacion').val('').trigger('change');
     });
 
+    $('#btnLimpiarFiltrosReagendamiento').on('click', function () {
+        $('#dniClienteReagendamientos').val('').trigger('input');
+        $('#supervisorReagendamientos').val('').trigger('change');
+        $('#asesorReagendamientosCol').val('').trigger('change');
+        $('#agenciaReagendamientos').val('').trigger('change');
+        $('#fechaReagendamientos').val('').trigger('change');
+        $('#fechaVisitaReagendamientos').val('').trigger('change');
+    });
+
     function actualizarSelects($this) {
         // Mostrar solo los asesores del supervisor seleccionado
         var idSupervisor = $this.val();
@@ -303,6 +312,7 @@ async function getHistorico(idDerivacion) {
         success: function(data) {
             if (data.success === true) {
                 response = data.data;
+                console.log(response)
             } else {
                 Swal.fire({
                     icon: 'error',
@@ -1541,7 +1551,7 @@ App.historico = (function () {
             field: 'fechaDerivacion',
             width: 150,
             sortable: true,
-            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy')
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm')
         },
         {
             headerName: 'Fecha Visita',
@@ -1577,7 +1587,7 @@ App.historico = (function () {
     function init(historicoData) {
         historico = historicoData || [];
 
-        const gridDiv = document.getElementById('gridHistóricoReagendamientos');
+        const gridDiv = document.getElementById('gridHistoricoReagendamientos');
         if (!gridDiv) {
             return;
         }

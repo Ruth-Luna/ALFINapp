@@ -158,7 +158,7 @@
                                 <i class="ri-checkbox-circle-fill"></i>
                                 <span>Enviado</span>
                             </div>
-                            <div class="af-badge af-badge-bg-warning">
+                            <div class="af-badge af-badge-bg-danger">
                                 <i class="ri-indeterminate-circle-fill"></i>
                                 <span>Pendiente</span>
                             </div>
@@ -185,36 +185,43 @@
             
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-body">
-                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-3">
-                        <div class="col">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-12 col-sm-6 col-lg-2">
                             <label for="dniClienteReagendamientos" class="form-label">DNI cliente</label>
                             <input type="text" autocomplete="off" class="form-control" id="dniClienteReagendamientos" />
                         </div>
-                        <div class="col filtro-supervisor-col" id="supervisorReagendamientosCol">
+                        <div class="col-12 col-sm-6 col-lg-2" id="supervisorReagendamientosCol">
                             <label for="supervisorReagendamientos" class="form-label">Supervisor</label>
                             <select class="form-select filtro-supervisor" id="supervisorReagendamientos">
                                 <option selected value="">Todos</option>
                             </select>
                         </div>
-                        <div class="col filtro-asesor-col" id="asesorReagendamientosCol">
+                        <div class="col-12 col-sm-6 col-lg-2" id="asesorReagendamientosCol">
                             <label for="asesorReagendamientos" class="form-label">Asesor</label>
                             <select class="form-select filtro-asesor" id="asesorReagendamientos">
                                 <option selected value="">Todos</option>
                             </select>
                         </div>
-                        <div class="col">
+                        <div class="col-12 col-sm-6 col-lg-2">
                             <label for="agenciaReagendamientos filtro-agencia-col" class="form-label">Agencia</label>
                             <select class="form-select filtro-agencia" id="agenciaReagendamientos">
                                 <option selected value="">Todos</option>
                             </select>
                         </div>
-                        <div class="col">
+                        <div class="col-12 col-sm-6 col-lg-2">
                             <label for="fechaReagendamientos" class="form-label">Fecha de reagendamiento</label>
                             <input type="date" class="form-control" id="fechaReagendamientos" />
                         </div>
-                        <div class="col">
+                        <div class="col-12 col-sm-6 col-lg-2">
                             <label for="fechaVisitaReagendamientos" class="form-label">Fecha de visita</label>
                             <input type="date" class="form-control" id="fechaVisitaReagendamientos" />
+                        </div>
+                        <div class="col-12 col-lg d-flex justify-content-lg-end">
+                            <button id="btnLimpiarFiltrosReagendamiento"
+                                    class="btn btn-sm btn-outline-secondary px-3 py-2"
+                                    title="Limpiar Filtros" aria-label="Limpiar filtros">
+                                <i class="bi bi-eraser"></i> Limpiar
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -227,8 +234,8 @@
                                 Descargar
                             </button>
                             <ul class="dropdown-menu">
-                                <li id="btnDescargarReagendamientos"><a class="dropdown-item"> Ãšltimos reagendamientos</a></li>
-                                <li id="btnDescargarHistoricos"><a class="dropdown-item"> HistÃ³ricos</a></li>
+                                <li id="btnDescargarReagendamientos"><a class="dropdown-item"> Últimos reagendamientos</a></li>
+                                <li id="btnDescargarHistoricos"><a class="dropdown-item"> Histórico</a></li>
                             </ul>
                         </div>
                     </div>
@@ -422,11 +429,11 @@
     <div class="modal-dialog modal-xxl">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="labelmodalHistoricoReagendamiento">HistÃ³rico</h1>
+                <h1 class="modal-title fs-5" id="labelmodalHistoricoReagendamiento">Histórico</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div id="gridHistÃ³ricoReagendamientos" class="ag-theme-alpine" style="height: 400px; width: 100%;"></div>
+                <div id="gridHistoricoReagendamientos" class="ag-theme-alpine" style="height: 400px; width: 100%;"></div>
             </div>
         </div>
     </div>

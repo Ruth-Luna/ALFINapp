@@ -68,7 +68,7 @@ App.historico = (function () {
             field: 'fechaDerivacion',
             width: 150,
             sortable: true,
-            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy')
+            valueFormatter: params => formatDateTime(params.value, 'dd/mm/yyyy hh:mm')
         },
         {
             headerName: 'Fecha Visita',
@@ -104,7 +104,7 @@ App.historico = (function () {
     function init(historicoData) {
         historico = historicoData || [];
 
-        const gridDiv = document.getElementById('gridHistóricoReagendamientos');
+        const gridDiv = document.getElementById('gridHistoricoReagendamientos');
         if (!gridDiv) {
             return;
         }
