@@ -1,7 +1,9 @@
 using System.Data;
 using ALFINapp.API.Models;
+using ALFINapp.Domain.Entities;
 using ALFINapp.Infrastructure.Persistence.Procedures;
 using ALFINapp.Models;
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using Microsoft.Data.SqlClient;
 using Models;
 
@@ -147,6 +149,55 @@ namespace ALFINapp.Datos.DAO.Operaciones
             }
         }
 
+        public List<ViewDerivaciones> Listar_Derivaciones_Excel(string? dni , int? idAsesor, int? idSupervisor, string? agencia = null, DateTime? fecha_derivacion = null, DateTime? fecha_visita = null)
+        {
+            try
+            {
+                var cn = new Conexion();
+                using (var connection = new SqlConnection(cn.getCadenaSQL()))
+                using (var command = new SqlCommand("SP_DERIVACION_Listar_Derivaciones_Excel", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@dni", string.IsNullOrEmpty(dni) ? (object)DBNull.Value : dni);
+                    command.Parameters.AddWithValue("@id_asesor", idAsesor.HasValue ? (object)idAsesor.Value : DBNull.Value);
+                    command.Parameters.AddWithValue("@id_supervisor", idSupervisor.HasValue ? (object)idSupervisor.Value : DBNull.Value);
+                    command.Parameters.AddWithValue("@fecha_derivacion", fecha_derivacion ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@fecha_visita", fecha_visita ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@agencia", agencia ?? (object)DBNull.Value);
+
+                    connection.Open();
+                    using (var reader = command.ExecuteReader())
+                    {
+                        var derivaciones = new List<ViewDerivaciones>();
+                        while (reader.Read())
+                        {
+                            derivaciones.Add(new ViewDerivaciones
+                            {
+                                EstadoDerivacion = reader["estado_derivacion"]?.ToString() ?? string.Empty,
+                                EstadoFormulario = reader["estado_formulario"]?.ToString() ?? string.Empty,
+                                EstadoCorreo = reader["estado_email"]?.ToString() ?? string.Empty,
+                                DniCliente = reader["dni_cliente"]?.ToString() ?? string.Empty,
+                                NombreCliente = reader["nombre_cliente"]?.ToString() ?? string.Empty,
+                                TelefonoCliente = reader["telefono_cliente"]?.ToString() ?? string.Empty,
+                                NombreAsesor = reader["nombre_asesor"]?.ToString() ?? string.Empty,
+                                OfertaMax = reader["oferta_max"] != DBNull.Value ? Convert.ToDecimal(reader["oferta_max"]) : 0,
+                                NombreAgencia = reader["nombre_agencia"]?.ToString() ?? string.Empty,
+                                FechaDerivacion = Convert.ToDateTime(reader["fecha_derivacion"]),
+                                FechaVisita = Convert.ToDateTime(reader["fecha_visita"]),
+                                estadoEvidencia = reader["estado_evidencia"]?.ToString() ?? string.Empty,
+                                FechaEvidencia = reader["fecha_evidencia"] != DBNull.Value ? Convert.ToDateTime(reader["fecha_evidencia"]) : (DateTime?)null,
+                            });
+                        }
+                        return derivaciones;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new List<ViewDerivaciones>();
+            }
+        }
         public async Task<(bool success, List<ViewAgencias>? data)> GetAgencias()
         {
             try
@@ -232,6 +283,7 @@ namespace ALFINapp.Datos.DAO.Operaciones
                 return (false, null);
             }
         }
+
 
     }
 }
