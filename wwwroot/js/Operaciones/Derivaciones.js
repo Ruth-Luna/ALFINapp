@@ -28,6 +28,65 @@ function cargarEvidencia(data) {
     return `${day}/${month}/${year}`;
 }
 
+function DescargarResumenExcelDerivaciones() {
+    let dni = $('#dniClienteDerivaciones').val() || null;
+    let supervisor = $('#supervisorDerivaciones').val() || null;
+    let asesor = $('#asesorDerivaciones').val() || null;
+    let agencia = $('#agenciaDerivaciones').val() || null;
+    let fechaDerivacion = $('#fechaDerivacion').val() || null;
+    let fechaVisita = $('#fechaVisitaDerivacion').val() || null;
+
+    const Fecha = obtenerFechaActual();
+
+    Swal.fire({
+        title: 'Cargando...',
+        timerProgressBar: true,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    
+    $.ajax({
+        url: '/Operaciones/ExportarDerivacionesExcel',
+        type: 'GET',
+        data: {
+            dni : dni,
+            idAsesor: asesor,
+            idSupervisor: supervisor,
+            agencia: agencia,
+            fecha_derivacion: fechaDerivacion,
+            fecha_visita: fechaVisita
+        },
+        xhrFields: {
+            responseType: 'blob'
+        },
+        success: function (data) {
+            console.log(data)
+            var a = document.createElement('a');
+            a.href = window.URL.createObjectURL(data);
+
+
+            a.download = 'ReporteResumenDerivacion_' + Fecha + '.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            Swal.close();
+        },
+        error: function () {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error en la operación',
+                text: 'Hubo un problema al generar el archivo Excel',
+                confirmButtonText: 'Ok',
+            });
+            Swal.close();
+        }
+    });
+}
+
 var App = App || {};
 App.derivaciones = (() => {
     let gridApi;
