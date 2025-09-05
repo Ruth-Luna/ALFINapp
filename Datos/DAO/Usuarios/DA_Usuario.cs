@@ -108,6 +108,7 @@ namespace ALFINapp.Datos
                                 Estado = dr["estado"].ToString() ?? string.Empty,
                                 FechaActualizacion = dr["fecha_actualizacion"] == DBNull.Value ? null : Convert.ToDateTime(dr["fecha_actualizacion"]),
                                 FechaInicio = dr["fecha_inicio"] == DBNull.Value ? null : Convert.ToDateTime(dr["fecha_inicio"]),
+                                FechaRegistro = dr["fecha_registro"] == DBNull.Value ? null : Convert.ToDateTime(dr["fecha_registro"]),
                                 FechaCese = dr["fecha_cese"] == DBNull.Value ? null : Convert.ToDateTime(dr["fecha_cese"]),
                             });
                         }
@@ -499,7 +500,7 @@ namespace ALFINapp.Datos
             }
         }
 
-        public List<object> ExportarUsuariosExcel(string dni = null, string usuario = null, int? idRol = null, string estado = null)
+        public List<object> ExportarUsuariosExcel(string? dni = null, string? usuario = null, int? idRol = null, string? estado = null)
         {
             try
             {
