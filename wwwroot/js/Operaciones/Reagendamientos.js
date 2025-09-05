@@ -1,4 +1,118 @@
 var App = App || {};
+
+function DescargarResumenExcelReagendamientos(){
+    let dni = $('#dniClienteReagendamientos').val() || null;
+    let supervisor = $('#supervisorReagendamientos').val() || null;
+    let asesor = $('#asesorReagendamientos').val() || null;
+    let agencia = $('#agenciaReagendamientos').val() || null;
+    let fechaReagendamiento = $('#fechaReagendamiento').val() || null;
+    let fechaVisita = $('#fechaVisitaReagendamientos').val() || null;
+
+    const Fecha = obtenerFechaActual();
+
+    Swal.fire({
+        title: 'Cargando...',
+        timerProgressBar: true,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    $.ajax({
+        url: '/Operaciones/ExportarReagendamientosExcel',
+        type: 'GET',
+        data: {
+            dni : dni,
+            idAsesor: asesor,
+            idSupervisor: supervisor,
+            agencia: agencia,
+            fecha_reagendamiento: fechaReagendamiento,
+            fecha_visita: fechaVisita
+        },
+        xhrFields: {
+            responseType: 'blob'
+        },
+        success: function (data) {
+            console.log(data)
+            var a = document.createElement('a');
+            a.href = window.URL.createObjectURL(data);
+
+
+            a.download = 'ReporteResumenReagendamiento_' + Fecha + '.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+        },
+        error: function () {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error en la operación',
+                text: 'Hubo un problema al generar el archivo Excel',
+                confirmButtonText: 'Ok',
+            });
+        },
+        complete: function () {
+            Swal.close();
+        }
+    });
+}
+
+function DescargarResumenExcelHistoricos(){
+
+    Swal.fire({
+        title: 'Cargando...',
+        timerProgressBar: true,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    const Fecha = obtenerFechaActual();
+
+    ListaIDsDerivacion = App.reagendamientos.obtenerListaIdsDerivacion();
+
+    $.ajax({
+        url: '/Operaciones/ExportarHistoricosExcel',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(
+            ListaIDsDerivacion
+        ),
+        xhrFields: {
+            responseType: 'blob'
+        },
+        success: function (data) {
+            console.log(data)
+            var a = document.createElement('a');
+            a.href = window.URL.createObjectURL(data);
+
+
+            a.download = 'ReporteResumenHistorico_' + Fecha + '.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        },
+        error: function () {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error en la operación',
+                text: 'Hubo un problema al generar el archivo Excel',
+                confirmButtonText: 'Ok',
+            });
+        },
+        complete: function () {
+            Swal.close();
+        }
+    });
+}
+
 App.reagendamientos = (() => {
     let gridApi;
     let listaReagendamientos = [];

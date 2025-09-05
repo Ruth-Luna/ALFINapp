@@ -102,36 +102,43 @@
             
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-body">
-                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-3">
-                        <div class="col">
-                            <label for="dniClienteDerivaciones" class="form-label">DNI cliente</label>
-                            <input type="text" autocomplete="off" class="form-control" id="dniClienteDerivaciones" />
+                    <div class="row g-3 align-items-end">
+                        <div class="col-12 col-sm-6 col-lg-2">
+                            <label for="dniClienteDerivaciones" class="form-label mb-1">DNI cliente</label>
+                            <input type="text" autocomplete="off" class="form-control" id="dniClienteDerivaciones">
                         </div>
-                        <div class="col filtro-supervisor-col" id="supervisorDerivacionesCol">
+                        <div class="col-12 col-sm-6 col-lg-2" id="supervisorDerivacionesCol">
                             <label for="supervisorDerivaciones" class="form-label">Supervisor</label>
                             <select class="form-select filtro-supervisor" id="supervisorDerivaciones">
                                 <option selected value="">Todos</option>
                             </select>
                         </div>
-                        <div class="col filtro-asesor-col" id="asesorDerivacionesCol">
+                        <div class="col-12 col-sm-6 col-lg-2" id="asesorDerivacionesCol">
                             <label for="asesorDerivaciones" class="form-label">Asesor</label>
                             <select class="form-select filtro-asesor" id="asesorDerivaciones">
                                 <option selected value="">Todos</option>
                             </select>
                         </div>
-                        <div class="col filtro-agencia-col" id="agenciaDerivacionesCol">
+                        <div class="col-12 col-sm-6 col-lg-2" id="agenciaDerivacionesCol">
                             <label for="agenciaDerivaciones" class="form-label">Agencia</label>
                             <select class="form-select filtro-agencia" id="agenciaDerivaciones">
                                 <option selected value="">Todos</option>
                             </select>
                         </div>
-                        <div class="col">
-                            <label for="fechaDerivacion" class="form-label">Fecha derivaci贸n</label>
+                        <div class="col-12 col-sm-6 col-lg-2">
+                            <label for="fechaDerivacion" class="form-label">Fecha derivaci髇</label>
                             <input type="date" class="form-control" id="fechaDerivacion" />
                         </div>
-                        <div class="col">
+                        <div class="col-12 col-sm-6 col-lg-2">
                             <label for="fechaVisitaDerivacion" class="form-label">Fecha de visita</label>
                             <input type="date" class="form-control" id="fechaVisitaDerivacion" />
+                        </div>
+                        <div class="col-12 col-lg d-flex justify-content-lg-end">
+                            <button id="btnLimpiarFiltrosOperaciones"
+                                    class="btn btn-sm btn-outline-secondary px-3 py-2"
+                                    title="Limpiar Filtros" aria-label="Limpiar filtros">
+                                <i class="bi bi-eraser"></i> Limpiar
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -151,7 +158,7 @@
                                 <i class="ri-checkbox-circle-fill"></i>
                                 <span>Enviado</span>
                             </div>
-                            <div class="af-badge af-badge-bg-warning">
+                            <div class="af-badge af-badge-bg-danger">
                                 <i class="ri-indeterminate-circle-fill"></i>
                                 <span>Pendiente</span>
                             </div>
@@ -178,36 +185,43 @@
             
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-body">
-                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-3">
-                        <div class="col">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-12 col-sm-6 col-lg-2">
                             <label for="dniClienteReagendamientos" class="form-label">DNI cliente</label>
                             <input type="text" autocomplete="off" class="form-control" id="dniClienteReagendamientos" />
                         </div>
-                        <div class="col filtro-supervisor-col" id="supervisorReagendamientosCol">
+                        <div class="col-12 col-sm-6 col-lg-2" id="supervisorReagendamientosCol">
                             <label for="supervisorReagendamientos" class="form-label">Supervisor</label>
                             <select class="form-select filtro-supervisor" id="supervisorReagendamientos">
                                 <option selected value="">Todos</option>
                             </select>
                         </div>
-                        <div class="col filtro-asesor-col" id="asesorReagendamientosCol">
+                        <div class="col-12 col-sm-6 col-lg-2" id="asesorReagendamientosCol">
                             <label for="asesorReagendamientos" class="form-label">Asesor</label>
                             <select class="form-select filtro-asesor" id="asesorReagendamientos">
                                 <option selected value="">Todos</option>
                             </select>
                         </div>
-                        <div class="col">
+                        <div class="col-12 col-sm-6 col-lg-2">
                             <label for="agenciaReagendamientos filtro-agencia-col" class="form-label">Agencia</label>
                             <select class="form-select filtro-agencia" id="agenciaReagendamientos">
                                 <option selected value="">Todos</option>
                             </select>
                         </div>
-                        <div class="col">
+                        <div class="col-12 col-sm-6 col-lg-2">
                             <label for="fechaReagendamientos" class="form-label">Fecha de reagendamiento</label>
                             <input type="date" class="form-control" id="fechaReagendamientos" />
                         </div>
-                        <div class="col">
+                        <div class="col-12 col-sm-6 col-lg-2">
                             <label for="fechaVisitaReagendamientos" class="form-label">Fecha de visita</label>
                             <input type="date" class="form-control" id="fechaVisitaReagendamientos" />
+                        </div>
+                        <div class="col-12 col-lg d-flex justify-content-lg-end">
+                            <button id="btnLimpiarFiltrosReagendamiento"
+                                    class="btn btn-sm btn-outline-secondary px-3 py-2"
+                                    title="Limpiar Filtros" aria-label="Limpiar filtros">
+                                <i class="bi bi-eraser"></i> Limpiar
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -220,8 +234,8 @@
                                 Descargar
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="javascript:void(0)" onclick="App.reagendamientos.exportarReagendamientos()">脷ltimos reagendamientos</a></li>
-                                <li><a class="dropdown-item" href="#">Hist贸ricos</a></li>
+                                <li id="btnDescargarReagendamientos"><a class="dropdown-item"> 趌timos reagendamientos</a></li>
+                                <li id="btnDescargarHistoricos"><a class="dropdown-item"> Hist髍ico</a></li>
                             </ul>
                         </div>
                     </div>
@@ -415,11 +429,11 @@
     <div class="modal-dialog modal-xxl">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="labelmodalHistoricoReagendamiento">Hist贸rico</h1>
+                <h1 class="modal-title fs-5" id="labelmodalHistoricoReagendamiento">Hist髍ico</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div id="gridHist贸ricoReagendamientos" class="ag-theme-alpine" style="height: 400px; width: 100%;"></div>
+                <div id="gridHistoricoReagendamientos" class="ag-theme-alpine" style="height: 400px; width: 100%;"></div>
             </div>
         </div>
     </div>
