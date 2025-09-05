@@ -43,6 +43,8 @@ document.addEventListener('DOMContentLoaded', function () {
         { headerName: "Campaña", field: "campania", width: 150 },
         { headerName: "Correo", field: "correo", width: 250 },
         { headerName: "Fecha Inicio", field: "fechaInicio", width: 130 },
+        { headerName: "Fecha Registro", field: "fechaRegistro", width: 130 },
+        { headerName: "Fecha Cese", field: "fechaCese", width: 130 },
         {
             headerName: "Estado",
             field: "estado",
@@ -104,8 +106,9 @@ document.addEventListener('DOMContentLoaded', function () {
         onGridReady: params => {
             configurarFiltros();
             // precargar filtro estado
-           $('#txtFiltrarEstado').val('ACTIVO').trigger('change');
         },
+        animateRows: true,
+        rowSelection: 'single',
         suppressHorizontalScroll: false,
         localeText: window.localeTextEs
     };
@@ -155,7 +158,7 @@ $('#btnGuardarCambios').on('click', function () {
     if (idUsuario) {
         AgregarActualizarCliente(true, idUsuario);
     } else {
-        AgregarActualizarCliente(false); 
+        AgregarActualizarCliente(false);
     }
 });
 
@@ -193,10 +196,10 @@ function CambiarEstadoUsuario(estado, idUsuario) {
     $.ajax({
         url: "/Usuarios/ActualizarEstadoUsuario",
         type: "POST",
-        contentType: "application/json", 
+        contentType: "application/json",
         data: JSON.stringify({
             IdUsuario: idUsuario,
-            estado: estado.toString() 
+            estado: estado.toString()
         }),
         success: function (response) {
             if (response.success === false) {
@@ -249,21 +252,23 @@ function ListarUsuarioGerente(id = null, editar = false) {
                     correo: usuario.correo ?? '',
                     telefono: usuario.telefono ?? '',
                     fechaInicio: usuario.fechaInicio ? FechaFormat(usuario.fechaInicio) : '',
+                    fechaRegistro: usuario.fechaRegistro ? FechaFormat(usuario.fechaRegistro) : '',
+                    fechaCese: usuario.fechaCese ? FechaFormat(usuario.fechaCese) : '',
                     estado: usuario.estado ?? '',
                     fechaActualizacion: usuario.fechaActualizacion ? FechaFormat(usuario.fechaActualizacion) : '',
                     idUsuario: usuario.idUsuario
                 }));
 
                 if (window.gridApi) {
-                    window.gridApi.setGridOption('rowData', rowData); 
+                    window.gridApi.setGridOption('rowData', rowData);
                 } else {
-                    console.warn("⚠️ gridApi no está lista todavía");
+                    console.warn("gridApi no está lista todavía");
                 }
 
             } else {
                 $('#titlemodalARGerente').text('ACTUALIZAR USUARIO');
                 $('#modalARGerente').modal('show');
-                
+
                 $('#txtDNI_AR').val(data[0].dni ?? '');
                 $('#selectTDocumento_AR').val(data[0].tipoDocumento ?? '');
                 $('#txtUser_AR').val(data[0].usuario ?? '');
@@ -305,11 +310,11 @@ function AgregarActualizarCliente(actualizar = false, idUsuario = null) {
             { selector: '#txtApellidosM_AR', mensaje: 'El apellido materno es requerido.' },
             { selector: '#txtNombres_AR', mensaje: 'El nombre es requerido.' },
             { selector: '#txtCampania_AR', mensaje: 'La campaña es requerida.' },
-/*            { selector: '#txtRegion_AR', mensaje: 'La región es requerida.' },*/
-        /*    { selector: '#txtDepartamento_AR', mensaje: 'El departamento es requerido.' },*/
+            /*            { selector: '#txtRegion_AR', mensaje: 'La región es requerida.' },*/
+            /*    { selector: '#txtDepartamento_AR', mensaje: 'El departamento es requerido.' },*/
             //{ selector: '#txtProvincia_AR', mensaje: 'La provincia es requerida.' },
             //{ selector: '#txtDistrito_AR', mensaje: 'El distrito es requerido.' },
-         /*   { selector: '#txtTelefono_AR', mensaje: 'El teléfono es requerido.' },*/
+            /*   { selector: '#txtTelefono_AR', mensaje: 'El teléfono es requerido.' },*/
             { selector: '#txtCorreo_AR', mensaje: 'El correo es requerido.' },
             { selector: '#sltEstado_AR', mensaje: 'El estado es requerido.' },
             { selector: '#txtRol_AR', mensaje: 'El rol es requerido.' }
@@ -501,7 +506,7 @@ function configurarFiltros() {
         const v = this.value;
         const model = window.gridApi.getFilterModel() || {};
         if (!v) {
-            delete model.usuarioNombre; 
+            delete model.usuarioNombre;
         } else {
             model.usuarioNombre = { filterType: 'text', type: 'contains', filter: v };
         }
@@ -513,7 +518,7 @@ function configurarFiltros() {
         const model = window.gridApi.getFilterModel() || {};
 
         if (!v) {
-            delete model.rol; 
+            delete model.rol;
         } else {
             model.rol = {
                 filterType: 'text',
@@ -550,7 +555,7 @@ function DescargarResumenExcel() {
     let usuario = $('#filtroUsuario').val();
     let txtFiltrarRol = $('#txtFiltrarRol').val();
     let txtFiltrarEstado = $('#txtFiltrarEstado').val();
-    
+
     Swal.fire({
         title: 'Cargando...',
         timerProgressBar: true,
