@@ -238,7 +238,7 @@ function ListarUsuarioGerente(id = null, editar = false) {
         url: '/Usuarios/ListarUsuarioAdministrador?idUsuario=' + (id ?? ''),
         type: 'GET',
         success: function (data) {
-
+            console.log(data)
             if (!editar) {
 
                 let rowData = (data || []).map(usuario => ({
@@ -287,6 +287,8 @@ function ListarUsuarioGerente(id = null, editar = false) {
                 $('#txtProvincia_AR').val(data[0].provincia ?? '');
                 $('#txtDistrito_AR').val(data[0].distrito ?? '');
                 $('#txtSupervisor_AR').val(data[0].idusuariosup?.toString() ?? '').change();
+       $('#txtFechaInicio_AR').val((data[0]?.fechaInicio ?? '').slice(0, 10)); // "2025-09-05"
+$('#txtFechaCese_AR').val((data[0]?.fechaCese ?? '').slice(0, 10));  
 
                 $('#btnGuardarCambios').attr('data-id', data[0].idUsuario);
             }
@@ -380,6 +382,9 @@ function AgregarActualizarCliente(actualizar = false, idUsuario = null) {
             $('#txtUser_AR').val().trim() || null :
             // Al generar un nuevo usuario, se utiliza el formato "nombre.apellido"
             $('#txtNombres_AR').val().split(' ')[0] + '.' + $('#txtApellidosP_AR').val().split(' ')[0],
+
+        FechaInicio: $('#txtFechaInicio_AR').val() || null,
+        FechaCese: $('#txtFechaCese_AR').val() || null,
         Correo: $('#txtCorreo_AR').val().trim() || ''
     };
 
@@ -395,13 +400,14 @@ function AgregarActualizarCliente(actualizar = false, idUsuario = null) {
 
     const url = actualizar ? '/Usuarios/ActualizarUsuario' : '/Usuarios/CrearUsuario';
     const mensajeExito = actualizar ? 'Actualizado Correctamente' : 'Registrado Correctamente';
-
+    console.log(url)
     $.ajax({
         url: url,
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(data),
         success: function (res) {
+            console.log(res)
             if (res.success) {
                 Swal.fire(mensajeExito, 'Se ha actualizado el usuario de manera correcta', 'success');
                 ListarUsuarioGerente();
@@ -622,6 +628,7 @@ function LimpiarFormularioUsuario() {
     $('#txtCorreo_AR').val('');
     $('#txtRol_AR').val('');
     $('#sltEstado_AR').val('');
+    $('#txtFechaCese_AR').val('');
 
     // Logica para manejar roles específicos
     if ($('#rolUser').val() == 2) { // Para supervisor

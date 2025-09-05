@@ -1,4 +1,5 @@
-﻿$(document).ready(function () {
+﻿let totalMesDerivaciones = null;
+$(document).ready(function () {
     // Logica segun el rol
     idRol = parseInt($('#idRol').val());
 
@@ -243,11 +244,15 @@ function getAllDerivaciones() {
         },
         contentType: 'application/json',
         success: function (data) {
+            if (totalMesDerivaciones === null) {
+                totalMesDerivaciones = (data?.data?.length) || 0;
+                $('#totalDelMesDerivaciones').html(totalMesDerivaciones);
+            }
             if (data && data.success) {
                 if (App.derivaciones && App.derivaciones.updateTableData) {
                     App.derivaciones.updateTableData(data.data || []);
                     // Actualizar contador
-                    $('#totalDelMesDerivaciones').html(data.data.length);
+                    $('#resultadoDerivaciones').html(data.data.length);
                 }
             }
         },

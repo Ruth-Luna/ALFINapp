@@ -40,7 +40,6 @@ namespace ALFINapp.Datos
                         command.Parameters.AddWithValue("@id_usuario_accion", idUsuarioAccion);
                         command.Parameters.AddWithValue("@Correo", string.IsNullOrWhiteSpace(usuario.Correo) ? DBNull.Value : usuario.Correo);
                         command.Parameters.AddWithValue("@TipoDocumento", string.IsNullOrWhiteSpace(usuario.TipoDocumento) ? DBNull.Value : usuario.TipoDocumento);
-
                         await connection.OpenAsync();
                         await command.ExecuteNonQueryAsync();
                     }
@@ -153,7 +152,8 @@ namespace ALFINapp.Datos
 
 
                         cmd.Parameters.AddWithValue("@Telefono", string.IsNullOrWhiteSpace(usuario.Telefono) ? DBNull.Value : usuario.Telefono);
-
+                        cmd.Parameters.AddWithValue("@fecha_inicio", usuario.FechaInicio == null ? DBNull.Value : usuario.FechaInicio);
+                        cmd.Parameters.AddWithValue("@fecha_cese", usuario.FechaCese == null ? DBNull.Value : usuario.FechaCese);
                         // Datos supervisor
                         cmd.Parameters.AddWithValue("@IDUSUARIOSUP", usuario.IDUSUARIOSUP == 0 ? DBNull.Value : usuario.IDUSUARIOSUP);
                         cmd.Parameters.AddWithValue("@RESPONSABLESUP", string.IsNullOrWhiteSpace(usuario.RESPONSABLESUP) ? DBNull.Value : usuario.RESPONSABLESUP);
@@ -535,6 +535,8 @@ namespace ALFINapp.Datos
                                 Distrito = dr.IsDBNull(dr.GetOrdinal("Distrito")) ? null : dr.GetString(dr.GetOrdinal("Distrito")),
                                 Telefono = dr.IsDBNull(dr.GetOrdinal("Telefono")) ? null : dr.GetString(dr.GetOrdinal("Telefono")),
                                 FechaRegistro = dr.IsDBNull(dr.GetOrdinal("fecha_registro")) ? (DateTime?)null : dr.GetDateTime(dr.GetOrdinal("fecha_registro")),
+                                FechaInicio = dr.IsDBNull(dr.GetOrdinal("fecha_inicio")) ? (DateTime?)null : dr.GetDateTime(dr.GetOrdinal("fecha_inicio")),
+                                FechaCese = dr.IsDBNull(dr.GetOrdinal("fecha_cese")) ? (DateTime?)null : dr.GetDateTime(dr.GetOrdinal("fecha_cese")),
                                 Estado = dr.IsDBNull(dr.GetOrdinal("Estado")) ? null : dr.GetString(dr.GetOrdinal("Estado")),
                                 Supervisor = dr.IsDBNull(dr.GetOrdinal("Supervisor")) ? null : dr.GetString(dr.GetOrdinal("Supervisor")),
                                 Region = dr.IsDBNull(dr.GetOrdinal("REGION")) ? null : dr.GetString(dr.GetOrdinal("REGION")),

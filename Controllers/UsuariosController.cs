@@ -129,20 +129,22 @@ namespace ALFINapp.API.Controllers
 
                 string[] headers = {
                     "Dni",
-                    "tipo_documento",
-                    "Apellido_Paterno",
-                    "Apellido_Materno",
+                    "Tipo de Documento",
+                    "Apellido Paterno",
+                    "Apellido Materno",
                     "Nombres",
                     "Rol",
                     "Departamento",
                     "Provincia",
                     "Distrito",
                     "Telefono",
-                    "fecha_registro",
+                    "Fecha de Registro",
+                    "Fecha de Inicio",
+                    "Fecha de Cese",
                     "Estado",
                     "Supervisor",
-                    "REGION",
-                    "NOMBRE_CAMPANIA"
+                    "Región",
+                    "Campaña"
                 };
 
                 ws.Row(1).Height = 22;
@@ -178,11 +180,20 @@ namespace ALFINapp.API.Controllers
                         ws.Cells[row, 11].Value = (DateTime?)d.FechaRegistro;
                         ws.Cells[row, 11].Style.Numberformat.Format = "dd/MM/yyyy";
                     }
-
-                    ws.Cells[row, 12].Value = d.Estado;
-                    ws.Cells[row, 13].Value = d.Supervisor;
-                    ws.Cells[row, 14].Value = d.Region;  
-                    ws.Cells[row, 15].Value = d.NombreCampania;
+                    if (d?.FechaInicio != null)
+                    {
+                        ws.Cells[row, 12].Value = (DateTime?)d.FechaInicio;
+                        ws.Cells[row, 12].Style.Numberformat.Format = "dd/MM/yyyy";
+                    }
+                    if (d?.FechaCese != null)
+                    {
+                        ws.Cells[row, 13].Value = (DateTime?)d.FechaCese;
+                        ws.Cells[row, 13].Style.Numberformat.Format = "dd/MM/yyyy";
+                    }
+                    ws.Cells[row, 14].Value = d.Estado;
+                    ws.Cells[row, 15].Value = d.Supervisor;
+                    ws.Cells[row, 16].Value = d.Region;  
+                    ws.Cells[row, 17].Value = d.NombreCampania;
 
                     row++;
                 }
