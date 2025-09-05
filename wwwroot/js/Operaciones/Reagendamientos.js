@@ -36,7 +36,6 @@ function DescargarResumenExcelReagendamientos(){
             responseType: 'blob'
         },
         success: function (data) {
-            console.log(data)
             var a = document.createElement('a');
             a.href = window.URL.createObjectURL(data);
 
@@ -89,7 +88,6 @@ function DescargarResumenExcelHistoricos(){
             responseType: 'blob'
         },
         success: function (data) {
-            console.log(data)
             var a = document.createElement('a');
             a.href = window.URL.createObjectURL(data);
 
@@ -460,10 +458,15 @@ App.reagendamientos = (() => {
         XLSX.writeFile(workbook, "Reagendamientos.xlsx");
     }
 
+    function obtenerListaIdsDerivacion() {
+        return listaReagendamientos.map(item => item.idDerivacion);
+    }
+
     return {
         init,
         updateTableData,
         gridApi: () => gridApi,
-        exportarReagendamientos
+        exportarReagendamientos,
+        obtenerListaIdsDerivacion
     };
 })();

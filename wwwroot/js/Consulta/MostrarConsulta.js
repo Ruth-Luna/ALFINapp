@@ -105,7 +105,6 @@ async function validarDNI() {
 }
 
 function mostrarConsultas(data) {
-    console.log(data);
     const mensajeBase = document.getElementById("mensaje-traido-de-base");
     if (data["traidoDe"] === "BDALFIN") {
         mensajeBase.innerHTML = `

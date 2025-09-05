@@ -335,7 +335,6 @@ function AgregarActualizarCliente(actualizar = false, idUsuario = null) {
             validaciones.push('El supervisor es requerido.');
         }
     }
-    console.log(actualizar)
     // Validaciones solo para actualizar
     //if (actualizar) {
     //    [

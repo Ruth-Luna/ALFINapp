@@ -2,7 +2,6 @@ let agenciasDisponibles = [];
 let tipificacionesLista = [];
 
 async function mostrarDataCliente(data) {
-    console.log('Datos del cliente:', data);
     await mostrarAgencias().then(agencias => {
         agenciasDisponibles = agencias;
     });

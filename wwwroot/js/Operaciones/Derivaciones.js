@@ -64,7 +64,6 @@ function DescargarResumenExcelDerivaciones() {
             responseType: 'blob'
         },
         success: function (data) {
-            console.log(data)
             var a = document.createElement('a');
             a.href = window.URL.createObjectURL(data);
 

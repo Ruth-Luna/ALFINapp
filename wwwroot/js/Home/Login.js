@@ -23,7 +23,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
     $('#btnRegresarStep1').on('click', function () {
-        console.log("click")
         $('#recuperarContraseñaModal').modal('show');
         document.getElementById("step1").classList.remove("d-none");
         document.getElementById("step2").classList.add("d-none");

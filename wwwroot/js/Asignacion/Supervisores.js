@@ -544,7 +544,6 @@ async function load_assignments_list_modal() {
             throw new Error('Error en la respuesta del servidor');
         }
         const result = await response.json();
-        console.log('Resultado de la solicitud:', result.data);
         if (result.isSuccess === true) {
             const data = result.data.asignaciones.map(item => [
                 item.dni,

@@ -312,7 +312,6 @@ async function getHistorico(idDerivacion) {
         success: function(data) {
             if (data.success === true) {
                 response = data.data;
-                console.log(response)
             } else {
                 Swal.fire({
                     icon: 'error',
