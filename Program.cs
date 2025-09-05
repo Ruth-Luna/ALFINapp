@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     // .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true) 
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true) 
+    .AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true) 
     .AddEnvironmentVariables();
 
 builder.WebHost.ConfigureKestrel(serverOptions =>

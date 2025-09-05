@@ -1,12 +1,9 @@
 using ALFINapp.API.DTOs;
 using ALFINapp.API.Models;
 using ALFINapp.Datos;
-using ALFINapp.Datos.DAO.Derivaciones;
 using ALFINapp.Datos.DAO.Operaciones;
-using ALFINapp.Datos.DAO.Reagendacion;
 using ALFINapp.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Models;
 using OfficeOpenXml.Style;
 using OfficeOpenXml;
